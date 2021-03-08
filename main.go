@@ -1,0 +1,40 @@
+package main
+
+import (
+	"runtime"
+
+	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+)
+
+func init() {
+	runtime.LockOSThread()
+}
+
+func main() {
+	dxlib.Init("DxLib.dll")
+
+	dxlib.ChangeWindowMode(dxlib.TRUE)
+	dxlib.SetGraphMode(common.ScreenX, common.ScreenY)
+	dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
+
+	dxlib.DxLib_Init()
+	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
+
+	count := 0
+
+MAIN:
+	for dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
+		// 処理関係
+		inputs.KeyStateUpdate()
+
+		if dxlib.CheckHitKey(dxlib.KEY_INPUT_ESCAPE) == 1 {
+			break MAIN
+		}
+		count++
+
+	}
+
+	dxlib.DxLib_End()
+}
