@@ -5,7 +5,9 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 func init() {
@@ -26,8 +28,13 @@ func main() {
 
 MAIN:
 	for dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
-		// 処理関係
 		inputs.KeyStateUpdate()
+		if err := game.Process(); err != nil {
+			logger.Error("Failed to play game: %v", err)
+			// TODO show to user
+			break MAIN
+		}
+		game.Draw()
 
 		if dxlib.CheckHitKey(dxlib.KEY_INPUT_ESCAPE) == 1 {
 			break MAIN
