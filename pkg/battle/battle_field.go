@@ -35,12 +35,12 @@ func fieldInit() error {
 	logger.Info("Initialize battle field data")
 
 	// Initialize images
-	fname := "data/images/battle/panel_player.png"
+	fname := common.ImagePath + "battle/panel_player.png"
 	imgPanel[typePlayer] = dxlib.LoadGraph(fname)
 	if imgPanel[typePlayer] < 0 {
 		return fmt.Errorf("Failed to read player panel image %s", fname)
 	}
-	fname = "data/images/battle/panel_enemy.png"
+	fname = common.ImagePath + "battle/panel_enemy.png"
 	imgPanel[typeEnemy] = dxlib.LoadGraph(fname)
 	if imgPanel[typeEnemy] < 0 {
 		return fmt.Errorf("Failed to read enemy panel image %s", fname)

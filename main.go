@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"runtime"
 
 	"github.com/sh-miyoshi/dxlib"
@@ -15,6 +16,14 @@ func init() {
 }
 
 func main() {
+	var debug bool
+	flag.BoolVar(&debug, "debug", false, "run as debug mode")
+	flag.Parse()
+
+	if debug {
+		common.ImagePath = "data/private/images/"
+	}
+
 	dxlib.Init("DxLib.dll")
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)

@@ -6,3 +6,8 @@ const (
 	// ScreenY is y size of screen
 	ScreenY = 320
 )
+
+var (
+	// ImagePath ...
+	ImagePath = "data/images/"
+)
