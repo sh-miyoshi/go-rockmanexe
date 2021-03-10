@@ -43,6 +43,11 @@ func Process() error {
 
 // Draw ...
 func Draw() {
+	if count == 0 {
+		// skip if initialize phase
+		return
+	}
+
 	switch state {
 	case stateBattle:
 		battle.Draw()

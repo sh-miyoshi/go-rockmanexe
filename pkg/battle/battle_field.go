@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	fieldNumX  = 6
-	fieldNumY  = 3
-	panelSizeX = 80
-	panelSizeY = 50
+	fieldNumX     = 6
+	fieldNumY     = 3
+	panelSizeX    = 80
+	panelSizeY    = 50
+	drawPanelTopY = common.ScreenY - (panelSizeY * 3) - 30
 )
 
 const (
@@ -68,13 +69,12 @@ func fieldEnd() {
 	logger.Info("Cleanup battle field data")
 	for i := 0; i < typeMax; i++ {
 		dxlib.DeleteGraph(imgPanel[i])
+		imgPanel[i] = -1
 	}
 	logger.Info("Successfully cleanuped battle field data")
 }
 
 func fieldDraw() {
-	const drawPanelTopY = common.ScreenY - (panelSizeY * 3) - 30
-
 	for x := 0; x < fieldNumX; x++ {
 		for y := 0; y < fieldNumY; y++ {
 			img := imgPanel[panels[x][y].typ]
