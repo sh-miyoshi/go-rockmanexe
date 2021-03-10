@@ -33,6 +33,8 @@ func main() {
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
+	inputs.InitByDefault()
+
 	count := 0
 
 MAIN:

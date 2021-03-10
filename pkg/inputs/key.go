@@ -2,9 +2,42 @@ package inputs
 
 import "github.com/sh-miyoshi/dxlib"
 
+// KeyType ...
+type KeyType int
+
+const (
+	// KeyEnter ...
+	KeyEnter KeyType = iota
+	// KeyCancel ...
+	KeyCancel
+	// KeyLeft ...
+	KeyLeft
+	// KeyRight ...
+	KeyRight
+	// KeyUp ...
+	KeyUp
+	// KeyDown ...
+	KeyDown
+
+	keyMax
+)
+
 var (
 	keyState [256]int
+	keyBind  [keyMax]int
 )
+
+// InitByDefault set key binding by default value
+func InitByDefault() {
+	keyBind[KeyEnter] = dxlib.KEY_INPUT_Z
+	keyBind[KeyCancel] = dxlib.KEY_INPUT_X
+	keyBind[KeyLeft] = dxlib.KEY_INPUT_LEFT
+	keyBind[KeyRight] = dxlib.KEY_INPUT_RIGHT
+	keyBind[KeyUp] = dxlib.KEY_INPUT_UP
+	keyBind[KeyDown] = dxlib.KEY_INPUT_DOWN
+}
+
+// TODO: InitBySetting(settingFile string)
 
 // KeyStateUpdate ...
 func KeyStateUpdate() {
@@ -21,6 +54,6 @@ func KeyStateUpdate() {
 }
 
 // CheckKey ...
-func CheckKey(key int) int {
-	return keyState[key]
+func CheckKey(key KeyType) int {
+	return keyState[keyBind[key]]
 }
