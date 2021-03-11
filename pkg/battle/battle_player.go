@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -18,11 +20,18 @@ const (
 	playerAnimMax
 )
 
+type act struct {
+	typ        int
+	count      int
+	animID     string
+	moveDirect int
+}
+
 type battlePlayer struct {
 	posX int
 	posY int
 	hp   uint
-	act  int
+	act  act
 }
 
 var (
@@ -36,7 +45,7 @@ func playerInit(hp uint) error {
 	playerInfo.hp = hp
 	playerInfo.posX = 1
 	playerInfo.posY = 1
-	playerInfo.act = playerAnimMove
+	playerInfo.act.typ = playerAnimMove
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -105,10 +114,73 @@ func playerEnd() {
 func playerDraw() {
 	x := panelSizeX*playerInfo.posX + panelSizeX/2
 	y := drawPanelTopY + panelSizeY*playerInfo.posY - 10
-	img := imgPlayers[playerInfo.act][0] // TODO
+	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
 }
 
 func playerMainProcess() {
+	if playerInfo.act.animID != "" {
+		// still in animation
+		if !anim.IsProcessing(playerInfo.act.animID) {
+			// end animation
+			playerInfo.act.reset()
+		}
+		return
+	}
+
 	// TODO: stateChange(chipSelect)
+	// TODO: chip use
+	// TODO: shot
+
+	// TODO: move
+	moveDirect := -1
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		moveDirect = common.DirectUp
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		moveDirect = common.DirectDown
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		moveDirect = common.DirectRight
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		moveDirect = common.DirectLeft
+	}
+
+	if moveDirect >= 0 {
+		if moveObject(&playerInfo.posX, &playerInfo.posY, moveDirect, false) {
+			playerInfo.act.setMove(moveDirect)
+		}
+	}
+}
+
+func (a *act) setMove(direct int) {
+	a.typ = playerAnimMove
+	a.count = 0
+	a.animID = anim.New(a)
+	a.moveDirect = direct
+}
+
+func (a *act) reset() {
+	a.typ = playerAnimMove
+	a.count = 0
+	a.animID = ""
+}
+
+func (a *act) Process() (bool, error) {
+	switch a.typ {
+	case playerAnimMove:
+		if a.count == 2 {
+			moveObject(&playerInfo.posX, &playerInfo.posY, a.moveDirect, true)
+		}
+		if a.count > len(imgPlayers[playerAnimMove]) {
+			return true, nil
+		}
+	default:
+		return false, fmt.Errorf("Anim %d is not implemented yet", a.typ)
+	}
+	a.count++
+	return false, nil
+}
+
+func (a *act) getImageNo() int {
+	// TODO image delay
+	return a.count % len(imgPlayers[a.typ])
 }

@@ -3,6 +3,8 @@ package battle
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
@@ -40,6 +42,9 @@ func End() {
 
 // Process ...
 func Process() {
+	// TODO error handling
+	anim.MgrProcess()
+
 	switch battleState {
 	case stateMain:
 		playerMainProcess()
@@ -50,4 +55,41 @@ func Process() {
 func Draw() {
 	fieldDraw()
 	playerDraw()
+}
+
+func moveObject(x, y *int, direct int, isMove bool) bool {
+	nx := *x
+	ny := *y
+
+	switch direct {
+	case common.DirectUp:
+		if ny <= 0 {
+			return false
+		}
+		ny--
+	case common.DirectDown:
+		if ny > fieldNumY {
+			return false
+		}
+		ny++
+	case common.DirectLeft:
+		if nx <= 0 {
+			return false
+		}
+		nx--
+	case common.DirectRight:
+		if nx > fieldNumX {
+			return false
+		}
+		nx++
+	}
+
+	// TODO field panel is player?
+
+	if isMove {
+		*x = nx
+		*y = ny
+	}
+
+	return true
 }

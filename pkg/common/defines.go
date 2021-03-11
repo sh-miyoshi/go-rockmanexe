@@ -7,6 +7,17 @@ const (
 	ScreenY = 320
 )
 
+const (
+	// DirectUp ...
+	DirectUp = 1 << iota
+	// DirectLeft ...
+	DirectLeft
+	// DirectDown ...
+	DirectDown
+	// DirectRight ...
+	DirectRight
+)
+
 var (
 	// ImagePath ...
 	ImagePath = "data/images/"

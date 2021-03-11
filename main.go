@@ -22,6 +22,7 @@ func main() {
 
 	if debug {
 		common.ImagePath = "data/private/images/"
+		logger.InitLogger(true, "")
 	}
 
 	dxlib.Init("DxLib.dll")

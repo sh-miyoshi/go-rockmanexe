@@ -1,3 +1,5 @@
+github.com/google/uuid v1.2.0 h1:qJYtXnJRWmpe7m/3XlyhrsLrEURqHRM2kxzoxXqyUDs=
+github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/sh-miyoshi/dxlib v1.1.0 h1:1S7XkiCcUhIqX5rJBpzsIYIgCOmScwfsekTFWqqKJzA=
 github.com/sh-miyoshi/dxlib v1.1.0/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
 golang.org/x/text v0.3.4 h1:0YWbFKbhXG/wIiuHDSKpS0Iy7FSA+u45VtBMfQcFTTc=
