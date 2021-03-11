@@ -28,7 +28,7 @@ type panelInfo struct {
 }
 
 var (
-	imgPanel [2]int32 = [2]int32{-1, -1}
+	imgPanel = [2]int32{-1, -1}
 	panels   [fieldNumX][fieldNumY]panelInfo
 )
 
