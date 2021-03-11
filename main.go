@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -35,6 +36,7 @@ func main() {
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
 	inputs.InitByDefault()
+	chip.Init("data/chipList.yaml")
 
 	count := 0
 

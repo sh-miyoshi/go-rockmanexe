@@ -1,0 +1,8 @@
+# type: 0(無)
+# player_act.type: 3(cannon)
+- id: 0
+  name: "キャノン"
+  power: 40
+  type: 0
+  code: "abc*"
+  player_act: 3
