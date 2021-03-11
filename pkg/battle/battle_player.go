@@ -132,7 +132,7 @@ func playerMainProcess() {
 	// TODO: chip use
 	// TODO: shot
 
-	// TODO: move
+	// Move
 	moveDirect := -1
 	if inputs.CheckKey(inputs.KeyUp) == 1 {
 		moveDirect = common.DirectUp

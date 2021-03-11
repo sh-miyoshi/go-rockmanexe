@@ -68,7 +68,7 @@ func moveObject(x, y *int, direct int, isMove bool) bool {
 		}
 		ny--
 	case common.DirectDown:
-		if ny > fieldNumY {
+		if ny >= fieldNumY-1 {
 			return false
 		}
 		ny++
@@ -78,7 +78,7 @@ func moveObject(x, y *int, direct int, isMove bool) bool {
 		}
 		nx--
 	case common.DirectRight:
-		if nx > fieldNumX {
+		if nx >= fieldNumX-1 {
 			return false
 		}
 		nx++
