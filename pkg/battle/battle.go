@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
@@ -23,11 +24,11 @@ var (
 
 // Init ...
 func Init(plyr *player.Player) error {
-	if err := fieldInit(); err != nil {
+	if err := field.Init(); err != nil {
 		return fmt.Errorf("Battle field init failed: %w", err)
 	}
 
-	if err := playerInit(plyr.HP); err != nil {
+	if err := battleplayer.Init(plyr.HP); err != nil {
 		return fmt.Errorf("Battle player init failed: %w", err)
 	}
 
@@ -36,8 +37,8 @@ func Init(plyr *player.Player) error {
 
 // End ...
 func End() {
-	fieldEnd()
-	playerEnd()
+	field.End()
+	battleplayer.End()
 }
 
 // Process ...
@@ -47,49 +48,12 @@ func Process() {
 
 	switch battleState {
 	case stateMain:
-		playerMainProcess()
+		battleplayer.MainProcess()
 	}
 }
 
 // Draw ...
 func Draw() {
-	fieldDraw()
-	playerDraw()
-}
-
-func moveObject(x, y *int, direct int, isMove bool) bool {
-	nx := *x
-	ny := *y
-
-	switch direct {
-	case common.DirectUp:
-		if ny <= 0 {
-			return false
-		}
-		ny--
-	case common.DirectDown:
-		if ny >= fieldNumY-1 {
-			return false
-		}
-		ny++
-	case common.DirectLeft:
-		if nx <= 0 {
-			return false
-		}
-		nx--
-	case common.DirectRight:
-		if nx >= fieldNumX-1 {
-			return false
-		}
-		nx++
-	}
-
-	// TODO field panel is player?
-
-	if isMove {
-		*x = nx
-		*y = ny
-	}
-
-	return true
+	field.Draw()
+	battleplayer.Draw()
 }

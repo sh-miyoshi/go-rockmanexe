@@ -1,4 +1,4 @@
-package battle
+package field
 
 import (
 	"fmt"
@@ -9,11 +9,16 @@ import (
 )
 
 const (
-	fieldNumX     = 6
-	fieldNumY     = 3
-	panelSizeX    = 80
-	panelSizeY    = 50
-	drawPanelTopY = common.ScreenY - (panelSizeY * 3) - 30
+	// FieldNumX ...
+	FieldNumX = 6
+	// FieldNumY ...
+	FieldNumY = 3
+	// PanelSizeX ...
+	PanelSizeX = 80
+	// PanelSizeY ...
+	PanelSizeY = 50
+	// DrawPanelTopY ...
+	DrawPanelTopY = common.ScreenY - (PanelSizeY * 3) - 30
 )
 
 const (
@@ -29,10 +34,11 @@ type panelInfo struct {
 
 var (
 	imgPanel = [2]int32{-1, -1}
-	panels   [fieldNumX][fieldNumY]panelInfo
+	panels   [FieldNumX][FieldNumY]panelInfo
 )
 
-func fieldInit() error {
+// Init ...
+func Init() error {
 	logger.Info("Initialize battle field data")
 
 	// Initialize images
@@ -48,12 +54,12 @@ func fieldInit() error {
 	}
 
 	// Initialize panel info
-	for x := 0; x < fieldNumX; x++ {
+	for x := 0; x < FieldNumX; x++ {
 		t := typePlayer
 		if x > 2 {
 			t = typeEnemy
 		}
-		for y := 0; y < fieldNumY; y++ {
+		for y := 0; y < FieldNumY; y++ {
 			panels[x][y] = panelInfo{
 				typ: t,
 			}
@@ -65,7 +71,8 @@ func fieldInit() error {
 	return nil
 }
 
-func fieldEnd() {
+// End ...
+func End() {
 	logger.Info("Cleanup battle field data")
 	for i := 0; i < typeMax; i++ {
 		dxlib.DeleteGraph(imgPanel[i])
@@ -74,11 +81,12 @@ func fieldEnd() {
 	logger.Info("Successfully cleanuped battle field data")
 }
 
-func fieldDraw() {
-	for x := 0; x < fieldNumX; x++ {
-		for y := 0; y < fieldNumY; y++ {
+// Draw ...
+func Draw() {
+	for x := 0; x < FieldNumX; x++ {
+		for y := 0; y < FieldNumY; y++ {
 			img := imgPanel[panels[x][y].typ]
-			dxlib.DrawGraph(int32(panelSizeX*x), int32(drawPanelTopY+panelSizeY*y), img, dxlib.TRUE)
+			dxlib.DrawGraph(int32(PanelSizeX*x), int32(DrawPanelTopY+PanelSizeY*y), img, dxlib.TRUE)
 		}
 	}
 }

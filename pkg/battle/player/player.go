@@ -1,10 +1,12 @@
-package battle
+package player
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -41,7 +43,8 @@ var (
 	playerInfo battlePlayer
 )
 
-func playerInit(hp uint) error {
+// Init ...
+func Init(hp uint) error {
 	logger.Info("Initialize battle player data")
 
 	playerInfo.hp = hp
@@ -101,7 +104,8 @@ func playerInit(hp uint) error {
 	return nil
 }
 
-func playerEnd() {
+// End ...
+func End() {
 	logger.Info("Cleanup battle player data")
 
 	for i := 0; i < playerAnimMax; i++ {
@@ -114,14 +118,16 @@ func playerEnd() {
 	logger.Info("Successfully cleanuped battle player data")
 }
 
-func playerDraw() {
-	x := panelSizeX*playerInfo.posX + panelSizeX/2
-	y := drawPanelTopY + panelSizeY*playerInfo.posY - 10
+// Draw ...
+func Draw() {
+	x := field.PanelSizeX*playerInfo.posX + field.PanelSizeX/2
+	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.posY - 10
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
 }
 
-func playerMainProcess() {
+// MainProcess ...
+func MainProcess() {
 	if playerInfo.act.animID != "" {
 		// still in animation
 		if !anim.IsProcessing(playerInfo.act.animID) {
@@ -135,7 +141,7 @@ func playerMainProcess() {
 	// TODO: chip use
 
 	// Rock buster
-	if inputs.CheckKey(inputs.KeyEnter) > 0 {
+	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		playerInfo.chargeCount++
 	} else if playerInfo.chargeCount > 0 {
 		playerInfo.act.setShot(playerInfo.chargeCount)
@@ -156,7 +162,7 @@ func playerMainProcess() {
 	}
 
 	if moveDirect >= 0 {
-		if moveObject(&playerInfo.posX, &playerInfo.posY, moveDirect, false) {
+		if battlecommon.MoveObject(&playerInfo.posX, &playerInfo.posY, moveDirect, false) {
 			playerInfo.act.setMove(moveDirect)
 		}
 	}
@@ -187,7 +193,7 @@ func (a *act) Process() (bool, error) {
 	switch a.typ {
 	case playerAnimMove:
 		if a.count == 2 {
-			moveObject(&playerInfo.posX, &playerInfo.posY, a.moveDirect, true)
+			battlecommon.MoveObject(&playerInfo.posX, &playerInfo.posY, a.moveDirect, true)
 		}
 		if a.count > len(imgPlayers[playerAnimMove]) {
 			return true, nil
