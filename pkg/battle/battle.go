@@ -49,6 +49,7 @@ func Process() {
 	switch battleState {
 	case stateMain:
 		battleplayer.MainProcess()
+		fieldUpdates()
 	}
 }
 
@@ -56,4 +57,15 @@ func Process() {
 func Draw() {
 	field.Draw()
 	battleplayer.Draw()
+}
+
+func fieldUpdates() {
+	px, py := battleplayer.GetPos()
+	objs := []field.ObjectPosition{
+		{X: px, Y: py, ID: battleplayer.GetID()},
+	}
+
+	// TODO set enemy pos
+
+	field.UpdateObjectPos(objs)
 }

@@ -3,6 +3,7 @@ package player
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -30,6 +31,7 @@ type act struct {
 }
 
 type battlePlayer struct {
+	id          string
 	posX        int
 	posY        int
 	hp          uint
@@ -46,6 +48,10 @@ var (
 // Init ...
 func Init(hp uint) error {
 	logger.Info("Initialize battle player data")
+
+	if playerInfo.id == "" {
+		playerInfo.id = uuid.New().String()
+	}
 
 	playerInfo.hp = hp
 	playerInfo.posX = 1
@@ -124,6 +130,16 @@ func Draw() {
 	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.posY - 10
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
+}
+
+// GetID ...
+func GetID() string {
+	return playerInfo.id
+}
+
+// GetPos ...
+func GetPos() (x, y int) {
+	return playerInfo.posX, playerInfo.posY
 }
 
 // MainProcess ...

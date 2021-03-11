@@ -27,8 +27,15 @@ const (
 	typeMax
 )
 
+// ObjectPosition ...
+type ObjectPosition struct {
+	ID   string
+	X, Y int
+}
+
 type panelInfo struct {
-	typ int
+	typ      int
+	objectID string
 	// TODO status(毒とか穴とか)
 }
 
@@ -88,5 +95,19 @@ func Draw() {
 			img := imgPanel[panels[x][y].typ]
 			dxlib.DrawGraph(int32(PanelSizeX*x), int32(DrawPanelTopY+PanelSizeY*y), img, dxlib.TRUE)
 		}
+	}
+}
+
+// UpdateObjectPos ...
+func UpdateObjectPos(positions []ObjectPosition) {
+	// Cleanup at first
+	for x := 0; x < FieldNumX; x++ {
+		for y := 0; y < FieldNumY; y++ {
+			panels[x][y].objectID = ""
+		}
+	}
+
+	for _, pos := range positions {
+		panels[pos.X][pos.Y].objectID = pos.ID
 	}
 }
