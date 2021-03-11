@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
 const (
@@ -30,34 +31,42 @@ type act struct {
 	moveDirect int
 }
 
-type battlePlayer struct {
-	id          string
-	posX        int
-	posY        int
-	hp          uint
-	act         act
-	chargeCount uint
+// BattlePlayer ...
+type BattlePlayer struct {
+	ID          string
+	PosX        int
+	PosY        int
+	HP          uint
+	ChargeCount uint
+	ChipFolder  []int
+
+	act act
 }
 
 var (
 	imgPlayers [playerAnimMax][]int32
 	imgDelays  = [playerAnimMax]int{1, 1, 1, 1, 1, 1} // TODO: set correct value
-	playerInfo battlePlayer
+	playerInfo BattlePlayer
 )
 
 // Init ...
-func Init(hp uint) error {
+func Init(hp uint, chipFolder [player.FolderSize]int) error {
 	logger.Info("Initialize battle player data")
 
-	if playerInfo.id == "" {
-		playerInfo.id = uuid.New().String()
+	if playerInfo.ID == "" {
+		playerInfo.ID = uuid.New().String()
 	}
 
-	playerInfo.hp = hp
-	playerInfo.posX = 1
-	playerInfo.posY = 1
+	playerInfo.HP = hp
+	playerInfo.PosX = 1
+	playerInfo.PosY = 1
 	playerInfo.act.typ = playerAnimMove
-	playerInfo.chargeCount = 0
+	playerInfo.ChargeCount = 0
+
+	for _, c := range chipFolder {
+		playerInfo.ChipFolder = append(playerInfo.ChipFolder, c)
+	}
+	// TODO: Shuffle
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -126,20 +135,15 @@ func End() {
 
 // Draw ...
 func Draw() {
-	x := field.PanelSizeX*playerInfo.posX + field.PanelSizeX/2
-	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.posY - 10
+	x := field.PanelSizeX*playerInfo.PosX + field.PanelSizeX/2
+	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.PosY - 10
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
 }
 
-// GetID ...
-func GetID() string {
-	return playerInfo.id
-}
-
-// GetPos ...
-func GetPos() (x, y int) {
-	return playerInfo.posX, playerInfo.posY
+// Get ...
+func Get() *BattlePlayer {
+	return &playerInfo
 }
 
 // MainProcess ...
@@ -158,10 +162,10 @@ func MainProcess() {
 
 	// Rock buster
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
-		playerInfo.chargeCount++
-	} else if playerInfo.chargeCount > 0 {
-		playerInfo.act.setShot(playerInfo.chargeCount)
-		playerInfo.chargeCount = 0
+		playerInfo.ChargeCount++
+	} else if playerInfo.ChargeCount > 0 {
+		playerInfo.act.setShot(playerInfo.ChargeCount)
+		playerInfo.ChargeCount = 0
 		return
 	}
 
@@ -178,7 +182,7 @@ func MainProcess() {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&playerInfo.posX, &playerInfo.posY, moveDirect, false) {
+		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, false) {
 			playerInfo.act.setMove(moveDirect)
 		}
 	}
@@ -209,7 +213,7 @@ func (a *act) Process() (bool, error) {
 	switch a.typ {
 	case playerAnimMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(&playerInfo.posX, &playerInfo.posY, a.moveDirect, true)
+			battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, a.moveDirect, true)
 		}
 		if a.count > len(imgPlayers[playerAnimMove]) {
 			return true, nil

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
@@ -15,11 +16,13 @@ const (
 	stateBeforeMain
 	stateMain
 	stateResult
+
 	stateMax
 )
 
 var (
-	battleState = stateMain // debug
+	battleCount = 0
+	battleState = stateChipSelect // debug
 )
 
 // Init ...
@@ -28,7 +31,7 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Battle field init failed: %w", err)
 	}
 
-	if err := battleplayer.Init(plyr.HP); err != nil {
+	if err := battleplayer.Init(plyr.HP, plyr.ChipFolder); err != nil {
 		return fmt.Errorf("Battle player init failed: %w", err)
 	}
 
@@ -47,25 +50,52 @@ func Process() {
 	anim.MgrProcess()
 
 	switch battleState {
+	case stateChipSelect:
+		if battleCount == 0 {
+			chipsel.Init(battleplayer.Get().ChipFolder)
+		}
+		chipsel.Process()
 	case stateMain:
 		battleplayer.MainProcess()
 		fieldUpdates()
 	}
+
+	battleCount++
 }
 
 // Draw ...
 func Draw() {
+	if battleCount == 0 {
+		// skip if initialize phase
+		return
+	}
+
 	field.Draw()
-	battleplayer.Draw()
+
+	switch battleState {
+	case stateChipSelect:
+		battleplayer.Draw()
+		chipsel.Draw()
+	case stateMain:
+		battleplayer.Draw()
+	}
 }
 
 func fieldUpdates() {
-	px, py := battleplayer.GetPos()
+	p := battleplayer.Get()
 	objs := []field.ObjectPosition{
-		{X: px, Y: py, ID: battleplayer.GetID()},
+		{X: p.PosX, Y: p.PosY, ID: p.ID},
 	}
 
 	// TODO set enemy pos
 
 	field.UpdateObjectPos(objs)
+}
+
+func stateChange(nextState int) {
+	if nextState < 0 || nextState >= stateMax {
+		panic(fmt.Sprintf("Invalid next game state: %d", nextState))
+	}
+	battleState = nextState
+	battleCount = 0
 }
