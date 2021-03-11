@@ -28,14 +28,16 @@ type act struct {
 }
 
 type battlePlayer struct {
-	posX int
-	posY int
-	hp   uint
-	act  act
+	posX        int
+	posY        int
+	hp          uint
+	act         act
+	chargeCount uint
 }
 
 var (
 	imgPlayers [playerAnimMax][]int32
+	imgDelays  = [playerAnimMax]int{1, 1, 1, 1, 1, 1} // TODO: set correct value
 	playerInfo battlePlayer
 )
 
@@ -46,6 +48,7 @@ func playerInit(hp uint) error {
 	playerInfo.posX = 1
 	playerInfo.posY = 1
 	playerInfo.act.typ = playerAnimMove
+	playerInfo.chargeCount = 0
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -130,9 +133,17 @@ func playerMainProcess() {
 
 	// TODO: stateChange(chipSelect)
 	// TODO: chip use
-	// TODO: shot
 
-	// TODO: move
+	// Rock buster
+	if inputs.CheckKey(inputs.KeyEnter) > 0 {
+		playerInfo.chargeCount++
+	} else if playerInfo.chargeCount > 0 {
+		playerInfo.act.setShot(playerInfo.chargeCount)
+		playerInfo.chargeCount = 0
+		return
+	}
+
+	// Move
 	moveDirect := -1
 	if inputs.CheckKey(inputs.KeyUp) == 1 {
 		moveDirect = common.DirectUp
@@ -158,6 +169,14 @@ func (a *act) setMove(direct int) {
 	a.moveDirect = direct
 }
 
+func (a *act) setShot(chargeCount uint) {
+	a.typ = playerAnimShot
+	a.count = 0
+	a.animID = anim.New(a)
+
+	// TODO: change show power by charge count
+}
+
 func (a *act) reset() {
 	a.typ = playerAnimMove
 	a.count = 0
@@ -173,14 +192,20 @@ func (a *act) Process() (bool, error) {
 		if a.count > len(imgPlayers[playerAnimMove]) {
 			return true, nil
 		}
+	case playerAnimShot:
+		// TODO
 	default:
 		return false, fmt.Errorf("Anim %d is not implemented yet", a.typ)
 	}
+
 	a.count++
+
+	if a.count > len(imgPlayers[a.typ])*imgDelays[a.typ] {
+		return true, nil
+	}
 	return false, nil
 }
 
 func (a *act) getImageNo() int {
-	// TODO image delay
-	return a.count % len(imgPlayers[a.typ])
+	return a.count % (len(imgPlayers[a.typ]) * imgDelays[a.typ])
 }
