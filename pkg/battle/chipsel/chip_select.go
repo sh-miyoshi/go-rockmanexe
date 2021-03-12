@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
@@ -64,13 +65,20 @@ func Init(folder []player.ChipInfo) error {
 func Draw() {
 	dxlib.DrawGraph(0, 0, imgFrame, dxlib.TRUE)
 
-	// TODO Show chip data
+	// Show chip data
 	for i, s := range selectList {
-		// c := chip.Get(s.ID)
 		// Show Icon
+		// TODO selectable()
+		x := i*32 + 17
+		dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, true), dxlib.TRUE)
 
 		// Show Detail Data
 		if i == pointer {
+			c := chip.Get(s.ID)
+			// TODO font
+			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
+			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
+			dxlib.DrawString(20, 25, c.Name, 0x000000)
 			dxlib.DrawFormatString(30, 163, 0xffffff, "%s", s.Code)
 		}
 	}
@@ -81,8 +89,8 @@ func Draw() {
 		if pointer == sendBtnNo {
 			dxlib.DrawGraph(180, 225, imgPointer[1], dxlib.TRUE)
 		} else {
-			x := (pointer%5)*32 + 10
-			y := (pointer/5)*20 + 201
+			x := (pointer%5)*32 + 8
+			y := (pointer/5)*20 + 202
 			dxlib.DrawGraph(int32(x), int32(y), imgPointer[0], dxlib.TRUE)
 		}
 	}
