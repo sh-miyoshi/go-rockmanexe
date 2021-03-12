@@ -6,7 +6,9 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -68,9 +70,8 @@ func Draw() {
 	// Show chip data
 	for i, s := range selectList {
 		// Show Icon
-		// TODO selectable()
 		x := i*32 + 17
-		dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, true), dxlib.TRUE)
+		dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, selectable(i)), dxlib.TRUE)
 
 		// Show Detail Data
 		if i == pointer {
@@ -94,14 +95,61 @@ func Draw() {
 			dxlib.DrawGraph(int32(x), int32(y), imgPointer[0], dxlib.TRUE)
 		}
 	}
+
+	// Show Selected Chips
+	for i, s := range selected {
+		y := i*32 + 50
+		dxlib.DrawGraph(193, int32(y), chip.GetIcon(selectList[s].ID, true), dxlib.TRUE)
+	}
 }
 
 // Process ...
-func Process() {
+func Process() bool {
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if pointer == sendBtnNo {
+			return true
+		}
+		if selectable(pointer) {
+			selected = append(selected, pointer)
+		}
+	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
+		if len(selected) > 0 {
+			selected = selected[:len(selected)-1]
+		}
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		if pointer == sendBtnNo {
+			pointer = 0
+		} else if pointer == selectMax-1 {
+			pointer = sendBtnNo
+		} else {
+			pointer++
+		}
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		if pointer == sendBtnNo {
+			pointer = selectMax - 1
+		} else if pointer == 0 {
+			pointer = sendBtnNo
+		} else {
+			pointer--
+		}
+	}
 	count++
+	return false
 }
 
 // GetSelected ...
 func GetSelected() []int {
 	return selected
+}
+
+func selectable(no int) bool {
+	if slice.Contains(selected, no) {
+		// already selected
+		return false
+	}
+
+	// TODO Fixed Name
+	// TODO Chip Code
+
+	return true
 }
