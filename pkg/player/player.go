@@ -10,13 +10,19 @@ const (
 	FolderSize = 10 // debug
 )
 
+// ChipInfo ...
+type ChipInfo struct {
+	ID   int
+	Code string
+}
+
 // Player ...
 type Player struct {
 	HP         uint
 	HPMax      uint
 	ShotPower  uint
 	Zenny      uint
-	ChipFolder [FolderSize]int
+	ChipFolder [FolderSize]ChipInfo
 }
 
 // New returns player data with default values
@@ -26,17 +32,17 @@ func New() *Player {
 		HPMax:     defaultHP,
 		ShotPower: defaultShotPower,
 		Zenny:     0,
-		ChipFolder: [FolderSize]int{
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
-			chip.IDCannon,
+		ChipFolder: [FolderSize]ChipInfo{
+			{ID: chip.IDCannon, Code: "a"},
+			{ID: chip.IDCannon, Code: "a"},
+			{ID: chip.IDCannon, Code: "a"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDCannon, Code: "*"},
+			{ID: chip.IDCannon, Code: "*"},
 		},
 	}
 }

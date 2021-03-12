@@ -53,6 +53,7 @@ func Process() {
 	case stateChipSelect:
 		if battleCount == 0 {
 			chipsel.Init(battleplayer.Get().ChipFolder)
+			// TODO error handling
 		}
 		chipsel.Process()
 	case stateMain:

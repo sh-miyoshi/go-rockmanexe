@@ -38,7 +38,7 @@ type BattlePlayer struct {
 	PosY        int
 	HP          uint
 	ChargeCount uint
-	ChipFolder  []int
+	ChipFolder  []player.ChipInfo
 
 	act act
 }
@@ -50,7 +50,7 @@ var (
 )
 
 // Init ...
-func Init(hp uint, chipFolder [player.FolderSize]int) error {
+func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 	logger.Info("Initialize battle player data")
 
 	if playerInfo.ID == "" {
