@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
@@ -33,12 +34,13 @@ type act struct {
 
 // BattlePlayer ...
 type BattlePlayer struct {
-	ID          string
-	PosX        int
-	PosY        int
-	HP          uint
-	ChargeCount uint
-	ChipFolder  []player.ChipInfo
+	ID            string
+	PosX          int
+	PosY          int
+	HP            uint
+	ChargeCount   uint
+	ChipFolder    []player.ChipInfo
+	SelectedChips []player.ChipInfo
 
 	act act
 }
@@ -146,15 +148,29 @@ func Get() *BattlePlayer {
 	return &playerInfo
 }
 
+// SetChipSelectResult ...
+func SetChipSelectResult(selected []int) {
+	playerInfo.SelectedChips = []player.ChipInfo{}
+	for _, s := range selected {
+		playerInfo.SelectedChips = append(playerInfo.SelectedChips, playerInfo.ChipFolder[s])
+	}
+
+	// Remove selected chips from folder
+	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
+	for _, s := range selected {
+		playerInfo.ChipFolder = append(playerInfo.ChipFolder[:s], playerInfo.ChipFolder[s+1:]...)
+	}
+}
+
 // MainProcess ...
-func MainProcess() {
+func MainProcess() bool {
 	if playerInfo.act.animID != "" {
 		// still in animation
 		if !anim.IsProcessing(playerInfo.act.animID) {
 			// end animation
 			playerInfo.act.reset()
 		}
-		return
+		return false
 	}
 
 	// TODO: stateChange(chipSelect)
@@ -166,7 +182,7 @@ func MainProcess() {
 	} else if playerInfo.ChargeCount > 0 {
 		playerInfo.act.setShot(playerInfo.ChargeCount)
 		playerInfo.ChargeCount = 0
-		return
+		return false
 	}
 
 	// Move
@@ -186,6 +202,11 @@ func MainProcess() {
 			playerInfo.act.setMove(moveDirect)
 		}
 	}
+
+	if dxlib.CheckHitKey(dxlib.KEY_INPUT_A) == 1 {
+		return true
+	}
+	return false
 }
 
 func (a *act) setMove(direct int) {

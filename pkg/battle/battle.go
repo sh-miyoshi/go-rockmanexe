@@ -55,10 +55,21 @@ func Process() {
 			chipsel.Init(battleplayer.Get().ChipFolder)
 			// TODO error handling
 		}
-		chipsel.Process()
+		if chipsel.Process() {
+			// set selected chips
+			battleplayer.SetChipSelectResult(chipsel.GetSelected())
+			stateChange(stateBeforeMain)
+		}
+	case stateBeforeMain:
+		// TODO implement this
+		stateChange(stateMain)
 	case stateMain:
-		battleplayer.MainProcess()
+		res := battleplayer.MainProcess()
 		fieldUpdates()
+		if res {
+			stateChange(stateChipSelect)
+			return
+		}
 	}
 
 	battleCount++
