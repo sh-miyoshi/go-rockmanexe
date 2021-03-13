@@ -86,10 +86,11 @@ func Draw() {
 
 	switch battleState {
 	case stateChipSelect:
-		battleplayer.Draw()
+		battleplayer.DrawChar()
 		chipsel.Draw()
 	case stateMain:
-		battleplayer.Draw()
+		battleplayer.DrawChar()
+		battleplayer.DrawChipIcon()
 	}
 }
 

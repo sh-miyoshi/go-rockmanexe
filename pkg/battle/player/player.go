@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -135,12 +136,27 @@ func End() {
 	logger.Info("Successfully cleanuped battle player data")
 }
 
-// Draw ...
-func Draw() {
+// DrawChar ...
+func DrawChar() {
 	x := field.PanelSizeX*playerInfo.PosX + field.PanelSizeX/2
 	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.PosY - 10
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
+}
+
+func DrawChipIcon() {
+	n := len(playerInfo.SelectedChips)
+	if n > 0 {
+		const px = 3
+		max := n * px
+		for i := 0; i < n; i++ {
+			x := field.PanelSizeX*playerInfo.PosX + field.PanelSizeX/2 - 2 + (i * px) - max
+			y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.PosY - 10 - 81 + (i * px) - max
+			dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
+			// draw from the end
+			dxlib.DrawGraph(int32(x), int32(y), chip.GetIcon(playerInfo.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
+		}
+	}
 }
 
 // Get ...
