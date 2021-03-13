@@ -105,6 +105,9 @@ func Draw() {
 
 // Process ...
 func Process() bool {
+	count++
+	max := len(selectList)
+
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if pointer == sendBtnNo {
 			return true
@@ -112,28 +115,34 @@ func Process() bool {
 		if selectable(pointer) {
 			selected = append(selected, pointer)
 		}
-	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
-		if len(selected) > 0 {
-			selected = selected[:len(selected)-1]
+	} else {
+		if max == 0 {
+			return false
 		}
-	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
-		if pointer == sendBtnNo {
-			pointer = 0
-		} else if pointer == selectMax-1 {
-			pointer = sendBtnNo
-		} else {
-			pointer++
-		}
-	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
-		if pointer == sendBtnNo {
-			pointer = selectMax - 1
-		} else if pointer == 0 {
-			pointer = sendBtnNo
-		} else {
-			pointer--
+
+		if inputs.CheckKey(inputs.KeyCancel) == 1 {
+			if len(selected) > 0 {
+				selected = selected[:len(selected)-1]
+			}
+		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+			if pointer == sendBtnNo {
+				pointer = 0
+			} else if pointer == max-1 {
+				pointer = sendBtnNo
+			} else {
+				pointer++
+			}
+		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+			if pointer == sendBtnNo {
+				pointer = max - 1
+			} else if pointer == 0 {
+				pointer = sendBtnNo
+			} else {
+				pointer--
+			}
 		}
 	}
-	count++
+
 	return false
 }
 
