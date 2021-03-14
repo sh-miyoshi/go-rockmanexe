@@ -9,6 +9,7 @@ import (
 // Anim ...
 type Anim interface {
 	Process() (bool, error)
+	Draw()
 }
 
 var (
@@ -28,6 +29,13 @@ func MgrProcess() error {
 		}
 	}
 	return nil
+}
+
+// MgrDraw ...
+func MgrDraw() {
+	for _, anim := range anims {
+		anim.Draw()
+	}
 }
 
 // New ...

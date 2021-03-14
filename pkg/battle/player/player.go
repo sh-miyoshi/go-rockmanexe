@@ -48,7 +48,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers [playerAnimMax][]int32
-	imgDelays  = [playerAnimMax]int{1, 1, 1, 8, 1, 1} // TODO: set correct value
+	imgDelays  = [playerAnimMax]int{1, 1, 1, 6, 1, 1} // TODO: set correct value
 	playerInfo BattlePlayer
 )
 
@@ -252,17 +252,18 @@ func (a *act) reset() {
 	a.animID = ""
 }
 
+func (a *act) Draw() {
+	// No common drawing process
+}
+
 func (a *act) Process() (bool, error) {
 	switch a.typ {
 	case playerAnimMove:
 		if a.count == 2 {
 			battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, a.moveDirect, true)
 		}
-		if a.count > len(imgPlayers[playerAnimMove]) {
-			return true, nil
-		}
-	case playerAnimShot:
-		// TODO
+	case playerAnimShot, playerAnimCannon:
+		// nothing to do
 	default:
 		return false, fmt.Errorf("Anim %d is not implemented yet", a.typ)
 	}
@@ -276,5 +277,9 @@ func (a *act) Process() (bool, error) {
 }
 
 func (a *act) getImageNo() int {
-	return a.count % (len(imgPlayers[a.typ]) * imgDelays[a.typ])
+	n := a.count / imgDelays[a.typ]
+	if n >= len(imgPlayers[a.typ]) {
+		n = len(imgPlayers[a.typ]) - 1
+	}
+	return n
 }
