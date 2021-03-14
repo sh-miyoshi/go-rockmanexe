@@ -111,3 +111,14 @@ func UpdateObjectPos(positions []ObjectPosition) {
 		panels[pos.X][pos.Y].objectID = pos.ID
 	}
 }
+
+func GetPos(objID string) (x, y int) {
+	for x := 0; x < FieldNumX; x++ {
+		for y := 0; y < FieldNumY; y++ {
+			if panels[x][y].objectID == objID {
+				return x, y
+			}
+		}
+	}
+	return -1, -1
+}
