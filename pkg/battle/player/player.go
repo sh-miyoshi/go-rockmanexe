@@ -48,7 +48,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers [playerAnimMax][]int32
-	imgDelays  = [playerAnimMax]int{1, 1, 1, 1, 1, 1} // TODO: set correct value
+	imgDelays  = [playerAnimMax]int{1, 1, 1, 8, 1, 1} // TODO: set correct value
 	playerInfo BattlePlayer
 )
 
@@ -144,9 +144,12 @@ func DrawChar() {
 	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
 }
 
+// DrawChipIcon ...
 func DrawChipIcon() {
 	n := len(playerInfo.SelectedChips)
 	if n > 0 {
+		// TODO Show chip info
+
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
@@ -190,13 +193,27 @@ func MainProcess() bool {
 	}
 
 	// TODO: stateChange(chipSelect)
-	// TODO: chip use
+
+	// Chip use
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if len(playerInfo.SelectedChips) > 0 {
+			// TODO: send to chip proc
+			c := chip.Get(playerInfo.SelectedChips[0].ID)
+			if c.PlayerAct != -1 {
+				playerInfo.act.set(c.PlayerAct)
+			}
+
+			playerInfo.SelectedChips = playerInfo.SelectedChips[1:]
+			return false
+		}
+	}
 
 	// Rock buster
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		playerInfo.ChargeCount++
 	} else if playerInfo.ChargeCount > 0 {
-		playerInfo.act.setShot(playerInfo.ChargeCount)
+		// TODO set act.ShotPower by playerInfo.ChargeCount
+		playerInfo.act.set(playerAnimShot)
 		playerInfo.ChargeCount = 0
 		return false
 	}
@@ -215,29 +232,18 @@ func MainProcess() bool {
 
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, false) {
-			playerInfo.act.setMove(moveDirect)
+			playerInfo.act.moveDirect = moveDirect
+			playerInfo.act.set(playerAnimMove)
 		}
 	}
 
-	if dxlib.CheckHitKey(dxlib.KEY_INPUT_A) == 1 {
-		return true
-	}
 	return false
 }
 
-func (a *act) setMove(direct int) {
-	a.typ = playerAnimMove
+func (a *act) set(typ int) {
+	a.typ = typ
 	a.count = 0
 	a.animID = anim.New(a)
-	a.moveDirect = direct
-}
-
-func (a *act) setShot(chargeCount uint) {
-	a.typ = playerAnimShot
-	a.count = 0
-	a.animID = anim.New(a)
-
-	// TODO: change show power by charge count
 }
 
 func (a *act) reset() {

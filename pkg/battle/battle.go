@@ -45,15 +45,17 @@ func End() {
 }
 
 // Process ...
-func Process() {
-	// TODO error handling
-	anim.MgrProcess()
+func Process() error {
+	if err := anim.MgrProcess(); err != nil {
+		return fmt.Errorf("Failed to handle animation: %w", err)
+	}
 
 	switch battleState {
 	case stateChipSelect:
 		if battleCount == 0 {
-			chipsel.Init(battleplayer.Get().ChipFolder)
-			// TODO error handling
+			if err := chipsel.Init(battleplayer.Get().ChipFolder); err != nil {
+				return fmt.Errorf("Failed to initialize chip select: %w", err)
+			}
 		}
 		if chipsel.Process() {
 			// set selected chips
@@ -68,11 +70,12 @@ func Process() {
 		fieldUpdates()
 		if res {
 			stateChange(stateChipSelect)
-			return
+			return nil
 		}
 	}
 
 	battleCount++
+	return nil
 }
 
 // Draw ...

@@ -35,7 +35,9 @@ func Process() error {
 				return fmt.Errorf("Game process in state battle failed: %w", err)
 			}
 		}
-		battle.Process()
+		if err := battle.Process(); err != nil {
+			return fmt.Errorf("Battle process failed: % w", err)
+		}
 	}
 	count++
 	return nil
