@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -48,7 +49,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers [playerAnimMax][]int32
-	imgDelays  = [playerAnimMax]int{1, 1, 1, 6, 1, 1} // TODO: set correct value
+	imgDelays  = [playerAnimMax]int{1, 1, 1, 5, 1, 1} // TODO: set correct value
 	playerInfo BattlePlayer
 )
 
@@ -80,7 +81,7 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
 	imgPlayers[playerAnimDamage] = make([]int32, 6)
-	res = dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimDamage])
+	res = dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimDamage])
 	if res == -1 {
 		return fmt.Errorf("Failed to load player damage image: %s", fname)
 	}
@@ -98,8 +99,8 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
-	imgPlayers[playerAnimCannon] = make([]int32, 4)
-	res = dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimCannon])
+	imgPlayers[playerAnimCannon] = make([]int32, 6)
+	res = dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimCannon])
 	if res == -1 {
 		return fmt.Errorf("Failed to load player cannon image: %s", fname)
 	}
@@ -197,11 +198,11 @@ func MainProcess() bool {
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if len(playerInfo.SelectedChips) > 0 {
-			// TODO: send to chip proc
 			c := chip.Get(playerInfo.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
 				playerInfo.act.set(c.PlayerAct)
 			}
+			anim.New(skill.Get(c.SkillID, playerInfo.ID))
 
 			playerInfo.SelectedChips = playerInfo.SelectedChips[1:]
 			return false

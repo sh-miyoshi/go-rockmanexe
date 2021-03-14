@@ -18,6 +18,7 @@ type Chip struct {
 	Type      int    `yaml:"type"`
 	Code      string `yaml:"code"`
 	PlayerAct int    `yaml:"player_act"`
+	SkillID   int    `yaml:"skill_id"`
 
 	Image int32
 }

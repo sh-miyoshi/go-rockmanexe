@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
@@ -35,6 +36,10 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Battle player init failed: %w", err)
 	}
 
+	if err := skill.Init(); err != nil {
+		return fmt.Errorf("Skill init failed: %w", err)
+	}
+
 	return nil
 }
 
@@ -42,6 +47,7 @@ func Init(plyr *player.Player) error {
 func End() {
 	field.End()
 	battleplayer.End()
+	skill.End()
 }
 
 // Process ...
@@ -95,6 +101,8 @@ func Draw() {
 		battleplayer.DrawChar()
 		battleplayer.DrawChipIcon()
 	}
+
+	anim.MgrDraw()
 }
 
 func fieldUpdates() {
