@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -28,6 +29,12 @@ func main() {
 
 	dxlib.Init("DxLib.dll")
 
+	fname := "data/font.ttf"
+	if res := dxlib.AddFontFile(fname); res == nil {
+		logger.Error("Failed to load font data %s", fname)
+		return
+	}
+
 	dxlib.ChangeWindowMode(dxlib.TRUE)
 	dxlib.SetGraphMode(common.ScreenX, common.ScreenY)
 	dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
@@ -36,7 +43,14 @@ func main() {
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
 	inputs.InitByDefault()
-	chip.Init("data/chipList.yaml")
+	if err := chip.Init("data/chipList.yaml"); err != nil {
+		logger.Error("Failed to init chip data: %v", err)
+		return
+	}
+	if err := draw.Init(); err != nil {
+		logger.Error("Failed to init drawing data: %v", err)
+		return
+	}
 
 	count := 0
 

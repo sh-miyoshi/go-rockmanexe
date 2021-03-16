@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 	"github.com/stretchr/stew/slice"
@@ -79,7 +80,7 @@ func Draw() {
 			// TODO font
 			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
 			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
-			dxlib.DrawString(20, 25, c.Name, 0x000000)
+			draw.String(20, 25, 0x000000, "%s", c.Name)
 			dxlib.DrawFormatString(30, 163, 0xffffff, "%s", s.Code)
 		}
 	}
