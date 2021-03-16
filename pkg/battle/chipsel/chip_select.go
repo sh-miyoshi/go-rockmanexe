@@ -81,7 +81,7 @@ func Draw() {
 			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
 			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
 			draw.String(20, 25, 0x000000, "%s", c.Name)
-			dxlib.DrawFormatString(30, 163, 0xffffff, "%s", s.Code)
+			draw.ChipCode(30, 163, s.Code)
 		}
 	}
 
