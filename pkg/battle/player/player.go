@@ -1,6 +1,7 @@
 package player
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 
@@ -48,6 +49,9 @@ type BattlePlayer struct {
 }
 
 var (
+	ErrPlayerDead = errors.New("player dead")
+	ErrChipSelect = errors.New("chip select")
+
 	imgPlayers [playerAnimMax][]int32
 	imgDelays  = [playerAnimMax]int{1, 1, 1, 5, 1, 1} // TODO: set correct value
 	playerInfo BattlePlayer
@@ -183,14 +187,14 @@ func SetChipSelectResult(selected []int) {
 }
 
 // MainProcess ...
-func MainProcess() bool {
+func MainProcess() error {
 	if playerInfo.act.animID != "" {
 		// still in animation
 		if !anim.IsProcessing(playerInfo.act.animID) {
 			// end animation
 			playerInfo.act.reset()
 		}
-		return false
+		return nil
 	}
 
 	// TODO: stateChange(chipSelect)
@@ -205,7 +209,7 @@ func MainProcess() bool {
 			anim.New(skill.Get(c.SkillID, playerInfo.ID))
 
 			playerInfo.SelectedChips = playerInfo.SelectedChips[1:]
-			return false
+			return nil
 		}
 	}
 
@@ -216,7 +220,7 @@ func MainProcess() bool {
 		// TODO set act.ShotPower by playerInfo.ChargeCount
 		playerInfo.act.set(playerAnimShot)
 		playerInfo.ChargeCount = 0
-		return false
+		return nil
 	}
 
 	// Move
@@ -238,7 +242,7 @@ func MainProcess() bool {
 		}
 	}
 
-	return false
+	return nil
 }
 
 func (a *act) set(typ int) {

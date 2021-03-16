@@ -1,10 +1,12 @@
 package battle
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
@@ -40,6 +42,10 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Skill init failed: %w", err)
 	}
 
+	if err := enemy.Init(); err != nil {
+		return fmt.Errorf("Enemy init failed: %w", err)
+	}
+
 	return nil
 }
 
@@ -48,6 +54,7 @@ func End() {
 	field.End()
 	battleplayer.End()
 	skill.End()
+	enemy.End()
 }
 
 // Process ...
@@ -72,12 +79,23 @@ func Process() error {
 		// TODO implement this
 		stateChange(stateMain)
 	case stateMain:
-		res := battleplayer.MainProcess()
-		fieldUpdates()
-		if res {
-			stateChange(stateChipSelect)
-			return nil
+		if err := battleplayer.MainProcess(); err != nil {
+			if errors.Is(err, battleplayer.ErrChipSelect) {
+				stateChange(stateChipSelect)
+				return nil
+			}
+			if errors.Is(err, battleplayer.ErrPlayerDead) {
+				// TODO return lose
+			}
+			return fmt.Errorf("Failed to process player: %w", err)
 		}
+		if err := enemy.MgrProcess(); err != nil {
+			if errors.Is(err, enemy.ErrGameEnd) {
+				// TODO return win
+			}
+			return fmt.Errorf("Failed to process enemy: %w", err)
+		}
+		fieldUpdates()
 	}
 
 	battleCount++
@@ -95,9 +113,11 @@ func Draw() {
 
 	switch battleState {
 	case stateChipSelect:
+		enemy.MgrDraw()
 		battleplayer.DrawChar()
 		chipsel.Draw()
 	case stateMain:
+		enemy.MgrDraw()
 		battleplayer.DrawChar()
 		battleplayer.DrawChipIcon()
 	}
