@@ -131,7 +131,14 @@ func fieldUpdates() {
 		{X: p.PosX, Y: p.PosY, ID: p.ID},
 	}
 
-	// TODO set enemy pos
+	enemies := enemy.GetEnemies()
+	for _, e := range enemies {
+		objs = append(objs, field.ObjectPosition{
+			X:  e.PosX,
+			Y:  e.PosY,
+			ID: e.ID,
+		})
+	}
 
 	field.UpdateObjectPos(objs)
 }
