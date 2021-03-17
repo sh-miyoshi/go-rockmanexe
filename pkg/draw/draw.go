@@ -2,7 +2,6 @@ package draw
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
@@ -111,7 +110,9 @@ func Number(x int32, y int32, number int32, opts ...NumberOption) {
 		nums = append(nums, int(number)%10)
 		number /= 10
 	}
-	sort.Sort(sort.Reverse(sort.IntSlice(nums)))
+	for i := 0; i < len(nums)/2; i++ {
+		nums[i], nums[len(nums)-i-1] = nums[len(nums)-i-1], nums[i]
+	}
 
 	color := NumberColorWhite
 	if len(opts) > 0 {
