@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
@@ -76,6 +77,13 @@ func (e *enemyMetall) End() {
 
 func (e *enemyMetall) Process() (bool, error) {
 	// TODO
+
+	// Damage Process
+	if dm := damage.Get(e.pm.PosX, e.pm.PosY); dm != nil {
+		if dm.TargetType|damage.TargetEnemy != 0 {
+			e.pm.HP -= dm.Power
+		}
+	}
 
 	if e.pm.HP <= 0 {
 		return true, nil

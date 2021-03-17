@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
@@ -97,6 +98,7 @@ func Process() error {
 		}
 		fieldUpdates()
 	}
+	damage.MgrProcess()
 
 	battleCount++
 	return nil
