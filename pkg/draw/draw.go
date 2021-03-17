@@ -2,14 +2,37 @@ package draw
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 )
 
+type NumberOption struct {
+	Color    int // defualt is NumberColorWhite
+	Centered bool
+	// RightAligned?
+}
+
+const (
+	// The order of number color depends on the image
+
+	NumberColorWhite int = iota
+	NumberColorRed
+	NumberColorGreen
+	NumberColorWhiteSmall
+
+	numberColorMax
+)
+
+const (
+	numberSizeX = 15
+)
+
 var (
 	fontHandle int32 = -1
 	imgCode    []int32
+	imgNumber  [numberColorMax][]int32
 )
 
 func Init() error {
@@ -30,7 +53,30 @@ func Init() error {
 		return fmt.Errorf("Failed to load chip code image %s", fname)
 	}
 
-	// TODO: load number data
+	// Load number data
+	tmp := make([]int32, 3*10)
+	fname = common.ImagePath + "number.png"
+	if res := dxlib.LoadDivGraph(fname, 30, 10, 3, numberSizeX, 26, tmp); res == -1 {
+		return fmt.Errorf("Failed to load number image %s", fname)
+	}
+	// Sort and set to start from 0
+	for i := 0; i < 3; i++ {
+		imgNumber[i] = make([]int32, 10)
+		imgNumber[i][0] = tmp[i*10+9]
+		for n := 0; n < 9; n++ {
+			imgNumber[i][n+1] = tmp[i*10+n]
+		}
+	}
+	fname = common.ImagePath + "number_small.png"
+	if res := dxlib.LoadDivGraph(fname, 10, 10, 1, numberSizeX, 20, tmp); res == -1 {
+		return fmt.Errorf("Failed to load small number image %s", fname)
+	}
+	// Sort and set to start from 0
+	imgNumber[NumberColorWhiteSmall] = make([]int32, 10)
+	imgNumber[NumberColorWhiteSmall][0] = tmp[9]
+	for n := 0; n < 9; n++ {
+		imgNumber[NumberColorWhiteSmall][n+1] = tmp[n]
+	}
 
 	return nil
 }
@@ -57,4 +103,26 @@ func ChipCode(x int32, y int32, code string) {
 	}
 
 	dxlib.DrawGraph(x, y, imgCode[index], dxlib.FALSE)
+}
+
+func Number(x int32, y int32, number int32, opts ...NumberOption) {
+	nums := []int{}
+	for number > 0 {
+		nums = append(nums, int(number)%10)
+		number /= 10
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(nums)))
+
+	color := NumberColorWhite
+	if len(opts) > 0 {
+		color = opts[0].Color
+		if opts[0].Centered {
+			x -= int32(len(nums) * numberSizeX / 2)
+		}
+	}
+
+	for _, n := range nums {
+		dxlib.DrawGraph(x, y, imgNumber[color][n], dxlib.TRUE)
+		x += numberSizeX
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 )
 
 /*
@@ -82,10 +83,18 @@ func (e *enemyMetall) Process() (bool, error) {
 	return false, nil
 }
 func (e *enemyMetall) Draw() {
-	x := field.PanelSizeX*e.pm.PosX + field.PanelSizeX/2
-	y := field.DrawPanelTopY + field.PanelSizeY*e.pm.PosY - 10
+	x := int32(field.PanelSizeX*e.pm.PosX + field.PanelSizeX/2)
+	y := int32(field.DrawPanelTopY + field.PanelSizeY*e.pm.PosY - 10)
 	img := e.imgMove[0] // TODO
-	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
+
+	// Show HP
+	if e.pm.HP > 0 {
+		draw.Number(x, y+field.PanelSizeY-10, int32(e.pm.HP), draw.NumberOption{
+			Color:    draw.NumberColorWhiteSmall,
+			Centered: true,
+		})
+	}
 }
 
 func (e *enemyMetall) Get() *EnemyParam {
