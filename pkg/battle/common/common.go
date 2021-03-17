@@ -42,3 +42,9 @@ func MoveObject(x, y *int, direct int, isMove bool) bool {
 
 	return true
 }
+
+func ViewPos(x, y int) (viewX, viewY int32) {
+	viewX = int32(field.PanelSizeX*x + field.PanelSizeX/2)
+	viewY = int32(field.DrawPanelTopY + field.PanelSizeY*y - 10)
+	return viewX, viewY
+}

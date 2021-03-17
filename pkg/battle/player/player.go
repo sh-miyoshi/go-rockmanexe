@@ -144,10 +144,9 @@ func End() {
 
 // DrawChar ...
 func DrawChar() {
-	x := field.PanelSizeX*playerInfo.PosX + field.PanelSizeX/2
-	y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.PosY - 10
+	x, y := battlecommon.ViewPos(playerInfo.PosX, playerInfo.PosY)
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
-	dxlib.DrawRotaGraph(int32(x), int32(y), 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 }
 
 // DrawChipIcon ...

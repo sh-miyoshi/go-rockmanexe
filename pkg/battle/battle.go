@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
@@ -47,6 +48,10 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Enemy init failed: %w", err)
 	}
 
+	if err := effect.Init(); err != nil {
+		return fmt.Errorf("Effect init failed: %w", err)
+	}
+
 	return nil
 }
 
@@ -56,6 +61,7 @@ func End() {
 	battleplayer.End()
 	skill.End()
 	enemy.End()
+	effect.End()
 }
 
 // Process ...

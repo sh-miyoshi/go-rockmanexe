@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -93,8 +94,7 @@ func (p *cannon) Draw() {
 		logger.Error("Failed to get object %s position", p.ObjectID)
 		return
 	}
-	x := int32(field.PanelSizeX*px + field.PanelSizeX/2)
-	y := int32(field.DrawPanelTopY + field.PanelSizeY*py - 10)
+	x, y := battlecommon.ViewPos(px, py)
 
 	n := p.count / delayCannonBody
 	if n < len(imgCannonBody[p.Type]) {

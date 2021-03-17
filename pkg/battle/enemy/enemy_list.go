@@ -5,7 +5,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
@@ -82,6 +85,10 @@ func (e *enemyMetall) Process() (bool, error) {
 	if dm := damage.Get(e.pm.PosX, e.pm.PosY); dm != nil {
 		if dm.TargetType|damage.TargetEnemy != 0 {
 			e.pm.HP -= dm.Power
+			anim.New(&effect.HitEffect{
+				X: e.pm.PosX,
+				Y: e.pm.PosY,
+			})
 		}
 	}
 
@@ -91,8 +98,7 @@ func (e *enemyMetall) Process() (bool, error) {
 	return false, nil
 }
 func (e *enemyMetall) Draw() {
-	x := int32(field.PanelSizeX*e.pm.PosX + field.PanelSizeX/2)
-	y := int32(field.DrawPanelTopY + field.PanelSizeY*e.pm.PosY - 10)
+	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
 	img := e.imgMove[0] // TODO
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 

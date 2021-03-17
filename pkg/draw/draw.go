@@ -47,7 +47,7 @@ func Init() error {
 
 	// Load chip code
 	imgCode = make([]int32, 27)
-	fname := common.ImagePath + "chip_code.png"
+	fname := common.ImagePath + "chipInfo/chip_code.png"
 	if res := dxlib.LoadDivGraph(fname, 27, 9, 3, 20, 26, imgCode); res == -1 {
 		return fmt.Errorf("Failed to load chip code image %s", fname)
 	}
