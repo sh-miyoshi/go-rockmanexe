@@ -6,12 +6,13 @@ const (
 )
 
 type Damage struct {
-	PosX       int
-	PosY       int
-	Power      int
-	TTL        int
-	TargetType int
-	// hit_effect_type, のけぞり
+	PosX          int
+	PosY          int
+	Power         int
+	TTL           int
+	TargetType    int
+	HitEffectType int
+	// TODO: のけぞり, インビジ貫通
 }
 
 var (

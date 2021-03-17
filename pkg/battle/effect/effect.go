@@ -5,8 +5,13 @@ import (
 	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+)
+
+const (
+	TypeHit int = iota
 )
 
 var (
@@ -34,6 +39,14 @@ func End() {
 	for _, img := range imgHitEffect {
 		dxlib.DeleteGraph(img)
 	}
+}
+
+func Get(typ int, x, y int) anim.Anim {
+	switch typ {
+	case TypeHit:
+		return &HitEffect{X: x, Y: y}
+	}
+	return nil
 }
 
 func (h *HitEffect) Process() (bool, error) {

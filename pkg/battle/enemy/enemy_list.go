@@ -85,10 +85,7 @@ func (e *enemyMetall) Process() (bool, error) {
 	if dm := damage.Get(e.pm.PosX, e.pm.PosY); dm != nil {
 		if dm.TargetType|damage.TargetEnemy != 0 {
 			e.pm.HP -= dm.Power
-			anim.New(&effect.HitEffect{
-				X: e.pm.PosX,
-				Y: e.pm.PosY,
-			})
+			anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
 		}
 	}
 

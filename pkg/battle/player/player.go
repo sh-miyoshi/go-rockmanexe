@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
@@ -271,11 +272,12 @@ func (a *act) Process() (bool, error) {
 		if a.count == 1 {
 			for x := playerInfo.PosX + 1; x < field.FieldNumX; x++ {
 				damage.New(damage.Damage{
-					PosX:       x,
-					PosY:       playerInfo.PosY,
-					Power:      1, // debug
-					TTL:        1,
-					TargetType: damage.TargetEnemy,
+					PosX:          x,
+					PosY:          playerInfo.PosY,
+					Power:         1, // debug
+					TTL:           1,
+					TargetType:    damage.TargetEnemy,
+					HitEffectType: effect.TypeHit,
 				})
 			}
 		}
