@@ -6,6 +6,8 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -36,9 +38,12 @@ var (
 )
 
 type cannon struct {
-	Type     int
-	ObjectID string
-	count    int
+	Type       int
+	OwnerID    string
+	Power      int
+	TargetType int
+
+	count int
 }
 
 func Init() error {
@@ -79,19 +84,19 @@ func End() {
 }
 
 // Get ...
-func Get(skillID int, objID string) anim.Anim {
+func Get(skillID int, ownerID string, targetType int) anim.Anim {
 	switch skillID {
 	case SkillCannon:
-		return &cannon{ObjectID: objID, Type: typeNormalCannon}
+		return &cannon{OwnerID: ownerID, Type: typeNormalCannon, Power: 40, TargetType: targetType}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
 }
 
 func (p *cannon) Draw() {
-	px, py := field.GetPos(p.ObjectID)
+	px, py := field.GetPos(p.OwnerID)
 	if px < 0 || py < 0 {
-		logger.Error("Failed to get object %s position", p.ObjectID)
+		logger.Error("Failed to get object %s position", p.OwnerID)
 		return
 	}
 	x, y := battlecommon.ViewPos(px, py)
@@ -112,9 +117,30 @@ func (p *cannon) Draw() {
 }
 
 func (p *cannon) Process() (bool, error) {
-	// TODO: damage register
-
 	p.count++
+	if p.count == 20 {
+		px, py := field.GetPos(p.OwnerID)
+		dm := damage.Damage{
+			PosY:          py,
+			Power:         p.Power,
+			TTL:           1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeHit, // TODO
+		}
+
+		if p.TargetType == damage.TargetEnemy {
+			for x := px + 1; x < field.FieldNumX; x++ {
+				dm.PosX = x
+				damage.New(dm)
+			}
+		} else {
+			for x := px - 1; x >= 0; x-- {
+				dm.PosX = x
+				damage.New(dm)
+			}
+		}
+	}
+
 	max := len(imgCannonBody[p.Type]) * delayCannonBody
 	if max < len(imgCannonAtk[p.Type])*delayCannonAtk+15 {
 		max = len(imgCannonAtk[p.Type])*delayCannonAtk + 15
