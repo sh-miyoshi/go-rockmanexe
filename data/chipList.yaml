@@ -1,9 +1,32 @@
-# type: 0(無)
-# player_act.type: 3(cannon)
-- id: 0
-  name: "キャノン"
+# type: 0(無), 3(剣)
+# player_act.type: 3(cannon), 4(sword)
+- name: "キャノン"
   power: 40
   type: 0
   code: "abc*"
   player_act: 3
-  skill_id: 0
+- name: "ハイキャノン"
+  power: 80
+  type: 0
+  code: "cde"
+  player_act: 3
+- name: "メガキャノン"
+  power: 120
+  type: 0
+  code: "efg"
+  player_act: 3
+- name: "ソード"
+  power: 80
+  type: 3
+  code: "els*"
+  player_act: 4
+- name: "ワイドソード"
+  power: 80
+  type: 3
+  code: "els"
+  player_act: 4
+- name: "ロングソード"
+  power: 80
+  type: 3
+  code: "els"
+  player_act: 4

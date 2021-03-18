@@ -14,8 +14,11 @@ import (
 )
 
 const (
-	// SkillCannon ...
+	// Chip Base Skills
+
 	SkillCannon int = iota
+	SkillHighCannon
+	SkillMegaCannon
 
 	skillMax
 )
@@ -31,6 +34,12 @@ const (
 	delayCannonAtk  = 2
 	delayCannonBody = 5
 )
+
+type Argument struct {
+	OwnerID    string
+	Power      int
+	TargetType int
+}
 
 var (
 	imgCannonAtk  [3][]int32
@@ -84,10 +93,14 @@ func End() {
 }
 
 // Get ...
-func Get(skillID int, ownerID string, targetType int) anim.Anim {
+func Get(skillID int, arg Argument) anim.Anim {
 	switch skillID {
 	case SkillCannon:
-		return &cannon{OwnerID: ownerID, Type: typeNormalCannon, Power: 40, TargetType: targetType}
+		return &cannon{OwnerID: arg.OwnerID, Type: typeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillHighCannon:
+		return &cannon{OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillMegaCannon:
+		return &cannon{OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))

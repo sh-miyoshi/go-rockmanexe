@@ -12,20 +12,23 @@ import (
 
 // Chip ...
 type Chip struct {
-	ID        int    `yaml:"id"`
+	ID        int
 	Name      string `yaml:"name"`
 	Power     uint   `yaml:"power"`
 	Type      int    `yaml:"type"`
 	Code      string `yaml:"code"`
 	PlayerAct int    `yaml:"player_act"`
-	SkillID   int    `yaml:"skill_id"`
 
 	Image int32
 }
 
 const (
-	// IDCannon ...
 	IDCannon = iota
+	IDHighCannon
+	IDMegaCannon
+	IDSword
+	IDWideSword
+	IDLongSword
 
 	idMax
 )
@@ -67,6 +70,8 @@ func Init(fname string) error {
 	}
 
 	for i := 0; i < idMax; i++ {
+		chipData[i].ID = i
+
 		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, i)
 		chipData[i].Image = dxlib.LoadGraph(fname)
 		if chipData[i].Image == -1 {
@@ -108,6 +113,21 @@ func Init(fname string) error {
 	used = append(used, 0)
 	imgIcons[IDCannon] = tmp[0]
 	imgMonoIcons[IDCannon] = tmp2[0]
+	used = append(used, 1)
+	imgIcons[IDHighCannon] = tmp[1]
+	imgMonoIcons[IDHighCannon] = tmp2[1]
+	used = append(used, 2)
+	imgIcons[IDMegaCannon] = tmp[2]
+	imgMonoIcons[IDMegaCannon] = tmp2[2]
+	used = append(used, 53)
+	imgIcons[IDSword] = tmp[53]
+	imgMonoIcons[IDSword] = tmp2[53]
+	used = append(used, 54)
+	imgIcons[IDWideSword] = tmp[54]
+	imgMonoIcons[IDWideSword] = tmp2[54]
+	used = append(used, 55)
+	imgIcons[IDLongSword] = tmp[55]
+	imgMonoIcons[IDLongSword] = tmp2[55]
 
 	// Release unused images
 	for i := 0; i < 240; i++ {

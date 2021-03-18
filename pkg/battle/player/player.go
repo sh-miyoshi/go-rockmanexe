@@ -276,7 +276,11 @@ func MainProcess() error {
 			if c.PlayerAct != -1 {
 				playerInfo.act.set(c.PlayerAct)
 			}
-			anim.New(skill.Get(c.SkillID, playerInfo.ID, damage.TargetEnemy))
+			anim.New(skill.Get(c.ID, skill.Argument{
+				OwnerID:    playerInfo.ID,
+				Power:      int(c.Power),
+				TargetType: damage.TargetEnemy,
+			}))
 
 			playerInfo.SelectedChips = playerInfo.SelectedChips[1:]
 			return nil
