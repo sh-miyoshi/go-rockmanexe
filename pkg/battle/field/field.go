@@ -41,8 +41,9 @@ type PanelInfo struct {
 }
 
 var (
-	imgPanel = [2]int32{-1, -1}
-	panels   [FieldNumX][FieldNumY]PanelInfo
+	imgPanel   = [2]int32{-1, -1}
+	imgHPFrame int32
+	panels     [FieldNumX][FieldNumY]PanelInfo
 )
 
 // Init ...
@@ -59,6 +60,11 @@ func Init() error {
 	imgPanel[PanelTypeEnemy] = dxlib.LoadGraph(fname)
 	if imgPanel[PanelTypeEnemy] < 0 {
 		return fmt.Errorf("Failed to read enemy panel image %s", fname)
+	}
+	fname = common.ImagePath + "battle/hp_frame.png"
+	imgHPFrame = dxlib.LoadGraph(fname)
+	if imgHPFrame < 0 {
+		return fmt.Errorf("Failed to read hp frame image %s", fname)
 	}
 
 	// Initialize panel info
@@ -97,6 +103,15 @@ func Draw() {
 			dxlib.DrawGraph(int32(PanelSizeX*x), int32(DrawPanelTopY+PanelSizeY*y), img, dxlib.TRUE)
 		}
 	}
+}
+
+func DrawFrame(hpFrameX, hpFrameY int32) {
+	// TODO Custom Gauge
+
+	// HP Frame
+	dxlib.DrawGraph(hpFrameX, hpFrameY, imgHPFrame, dxlib.TRUE)
+
+	// TODO Mind Frame
 }
 
 // UpdateObjectPos ...

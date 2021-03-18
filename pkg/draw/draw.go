@@ -8,9 +8,10 @@ import (
 )
 
 type NumberOption struct {
-	Color    int // defualt is NumberColorWhite
-	Centered bool
-	// RightAligned?
+	Color        int // defualt is NumberColorWhite
+	Centered     bool
+	RightAligned bool
+	Length       int // Required if RightAligned is tru
 }
 
 const (
@@ -119,6 +120,12 @@ func Number(x int32, y int32, number int32, opts ...NumberOption) {
 		color = opts[0].Color
 		if opts[0].Centered {
 			x -= int32(len(nums) * numberSizeX / 2)
+		} else if opts[0].RightAligned {
+			n := opts[0].Length - len(nums)
+			if n < 0 {
+				panic(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
+			}
+			x += int32(n * numberSizeX)
 		}
 	}
 

@@ -121,13 +121,17 @@ func Draw() {
 
 	switch battleState {
 	case stateChipSelect:
+		field.DrawFrame(235+7, 5)
 		enemy.MgrDraw()
 		battleplayer.DrawChar()
 		chipsel.Draw()
+		battleplayer.DrawHP(235+9, 7)
 	case stateMain:
+		field.DrawFrame(7, 5)
 		enemy.MgrDraw()
 		battleplayer.DrawChar()
 		battleplayer.DrawChipIcon()
+		battleplayer.DrawHP(9, 7)
 	}
 
 	anim.MgrDraw()
