@@ -45,19 +45,27 @@ type BattlePlayer struct {
 	PosY          int
 	HP            uint
 	ChargeCount   uint
+	GaugeCount    uint
 	ChipFolder    []player.ChipInfo
 	SelectedChips []player.ChipInfo
 
 	act act
 }
 
+const (
+	gaugeMaxCount = 1200
+)
+
 var (
 	ErrPlayerDead = errors.New("player dead")
 	ErrChipSelect = errors.New("chip select")
 
-	imgPlayers [playerAnimMax][]int32
-	imgDelays  = [playerAnimMax]int{1, 1, 1, 5, 1, 1} // TODO: set correct value
-	playerInfo BattlePlayer
+	imgPlayers    [playerAnimMax][]int32
+	imgDelays     = [playerAnimMax]int{1, 1, 1, 5, 1, 1} // TODO: set correct value
+	imgHPFrame    int32
+	imgGaugeFrame int32
+	imgGaugeMax   []int32
+	playerInfo    BattlePlayer
 )
 
 // Init ...
@@ -73,6 +81,7 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 	playerInfo.PosY = 1
 	playerInfo.act.typ = playerAnimMove
 	playerInfo.ChargeCount = 0
+	playerInfo.GaugeCount = 0
 
 	for _, c := range chipFolder {
 		playerInfo.ChipFolder = append(playerInfo.ChipFolder, c)
@@ -126,6 +135,23 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 		return fmt.Errorf("Failed to load player bomb image: %s", fname)
 	}
 
+	fname = common.ImagePath + "battle/hp_frame.png"
+	imgHPFrame = dxlib.LoadGraph(fname)
+	if imgHPFrame < 0 {
+		return fmt.Errorf("Failed to read hp frame image %s", fname)
+	}
+	fname = common.ImagePath + "battle/gauge.png"
+	imgGaugeFrame = dxlib.LoadGraph(fname)
+	if imgGaugeFrame < 0 {
+		return fmt.Errorf("Failed to read gauge frame image %s", fname)
+	}
+	fname = common.ImagePath + "battle/gauge_max.png"
+	imgGaugeMax = make([]int32, 4)
+	res = dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax)
+	if res == -1 {
+		return fmt.Errorf("Failed to read gauge max image %s", fname)
+	}
+
 	logger.Info("Successfully initialized battle player data")
 	return nil
 }
@@ -139,6 +165,13 @@ func End() {
 			dxlib.DeleteGraph(imgPlayers[i][j])
 			imgPlayers[i][j] = -1
 		}
+	}
+	dxlib.DeleteGraph(imgHPFrame)
+	imgHPFrame = -1
+	dxlib.DeleteGraph(imgGaugeFrame)
+	imgGaugeFrame = -1
+	for _, img := range imgGaugeMax {
+		dxlib.DeleteGraph(img)
 	}
 
 	logger.Info("Successfully cleanuped battle player data")
@@ -169,8 +202,31 @@ func DrawChipIcon() {
 	}
 }
 
-func DrawHP(x, y int32) {
-	draw.Number(x, y, int32(playerInfo.HP), draw.NumberOption{RightAligned: true, Length: 4})
+func DrawFrame(xShift bool, showGauge bool) {
+	x := int32(7)
+	y := int32(5)
+	if xShift {
+		x += 235
+	}
+
+	// Show HP
+	dxlib.DrawGraph(x, y, imgHPFrame, dxlib.TRUE)
+	draw.Number(x+2, y+2, int32(playerInfo.HP), draw.NumberOption{RightAligned: true, Length: 4})
+
+	// Show Custom Gauge
+	if showGauge {
+		if playerInfo.GaugeCount < gaugeMaxCount {
+			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
+			const gaugeMaxSize = 256
+			size := int32(gaugeMaxSize * playerInfo.GaugeCount / gaugeMaxCount)
+			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
+			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
+			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
+		} else {
+			i := (playerInfo.GaugeCount / 20) % 4
+			dxlib.DrawGraph(96, 5, imgGaugeMax[i], dxlib.TRUE)
+		}
+	}
 }
 
 // Get ...
@@ -194,6 +250,8 @@ func SetChipSelectResult(selected []int) {
 
 // MainProcess ...
 func MainProcess() error {
+	playerInfo.GaugeCount++ // TODO GaugeSpeed
+
 	if playerInfo.act.animID != "" {
 		// still in animation
 		if !anim.IsProcessing(playerInfo.act.animID) {
