@@ -277,7 +277,7 @@ func (a *act) Process() (bool, error) {
 					Power:         1, // debug
 					TTL:           1,
 					TargetType:    damage.TargetEnemy,
-					HitEffectType: effect.TypeHit,
+					HitEffectType: effect.TypeHitSmall, // TODO HitBig if charge shot
 				})
 			}
 		}

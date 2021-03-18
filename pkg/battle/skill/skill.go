@@ -125,7 +125,7 @@ func (p *cannon) Process() (bool, error) {
 			Power:         p.Power,
 			TTL:           1,
 			TargetType:    p.TargetType,
-			HitEffectType: effect.TypeHit, // TODO
+			HitEffectType: effect.TypeHitBig, // TODO
 		}
 
 		if p.TargetType == damage.TargetEnemy {
