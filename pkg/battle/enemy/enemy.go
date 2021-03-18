@@ -34,7 +34,7 @@ func Init() error {
 	enemies = append(enemies, getObject(idMetall, EnemyParam{
 		PosX: 4,
 		PosY: 1,
-		HP:   40,
+		HP:   1000,
 	}))
 
 	// Init enemy data

@@ -22,9 +22,10 @@ const (
 )
 
 const (
-	typePlayer int = iota
-	typeEnemy
-	typeMax
+	PanelTypePlayer int = iota
+	PanelTypeEnemy
+
+	panelTypeMax
 )
 
 // ObjectPosition ...
@@ -33,15 +34,15 @@ type ObjectPosition struct {
 	X, Y int
 }
 
-type panelInfo struct {
-	typ      int
-	objectID string
+type PanelInfo struct {
+	Type     int
+	ObjectID string
 	// TODO status(毒とか穴とか)
 }
 
 var (
 	imgPanel = [2]int32{-1, -1}
-	panels   [FieldNumX][FieldNumY]panelInfo
+	panels   [FieldNumX][FieldNumY]PanelInfo
 )
 
 // Init ...
@@ -50,25 +51,25 @@ func Init() error {
 
 	// Initialize images
 	fname := common.ImagePath + "battle/panel_player.png"
-	imgPanel[typePlayer] = dxlib.LoadGraph(fname)
-	if imgPanel[typePlayer] < 0 {
+	imgPanel[PanelTypePlayer] = dxlib.LoadGraph(fname)
+	if imgPanel[PanelTypePlayer] < 0 {
 		return fmt.Errorf("Failed to read player panel image %s", fname)
 	}
 	fname = common.ImagePath + "battle/panel_enemy.png"
-	imgPanel[typeEnemy] = dxlib.LoadGraph(fname)
-	if imgPanel[typeEnemy] < 0 {
+	imgPanel[PanelTypeEnemy] = dxlib.LoadGraph(fname)
+	if imgPanel[PanelTypeEnemy] < 0 {
 		return fmt.Errorf("Failed to read enemy panel image %s", fname)
 	}
 
 	// Initialize panel info
 	for x := 0; x < FieldNumX; x++ {
-		t := typePlayer
+		t := PanelTypePlayer
 		if x > 2 {
-			t = typeEnemy
+			t = PanelTypeEnemy
 		}
 		for y := 0; y < FieldNumY; y++ {
-			panels[x][y] = panelInfo{
-				typ: t,
+			panels[x][y] = PanelInfo{
+				Type: t,
 			}
 		}
 	}
@@ -81,7 +82,7 @@ func Init() error {
 // End ...
 func End() {
 	logger.Info("Cleanup battle field data")
-	for i := 0; i < typeMax; i++ {
+	for i := 0; i < panelTypeMax; i++ {
 		dxlib.DeleteGraph(imgPanel[i])
 		imgPanel[i] = -1
 	}
@@ -92,7 +93,7 @@ func End() {
 func Draw() {
 	for x := 0; x < FieldNumX; x++ {
 		for y := 0; y < FieldNumY; y++ {
-			img := imgPanel[panels[x][y].typ]
+			img := imgPanel[panels[x][y].Type]
 			dxlib.DrawGraph(int32(PanelSizeX*x), int32(DrawPanelTopY+PanelSizeY*y), img, dxlib.TRUE)
 		}
 	}
@@ -103,22 +104,26 @@ func UpdateObjectPos(positions []ObjectPosition) {
 	// Cleanup at first
 	for x := 0; x < FieldNumX; x++ {
 		for y := 0; y < FieldNumY; y++ {
-			panels[x][y].objectID = ""
+			panels[x][y].ObjectID = ""
 		}
 	}
 
 	for _, pos := range positions {
-		panels[pos.X][pos.Y].objectID = pos.ID
+		panels[pos.X][pos.Y].ObjectID = pos.ID
 	}
 }
 
 func GetPos(objID string) (x, y int) {
 	for x := 0; x < FieldNumX; x++ {
 		for y := 0; y < FieldNumY; y++ {
-			if panels[x][y].objectID == objID {
+			if panels[x][y].ObjectID == objID {
 				return x, y
 			}
 		}
 	}
 	return -1, -1
+}
+
+func GetPanelInfo(x, y int) PanelInfo {
+	return panels[x][y]
 }

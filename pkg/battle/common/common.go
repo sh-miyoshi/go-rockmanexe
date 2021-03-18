@@ -6,10 +6,11 @@ import (
 )
 
 // MoveObject ...
-func MoveObject(x, y *int, direct int, isMove bool) bool {
+func MoveObject(x, y *int, direct int, objType int, isMove bool) bool {
 	nx := *x
 	ny := *y
 
+	// Check field out
 	switch direct {
 	case common.DirectUp:
 		if ny <= 0 {
@@ -33,7 +34,10 @@ func MoveObject(x, y *int, direct int, isMove bool) bool {
 		nx++
 	}
 
-	// TODO field panel is player?
+	// Check panel type
+	if objType != field.GetPanelInfo(nx, ny).Type {
+		return false
+	}
 
 	if isMove {
 		*x = nx

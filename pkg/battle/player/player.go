@@ -237,7 +237,7 @@ func MainProcess() error {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, false) {
+		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, field.PanelTypePlayer, false) {
 			playerInfo.act.moveDirect = moveDirect
 			playerInfo.act.set(playerAnimMove)
 		}
@@ -266,7 +266,7 @@ func (a *act) Process() (bool, error) {
 	switch a.typ {
 	case playerAnimMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, a.moveDirect, true)
+			battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, a.moveDirect, field.PanelTypePlayer, true)
 		}
 	case playerAnimShot:
 		if a.count == 1 {
