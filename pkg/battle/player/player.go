@@ -53,7 +53,7 @@ type BattlePlayer struct {
 }
 
 const (
-	gaugeMaxCount = 1200
+	gaugeMaxCount = 256 // debug(1200)
 )
 
 var (
@@ -261,7 +261,13 @@ func MainProcess() error {
 		return nil
 	}
 
-	// TODO: stateChange(chipSelect)
+	if playerInfo.GaugeCount >= gaugeMaxCount {
+		// State change to chip select
+		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
+			playerInfo.GaugeCount = 0
+			return ErrChipSelect
+		}
+	}
 
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {

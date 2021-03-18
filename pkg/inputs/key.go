@@ -6,18 +6,14 @@ import "github.com/sh-miyoshi/dxlib"
 type KeyType int
 
 const (
-	// KeyEnter ...
 	KeyEnter KeyType = iota
-	// KeyCancel ...
 	KeyCancel
-	// KeyLeft ...
 	KeyLeft
-	// KeyRight ...
 	KeyRight
-	// KeyUp ...
 	KeyUp
-	// KeyDown ...
 	KeyDown
+	KeyLButton
+	KeyRButton
 
 	keyMax
 )
@@ -35,6 +31,8 @@ func InitByDefault() {
 	keyBind[KeyRight] = dxlib.KEY_INPUT_RIGHT
 	keyBind[KeyUp] = dxlib.KEY_INPUT_UP
 	keyBind[KeyDown] = dxlib.KEY_INPUT_DOWN
+	keyBind[KeyLButton] = dxlib.KEY_INPUT_A
+	keyBind[KeyRButton] = dxlib.KEY_INPUT_S
 }
 
 // TODO: InitBySetting(settingFile string)

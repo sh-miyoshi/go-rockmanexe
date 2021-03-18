@@ -77,7 +77,6 @@ func Draw() {
 		// Show Detail Data
 		if i == pointer {
 			c := chip.Get(s.ID)
-			// TODO font
 			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
 			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
 			draw.String(20, 25, 0x000000, "%s", c.Name)
