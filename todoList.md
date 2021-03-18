@@ -1,6 +1,6 @@
 # TODO List
 
-## 全体
+## 機能一覧
 
 - タイトル
   - はじめから
@@ -31,24 +31,66 @@
 - エンディング
 - シナリオ
 
-## バトル
+## 未実装項目
+
+### 全体
+
+- panic時のエラーの表示の仕方
+- つづきから
+- キー設定の変更と保存
+
+### バトル時
 
 - stateOpening
   - decide enemies
   - show enemies
   - force state change to chip select
+  - shuffle player folder
 - stateChipSelect
+  - 選択できるかの判定式
 - stateBeforeMain
 - stateMain
   - player action
-    - move
     - rock buster
-    - chip use
+      - charge shot image
+      - charge shot process
+      - charge shot power
+      - charge hit effect
     - damaged
+    - image delay
   - enemy action
-    - unique action
+    - メットール
       - move
       - attack
-    - chip use(?)
-    - damaged
+  - その他
+    - チップ情報を左下に表示
+    - ダメージ情報にのけぞるかのフラグ
 - stateResult
+  - lose
+  - win
+
+### その他の状態
+
+- すべて
+
+## チップ情報
+
+### 優先的実装予定
+
+- キャノン
+- ミニボム
+- ソード
+- ワイドソード
+- リカバリー10
+
+### 後回し
+
+- クラックアウト
+- エリアスチール
+- アタック+10
+
+### 悩み中
+
+- エアシュート
+- バルカン1
+- ・・・
