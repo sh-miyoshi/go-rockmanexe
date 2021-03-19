@@ -61,7 +61,7 @@ var (
 	ErrChipSelect = errors.New("chip select")
 
 	imgPlayers    [playerAnimMax][]int32
-	imgDelays     = [playerAnimMax]int{1, 1, 1, 5, 1, 1} // TODO: set correct value
+	imgDelays     = [playerAnimMax]int{1, 1, 1, 6, 3, 1} // TODO: set correct value
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -354,7 +354,7 @@ func (a *act) Process() (bool, error) {
 				})
 			}
 		}
-	case playerAnimCannon:
+	case playerAnimCannon, playerAnimSword:
 		// nothing to do
 	default:
 		return false, fmt.Errorf("Anim %d is not implemented yet", a.typ)

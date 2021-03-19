@@ -19,6 +19,9 @@ const (
 	SkillCannon int = iota
 	SkillHighCannon
 	SkillMegaCannon
+	SkillSword
+	SkillWideSword
+	SkillLongSword
 
 	skillMax
 )
@@ -27,12 +30,18 @@ const (
 	typeNormalCannon int = iota
 	typeHighCannon
 	typeMegaCannon
-	// TODO: typeWideSword, ...
+)
+
+const (
+	typeSword int = iota
+	typeWideSword
+	typeLongSword
 )
 
 const (
 	delayCannonAtk  = 2
 	delayCannonBody = 5
+	delaySword      = 3
 )
 
 type Argument struct {
@@ -44,9 +53,19 @@ type Argument struct {
 var (
 	imgCannonAtk  [3][]int32
 	imgCannonBody [3][]int32
+	imgSword      [3][]int32
 )
 
 type cannon struct {
+	Type       int
+	OwnerID    string
+	Power      int
+	TargetType int
+
+	count int
+}
+
+type sword struct {
 	Type       int
 	OwnerID    string
 	Power      int
@@ -78,6 +97,17 @@ func Init() error {
 		imgCannonBody[2] = append(imgCannonBody[2], tmp[i+10])
 	}
 
+	fname = path + "ソード.png"
+	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		// Note: In the image, the order of wide sword and long sword is swapped.
+		imgSword[0] = append(imgSword[0], tmp[i])
+		imgSword[1] = append(imgSword[1], tmp[i+8])
+		imgSword[2] = append(imgSword[2], tmp[i+4])
+	}
+
 	return nil
 }
 
@@ -88,6 +118,11 @@ func End() {
 		}
 		for j := 0; j < len(imgCannonBody[i]); j++ {
 			dxlib.DeleteGraph(imgCannonBody[i][j])
+		}
+	}
+	for i := 0; i < 3; i++ {
+		for j := 0; j < len(imgSword[i]); j++ {
+			dxlib.DeleteGraph(imgSword[i][j])
 		}
 	}
 }
@@ -101,6 +136,12 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &cannon{OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMegaCannon:
 		return &cannon{OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillSword:
+		return &sword{OwnerID: arg.OwnerID, Type: typeSword, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillWideSword:
+		return &sword{OwnerID: arg.OwnerID, Type: typeWideSword, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillLongSword:
+		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -160,6 +201,31 @@ func (p *cannon) Process() (bool, error) {
 	}
 
 	if p.count > max {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *sword) Draw() {
+	px, py := field.GetPos(p.OwnerID)
+	if px < 0 || py < 0 {
+		logger.Error("Failed to get object %s position", p.OwnerID)
+		return
+	}
+	x, y := battlecommon.ViewPos(px, py)
+
+	n := (p.count - 5) / delaySword
+	if n >= 0 && n < len(imgSword[p.Type]) {
+		dxlib.DrawRotaGraph(x+100, y, 1, 0, imgSword[p.Type][n], dxlib.TRUE)
+	}
+}
+
+func (p *sword) Process() (bool, error) {
+	p.count++
+
+	// TODO damage register
+
+	if p.count > len(imgSword[p.Type])*delaySword {
 		return true, nil
 	}
 	return false, nil
