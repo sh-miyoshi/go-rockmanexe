@@ -15,6 +15,11 @@
   type: 0
   code: "efg"
   player_act: 3
+- name: "ミニボム"
+  power: 50
+  type: 0
+  code: "blt*"
+  player_act: 5
 - name: "ソード"
   power: 80
   type: 3

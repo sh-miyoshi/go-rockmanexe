@@ -33,10 +33,10 @@ func New() *Player {
 		ShotPower: defaultShotPower,
 		Zenny:     0,
 		ChipFolder: [FolderSize]ChipInfo{
+			{ID: chip.IDMiniBomb, Code: "l"},
 			{ID: chip.IDSword, Code: "a"},
 			{ID: chip.IDWideSword, Code: "a"},
 			{ID: chip.IDLongSword, Code: "a"},
-			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "c"},

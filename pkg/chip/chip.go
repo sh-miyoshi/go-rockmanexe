@@ -26,6 +26,7 @@ const (
 	IDCannon = iota
 	IDHighCannon
 	IDMegaCannon
+	IDMiniBomb
 	IDSword
 	IDWideSword
 	IDLongSword
@@ -119,6 +120,9 @@ func Init(fname string) error {
 	used = append(used, 2)
 	imgIcons[IDMegaCannon] = tmp[2]
 	imgMonoIcons[IDMegaCannon] = tmp2[2]
+	used = append(used, 43)
+	imgIcons[IDMiniBomb] = tmp[43]
+	imgMonoIcons[IDMiniBomb] = tmp2[43]
 	used = append(used, 53)
 	imgIcons[IDSword] = tmp[53]
 	imgMonoIcons[IDSword] = tmp2[53]

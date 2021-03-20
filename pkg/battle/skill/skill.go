@@ -19,6 +19,7 @@ const (
 	SkillCannon int = iota
 	SkillHighCannon
 	SkillMegaCannon
+	SkillMiniBomb
 	SkillSword
 	SkillWideSword
 	SkillLongSword
@@ -42,18 +43,22 @@ const (
 	delayCannonAtk  = 2
 	delayCannonBody = 5
 	delaySword      = 3
+	delayMiniBomb   = 6
 )
 
 type Argument struct {
 	OwnerID    string
 	Power      int
 	TargetType int
+	TargetX    int
+	TargetY    int
 }
 
 var (
 	imgCannonAtk  [3][]int32
 	imgCannonBody [3][]int32
 	imgSword      [3][]int32
+	imgMiniBomb   []int32
 )
 
 type cannon struct {
@@ -72,6 +77,21 @@ type sword struct {
 	TargetType int
 
 	count int
+}
+
+type miniBomb struct {
+	OwnerID    string
+	Power      int
+	TargetType int
+	TargetX    int
+	TargetY    int
+
+	count int
+	dist  int
+	baseX int32
+	baseY int32
+	dx    int
+	dy    int
 }
 
 func Init() error {
@@ -95,6 +115,14 @@ func Init() error {
 		imgCannonBody[0] = append(imgCannonBody[0], tmp[i])
 		imgCannonBody[1] = append(imgCannonBody[1], tmp[i+5])
 		imgCannonBody[2] = append(imgCannonBody[2], tmp[i+10])
+	}
+
+	fname = path + "ミニボム.png"
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 5; i++ {
+		imgMiniBomb = append(imgMiniBomb, tmp[i])
 	}
 
 	fname = path + "ソード.png"
@@ -125,6 +153,9 @@ func End() {
 			dxlib.DeleteGraph(imgSword[i][j])
 		}
 	}
+	for i := 0; i < len(imgMiniBomb); i++ {
+		dxlib.DeleteGraph(imgMiniBomb[i])
+	}
 }
 
 // Get ...
@@ -136,6 +167,9 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &cannon{OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMegaCannon:
 		return &cannon{OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillMiniBomb:
+		px, py := field.GetPos(arg.OwnerID)
+		return &miniBomb{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
 	case SkillSword:
 		return &sword{OwnerID: arg.OwnerID, Type: typeSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillWideSword:
@@ -226,6 +260,38 @@ func (p *sword) Process() (bool, error) {
 	// TODO damage register
 
 	if p.count > len(imgSword[p.Type])*delaySword {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *miniBomb) Draw() {
+	n := (p.count / delayMiniBomb) % len(imgMiniBomb)
+	if n >= 0 {
+		vx := p.baseX + int32(p.dx)
+		vy := p.baseY + int32(p.dy)
+		dxlib.DrawRotaGraph(vx-38, vy-28, 1, 0, imgMiniBomb[n], dxlib.TRUE)
+	}
+}
+
+func (p *miniBomb) Process() (bool, error) {
+	if p.count == 0 {
+		// Initialize
+		px, py := field.GetPos(p.OwnerID)
+		p.baseX, p.baseY = battlecommon.ViewPos(px, py)
+		// TODO: yが等しい場合でかつプレイヤー側のみ
+		p.dist = (p.TargetX - px) * field.PanelSizeX
+	}
+
+	// y = ax^2 + bx +c
+	// (0,0), (d/2, ymax), (d, 0)
+	p.count++
+	p.dx += 4
+	ymax := 100
+	p.dy = ymax*4*p.dx*p.dx/(p.dist*p.dist) - ymax*4*p.dx/p.dist
+
+	if p.dx >= p.dist+38 {
+		// TODO damage register
 		return true, nil
 	}
 	return false, nil
