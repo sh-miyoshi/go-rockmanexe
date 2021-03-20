@@ -269,6 +269,26 @@ func MainProcess() error {
 		}
 	}
 
+	// Move
+	moveDirect := -1
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		moveDirect = common.DirectUp
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		moveDirect = common.DirectDown
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		moveDirect = common.DirectRight
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		moveDirect = common.DirectLeft
+	}
+
+	if moveDirect >= 0 {
+		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, field.PanelTypePlayer, false) {
+			playerInfo.act.moveDirect = moveDirect
+			playerInfo.act.set(playerAnimMove)
+			return nil
+		}
+	}
+
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if len(playerInfo.SelectedChips) > 0 {
@@ -294,26 +314,6 @@ func MainProcess() error {
 		// TODO set act.ShotPower by playerInfo.ChargeCount
 		playerInfo.act.set(playerAnimShot)
 		playerInfo.ChargeCount = 0
-		return nil
-	}
-
-	// Move
-	moveDirect := -1
-	if inputs.CheckKey(inputs.KeyUp) == 1 {
-		moveDirect = common.DirectUp
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-		moveDirect = common.DirectDown
-	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
-		moveDirect = common.DirectRight
-	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
-		moveDirect = common.DirectLeft
-	}
-
-	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, field.PanelTypePlayer, false) {
-			playerInfo.act.moveDirect = moveDirect
-			playerInfo.act.set(playerAnimMove)
-		}
 	}
 
 	return nil
