@@ -200,7 +200,7 @@ func (p *cannon) Draw() {
 
 	n = (p.count - 15) / delayCannonAtk
 	if n >= 0 && n < len(imgCannonAtk[p.Type]) {
-		dxlib.DrawRotaGraph(x+115, y-10, 1, 0, imgCannonAtk[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(x+90, y-10, 1, 0, imgCannonAtk[p.Type][n], dxlib.TRUE)
 	}
 }
 
@@ -213,7 +213,7 @@ func (p *cannon) Process() (bool, error) {
 			Power:         p.Power,
 			TTL:           1,
 			TargetType:    p.TargetType,
-			HitEffectType: effect.TypeHitBig, // TODO
+			HitEffectType: effect.TypeCannonHit,
 		}
 
 		if p.TargetType == damage.TargetEnemy {

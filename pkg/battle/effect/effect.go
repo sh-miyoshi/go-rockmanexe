@@ -2,7 +2,6 @@ package effect
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
@@ -14,14 +13,22 @@ const (
 	TypeNone int = iota
 	TypeHitSmall
 	TypeHitBig
+	TypeExplode
+	TypeCannonHit
+)
+
+const (
+	explodeDelay = 2
 )
 
 var (
-	imgHitSmallEffect []int32
-	imgHitBigEffect   []int32
+	imgHitSmallEffect  []int32
+	imgHitBigEffect    []int32
+	imgExplodeEffect   []int32
+	imgCannonHitEffect []int32
 )
 
-type HitEffect struct {
+type effect struct {
 	X int
 	Y int
 
@@ -40,6 +47,16 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, imgHitBigEffect); res == -1 {
 		return fmt.Errorf("Failed to load hit big effect image %s", fname)
 	}
+	imgExplodeEffect = make([]int32, 16)
+	fname = common.ImagePath + "battle/skill/explode.png"
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, imgExplodeEffect); res == -1 {
+		return fmt.Errorf("Failed to load explode effect image %s", fname)
+	}
+	imgCannonHitEffect = make([]int32, 7)
+	fname = common.ImagePath + "battle/skill/キャノン_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, imgCannonHitEffect); res == -1 {
+		return fmt.Errorf("Failed to load cannon hit effect image %s", fname)
+	}
 
 	return nil
 }
@@ -51,32 +68,39 @@ func End() {
 	for _, img := range imgHitBigEffect {
 		dxlib.DeleteGraph(img)
 	}
+	for _, img := range imgExplodeEffect {
+		dxlib.DeleteGraph(img)
+	}
+	for _, img := range imgCannonHitEffect {
+		dxlib.DeleteGraph(img)
+	}
 }
 
 func Get(typ int, x, y int) anim.Anim {
 	switch typ {
 	case TypeHitSmall:
-		return &HitEffect{X: x, Y: y, images: imgHitSmallEffect}
+		return &effect{X: x, Y: y, images: imgHitSmallEffect}
 	case TypeHitBig:
-		return &HitEffect{X: x, Y: y, images: imgHitBigEffect}
+		return &effect{X: x, Y: y, images: imgHitBigEffect}
+	case TypeExplode:
+		return &effect{X: x, Y: y, images: imgExplodeEffect}
+	case TypeCannonHit:
+		return &effect{X: x, Y: y, images: imgCannonHitEffect}
 	}
 	return nil
 }
 
-func (h *HitEffect) Process() (bool, error) {
-	h.count++
-	return h.count >= len(h.images), nil
+func (e *effect) Process() (bool, error) {
+	e.count++
+	return e.count >= len(e.images)*explodeDelay, nil
 }
 
-func (h *HitEffect) Draw() {
+func (e *effect) Draw() {
 	imgNo := -1
-	if h.count < len(h.images) {
-		imgNo = h.count
+	if e.count < len(e.images)*explodeDelay {
+		imgNo = e.count / explodeDelay
 	}
 
-	x, y := battlecommon.ViewPos(h.X, h.Y)
-	x = x - 15 + rand.Int31n(30)
-	y = y - 5 + rand.Int31n(10)
-
-	dxlib.DrawRotaGraph(x, y, 1, 0, h.images[imgNo], dxlib.TRUE)
+	x, y := battlecommon.ViewPos(e.X, e.Y)
+	dxlib.DrawRotaGraph(x, y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
