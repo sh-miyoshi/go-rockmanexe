@@ -60,8 +60,10 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 }
 
 type enemyMetall struct {
-	pm      EnemyParam
-	imgMove []int32
+	pm        EnemyParam
+	imgMove   []int32
+	count     int
+	moveCount int
 }
 
 func (e *enemyMetall) Init() error {
@@ -79,7 +81,7 @@ func (e *enemyMetall) End() {
 }
 
 func (e *enemyMetall) Process() (bool, error) {
-	// TODO
+	e.count++
 
 	// Damage Process
 	if dm := damage.Get(e.pm.PosX, e.pm.PosY); dm != nil {
@@ -92,6 +94,29 @@ func (e *enemyMetall) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		return true, nil
 	}
+
+	const waitCount = 1 * 60
+	const actionInterval = 1 * 60
+
+	// Metall Actions
+	if e.count < waitCount {
+		return false, nil
+	}
+
+	if e.count%actionInterval == 0 {
+		_, py := field.GetPos(e.pm.PlayerID)
+		if py == e.pm.PosY {
+			// TODO: Attack
+		} else {
+			// Move
+			if py > e.pm.PosY {
+				battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true)
+			} else {
+				battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true)
+			}
+		}
+	}
+
 	return false, nil
 }
 func (e *enemyMetall) Draw() {

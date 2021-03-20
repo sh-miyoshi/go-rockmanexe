@@ -9,10 +9,11 @@ import (
 
 // EnemyParam ...
 type EnemyParam struct {
-	ID   string
-	PosX int
-	PosY int
-	HP   int
+	ID       string
+	PlayerID string
+	PosX     int
+	PosY     int
+	HP       int
 }
 
 type enemyObject interface {
@@ -28,13 +29,14 @@ var (
 	enemies []enemyObject
 )
 
-func Init() error {
+func Init(playerID string) error {
 	// Decide enemies
 	// debug(set debug param)
 	enemies = append(enemies, getObject(idMetall, EnemyParam{
-		PosX: 4,
-		PosY: 1,
-		HP:   1000,
+		PlayerID: playerID,
+		PosX:     4,
+		PosY:     1,
+		HP:       1000,
 	}))
 
 	// Init enemy data
