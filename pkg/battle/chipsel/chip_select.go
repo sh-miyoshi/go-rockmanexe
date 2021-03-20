@@ -153,8 +153,37 @@ func selectable(no int) bool {
 		return false
 	}
 
-	// TODO Fixed Name
-	// TODO Chip Code
+	name := ""
+	code := ""
+	for _, s := range selected {
+		c := chip.Get(selectList[s].ID)
+		if name == "" {
+			name = c.Name
+		} else if name != c.Name {
+			if code == "-" {
+				return false
+			}
+			name = "-"
+		}
+		if code == "" || code == "*" {
+			code = selectList[s].Code
+		} else {
+			if code != selectList[s].Code {
+				if name == "-" {
+					return false
+				}
+				code = "-"
+			}
+		}
+	}
+
+	if name == "" || code == "" || code == "*" {
+		return true
+	}
+
+	if name != chip.Get(selectList[no].ID).Name && code != selectList[no].Code {
+		return false
+	}
 
 	return true
 }

@@ -46,8 +46,6 @@
   - show enemies
   - force state change to chip select
   - shuffle player folder
-- stateChipSelect
-  - 選択できるかの判定式
 - stateBeforeMain
 - stateMain
   - player action
