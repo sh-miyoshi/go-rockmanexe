@@ -73,6 +73,7 @@ func Draw() {
 		// Show Icon
 		x := i*32 + 17
 		dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, selectable(i)), dxlib.TRUE)
+		draw.ChipCode(int32(x+10), 240, s.Code, 50)
 
 		// Show Detail Data
 		if i == pointer {
@@ -80,7 +81,7 @@ func Draw() {
 			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
 			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
 			draw.String(20, 25, 0x000000, "%s", c.Name)
-			draw.ChipCode(30, 163, s.Code)
+			draw.ChipCode(30, 163, s.Code, 100)
 		}
 	}
 

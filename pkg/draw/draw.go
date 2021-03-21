@@ -85,7 +85,7 @@ func String(x int32, y int32, color uint32, format string, a ...interface{}) {
 	dxlib.DrawFormatStringToHandle(x, y, color, fontHandle, format, a...)
 }
 
-func ChipCode(x int32, y int32, code string) {
+func ChipCode(x int32, y int32, code string, percent int32) {
 	index := -1
 	if len(code) != 1 {
 		panic(fmt.Sprintf("Invalid chip code %s is specified.", code))
@@ -102,7 +102,11 @@ func ChipCode(x int32, y int32, code string) {
 		panic(fmt.Sprintf("Invalid chip code %s is specified.", code))
 	}
 
-	dxlib.DrawGraph(x, y, imgCode[index], dxlib.FALSE)
+	if percent == 100 {
+		dxlib.DrawGraph(x, y, imgCode[index], dxlib.FALSE)
+	} else {
+		dxlib.DrawExtendGraph(x, y, x+20*percent/100, y+26*percent/100, imgCode[index], dxlib.FALSE)
+	}
 }
 
 func Number(x int32, y int32, number int32, opts ...NumberOption) {
