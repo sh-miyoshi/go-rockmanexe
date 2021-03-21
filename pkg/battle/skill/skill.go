@@ -10,7 +10,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -214,10 +213,6 @@ func Get(skillID int, arg Argument) anim.Anim {
 
 func (p *cannon) Draw() {
 	px, py := field.GetPos(p.OwnerID)
-	if px < 0 || py < 0 {
-		logger.Error("Failed to get object %s position", p.OwnerID)
-		return
-	}
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := p.count / delayCannonBody
@@ -273,10 +268,6 @@ func (p *cannon) Process() (bool, error) {
 
 func (p *sword) Draw() {
 	px, py := field.GetPos(p.OwnerID)
-	if px < 0 || py < 0 {
-		logger.Error("Failed to get object %s position", p.OwnerID)
-		return
-	}
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := (p.count - 5) / delaySword

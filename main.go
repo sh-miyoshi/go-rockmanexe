@@ -44,11 +44,11 @@ func main() {
 
 	inputs.InitByDefault()
 	if err := chip.Init("data/chipList.yaml"); err != nil {
-		logger.Error("Failed to init chip data: %v", err)
+		logger.Error("Failed to init chip data: %+v", err)
 		return
 	}
 	if err := draw.Init(); err != nil {
-		logger.Error("Failed to init drawing data: %v", err)
+		logger.Error("Failed to init drawing data: %+v", err)
 		return
 	}
 
@@ -58,7 +58,7 @@ MAIN:
 	for dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
 		if err := game.Process(); err != nil {
-			logger.Error("Failed to play game: %v", err)
+			logger.Error("Failed to play game: %+v", err)
 			// TODO show to user
 			break MAIN
 		}
