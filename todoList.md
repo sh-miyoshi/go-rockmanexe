@@ -56,13 +56,13 @@
       - charge hit effect
     - damaged
     - image delay
-  - enemy action
-    - メットール
-      - move
-      - attack
+  - skill
+    - damage register
+      - shock wave
   - その他
     - チップ情報を左下に表示
     - ダメージ情報にのけぞるかのフラグ
+    - 敵名表示
 - stateResult
   - lose
   - win
