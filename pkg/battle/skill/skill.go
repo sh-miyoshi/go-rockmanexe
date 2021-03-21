@@ -288,7 +288,33 @@ func (p *sword) Draw() {
 func (p *sword) Process() (bool, error) {
 	p.count++
 
-	// TODO damage register
+	if p.count == 1*delaySword {
+		dm := damage.Damage{
+			Power:         p.Power,
+			TTL:           1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+		}
+
+		px, py := field.GetPos(p.OwnerID)
+
+		dm.PosX = px + 1
+		dm.PosY = py
+		damage.New(dm)
+
+		switch p.Type {
+		case typeSword:
+			// No more damage area
+		case typeWideSword:
+			dm.PosY = py - 1
+			damage.New(dm)
+			dm.PosY = py + 1
+			damage.New(dm)
+		case typeLongSword:
+			dm.PosX = px + 2
+			damage.New(dm)
+		}
+	}
 
 	if p.count > len(imgSword[p.Type])*delaySword {
 		return true, nil
