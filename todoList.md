@@ -45,7 +45,6 @@
   - decide enemies
   - show enemies
   - force state change to chip select
-  - shuffle player folder
 - stateBeforeMain
 - stateMain
   - player action
