@@ -203,8 +203,6 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
 		px, py := field.GetPos(arg.OwnerID)
-		// TODO: 現在敵しかショックウェーブを打てない
-		px -= 1
 		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, x: px, y: py}
 	}
 
@@ -363,13 +361,21 @@ func (p *shockWave) Draw() {
 }
 
 func (p *shockWave) Process() (bool, error) {
-	p.count++
-	if p.count%(len(imgShockWave)*delayShockWave) == 0 {
+	n := len(imgShockWave) * delayShockWave
+	if p.count%(n) == 0 {
 		// TODO Player Shock Wave
 		p.x--
+		damage.New(damage.Damage{
+			PosX:          p.x,
+			PosY:          p.y,
+			Power:         p.Power,
+			TTL:           n - 2,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+			ShowHitArea:   true,
+		})
 	}
-
-	// TODO damage register
+	p.count++
 
 	if p.x < 0 || p.x > field.FieldNumX {
 		return true, nil

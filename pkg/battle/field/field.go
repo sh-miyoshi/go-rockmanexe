@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -95,7 +96,17 @@ func Draw() {
 	for x := 0; x < FieldNumX; x++ {
 		for y := 0; y < FieldNumY; y++ {
 			img := imgPanel[panels[x][y].Type]
-			dxlib.DrawGraph(int32(PanelSizeX*x), int32(DrawPanelTopY+PanelSizeY*y), img, dxlib.TRUE)
+			vx := int32(PanelSizeX * x)
+			vy := int32(DrawPanelTopY + PanelSizeY*y)
+			dxlib.DrawGraph(vx, vy, img, dxlib.TRUE)
+			if dm := damage.Get(x, y); dm != nil && dm.ShowHitArea {
+				x1 := vx
+				y1 := vy
+				x2 := vx + PanelSizeX
+				y2 := vy + PanelSizeY
+				const s = 5
+				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
+			}
 		}
 	}
 }
