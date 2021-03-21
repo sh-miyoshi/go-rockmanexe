@@ -27,7 +27,7 @@ const (
 
 var (
 	battleCount = 0
-	battleState = stateChipSelect // debug
+	battleState = stateMain // debug
 )
 
 // Init ...
@@ -36,7 +36,7 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Battle field init failed: %w", err)
 	}
 
-	if err := battleplayer.Init(plyr.HP, plyr.ChipFolder); err != nil {
+	if err := battleplayer.Init(plyr); err != nil {
 		return fmt.Errorf("Battle player init failed: %w", err)
 	}
 

@@ -36,6 +36,7 @@ type act struct {
 	count      int
 	animID     string
 	moveDirect int
+	charged    bool
 }
 
 // BattlePlayer ...
@@ -44,8 +45,10 @@ type BattlePlayer struct {
 	PosX          int
 	PosY          int
 	HP            uint
+	HPMax         uint
 	ChargeCount   uint
 	GaugeCount    uint
+	ShotPower     uint
 	ChipFolder    []player.ChipInfo
 	SelectedChips []player.ChipInfo
 
@@ -53,7 +56,8 @@ type BattlePlayer struct {
 }
 
 const (
-	gaugeMaxCount = 256 // debug(1200)
+	gaugeMaxCount = 1200
+	chargeTime    = 180 // TODO 変数化
 )
 
 var (
@@ -65,40 +69,41 @@ var (
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
+	imgCharge     [2][]int32
 	playerInfo    BattlePlayer
 )
 
 // Init ...
-func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
+func Init(plyr *player.Player) error {
 	logger.Info("Initialize battle player data")
 
 	if playerInfo.ID == "" {
 		playerInfo.ID = uuid.New().String()
 	}
 
-	playerInfo.HP = hp
+	playerInfo.HP = plyr.HP
+	playerInfo.HPMax = plyr.HPMax
 	playerInfo.PosX = 1
 	playerInfo.PosY = 1
 	playerInfo.act.typ = playerAnimMove
 	playerInfo.ChargeCount = 0
 	playerInfo.GaugeCount = 0
+	playerInfo.ShotPower = plyr.ShotPower
 
-	for _, c := range chipFolder {
+	for _, c := range plyr.ChipFolder {
 		playerInfo.ChipFolder = append(playerInfo.ChipFolder, c)
 	}
 	// TODO: Shuffle
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
-	res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimMove])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimMove]); res == -1 {
 		return fmt.Errorf("Failed to load player move image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
 	imgPlayers[playerAnimDamage] = make([]int32, 6)
-	res = dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimDamage])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimDamage]); res == -1 {
 		return fmt.Errorf("Failed to load player damage image: %s", fname)
 	}
 	// 1 -> 2,3  2-4 3-5
@@ -109,29 +114,25 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 
 	fname = common.ImagePath + "battle/character/player_shot.png"
 	imgPlayers[playerAnimShot] = make([]int32, 6)
-	res = dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimShot])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimShot]); res == -1 {
 		return fmt.Errorf("Failed to load player shot image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
 	imgPlayers[playerAnimCannon] = make([]int32, 6)
-	res = dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimCannon])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimCannon]); res == -1 {
 		return fmt.Errorf("Failed to load player cannon image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_sword.png"
 	imgPlayers[playerAnimSword] = make([]int32, 7)
-	res = dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[playerAnimSword])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[playerAnimSword]); res == -1 {
 		return fmt.Errorf("Failed to load player sword image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
 	imgPlayers[playerAnimBomb] = make([]int32, 5)
-	res = dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb])
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb]); res == -1 {
 		return fmt.Errorf("Failed to load player bomb image: %s", fname)
 	}
 
@@ -147,9 +148,18 @@ func Init(hp uint, chipFolder [player.FolderSize]player.ChipInfo) error {
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
 	imgGaugeMax = make([]int32, 4)
-	res = dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax)
-	if res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
 		return fmt.Errorf("Failed to read gauge max image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/skill/charge.png"
+	tmp := make([]int32, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 8; i++ {
+		imgCharge[0] = append(imgCharge[0], tmp[i])
+		imgCharge[1] = append(imgCharge[1], tmp[i+8])
 	}
 
 	logger.Info("Successfully initialized battle player data")
@@ -182,6 +192,18 @@ func DrawChar() {
 	x, y := battlecommon.ViewPos(playerInfo.PosX, playerInfo.PosY)
 	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
+
+	// Show charge image
+	if playerInfo.ChargeCount > 0 {
+		n := 0
+		if playerInfo.ChargeCount > chargeTime {
+			n = 1
+		}
+		imgNo := int(playerInfo.ChargeCount/4) % len(imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(x, y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 }
 
 // DrawChipIcon ...
@@ -252,6 +274,8 @@ func SetChipSelectResult(selected []int) {
 func MainProcess() error {
 	playerInfo.GaugeCount++ // TODO GaugeSpeed
 
+	// TODO damage process
+
 	if playerInfo.act.animID != "" {
 		// still in animation
 		if !anim.IsProcessing(playerInfo.act.animID) {
@@ -311,7 +335,7 @@ func MainProcess() error {
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		playerInfo.ChargeCount++
 	} else if playerInfo.ChargeCount > 0 {
-		// TODO set act.ShotPower by playerInfo.ChargeCount
+		playerInfo.act.charged = playerInfo.ChargeCount > chargeTime
 		playerInfo.act.set(playerAnimShot)
 		playerInfo.ChargeCount = 0
 	}
@@ -343,14 +367,21 @@ func (a *act) Process() (bool, error) {
 		}
 	case playerAnimShot:
 		if a.count == 1 {
+			s := playerInfo.ShotPower
+			eff := effect.TypeHitSmall
+			if a.charged {
+				s *= 10
+				eff = effect.TypeHitBig
+			}
+
 			for x := playerInfo.PosX + 1; x < field.FieldNumX; x++ {
 				damage.New(damage.Damage{
 					PosX:          x,
 					PosY:          playerInfo.PosY,
-					Power:         1, // debug
+					Power:         int(s),
 					TTL:           1,
 					TargetType:    damage.TargetEnemy,
-					HitEffectType: effect.TypeHitSmall, // TODO HitBig if charge shot
+					HitEffectType: eff,
 				})
 			}
 		}
