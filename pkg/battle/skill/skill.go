@@ -46,7 +46,7 @@ const (
 	delayCannonAtk  = 2
 	delayCannonBody = 5
 	delaySword      = 3
-	delayMiniBomb   = 6
+	delayMiniBomb   = 4
 	delayShockWave  = 5
 )
 
@@ -339,7 +339,16 @@ func (p *miniBomb) Process() (bool, error) {
 	p.dy = ymax*4*p.dx*p.dx/(p.dist*p.dist) - ymax*4*p.dx/p.dist
 
 	if p.dx >= p.dist+38 {
-		// TODO damage register
+		// TODO 不発処理(画面外やパネル状況など)
+		anim.New(effect.Get(effect.TypeExplode, p.TargetX, p.TargetY))
+		damage.New(damage.Damage{
+			PosX:          p.TargetX,
+			PosY:          p.TargetY,
+			Power:         p.Power,
+			TTL:           1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+		})
 		return true, nil
 	}
 	return false, nil
