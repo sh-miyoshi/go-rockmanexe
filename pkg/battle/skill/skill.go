@@ -24,6 +24,10 @@ const (
 	SkillWideSword
 	SkillLongSword
 
+	// Char Skills
+
+	SkillShockWave
+
 	skillMax
 )
 
@@ -44,6 +48,7 @@ const (
 	delayCannonBody = 5
 	delaySword      = 3
 	delayMiniBomb   = 6
+	delayShockWave  = 5
 )
 
 type Argument struct {
@@ -59,6 +64,7 @@ var (
 	imgCannonBody [3][]int32
 	imgSword      [3][]int32
 	imgMiniBomb   []int32
+	imgShockWave  []int32
 )
 
 type cannon struct {
@@ -92,6 +98,15 @@ type miniBomb struct {
 	baseY int32
 	dx    int
 	dy    int
+}
+
+type shockWave struct {
+	OwnerID    string
+	Power      int
+	TargetType int
+
+	count int
+	x, y  int
 }
 
 func Init() error {
@@ -136,6 +151,14 @@ func Init() error {
 		imgSword[2] = append(imgSword[2], tmp[i+4])
 	}
 
+	fname = path + "ショックウェーブ.png"
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 7; i++ {
+		imgShockWave = append(imgShockWave, tmp[i])
+	}
+
 	return nil
 }
 
@@ -155,6 +178,9 @@ func End() {
 	}
 	for i := 0; i < len(imgMiniBomb); i++ {
 		dxlib.DeleteGraph(imgMiniBomb[i])
+	}
+	for i := 0; i < len(imgShockWave); i++ {
+		dxlib.DeleteGraph(imgShockWave[i])
 	}
 }
 
@@ -176,6 +202,11 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &sword{OwnerID: arg.OwnerID, Type: typeWideSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillLongSword:
 		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillShockWave:
+		px, py := field.GetPos(arg.OwnerID)
+		// TODO: 現在敵しかショックウェーブを打てない
+		px -= 1
+		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, x: px, y: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -292,6 +323,29 @@ func (p *miniBomb) Process() (bool, error) {
 
 	if p.dx >= p.dist+38 {
 		// TODO damage register
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *shockWave) Draw() {
+	n := (p.count / delayShockWave) % len(imgShockWave)
+	if n >= 0 {
+		vx, vy := battlecommon.ViewPos(p.x, p.y)
+		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
+	}
+}
+
+func (p *shockWave) Process() (bool, error) {
+	p.count++
+	if p.count%(len(imgShockWave)*delayShockWave) == 0 {
+		// TODO Player Shock Wave
+		p.x--
+	}
+
+	// TODO damage register
+
+	if p.x < 0 || p.x > field.FieldNumX {
 		return true, nil
 	}
 	return false, nil

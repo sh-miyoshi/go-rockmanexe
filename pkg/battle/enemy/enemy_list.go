@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 )
@@ -49,6 +50,10 @@ const (
 	animMax
 )
 
+const (
+	delayMetallAtk = 3
+)
+
 func getObject(id int, initParam EnemyParam) enemyObject {
 	initParam.ID = uuid.New().String()
 
@@ -59,11 +64,19 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	return nil
 }
 
+type metallAtk struct {
+	ownerID string
+	count   int
+	images  []int32
+}
+
 type enemyMetall struct {
 	pm        EnemyParam
 	imgMove   []int32
 	count     int
 	moveCount int
+	atkID     string
+	atk       metallAtk
 }
 
 func (e *enemyMetall) Init() error {
@@ -73,11 +86,19 @@ func (e *enemyMetall) Init() error {
 	if e.imgMove[0] == -1 {
 		return fmt.Errorf("Failed to load image: %s", fname)
 	}
+	e.atk.images = make([]int32, 15)
+	fname = common.ImagePath + "battle/character/メットール_atk.png"
+	if res := dxlib.LoadDivGraph(fname, 15, 15, 1, 100, 140, e.atk.images); res == -1 {
+		return fmt.Errorf("Failed to load image: %s", fname)
+	}
 
 	return nil
 }
 func (e *enemyMetall) End() {
 	dxlib.DeleteGraph(e.imgMove[0])
+	for _, img := range e.atk.images {
+		dxlib.DeleteGraph(img)
+	}
 }
 
 func (e *enemyMetall) Process() (bool, error) {
@@ -98,6 +119,14 @@ func (e *enemyMetall) Process() (bool, error) {
 	const waitCount = 1 * 60
 	const actionInterval = 1 * 60
 
+	if e.atkID != "" {
+		// Anim end
+		if !anim.IsProcessing(e.atkID) {
+			e.atkID = ""
+			e.count = waitCount + 1 // Skip initial wait
+		}
+	}
+
 	// Metall Actions
 	if e.count < waitCount {
 		return false, nil
@@ -106,7 +135,10 @@ func (e *enemyMetall) Process() (bool, error) {
 	if e.count%actionInterval == 0 {
 		_, py := field.GetPos(e.pm.PlayerID)
 		if py == e.pm.PosY {
-			// TODO: Attack
+			// Attack
+			e.atk.count = 0
+			e.atk.ownerID = e.pm.ID
+			e.atkID = anim.New(&e.atk)
 		} else {
 			// Move
 			if py > e.pm.PosY {
@@ -119,9 +151,13 @@ func (e *enemyMetall) Process() (bool, error) {
 
 	return false, nil
 }
+
 func (e *enemyMetall) Draw() {
 	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
-	img := e.imgMove[0] // TODO
+	img := e.imgMove[0]
+	if e.atkID != "" {
+		img = e.atk.images[e.atk.GetImageNo()]
+	}
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 
 	// Show HP
@@ -135,4 +171,30 @@ func (e *enemyMetall) Draw() {
 
 func (e *enemyMetall) Get() *EnemyParam {
 	return &e.pm
+}
+
+func (a *metallAtk) Draw() {
+	// Nothing to do
+}
+
+func (a *metallAtk) Process() (bool, error) {
+	a.count++
+
+	if a.count == delayMetallAtk*10 {
+		anim.New(skill.Get(skill.SkillShockWave, skill.Argument{
+			OwnerID:    a.ownerID,
+			Power:      10, // TODO: ダメージ
+			TargetType: damage.TargetPlayer,
+		}))
+	}
+
+	return a.count >= (len(a.images) * delayMetallAtk), nil
+}
+
+func (a *metallAtk) GetImageNo() int {
+	n := a.count / delayMetallAtk
+	if n >= len(a.images) {
+		n = len(a.images) - 1
+	}
+	return n
 }
