@@ -3,6 +3,7 @@ package player
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"sort"
 
 	"github.com/google/uuid"
@@ -93,7 +94,13 @@ func Init(plyr *player.Player) error {
 	for _, c := range plyr.ChipFolder {
 		playerInfo.ChipFolder = append(playerInfo.ChipFolder, c)
 	}
-	// TODO: Shuffle
+	// Shuffle
+	for i := 0; i < 10; i++ {
+		for j := 0; j < len(playerInfo.ChipFolder); j++ {
+			n := rand.Intn(len(playerInfo.ChipFolder))
+			playerInfo.ChipFolder[j], playerInfo.ChipFolder[n] = playerInfo.ChipFolder[n], playerInfo.ChipFolder[j]
+		}
+	}
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -272,7 +279,7 @@ func SetChipSelectResult(selected []int) {
 
 // MainProcess ...
 func MainProcess() error {
-	playerInfo.GaugeCount++ // TODO GaugeSpeed
+	playerInfo.GaugeCount += 4 // TODO GaugeSpeed
 
 	// TODO damage process
 

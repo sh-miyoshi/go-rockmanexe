@@ -66,10 +66,6 @@ func End() {
 
 // Process ...
 func Process() error {
-	if err := anim.MgrProcess(); err != nil {
-		return fmt.Errorf("Failed to handle animation: %w", err)
-	}
-
 	switch battleState {
 	case stateChipSelect:
 		if battleCount == 0 {
@@ -86,6 +82,10 @@ func Process() error {
 		// TODO implement this
 		stateChange(stateMain)
 	case stateMain:
+		if err := anim.MgrProcess(); err != nil {
+			return fmt.Errorf("Failed to handle animation: %w", err)
+		}
+
 		if err := battleplayer.MainProcess(); err != nil {
 			if errors.Is(err, battleplayer.ErrChipSelect) {
 				stateChange(stateChipSelect)
@@ -103,8 +103,9 @@ func Process() error {
 			return fmt.Errorf("Failed to process enemy: %w", err)
 		}
 		fieldUpdates()
+
+		damage.MgrProcess()
 	}
-	damage.MgrProcess()
 
 	battleCount++
 	return nil
