@@ -34,7 +34,10 @@ type effect struct {
 
 	count  int
 	images []int32
+	delay  int
 }
+
+type noEffect struct{}
 
 func Init() error {
 	imgHitSmallEffect = make([]int32, 4)
@@ -78,29 +81,40 @@ func End() {
 
 func Get(typ int, x, y int) anim.Anim {
 	switch typ {
+	case TypeNone:
+		return &noEffect{}
 	case TypeHitSmall:
-		return &effect{X: x, Y: y, images: imgHitSmallEffect}
+		return &effect{X: x, Y: y, images: imgHitSmallEffect, delay: 1}
 	case TypeHitBig:
-		return &effect{X: x, Y: y, images: imgHitBigEffect}
+		return &effect{X: x, Y: y, images: imgHitBigEffect, delay: 1}
 	case TypeExplode:
-		return &effect{X: x, Y: y, images: imgExplodeEffect}
+		return &effect{X: x, Y: y, images: imgExplodeEffect, delay: explodeDelay}
 	case TypeCannonHit:
-		return &effect{X: x, Y: y, images: imgCannonHitEffect}
+		return &effect{X: x, Y: y, images: imgCannonHitEffect, delay: 1}
 	}
-	return nil
+
+	panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
 }
 
 func (e *effect) Process() (bool, error) {
 	e.count++
-	return e.count >= len(e.images)*explodeDelay, nil
+	return e.count >= len(e.images)*e.delay, nil
 }
 
 func (e *effect) Draw() {
 	imgNo := -1
-	if e.count < len(e.images)*explodeDelay {
-		imgNo = e.count / explodeDelay
+	if e.count < len(e.images)*e.delay {
+		imgNo = e.count / e.delay
 	}
 
 	x, y := battlecommon.ViewPos(e.X, e.Y)
 	dxlib.DrawRotaGraph(x, y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
+}
+
+func (e *noEffect) Process() (bool, error) {
+	// Nothing to do, so return finish immediately
+	return true, nil
+}
+
+func (e *noEffect) Draw() {
 }
