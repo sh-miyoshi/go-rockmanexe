@@ -27,24 +27,28 @@ const (
 
 var (
 	battleCount = 0
-	battleState = stateMain // debug
+	battleState = stateChipSelect // debug
+	playerInst  *battleplayer.BattlePlayer
 )
 
 // Init ...
 func Init(plyr *player.Player) error {
+	var err error
+	playerInst, err = battleplayer.New(plyr)
+	if err != nil {
+		return fmt.Errorf("Battle player init failed: %w", err)
+	}
+	anim.New(playerInst)
+
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("Battle field init failed: %w", err)
-	}
-
-	if err := battleplayer.Init(plyr); err != nil {
-		return fmt.Errorf("Battle player init failed: %w", err)
 	}
 
 	if err := skill.Init(); err != nil {
 		return fmt.Errorf("Skill init failed: %w", err)
 	}
 
-	if err := enemy.Init(battleplayer.Get().ID); err != nil {
+	if err := enemy.Init(playerInst.ID); err != nil {
 		return fmt.Errorf("Enemy init failed: %w", err)
 	}
 
@@ -58,7 +62,7 @@ func Init(plyr *player.Player) error {
 // End ...
 func End() {
 	field.End()
-	battleplayer.End()
+	playerInst.End()
 	skill.End()
 	enemy.End()
 	effect.End()
@@ -69,13 +73,13 @@ func Process() error {
 	switch battleState {
 	case stateChipSelect:
 		if battleCount == 0 {
-			if err := chipsel.Init(battleplayer.Get().ChipFolder); err != nil {
+			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
 				return fmt.Errorf("Failed to initialize chip select: %w", err)
 			}
 		}
 		if chipsel.Process() {
 			// set selected chips
-			battleplayer.SetChipSelectResult(chipsel.GetSelected())
+			playerInst.SetChipSelectResult(chipsel.GetSelected())
 			stateChange(stateBeforeMain)
 		}
 	case stateBeforeMain:
@@ -86,15 +90,11 @@ func Process() error {
 			return fmt.Errorf("Failed to handle animation: %w", err)
 		}
 
-		if err := battleplayer.MainProcess(); err != nil {
-			if errors.Is(err, battleplayer.ErrChipSelect) {
-				stateChange(stateChipSelect)
-				return nil
-			}
-			if errors.Is(err, battleplayer.ErrPlayerDead) {
-				// TODO return lose
-			}
-			return fmt.Errorf("Failed to process player: %w", err)
+		switch playerInst.NextAction {
+		case battleplayer.NextActChipSelect:
+			stateChange(stateChipSelect)
+		case battleplayer.MextActLose:
+			// TODO return lose
 		}
 		if err := enemy.MgrProcess(); err != nil {
 			if errors.Is(err, enemy.ErrGameEnd) {
@@ -119,27 +119,22 @@ func Draw() {
 	}
 
 	field.Draw()
+	anim.MgrDraw()
 
 	switch battleState {
 	case stateChipSelect:
+		playerInst.DrawFrame(true, false)
 		enemy.MgrDraw()
-		battleplayer.DrawChar()
-		battleplayer.DrawFrame(true, false)
 		chipsel.Draw()
 	case stateMain:
+		playerInst.DrawFrame(false, true)
 		enemy.MgrDraw()
-		battleplayer.DrawChar()
-		battleplayer.DrawChipIcon()
-		battleplayer.DrawFrame(false, true)
 	}
-
-	anim.MgrDraw()
 }
 
 func fieldUpdates() {
-	p := battleplayer.Get()
 	objs := []field.ObjectPosition{
-		{X: p.PosX, Y: p.PosY, ID: p.ID},
+		{X: playerInst.PosX, Y: playerInst.PosY, ID: playerInst.ID},
 	}
 
 	enemies := enemy.GetEnemies()

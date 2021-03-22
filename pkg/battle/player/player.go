@@ -1,7 +1,6 @@
 package player
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -32,12 +31,21 @@ const (
 	playerAnimMax
 )
 
+const (
+	NextActNone int = iota
+	NextActChipSelect
+	MextActLose
+)
+
 type act struct {
-	typ        int
-	count      int
-	animID     string
-	moveDirect int
-	charged    bool
+	MoveDirect int
+	Charged    bool
+	ShotPower  uint
+
+	typ   int
+	count int
+	pPosX *int
+	pPosY *int
 }
 
 // BattlePlayer ...
@@ -52,6 +60,7 @@ type BattlePlayer struct {
 	ShotPower     uint
 	ChipFolder    []player.ChipInfo
 	SelectedChips []player.ChipInfo
+	NextAction    int
 
 	act act
 }
@@ -62,56 +71,51 @@ const (
 )
 
 var (
-	ErrPlayerDead = errors.New("player dead")
-	ErrChipSelect = errors.New("chip select")
-
 	imgPlayers    [playerAnimMax][]int32
 	imgDelays     = [playerAnimMax]int{1, 1, 1, 6, 3, 4} // TODO: set correct value
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
 	imgCharge     [2][]int32
-	playerInfo    BattlePlayer
 )
 
-// Init ...
-func Init(plyr *player.Player) error {
+// New ...
+func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
-	if playerInfo.ID == "" {
-		playerInfo.ID = uuid.New().String()
+	res := BattlePlayer{
+		ID:        uuid.New().String(),
+		HP:        plyr.HP,
+		HPMax:     plyr.HPMax,
+		PosX:      1,
+		PosY:      1,
+		ShotPower: plyr.ShotPower,
 	}
-
-	playerInfo.HP = plyr.HP
-	playerInfo.HPMax = plyr.HPMax
-	playerInfo.PosX = 1
-	playerInfo.PosY = 1
-	playerInfo.act.typ = playerAnimMove
-	playerInfo.ChargeCount = 0
-	playerInfo.GaugeCount = 0
-	playerInfo.ShotPower = plyr.ShotPower
+	res.act.typ = -1
+	res.act.pPosX = &res.PosX
+	res.act.pPosY = &res.PosY
 
 	for _, c := range plyr.ChipFolder {
-		playerInfo.ChipFolder = append(playerInfo.ChipFolder, c)
+		res.ChipFolder = append(res.ChipFolder, c)
 	}
 	// Shuffle
 	for i := 0; i < 10; i++ {
-		for j := 0; j < len(playerInfo.ChipFolder); j++ {
-			n := rand.Intn(len(playerInfo.ChipFolder))
-			playerInfo.ChipFolder[j], playerInfo.ChipFolder[n] = playerInfo.ChipFolder[n], playerInfo.ChipFolder[j]
+		for j := 0; j < len(res.ChipFolder); j++ {
+			n := rand.Intn(len(res.ChipFolder))
+			res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
 		}
 	}
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimMove]); res == -1 {
-		return fmt.Errorf("Failed to load player move image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player move image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
 	imgPlayers[playerAnimDamage] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimDamage]); res == -1 {
-		return fmt.Errorf("Failed to load player damage image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player damage image: %s", fname)
 	}
 	// 1 -> 2,3  2-4 3-5
 	imgPlayers[playerAnimDamage][4] = imgPlayers[playerAnimDamage][2]
@@ -122,47 +126,47 @@ func Init(plyr *player.Player) error {
 	fname = common.ImagePath + "battle/character/player_shot.png"
 	imgPlayers[playerAnimShot] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimShot]); res == -1 {
-		return fmt.Errorf("Failed to load player shot image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player shot image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
 	imgPlayers[playerAnimCannon] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimCannon]); res == -1 {
-		return fmt.Errorf("Failed to load player cannon image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player cannon image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_sword.png"
 	imgPlayers[playerAnimSword] = make([]int32, 7)
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[playerAnimSword]); res == -1 {
-		return fmt.Errorf("Failed to load player sword image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player sword image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
 	imgPlayers[playerAnimBomb] = make([]int32, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb]); res == -1 {
-		return fmt.Errorf("Failed to load player bomb image: %s", fname)
+		return nil, fmt.Errorf("Failed to load player bomb image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
 	if imgHPFrame < 0 {
-		return fmt.Errorf("Failed to read hp frame image %s", fname)
+		return nil, fmt.Errorf("Failed to read hp frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge.png"
 	imgGaugeFrame = dxlib.LoadGraph(fname)
 	if imgGaugeFrame < 0 {
-		return fmt.Errorf("Failed to read gauge frame image %s", fname)
+		return nil, fmt.Errorf("Failed to read gauge frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
 	imgGaugeMax = make([]int32, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
-		return fmt.Errorf("Failed to read gauge max image %s", fname)
+		return nil, fmt.Errorf("Failed to read gauge max image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/skill/charge.png"
 	tmp := make([]int32, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return nil, fmt.Errorf("Failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgCharge[0] = append(imgCharge[0], tmp[i])
@@ -170,11 +174,11 @@ func Init(plyr *player.Player) error {
 	}
 
 	logger.Info("Successfully initialized battle player data")
-	return nil
+	return &res, nil
 }
 
 // End ...
-func End() {
+func (p *BattlePlayer) End() {
 	logger.Info("Cleanup battle player data")
 
 	for i := 0; i < playerAnimMax; i++ {
@@ -194,44 +198,42 @@ func End() {
 	logger.Info("Successfully cleanuped battle player data")
 }
 
-// DrawChar ...
-func DrawChar() {
-	x, y := battlecommon.ViewPos(playerInfo.PosX, playerInfo.PosY)
-	img := imgPlayers[playerInfo.act.typ][playerInfo.act.getImageNo()]
+// Draw ...
+func (p *BattlePlayer) Draw() {
+	x, y := battlecommon.ViewPos(p.PosX, p.PosY)
+	img := p.act.GetImage()
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 
 	// Show charge image
-	if playerInfo.ChargeCount > 0 {
+	if p.ChargeCount > 20 {
 		n := 0
-		if playerInfo.ChargeCount > chargeTime {
+		if p.ChargeCount > chargeTime {
 			n = 1
 		}
-		imgNo := int(playerInfo.ChargeCount/4) % len(imgCharge[n])
+		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
 		dxlib.DrawRotaGraph(x, y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
-}
 
-// DrawChipIcon ...
-func DrawChipIcon() {
-	n := len(playerInfo.SelectedChips)
+	// Show selected chip icons
+	n := len(p.SelectedChips)
 	if n > 0 {
 		// TODO Show chip info
 
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := field.PanelSizeX*playerInfo.PosX + field.PanelSizeX/2 - 2 + (i * px) - max
-			y := field.DrawPanelTopY + field.PanelSizeY*playerInfo.PosY - 10 - 81 + (i * px) - max
+			x := field.PanelSizeX*p.PosX + field.PanelSizeX/2 - 2 + (i * px) - max
+			y := field.DrawPanelTopY + field.PanelSizeY*p.PosY - 10 - 81 + (i * px) - max
 			dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
 			// draw from the end
-			dxlib.DrawGraph(int32(x), int32(y), chip.GetIcon(playerInfo.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
+			dxlib.DrawGraph(int32(x), int32(y), chip.GetIcon(p.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
 		}
 	}
 }
 
-func DrawFrame(xShift bool, showGauge bool) {
+func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	x := int32(7)
 	y := int32(5)
 	if xShift {
@@ -240,63 +242,40 @@ func DrawFrame(xShift bool, showGauge bool) {
 
 	// Show HP
 	dxlib.DrawGraph(x, y, imgHPFrame, dxlib.TRUE)
-	draw.Number(x+2, y+2, int32(playerInfo.HP), draw.NumberOption{RightAligned: true, Length: 4})
+	draw.Number(x+2, y+2, int32(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Custom Gauge
 	if showGauge {
-		if playerInfo.GaugeCount < gaugeMaxCount {
+		if p.GaugeCount < gaugeMaxCount {
 			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * playerInfo.GaugeCount / gaugeMaxCount)
+			size := int32(gaugeMaxSize * p.GaugeCount / gaugeMaxCount)
 			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
 		} else {
-			i := (playerInfo.GaugeCount / 20) % 4
+			i := (p.GaugeCount / 20) % 4
 			dxlib.DrawGraph(96, 5, imgGaugeMax[i], dxlib.TRUE)
 		}
 	}
 }
 
-// Get ...
-func Get() *BattlePlayer {
-	return &playerInfo
-}
-
-// SetChipSelectResult ...
-func SetChipSelectResult(selected []int) {
-	playerInfo.SelectedChips = []player.ChipInfo{}
-	for _, s := range selected {
-		playerInfo.SelectedChips = append(playerInfo.SelectedChips, playerInfo.ChipFolder[s])
-	}
-
-	// Remove selected chips from folder
-	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
-	for _, s := range selected {
-		playerInfo.ChipFolder = append(playerInfo.ChipFolder[:s], playerInfo.ChipFolder[s+1:]...)
-	}
-}
-
-// MainProcess ...
-func MainProcess() error {
-	playerInfo.GaugeCount += 4 // TODO GaugeSpeed
+func (p *BattlePlayer) Process() (bool, error) {
+	p.GaugeCount += 4 // TODO GaugeSpeed
 
 	// TODO damage process
+	// TODO return true, nil and set NextActLose if dead
 
-	if playerInfo.act.animID != "" {
-		// still in animation
-		if !anim.IsProcessing(playerInfo.act.animID) {
-			// end animation
-			playerInfo.act.reset()
-		}
-		return nil
+	if p.act.Process() {
+		return false, nil
 	}
 
-	if playerInfo.GaugeCount >= gaugeMaxCount {
+	if p.GaugeCount >= gaugeMaxCount {
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
-			playerInfo.GaugeCount = 0
-			return ErrChipSelect
+			p.GaugeCount = 0
+			p.NextAction = NextActChipSelect
+			return false, nil
 		}
 	}
 
@@ -313,78 +292,76 @@ func MainProcess() error {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, moveDirect, field.PanelTypePlayer, false) {
-			playerInfo.act.moveDirect = moveDirect
-			playerInfo.act.set(playerAnimMove)
-			return nil
+		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false) {
+			p.act.MoveDirect = moveDirect
+			p.act.SetAnim(playerAnimMove)
+			return false, nil
 		}
 	}
 
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		if len(playerInfo.SelectedChips) > 0 {
-			c := chip.Get(playerInfo.SelectedChips[0].ID)
+		if len(p.SelectedChips) > 0 {
+			c := chip.Get(p.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
-				playerInfo.act.set(c.PlayerAct)
+				p.act.SetAnim(c.PlayerAct)
 			}
 			anim.New(skill.Get(c.ID, skill.Argument{
-				OwnerID:    playerInfo.ID,
+				OwnerID:    p.ID,
 				Power:      int(c.Power),
 				TargetType: damage.TargetEnemy,
 			}))
 
-			playerInfo.SelectedChips = playerInfo.SelectedChips[1:]
-			return nil
+			p.SelectedChips = p.SelectedChips[1:]
+			return false, nil
 		}
 	}
 
 	// Rock buster
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
-		playerInfo.ChargeCount++
-	} else if playerInfo.ChargeCount > 0 {
-		playerInfo.act.charged = playerInfo.ChargeCount > chargeTime
-		playerInfo.act.set(playerAnimShot)
-		playerInfo.ChargeCount = 0
+		p.ChargeCount++
+	} else if p.ChargeCount > 0 {
+		p.act.Charged = p.ChargeCount > chargeTime
+		p.act.ShotPower = p.ShotPower
+		p.act.SetAnim(playerAnimShot)
+		p.ChargeCount = 0
 	}
 
-	return nil
+	return false, nil
 }
 
-func (a *act) set(typ int) {
-	a.typ = typ
-	a.count = 0
-	a.animID = anim.New(a)
+func (p *BattlePlayer) SetChipSelectResult(selected []int) {
+	p.SelectedChips = []player.ChipInfo{}
+	for _, s := range selected {
+		p.SelectedChips = append(p.SelectedChips, p.ChipFolder[s])
+	}
+
+	// Remove selected chips from folder
+	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
+	for _, s := range selected {
+		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
+	}
 }
 
-func (a *act) reset() {
-	a.typ = playerAnimMove
-	a.count = 0
-	a.animID = ""
-}
-
-func (a *act) Draw() {
-	// No common drawing process
-}
-
-func (a *act) Process() (bool, error) {
+// Process method returns true if processing now
+func (a *act) Process() bool {
 	switch a.typ {
-	case playerAnimMove:
-		if a.count == 2 {
-			battlecommon.MoveObject(&playerInfo.PosX, &playerInfo.PosY, a.moveDirect, field.PanelTypePlayer, true)
-		}
+	case -1: // No animation
+		return false
 	case playerAnimShot:
 		if a.count == 1 {
-			s := playerInfo.ShotPower
+			s := a.ShotPower
 			eff := effect.TypeHitSmall
-			if a.charged {
+			if a.Charged {
 				s *= 10
 				eff = effect.TypeHitBig
 			}
 
-			for x := playerInfo.PosX + 1; x < field.FieldNumX; x++ {
+			for x := *a.pPosX + 1; x < field.FieldNumX; x++ {
+				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, *a.pPosY)
 				damage.New(damage.Damage{
 					PosX:          x,
-					PosY:          playerInfo.PosY,
+					PosY:          *a.pPosY,
 					Power:         int(s),
 					TTL:           1,
 					TargetType:    damage.TargetEnemy,
@@ -392,24 +369,38 @@ func (a *act) Process() (bool, error) {
 				})
 			}
 		}
+	case playerAnimMove:
+		if a.count == 2 {
+			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true)
+		}
 	case playerAnimCannon, playerAnimSword, playerAnimBomb:
-		// nothing to do
+		// No special action
 	default:
-		return false, fmt.Errorf("Anim %d is not implemented yet", a.typ)
+		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
 	}
 
 	a.count++
 
 	if a.count > len(imgPlayers[a.typ])*imgDelays[a.typ] {
-		return true, nil
+		// Reset params
+		a.typ = -1
+		a.count = 0
+		return false // finished
 	}
-	return false, nil
+	return true // processing now
 }
 
-func (a *act) getImageNo() int {
-	n := a.count / imgDelays[a.typ]
-	if n >= len(imgPlayers[a.typ]) {
-		n = len(imgPlayers[a.typ]) - 1
+func (a *act) SetAnim(animType int) {
+	a.count = 0
+	a.typ = animType
+}
+
+func (a *act) GetImage() int32 {
+	if a.typ == -1 {
+		// return stand image
+		return imgPlayers[playerAnimMove][0]
 	}
-	return n
+
+	imgNo := (a.count / imgDelays[a.typ]) % len(imgPlayers[a.typ])
+	return imgPlayers[a.typ][imgNo]
 }
