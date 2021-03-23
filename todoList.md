@@ -49,11 +49,14 @@
 - stateMain
   - player action
     - damaged
+      - Animationや無敵処理など
     - image delay
   - その他
     - チップ情報を左下に表示
     - ダメージ情報にのけぞるかのフラグ
     - 敵名表示
+    - ヒット後貫通しない攻撃ならスキルを止める
+    - sort anim by type
 - stateResult
   - lose
   - win
