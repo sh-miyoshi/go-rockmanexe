@@ -128,13 +128,17 @@ func Process() bool {
 		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 			if pointer == max-1 {
 				pointer = sendBtnNo
-			} else if pointer != sendBtnNo {
+			} else if pointer == sendBtnNo {
+				pointer = 0
+			} else {
 				pointer++
 			}
 		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
 			if pointer == sendBtnNo {
 				pointer = max - 1
-			} else if pointer != 0 {
+			} else if pointer == 0 {
+				pointer = sendBtnNo
+			} else {
 				pointer--
 			}
 		}
