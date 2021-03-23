@@ -48,6 +48,7 @@ func MgrProcess() error {
 		if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
 			anim.DamageProc(dm)
 			damage.Remove(dm.ID)
+			// TODO if !pm.Penetrate delete(anims, id)
 		}
 	}
 
