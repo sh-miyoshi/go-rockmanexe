@@ -66,6 +66,11 @@ func Init(folder []player.ChipInfo) error {
 
 // Draw ...
 func Draw() {
+	if imgFrame == -1 {
+		// Waiting initialize
+		return
+	}
+
 	dxlib.DrawGraph(0, 0, imgFrame, dxlib.TRUE)
 
 	// Show chip data

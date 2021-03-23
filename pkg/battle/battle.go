@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
@@ -12,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
@@ -81,10 +83,20 @@ func Process() error {
 			// set selected chips
 			playerInst.SetChipSelectResult(chipsel.GetSelected())
 			stateChange(stateBeforeMain)
+			return nil
 		}
 	case stateBeforeMain:
-		// TODO implement this
-		stateChange(stateMain)
+		if battleCount == 0 {
+			if err := b4main.Init(); err != nil {
+				return fmt.Errorf("Failed to initialize before main: %w", err)
+			}
+		}
+
+		if b4main.Process() {
+			b4main.End()
+			stateChange(stateMain)
+			return nil
+		}
 	case stateMain:
 		if err := anim.MgrProcess(); err != nil {
 			return fmt.Errorf("Failed to handle animation: %w", err)
@@ -115,11 +127,6 @@ func Process() error {
 
 // Draw ...
 func Draw() {
-	if battleCount == 0 {
-		// skip if initialize phase
-		return
-	}
-
 	field.Draw()
 	anim.MgrDraw()
 
@@ -127,6 +134,9 @@ func Draw() {
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()
+	case stateBeforeMain:
+		playerInst.DrawFrame(false, true)
+		b4main.Draw()
 	case stateMain:
 		playerInst.DrawFrame(false, true)
 	}
@@ -146,8 +156,9 @@ func fieldUpdates() {
 }
 
 func stateChange(nextState int) {
+	logger.Info("Change battle state from %d to %d", battleState, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		panic(fmt.Sprintf("Invalid next game state: %d", nextState))
+		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	battleState = nextState
 	battleCount = 0
