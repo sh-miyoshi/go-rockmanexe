@@ -3,7 +3,6 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -55,8 +54,6 @@ const (
 )
 
 func getObject(id int, initParam EnemyParam) enemyObject {
-	initParam.ID = uuid.New().String()
-
 	switch id {
 	case idMetall:
 		return &enemyMetall{pm: initParam}
@@ -79,7 +76,8 @@ type enemyMetall struct {
 	atk       metallAtk
 }
 
-func (e *enemyMetall) Init() error {
+func (e *enemyMetall) Init(ID string) error {
+	e.pm.ID = ID
 	e.imgMove = make([]int32, 1)
 	fname := common.ImagePath + "battle/character/メットール_move.png"
 	e.imgMove[0] = dxlib.LoadGraph(fname)
@@ -94,6 +92,7 @@ func (e *enemyMetall) Init() error {
 
 	return nil
 }
+
 func (e *enemyMetall) End() {
 	dxlib.DeleteGraph(e.imgMove[0])
 	for _, img := range e.atk.images {
@@ -103,14 +102,6 @@ func (e *enemyMetall) End() {
 
 func (e *enemyMetall) Process() (bool, error) {
 	e.count++
-
-	// Damage Process
-	if dm := damage.Get(e.pm.PosX, e.pm.PosY); dm != nil {
-		if dm.TargetType|damage.TargetEnemy != 0 {
-			e.pm.HP -= dm.Power
-			anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
-		}
-	}
 
 	if e.pm.HP <= 0 {
 		return true, nil
@@ -169,8 +160,22 @@ func (e *enemyMetall) Draw() {
 	}
 }
 
-func (e *enemyMetall) Get() *EnemyParam {
-	return &e.pm
+func (e *enemyMetall) DamageProc(dm *damage.Damage) {
+	if dm == nil {
+		return
+	}
+	if dm.TargetType|damage.TargetEnemy != 0 {
+		e.pm.HP -= dm.Power
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
+	}
+}
+
+func (e *enemyMetall) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     e.pm.PosX,
+		PosY:     e.pm.PosY,
+		AnimType: anim.TypeObject,
+	}
 }
 
 func (a *metallAtk) Draw() {
@@ -189,6 +194,15 @@ func (a *metallAtk) Process() (bool, error) {
 	}
 
 	return a.count >= (len(a.images) * delayMetallAtk), nil
+}
+
+func (a *metallAtk) DamageProc(dm *damage.Damage) {
+}
+
+func (a *metallAtk) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
 }
 
 func (a *metallAtk) GetImageNo() int {

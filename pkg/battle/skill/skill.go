@@ -264,6 +264,15 @@ func (p *cannon) Process() (bool, error) {
 	return false, nil
 }
 
+func (p *cannon) DamageProc(dm *damage.Damage) {
+}
+
+func (p *cannon) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
 func (p *sword) Draw() {
 	px, py := field.GetPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
@@ -311,6 +320,15 @@ func (p *sword) Process() (bool, error) {
 	return false, nil
 }
 
+func (p *sword) DamageProc(dm *damage.Damage) {
+}
+
+func (p *sword) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
 func (p *miniBomb) Draw() {
 	n := (p.count / delayMiniBomb) % len(imgMiniBomb)
 	if n >= 0 {
@@ -352,6 +370,15 @@ func (p *miniBomb) Process() (bool, error) {
 	return false, nil
 }
 
+func (p *miniBomb) DamageProc(dm *damage.Damage) {
+}
+
+func (p *miniBomb) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
 func (p *shockWave) Draw() {
 	n := (p.count / delayShockWave) % len(imgShockWave)
 	if n >= 0 {
@@ -381,4 +408,13 @@ func (p *shockWave) Process() (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func (p *shockWave) DamageProc(dm *damage.Damage) {
+}
+
+func (p *shockWave) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
 }

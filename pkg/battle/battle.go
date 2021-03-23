@@ -93,6 +93,8 @@ func Process() error {
 		switch playerInst.NextAction {
 		case battleplayer.NextActChipSelect:
 			stateChange(stateChipSelect)
+			playerInst.NextAction = battleplayer.NextActNone
+			return nil
 		case battleplayer.MextActLose:
 			// TODO return lose
 		}
@@ -124,11 +126,9 @@ func Draw() {
 	switch battleState {
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
-		enemy.MgrDraw()
 		chipsel.Draw()
 	case stateMain:
 		playerInst.DrawFrame(false, true)
-		enemy.MgrDraw()
 	}
 }
 
@@ -137,13 +137,9 @@ func fieldUpdates() {
 		{X: playerInst.PosX, Y: playerInst.PosY, ID: playerInst.ID},
 	}
 
-	enemies := enemy.GetEnemies()
+	enemies := enemy.GetEnemyPositions()
 	for _, e := range enemies {
-		objs = append(objs, field.ObjectPosition{
-			X:  e.PosX,
-			Y:  e.PosY,
-			ID: e.ID,
-		})
+		objs = append(objs, e)
 	}
 
 	field.UpdateObjectPos(objs)

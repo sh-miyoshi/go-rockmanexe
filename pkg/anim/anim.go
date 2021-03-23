@@ -4,12 +4,26 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 )
+
+const (
+	TypeObject int = iota
+	TypeEffect
+)
+
+type Param struct {
+	PosX     int
+	PosY     int
+	AnimType int
+}
 
 // Anim ...
 type Anim interface {
 	Process() (bool, error)
 	Draw()
+	DamageProc(dm *damage.Damage)
+	GetParam() Param
 }
 
 var (
@@ -28,6 +42,12 @@ func MgrProcess() error {
 			delete(anims, id)
 		}
 	}
+
+	for _, anim := range anims {
+		pm := anim.GetParam()
+		anim.DamageProc(damage.Get(pm.PosX, pm.PosY))
+	}
+
 	return nil
 }
 

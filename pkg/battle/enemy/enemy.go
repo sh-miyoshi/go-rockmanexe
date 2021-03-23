@@ -2,9 +2,9 @@ package enemy
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 )
 
 // EnemyParam ...
@@ -18,30 +18,30 @@ type EnemyParam struct {
 
 type enemyObject interface {
 	anim.Anim
-	Get() *EnemyParam
-	Init() error
+	Init(ID string) error
 	End()
 }
 
 var (
 	ErrGameEnd = errors.New("game end")
-
-	enemies []enemyObject
+	enemies    = make(map[string]enemyObject)
 )
 
 func Init(playerID string) error {
 	// Decide enemies
 	// debug(set debug param)
-	enemies = append(enemies, getObject(idMetall, EnemyParam{
+	e := getObject(idMetall, EnemyParam{
 		PlayerID: playerID,
 		PosX:     4,
 		PosY:     1,
 		HP:       1000,
-	}))
+	})
+	id := anim.New(e)
+	enemies[id] = e
 
 	// Init enemy data
-	for _, e := range enemies {
-		if err := e.Init(); err != nil {
+	for id, e := range enemies {
+		if err := e.Init(id); err != nil {
 			return err
 		}
 	}
@@ -56,38 +56,29 @@ func End() {
 }
 
 func MgrProcess() error {
-	newEnemies := []enemyObject{}
-	for _, e := range enemies {
-		end, err := e.Process()
-		if err != nil {
-			return fmt.Errorf("Anim process failed: %w", err)
-		}
-
-		if end {
+	for id, e := range enemies {
+		if !anim.IsProcessing(id) {
 			e.End()
-			continue
+			delete(enemies, id)
 		}
-		newEnemies = append(newEnemies, e)
 	}
 
-	if len(newEnemies) == 0 {
+	if len(enemies) == 0 {
 		return ErrGameEnd
 	}
-	enemies = newEnemies
 
 	return nil
 }
 
-func MgrDraw() {
-	for _, e := range enemies {
-		e.Draw()
-	}
-}
-
-func GetEnemies() []*EnemyParam {
-	res := []*EnemyParam{}
-	for _, e := range enemies {
-		res = append(res, e.Get())
+func GetEnemyPositions() []field.ObjectPosition {
+	res := []field.ObjectPosition{}
+	for id, e := range enemies {
+		pm := e.GetParam()
+		res = append(res, field.ObjectPosition{
+			ID: id,
+			X:  pm.PosX,
+			Y:  pm.PosY,
+		})
 	}
 	return res
 }

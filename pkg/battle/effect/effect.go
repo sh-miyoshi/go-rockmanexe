@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 )
 
@@ -111,10 +112,30 @@ func (e *effect) Draw() {
 	dxlib.DrawRotaGraph(x, y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
 
+func (e *effect) DamageProc(dm *damage.Damage) {
+}
+
+func (e *effect) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     e.X,
+		PosY:     e.Y,
+		AnimType: anim.TypeEffect,
+	}
+}
+
 func (e *noEffect) Process() (bool, error) {
 	// Nothing to do, so return finish immediately
 	return true, nil
 }
 
 func (e *noEffect) Draw() {
+}
+
+func (e *noEffect) DamageProc(dm *damage.Damage) {
+}
+
+func (e *noEffect) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
 }

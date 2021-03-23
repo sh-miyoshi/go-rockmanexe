@@ -330,6 +330,32 @@ func (p *BattlePlayer) Process() (bool, error) {
 	return false, nil
 }
 
+func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
+	if dm == nil {
+		return
+	}
+	if dm.TargetType|damage.TargetPlayer != 0 {
+		hp := int(p.HP) - dm.Power
+		if hp < 0 {
+			p.HP = 0
+		} else if hp > int(p.HPMax) {
+			p.HP = p.HPMax
+		} else {
+			p.HP = uint(hp)
+		}
+		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY))
+		// TODO player anim, 無敵処理など
+	}
+}
+
+func (p *BattlePlayer) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     p.PosX,
+		PosY:     p.PosY,
+		AnimType: anim.TypeObject,
+	}
+}
+
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	p.SelectedChips = []player.ChipInfo{}
 	for _, s := range selected {
