@@ -1,11 +1,14 @@
 package damage
 
+import "github.com/google/uuid"
+
 const (
 	TargetPlayer int = 1 << iota
 	TargetEnemy
 )
 
 type Damage struct {
+	ID            string
 	PosX          int
 	PosY          int
 	Power         int
@@ -17,29 +20,32 @@ type Damage struct {
 }
 
 var (
-	damages []Damage
+	damages = make(map[string]*Damage)
 )
 
 func New(dm Damage) {
-	damages = append(damages, dm)
+	dm.ID = uuid.New().String()
+	damages[dm.ID] = &dm
 }
 
 func MgrProcess() {
-	newList := []Damage{}
-	for _, d := range damages {
+	for id, d := range damages {
 		d.TTL--
-		if d.TTL > 0 {
-			newList = append(newList, d)
+		if d.TTL <= 0 {
+			delete(damages, id)
 		}
 	}
-	damages = newList
 }
 
 func Get(x, y int) *Damage {
 	for _, d := range damages {
 		if d.PosX == x && d.PosY == y {
-			return &d
+			return d
 		}
 	}
 	return nil
+}
+
+func Remove(id string) {
+	delete(damages, id)
 }

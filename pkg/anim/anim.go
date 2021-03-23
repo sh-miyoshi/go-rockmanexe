@@ -45,7 +45,10 @@ func MgrProcess() error {
 
 	for _, anim := range anims {
 		pm := anim.GetParam()
-		anim.DamageProc(damage.Get(pm.PosX, pm.PosY))
+		if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
+			anim.DamageProc(dm)
+			damage.Remove(dm.ID)
+		}
 	}
 
 	return nil

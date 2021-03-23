@@ -345,6 +345,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 		}
 		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY))
 		// TODO player anim, 無敵処理など
+		logger.Debug("Player damaged: %+v", *dm)
 	}
 }
 
