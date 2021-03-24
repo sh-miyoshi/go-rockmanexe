@@ -21,17 +21,43 @@ type enemy struct {
 	pm EnemyParam
 }
 
-func (e *enemy) Init() error {
+func (e *enemy) Init(IS string) error {
+	e.pm.ID = ID
+
+	// Load Images
 	return nil
 }
-func (e *enemy) End() {}
+
+func (e *enemy) End() {
+	// Delete Images
+}
 
 func (e *enemy) Process() (bool, error) {
+	// Return true if finished(e.g. hp=0)
+	// Enemy Logic
 	return false, nil
 }
-func (e *enemy) Draw() {}
-func (e *enemy) Get() *EnemyParam {
-	return &e.pm
+
+func (e *enemy) Draw() {
+	// Show Enemy Images
+}
+
+func (e *enemy) DamageProc(dm *damage.Damage) {
+	if dm == nil {
+		return
+	}
+	if dm.TargetType|damage.TargetEnemy != 0 {
+		e.pm.HP -= dm.Power
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
+	}
+}
+
+func (e *enemy) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     e.pm.PosX,
+		PosY:     e.pm.PosY,
+		AnimType: anim.TypeObject,
+	}
 }
 
 */
@@ -60,6 +86,10 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	}
 	return nil
 }
+
+//-----------------------------------
+// Metall
+//-----------------------------------
 
 type metallAtk struct {
 	ownerID string
@@ -201,7 +231,7 @@ func (a *metallAtk) DamageProc(dm *damage.Damage) {
 
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeEffect,
+		AnimType: anim.TypeObject,
 	}
 }
 

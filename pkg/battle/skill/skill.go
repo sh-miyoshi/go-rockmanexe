@@ -269,7 +269,7 @@ func (p *cannon) DamageProc(dm *damage.Damage) {
 
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeEffect,
+		AnimType: anim.TypeObject,
 	}
 }
 
@@ -325,7 +325,7 @@ func (p *sword) DamageProc(dm *damage.Damage) {
 
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeEffect,
+		AnimType: anim.TypeObject,
 	}
 }
 
@@ -375,7 +375,7 @@ func (p *miniBomb) DamageProc(dm *damage.Damage) {
 
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeEffect,
+		AnimType: anim.TypeObject,
 	}
 }
 
@@ -415,6 +415,6 @@ func (p *shockWave) DamageProc(dm *damage.Damage) {
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeEffect,
+		AnimType: anim.TypeObject,
 	}
 }
