@@ -21,7 +21,7 @@ type enemy struct {
 	pm EnemyParam
 }
 
-func (e *enemy) Init(IS string) error {
+func (e *enemy) Init(ID string) error {
 	e.pm.ID = ID
 
 	// Load Images
@@ -64,6 +64,7 @@ func (e *enemy) GetParam() anim.Param {
 
 const (
 	idMetall int = iota
+	idTarget
 
 	idMax
 )
@@ -83,6 +84,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	switch id {
 	case idMetall:
 		return &enemyMetall{pm: initParam}
+	case idTarget:
+		return &enemyTarget{pm: initParam}
 	}
 	return nil
 }
@@ -241,4 +244,66 @@ func (a *metallAtk) GetImageNo() int {
 		n = len(a.images) - 1
 	}
 	return n
+}
+
+//-----------------------------------
+// Target
+//-----------------------------------
+
+type enemyTarget struct {
+	pm    EnemyParam
+	image int32
+}
+
+func (e *enemyTarget) Init(ID string) error {
+	e.pm.ID = ID
+	fname := common.ImagePath + "battle/character/的.png"
+	e.image = dxlib.LoadGraph(fname)
+	if e.image == -1 {
+		return fmt.Errorf("Failed to load enemy image %s", fname)
+	}
+
+	return nil
+}
+
+func (e *enemyTarget) End() {
+	dxlib.DeleteGraph(e.image)
+}
+
+func (e *enemyTarget) Process() (bool, error) {
+	if e.pm.HP <= 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (e *enemyTarget) Draw() {
+	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	dxlib.DrawRotaGraph(x, y, 1, 0, e.image, dxlib.TRUE)
+
+	// Show HP
+	if e.pm.HP > 0 {
+		draw.Number(x, y+field.PanelSizeY-10, int32(e.pm.HP), draw.NumberOption{
+			Color:    draw.NumberColorWhiteSmall,
+			Centered: true,
+		})
+	}
+}
+
+func (e *enemyTarget) DamageProc(dm *damage.Damage) {
+	if dm == nil {
+		return
+	}
+	if dm.TargetType|damage.TargetEnemy != 0 {
+		e.pm.HP -= dm.Power
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
+	}
+}
+
+func (e *enemyTarget) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     e.pm.PosX,
+		PosY:     e.pm.PosY,
+		AnimType: anim.TypeObject,
+	}
 }
