@@ -4,12 +4,15 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
 const (
 	stateTitle int = iota
 	stateBattle
+	stateMenu
+
 	stateMax
 )
 
@@ -27,8 +30,14 @@ func Process() error {
 		// show opening page
 		// select "はじめから" or "つづきから"
 		playerInfo = player.New()
-		stateChange(stateBattle)
+		stateChange(stateMenu)
 		return nil
+	case stateMenu:
+		// TODO error handling
+		if count == 0 {
+			menu.Init()
+		}
+		menu.Process()
 	case stateBattle:
 		if count == 0 {
 			if err := battle.Init(playerInfo); err != nil {
@@ -51,6 +60,8 @@ func Draw() {
 	}
 
 	switch state {
+	case stateMenu:
+		menu.Draw()
 	case stateBattle:
 		battle.Draw()
 	}
