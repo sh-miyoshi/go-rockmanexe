@@ -243,12 +243,18 @@ func (p *cannon) Process() (bool, error) {
 		if p.TargetType == damage.TargetEnemy {
 			for x := px + 1; x < field.FieldNumX; x++ {
 				dm.PosX = x
-				damage.New(dm)
+				if field.GetPanelInfo(x, dm.PosY).ObjectID != "" {
+					damage.New(dm)
+					break
+				}
 			}
 		} else {
 			for x := px - 1; x >= 0; x-- {
 				dm.PosX = x
-				damage.New(dm)
+				if field.GetPanelInfo(x, dm.PosY).ObjectID != "" {
+					damage.New(dm)
+					break
+				}
 			}
 		}
 	}

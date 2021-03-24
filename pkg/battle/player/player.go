@@ -384,16 +384,20 @@ func (a *act) Process() bool {
 				eff = effect.TypeHitBig
 			}
 
+			y := *a.pPosY
 			for x := *a.pPosX + 1; x < field.FieldNumX; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, *a.pPosY)
-				damage.New(damage.Damage{
-					PosX:          x,
-					PosY:          *a.pPosY,
-					Power:         int(s),
-					TTL:           1,
-					TargetType:    damage.TargetEnemy,
-					HitEffectType: eff,
-				})
+				if field.GetPanelInfo(x, y).ObjectID != "" {
+					damage.New(damage.Damage{
+						PosX:          x,
+						PosY:          y,
+						Power:         int(s),
+						TTL:           1,
+						TargetType:    damage.TargetEnemy,
+						HitEffectType: eff,
+					})
+					break
+				}
 			}
 		}
 	case playerAnimMove:
