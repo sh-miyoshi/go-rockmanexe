@@ -3,6 +3,8 @@ package menu
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -18,16 +20,28 @@ const (
 var (
 	menuState int
 	menuCount int
+
+	imgBack int32
 )
 
-func Init() {
+func Init() error {
 	menuState = stateTop
 	menuCount = 0
 
-	topInit()
+	fname := common.ImagePath + "menu/back.png"
+	imgBack = dxlib.LoadGraph(fname)
+	if imgBack == -1 {
+		return fmt.Errorf("Failed to load menu back image %s", fname)
+	}
+
+	if err := topInit(); err != nil {
+		return fmt.Errorf("Failed to init menu top: %w", err)
+	}
+	return nil
 }
 
 func End() {
+	dxlib.DeleteGraph(imgBack)
 	topEnd()
 }
 
@@ -39,6 +53,8 @@ func Process() {
 }
 
 func Draw() {
+	dxlib.DrawGraph(0, 0, imgBack, dxlib.TRUE)
+
 	switch menuState {
 	case stateTop:
 		topDraw()
