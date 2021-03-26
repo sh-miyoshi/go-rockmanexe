@@ -33,10 +33,12 @@ func Process() error {
 		stateChange(stateMenu)
 		return nil
 	case stateMenu:
-		// TODO error handling
 		if count == 0 {
-			menu.Init()
+			if err := menu.Init(playerInfo); err != nil {
+				return fmt.Errorf("Game process in state menu failed: %w", err)
+			}
 		}
+		// TODO error handling
 		menu.Process()
 	case stateBattle:
 		if count == 0 {

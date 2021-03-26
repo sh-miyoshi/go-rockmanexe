@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	pointer = 0
+	topPointer = 0
 )
 
 func topInit() error {
@@ -27,15 +27,19 @@ func topEnd() {
 
 func topProcess() {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		switch topPointer {
+		case topSelectChipFolder:
+			stateChange(stateChipFolder)
+		}
 		// TODO stateChange()
 	} else {
 		if inputs.CheckKey(inputs.KeyUp) == 1 {
-			if pointer > 0 {
-				pointer--
+			if topPointer > 0 {
+				topPointer--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			if pointer < topSelectMax-1 {
-				pointer++
+			if topPointer < topSelectMax-1 {
+				topPointer++
 			}
 		}
 	}
@@ -56,7 +60,7 @@ func topDraw() {
 	}
 
 	const s = 2
-	y := int32(50 + pointer*35)
+	y := int32(50 + topPointer*35)
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, dxlib.TRUE)
 
 	// Show description
@@ -67,7 +71,7 @@ func topDraw() {
 	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
 	draw.String(280, 40, 0xffffff, "Description")
 
-	switch pointer {
+	switch topPointer {
 	case topSelectChipFolder:
 		draw.String(270, 70, 0xffffff, "チップフォルダを編集し")
 		draw.String(270, 100, 0xffffff, "ます")

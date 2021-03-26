@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
 
 const (
@@ -24,7 +25,7 @@ var (
 	imgBack int32
 )
 
-func Init() error {
+func Init(plyr *player.Player) error {
 	menuState = stateTop
 	menuCount = 0
 
@@ -37,6 +38,11 @@ func Init() error {
 	if err := topInit(); err != nil {
 		return fmt.Errorf("Failed to init menu top: %w", err)
 	}
+
+	if err := folderInit(plyr); err != nil {
+		return fmt.Errorf("Failed to init menu folder: %w", err)
+	}
+
 	return nil
 }
 
@@ -49,6 +55,8 @@ func Process() {
 	switch menuState {
 	case stateTop:
 		topProcess()
+	case stateChipFolder:
+		folderProcess()
 	}
 }
 
@@ -58,6 +66,8 @@ func Draw() {
 	switch menuState {
 	case stateTop:
 		topDraw()
+	case stateChipFolder:
+		folderDraw()
 	}
 }
 
