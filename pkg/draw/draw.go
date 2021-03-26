@@ -11,7 +11,7 @@ type NumberOption struct {
 	Color        int // defualt is NumberColorWhite
 	Centered     bool
 	RightAligned bool
-	Length       int // Required if RightAligned is tru
+	Length       int // Required if RightAligned is true
 }
 
 const (
