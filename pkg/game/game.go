@@ -31,7 +31,7 @@ func Process() error {
 		// show opening page
 		// select "はじめから" or "つづきから"
 		playerInfo = player.New()
-		stateChange(stateMenu)
+		stateChange(stateBattle)
 		return nil
 	case stateMenu:
 		if count == 0 {
@@ -43,7 +43,7 @@ func Process() error {
 		menu.Process()
 	case stateBattle:
 		if count == 0 {
-			if err := battle.Init(playerInfo); err != nil {
+			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
 				return fmt.Errorf("Game process in state battle failed: %w", err)
 			}
 		}

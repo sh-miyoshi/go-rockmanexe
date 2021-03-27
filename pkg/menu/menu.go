@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
@@ -87,6 +88,18 @@ func Draw() {
 		goBattleDraw()
 	case stateRecord:
 		recordDraw()
+	}
+}
+
+func GetBattleEnemies() []enemy.EnemyParam {
+	// TODO
+	return []enemy.EnemyParam{
+		{
+			CharID: enemy.IDTarget,
+			PosX:   4,
+			PosY:   1,
+			HP:     1000,
+		},
 	}
 }
 

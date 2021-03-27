@@ -29,15 +29,18 @@ const (
 
 var (
 	battleCount = 0
-	battleState = stateChipSelect // debug
+	battleState = stateOpening // debug
 	playerInst  *battleplayer.BattlePlayer
+	enemyList   []enemy.EnemyParam
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
 )
 
 // Init ...
-func Init(plyr *player.Player) error {
+func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
+	enemyList = enemies
+
 	var err error
 	playerInst, err = battleplayer.New(plyr)
 	if err != nil {
@@ -51,10 +54,6 @@ func Init(plyr *player.Player) error {
 
 	if err := skill.Init(); err != nil {
 		return fmt.Errorf("Skill init failed: %w", err)
-	}
-
-	if err := enemy.Init(playerInst.ID); err != nil {
-		return fmt.Errorf("Enemy init failed: %w", err)
 	}
 
 	if err := effect.Init(); err != nil {
@@ -76,6 +75,13 @@ func End() {
 // Process ...
 func Process() error {
 	switch battleState {
+	case stateOpening:
+		// TODO if end
+		if err := enemy.Init(playerInst.ID, enemyList); err != nil {
+			return fmt.Errorf("Enemy init failed: %w", err)
+		}
+		stateChange(stateChipSelect)
+		return nil
 	case stateChipSelect:
 		if battleCount == 0 {
 			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
@@ -134,6 +140,7 @@ func Draw() {
 	anim.MgrDraw()
 
 	switch battleState {
+	case stateOpening:
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()

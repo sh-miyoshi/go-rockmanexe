@@ -9,7 +9,8 @@ import (
 
 // EnemyParam ...
 type EnemyParam struct {
-	ID       string
+	CharID   int
+	ObjectID string
 	PlayerID string
 	PosX     int
 	PosY     int
@@ -27,17 +28,12 @@ var (
 	enemies    = make(map[string]enemyObject)
 )
 
-func Init(playerID string) error {
-	// Decide enemies
-	// debug(set debug param)
-	e := getObject(idMetall, EnemyParam{
-		PlayerID: playerID,
-		PosX:     4,
-		PosY:     1,
-		HP:       1000,
-	})
-	id := anim.New(e)
-	enemies[id] = e
+func Init(playerID string, enemyList []EnemyParam) error {
+	for _, e := range enemyList {
+		obj := getObject(e.CharID, e)
+		objID := anim.New(obj)
+		enemies[objID] = obj
+	}
 
 	// Init enemy data
 	for id, e := range enemies {

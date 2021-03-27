@@ -21,8 +21,8 @@ type enemy struct {
 	pm EnemyParam
 }
 
-func (e *enemy) Init(ID string) error {
-	e.pm.ID = ID
+func (e *enemy) Init(objID string) error {
+	e.pm.ObjectID = objID
 
 	// Load Images
 	return nil
@@ -63,8 +63,8 @@ func (e *enemy) GetParam() anim.Param {
 */
 
 const (
-	idMetall int = iota
-	idTarget
+	IDMetall int = iota
+	IDTarget
 
 	idMax
 )
@@ -82,9 +82,9 @@ const (
 
 func getObject(id int, initParam EnemyParam) enemyObject {
 	switch id {
-	case idMetall:
+	case IDMetall:
 		return &enemyMetall{pm: initParam}
-	case idTarget:
+	case IDTarget:
 		return &enemyTarget{pm: initParam}
 	}
 	return nil
@@ -109,8 +109,8 @@ type enemyMetall struct {
 	atk       metallAtk
 }
 
-func (e *enemyMetall) Init(ID string) error {
-	e.pm.ID = ID
+func (e *enemyMetall) Init(objID string) error {
+	e.pm.ObjectID = objID
 	e.imgMove = make([]int32, 1)
 	fname := common.ImagePath + "battle/character/メットール_move.png"
 	e.imgMove[0] = dxlib.LoadGraph(fname)
@@ -161,7 +161,7 @@ func (e *enemyMetall) Process() (bool, error) {
 		if py == e.pm.PosY {
 			// Attack
 			e.atk.count = 0
-			e.atk.ownerID = e.pm.ID
+			e.atk.ownerID = e.pm.ObjectID
 			e.atkID = anim.New(&e.atk)
 		} else {
 			// Move
@@ -255,8 +255,8 @@ type enemyTarget struct {
 	image int32
 }
 
-func (e *enemyTarget) Init(ID string) error {
-	e.pm.ID = ID
+func (e *enemyTarget) Init(objID string) error {
+	e.pm.ObjectID = objID
 	fname := common.ImagePath + "battle/character/的.png"
 	e.image = dxlib.LoadGraph(fname)
 	if e.image == -1 {
