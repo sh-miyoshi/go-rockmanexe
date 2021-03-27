@@ -1,10 +1,16 @@
 package player
 
-import "github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
+import (
+	"bytes"
+	"strconv"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
+)
 
 const (
 	defaultHP        uint = 100
 	defaultShotPower uint = 1
+	separater             = "#"
 
 	// FolderSize ...
 	FolderSize = 10 // debug
@@ -18,20 +24,21 @@ type ChipInfo struct {
 
 // Player ...
 type Player struct {
-	HP         uint
-	HPMax      uint
-	ShotPower  uint
-	Zenny      uint
+	HP        uint
+	ShotPower uint
+	// Zenny      uint
 	ChipFolder [FolderSize]ChipInfo
+
+	WinNum  int
+	LoseNum int
+	// PlayTime
 }
 
 // New returns player data with default values
 func New() *Player {
 	return &Player{
 		HP:        defaultHP,
-		HPMax:     defaultHP,
 		ShotPower: defaultShotPower,
-		Zenny:     0,
 		ChipFolder: [FolderSize]ChipInfo{
 			{ID: chip.IDMiniBomb, Code: "l"},
 			{ID: chip.IDSword, Code: "a"},
@@ -44,7 +51,28 @@ func New() *Player {
 			{ID: chip.IDCannon, Code: "*"},
 			{ID: chip.IDCannon, Code: "*"},
 		},
+		WinNum:  0,
+		LoseNum: 0,
 	}
 }
 
 // TODO NewWithSaveData(fname string) (*Player, error)
+
+func (p *Player) Save(fname string, key []byte) error {
+	// TODO convert player info to string(or binary)
+	var buf bytes.Buffer
+	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
+	buf.WriteString(separater)
+	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))
+	buf.WriteString(separater)
+
+	/*
+		ChipFolder [FolderSize]ChipInfo
+
+		WinNum  int
+		LoseNum int
+	*/
+
+	// TODO encryption
+	return nil
+}

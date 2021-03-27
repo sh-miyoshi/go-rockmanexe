@@ -1,6 +1,7 @@
 package game
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle"
@@ -53,7 +54,7 @@ func Process() error {
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, battle.ErrLose) {
-				playerInfo.LoseENum++
+				playerInfo.LoseNum++
 				// TODO save
 				stateChange(stateMenu)
 				return nil

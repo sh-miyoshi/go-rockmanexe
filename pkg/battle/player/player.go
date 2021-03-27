@@ -86,7 +86,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	res := BattlePlayer{
 		ID:        uuid.New().String(),
 		HP:        plyr.HP,
-		HPMax:     plyr.HPMax,
+		HPMax:     plyr.HP, // TODO HPは引き継がない
 		PosX:      1,
 		PosY:      1,
 		ShotPower: plyr.ShotPower,
