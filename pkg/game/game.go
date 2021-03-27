@@ -47,6 +47,18 @@ func Process() error {
 			}
 		}
 		if err := battle.Process(); err != nil {
+			if errors.Is(err, battle.ErrWin) {
+				playerInfo.WinNum++
+				// TODO save
+				stateChange(stateMenu)
+				return nil
+			} else if errors.Is(err, battle.ErrLose) {
+				playerInfo.LoseENum++
+				// TODO save
+				stateChange(stateMenu)
+				return nil
+			}
+
 			return fmt.Errorf("Battle process failed: % w", err)
 		}
 	}

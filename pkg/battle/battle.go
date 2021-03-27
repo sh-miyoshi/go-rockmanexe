@@ -31,6 +31,9 @@ var (
 	battleCount = 0
 	battleState = stateChipSelect // debug
 	playerInst  *battleplayer.BattlePlayer
+
+	ErrWin  = errors.New("player win")
+	ErrLose = errors.New("playser lose")
 )
 
 // Init ...
@@ -108,11 +111,11 @@ func Process() error {
 			playerInst.NextAction = battleplayer.NextActNone
 			return nil
 		case battleplayer.MextActLose:
-			// TODO return lose
+			return ErrLose
 		}
 		if err := enemy.MgrProcess(); err != nil {
 			if errors.Is(err, enemy.ErrGameEnd) {
-				// TODO return win
+				return ErrWin
 			}
 			return fmt.Errorf("Failed to process enemy: %w", err)
 		}
