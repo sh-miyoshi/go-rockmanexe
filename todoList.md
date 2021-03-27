@@ -1,5 +1,25 @@
 # TODO List
 
+## 初回リリースまでにやること
+
+- 全体の状態遷移
+- セーブ
+  - 勝利・敗北回数？
+- BGM
+  - SE
+- Battle State Opening
+  - 敵登場シーン
+- Battle State Main
+  - のけぞり処理
+  - 無敵処理
+  - sort anim by type
+- 勝利・敗北
+- 敵追加
+  - ビリー？
+- チップ追加
+  - リカバリー
+  - もう一つ何か(ブーメラン、エアホッケー、サンダーボール、ワイドショット)
+
 ## 機能一覧
 
 - タイトル
@@ -14,6 +34,7 @@
   - 敵登場
   - チップ選択
   - ソウルユニゾン
+  - PA
   - 戦闘開始
   - 戦闘
   - 結果
@@ -45,7 +66,6 @@
   - decide enemies
   - show enemies
   - force state change to chip select
-- stateBeforeMain
 - stateMain
   - player action
     - damaged
@@ -60,6 +80,17 @@
 - stateResult
   - lose
   - win
+
+### メニュー
+
+- Top
+  - 左下にアニメーション
+- Chip Folder
+  - Chip Folder ListのCodeのフォント
+  - フォルダ編集
+  - チップの説明文
+- Go Battle
+- Record
 
 ### その他の状態
 
