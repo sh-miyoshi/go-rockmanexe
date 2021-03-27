@@ -2,6 +2,8 @@ package player
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"strconv"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
@@ -59,20 +61,27 @@ func New() *Player {
 // TODO NewWithSaveData(fname string) (*Player, error)
 
 func (p *Player) Save(fname string, key []byte) error {
-	// TODO convert player info to string(or binary)
+	// Convert player info to string
 	var buf bytes.Buffer
 	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))
 	buf.WriteString(separater)
+	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
+	buf.WriteString(separater)
+	buf.WriteString(strconv.FormatInt(int64(p.LoseNum), 10))
+	buf.WriteString(separater)
+	for _, c := range p.ChipFolder {
+		buf.WriteString(fmt.Sprintf("%d%s#", c.ID, c.Code))
+	}
 
-	/*
-		ChipFolder [FolderSize]ChipInfo
+	var dst []byte
 
-		WinNum  int
-		LoseNum int
-	*/
+	if key == nil {
+		dst = buf.Bytes()
+	} else {
+		// TODO Encryption
+	}
 
-	// TODO encryption
-	return nil
+	return ioutil.WriteFile(fname, dst, 0644)
 }
