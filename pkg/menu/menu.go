@@ -43,12 +43,23 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("Failed to init menu folder: %w", err)
 	}
 
+	if err := goBattleInit(); err != nil {
+		return fmt.Errorf("Failed to init menu go battle: %w", err)
+	}
+
+	if err := recordInit(); err != nil {
+		return fmt.Errorf("Failed to init menu record: %w", err)
+	}
+
 	return nil
 }
 
 func End() {
 	dxlib.DeleteGraph(imgBack)
 	topEnd()
+	folderEnd()
+	goBattleEnd()
+	recordEnd()
 }
 
 func Process() {
@@ -57,6 +68,10 @@ func Process() {
 		topProcess()
 	case stateChipFolder:
 		folderProcess()
+	case stateGoBattle:
+		goBattleProcess()
+	case stateRecord:
+		recordProcess()
 	}
 }
 
@@ -68,6 +83,10 @@ func Draw() {
 		topDraw()
 	case stateChipFolder:
 		folderDraw()
+	case stateGoBattle:
+		goBattleDraw()
+	case stateRecord:
+		recordDraw()
 	}
 }
 

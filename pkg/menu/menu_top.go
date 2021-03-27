@@ -30,8 +30,11 @@ func topProcess() {
 		switch topPointer {
 		case topSelectChipFolder:
 			stateChange(stateChipFolder)
+		case topSelectGoBattle:
+			stateChange(stateGoBattle)
+		case topSelectRecord:
+			stateChange(stateRecord)
 		}
-		// TODO stateChange()
 	} else {
 		if inputs.CheckKey(inputs.KeyUp) == 1 {
 			if topPointer > 0 {
