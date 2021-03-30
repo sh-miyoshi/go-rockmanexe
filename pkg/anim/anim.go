@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	TypeObject int = iota
-	TypeEffect
+	TypeEffect int = iota
+	TypeObject
 )
 
 type Param struct {

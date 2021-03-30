@@ -2,7 +2,7 @@
 
 ## バグ
 
-- ミニボムとキャノンがplayer animとあってない
+- ミニボムがplayer animとあってない
 - メットールが一体ずつ攻撃するようにする
 
 ## 初回リリースまでにやること
@@ -12,8 +12,6 @@
   - 勝利・敗北回数？
 - BGM
   - SE
-- Battle State Opening
-  - 敵登場シーン
 - Battle State Main
   - のけぞり処理
   - 無敵処理

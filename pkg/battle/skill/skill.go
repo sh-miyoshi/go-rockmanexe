@@ -44,7 +44,7 @@ const (
 
 const (
 	delayCannonAtk  = 2
-	delayCannonBody = 5
+	delayCannonBody = 6
 	delaySword      = 3
 	delayMiniBomb   = 4
 	delayShockWave  = 5
