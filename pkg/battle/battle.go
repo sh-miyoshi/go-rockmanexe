@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -76,12 +77,20 @@ func End() {
 func Process() error {
 	switch battleState {
 	case stateOpening:
-		// TODO if end
-		if err := enemy.Init(playerInst.ID, enemyList); err != nil {
-			return fmt.Errorf("Enemy init failed: %w", err)
+		if battleCount == 0 {
+			if err := opening.Init(enemyList); err != nil {
+				return fmt.Errorf("Opening init failed: %w", err)
+			}
 		}
-		stateChange(stateChipSelect)
-		return nil
+
+		if opening.Process() {
+			opening.End()
+			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
+				return fmt.Errorf("Enemy init failed: %w", err)
+			}
+			stateChange(stateChipSelect)
+			return nil
+		}
 	case stateChipSelect:
 		if battleCount == 0 {
 			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
@@ -141,6 +150,7 @@ func Draw() {
 
 	switch battleState {
 	case stateOpening:
+		opening.Draw()
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()

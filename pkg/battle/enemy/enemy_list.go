@@ -90,6 +90,18 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	return nil
 }
 
+func GetStandImageFile(id int) (name, ext string) {
+	ext = ".png"
+
+	switch id {
+	case IDMetall:
+		name = common.ImagePath + "battle/character/メットール"
+	case IDTarget:
+		name = common.ImagePath + "battle/character/的"
+	}
+	return
+}
+
 //-----------------------------------
 // Metall
 //-----------------------------------
@@ -110,15 +122,17 @@ type enemyMetall struct {
 }
 
 func (e *enemyMetall) Init(objID string) error {
+	name, ext := GetStandImageFile(IDMetall)
+
 	e.pm.ObjectID = objID
 	e.imgMove = make([]int32, 1)
-	fname := common.ImagePath + "battle/character/メットール_move.png"
+	fname := name + "_move" + ext
 	e.imgMove[0] = dxlib.LoadGraph(fname)
 	if e.imgMove[0] == -1 {
 		return fmt.Errorf("Failed to load image: %s", fname)
 	}
 	e.atk.images = make([]int32, 15)
-	fname = common.ImagePath + "battle/character/メットール_atk.png"
+	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 15, 15, 1, 100, 140, e.atk.images); res == -1 {
 		return fmt.Errorf("Failed to load image: %s", fname)
 	}
@@ -257,7 +271,8 @@ type enemyTarget struct {
 
 func (e *enemyTarget) Init(objID string) error {
 	e.pm.ObjectID = objID
-	fname := common.ImagePath + "battle/character/的.png"
+	name, ext := GetStandImageFile(IDTarget)
+	fname := name + ext
 	e.image = dxlib.LoadGraph(fname)
 	if e.image == -1 {
 		return fmt.Errorf("Failed to load enemy image %s", fname)
