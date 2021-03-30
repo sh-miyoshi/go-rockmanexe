@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -27,7 +28,8 @@ type Anim interface {
 }
 
 var (
-	anims = map[string]Anim{}
+	anims         = map[string]Anim{}
+	sortedAnimIDs = []string{}
 )
 
 // MgrProcess ...
@@ -40,9 +42,15 @@ func MgrProcess() error {
 
 		if end {
 			delete(anims, id)
+			for i, sid := range sortedAnimIDs {
+				if sid == id {
+					sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
+				}
+			}
 		}
 	}
 
+	// Damage Process
 	for _, anim := range anims {
 		pm := anim.GetParam()
 		if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
@@ -57,15 +65,42 @@ func MgrProcess() error {
 
 // MgrDraw ...
 func MgrDraw() {
-	for _, anim := range anims {
-		anim.Draw()
+	for _, id := range sortedAnimIDs {
+		anims[id].Draw()
 	}
 }
 
 // New ...
 func New(anim Anim) string {
 	id := uuid.New().String()
+	pm := anim.GetParam()
+	index := pm.AnimType*100 + pm.PosY*6 + pm.PosX
+
+	if len(sortedAnimIDs) == 0 {
+		sortedAnimIDs = append(sortedAnimIDs, id)
+	} else {
+		set := false
+		for i, sid := range sortedAnimIDs {
+			pm := anims[sid].GetParam()
+			sindex := pm.AnimType*100 + pm.PosY*6 + pm.PosX
+			if index > sindex {
+				tmp := append([]string{}, sortedAnimIDs[i:]...)
+				sortedAnimIDs = append(sortedAnimIDs[:i], id)
+				sortedAnimIDs = append(sortedAnimIDs, tmp...)
+				set = true
+				break
+			}
+		}
+		if !set {
+			sortedAnimIDs = append(sortedAnimIDs, id)
+		}
+	}
+
 	anims[id] = anim
+
+	logger.Debug("added %s, sorted list: %v", id, sortedAnimIDs)
+	logger.Debug("anims: %v", anims)
+
 	return id
 }
 
