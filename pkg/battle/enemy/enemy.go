@@ -30,6 +30,7 @@ var (
 
 func Init(playerID string, enemyList []EnemyParam) error {
 	for _, e := range enemyList {
+		e.PlayerID = playerID
 		obj := getObject(e.CharID, e)
 		objID := anim.New(obj)
 		enemies[objID] = obj
