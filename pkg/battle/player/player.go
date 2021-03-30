@@ -334,7 +334,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 	if dm == nil {
 		return
 	}
-	if dm.TargetType|damage.TargetPlayer != 0 {
+	if dm.TargetType&damage.TargetPlayer != 0 {
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
 			p.HP = 0

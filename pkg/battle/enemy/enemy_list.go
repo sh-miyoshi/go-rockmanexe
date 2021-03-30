@@ -211,7 +211,7 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) {
 	if dm == nil {
 		return
 	}
-	if dm.TargetType|damage.TargetEnemy != 0 {
+	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
 	}
@@ -309,7 +309,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) {
 	if dm == nil {
 		return
 	}
-	if dm.TargetType|damage.TargetEnemy != 0 {
+	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
 	}
