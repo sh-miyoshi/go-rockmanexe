@@ -81,8 +81,8 @@ func New(anim Anim) string {
 	} else {
 		set := false
 		for i, sid := range sortedAnimIDs {
-			pm := anims[sid].GetParam()
-			sindex := pm.AnimType*100 + pm.PosY*6 + pm.PosX
+			spm := anims[sid].GetParam()
+			sindex := spm.AnimType*100 + spm.PosY*6 + spm.PosX
 			if index > sindex {
 				tmp := append([]string{}, sortedAnimIDs[i:]...)
 				sortedAnimIDs = append(sortedAnimIDs[:i], id)
@@ -98,9 +98,7 @@ func New(anim Anim) string {
 
 	anims[id] = anim
 
-	logger.Debug("added %s, sorted list: %v", id, sortedAnimIDs)
-	logger.Debug("anims: %v", anims)
-
+	logger.Debug("added anim %s with %+v", id, pm)
 	return id
 }
 
