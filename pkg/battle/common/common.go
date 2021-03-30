@@ -34,8 +34,12 @@ func MoveObject(x, y *int, direct int, objType int, isMove bool) bool {
 		nx++
 	}
 
+	pn := field.GetPanelInfo(nx, ny)
+	if pn.ObjectID != "" {
+		return false
+	}
 	// Check panel type
-	if objType != field.GetPanelInfo(nx, ny).Type {
+	if objType != pn.Type {
 		return false
 	}
 
