@@ -81,7 +81,7 @@ const (
 )
 
 var (
-	metallActor string
+	metallActQueue = []string{}
 )
 
 func getObject(id int, initParam EnemyParam) enemyObject {
@@ -142,6 +142,8 @@ func (e *enemyMetall) Init(objID string) error {
 		return fmt.Errorf("Failed to load image: %s", fname)
 	}
 
+	metallActQueue = append(metallActQueue, objID)
+
 	return nil
 }
 
@@ -154,18 +156,17 @@ func (e *enemyMetall) End() {
 
 func (e *enemyMetall) Process() (bool, error) {
 	if e.pm.HP <= 0 {
+		// TODO(Delete animation)
+
+		// Delete from act queue
+		for i, id := range metallActQueue {
+			if e.pm.ObjectID == id {
+				metallActQueue = append(metallActQueue[:i], metallActQueue[i+1:]...)
+				break
+			}
+		}
 		return true, nil
 	}
-
-	if metallActor == "" {
-		// current metall actor is me
-		metallActor = e.pm.ObjectID
-	} else if metallActor != e.pm.ObjectID {
-		// other metall is acting
-		return false, nil
-	}
-
-	e.count++
 
 	const waitCount = 1 * 60
 	const actionInterval = 1 * 60
@@ -174,10 +175,20 @@ func (e *enemyMetall) Process() (bool, error) {
 	if e.atkID != "" {
 		// Anim end
 		if !anim.IsProcessing(e.atkID) {
+			metallActQueue = metallActQueue[1:]
+			metallActQueue = append(metallActQueue, e.pm.ObjectID)
+
 			e.atkID = ""
 			e.count = waitCount + 1 // Skip initial wait
 		}
 	}
+
+	if metallActQueue[0] != e.pm.ObjectID {
+		// other metall is acting
+		return false, nil
+	}
+
+	e.count++
 
 	// Metall Actions
 	if e.count < waitCount {
