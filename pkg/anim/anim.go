@@ -2,15 +2,15 @@ package anim
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
-	TypeEffect int = iota
-	TypeObject
+	TypeObject int = iota
+	TypeEffect
 )
 
 type Param struct {
@@ -60,6 +60,8 @@ func MgrProcess() error {
 		}
 	}
 
+	sortAnim()
+
 	return nil
 }
 
@@ -73,32 +75,8 @@ func MgrDraw() {
 // New ...
 func New(anim Anim) string {
 	id := uuid.New().String()
-	pm := anim.GetParam()
-	index := pm.AnimType*100 + pm.PosY*6 + pm.PosX
-
-	if len(sortedAnimIDs) == 0 {
-		sortedAnimIDs = append(sortedAnimIDs, id)
-	} else {
-		set := false
-		for i, sid := range sortedAnimIDs {
-			spm := anims[sid].GetParam()
-			sindex := spm.AnimType*100 + spm.PosY*6 + spm.PosX
-			if index > sindex {
-				tmp := append([]string{}, sortedAnimIDs[i:]...)
-				sortedAnimIDs = append(sortedAnimIDs[:i], id)
-				sortedAnimIDs = append(sortedAnimIDs, tmp...)
-				set = true
-				break
-			}
-		}
-		if !set {
-			sortedAnimIDs = append(sortedAnimIDs, id)
-		}
-	}
-
 	anims[id] = anim
-
-	logger.Debug("added anim %s with %+v", id, pm)
+	sortAnim()
 	return id
 }
 
@@ -106,4 +84,28 @@ func New(anim Anim) string {
 func IsProcessing(id string) bool {
 	_, exists := anims[id]
 	return exists
+}
+
+func sortAnim() {
+	type sortParam struct {
+		Index int
+		ID    string
+	}
+	sortAnims := []sortParam{}
+	for id, anim := range anims {
+		pm := anim.GetParam()
+		sortAnims = append(sortAnims, sortParam{
+			ID:    id,
+			Index: pm.AnimType*100 + pm.PosY*6 + pm.PosX,
+		})
+	}
+
+	sort.Slice(sortAnims, func(i, j int) bool {
+		return sortAnims[i].Index < sortAnims[j].Index
+	})
+
+	sortedAnimIDs = []string{}
+	for _, a := range sortAnims {
+		sortedAnimIDs = append(sortedAnimIDs, a.ID)
+	}
 }
