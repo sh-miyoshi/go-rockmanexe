@@ -35,3 +35,8 @@
   type: 3
   code: "els"
   player_act: 4
+- name: "リカバリー10"
+  power: 10
+  type: 6
+  code: "al*"
+  player_act: -1

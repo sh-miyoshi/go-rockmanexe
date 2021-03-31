@@ -22,6 +22,7 @@ const (
 	SkillWideSword
 	SkillLongSword
 	SkillShockWave
+	SkillRecover
 
 	skillMax
 )
@@ -44,11 +45,12 @@ const (
 	delaySword      = 3
 	delayMiniBomb   = 4
 	delayShockWave  = 5
+	delayRecover    = 1
 )
 
 type Argument struct {
 	OwnerID    string
-	Power      int
+	Power      uint
 	TargetType int
 	TargetX    int
 	TargetY    int
@@ -60,12 +62,13 @@ var (
 	imgSword      [3][]int32
 	imgMiniBomb   []int32
 	imgShockWave  []int32
+	imgRecover    []int32
 )
 
 type cannon struct {
 	Type       int
 	OwnerID    string
-	Power      int
+	Power      uint
 	TargetType int
 
 	count int
@@ -74,7 +77,7 @@ type cannon struct {
 type sword struct {
 	Type       int
 	OwnerID    string
-	Power      int
+	Power      uint
 	TargetType int
 
 	count int
@@ -82,7 +85,7 @@ type sword struct {
 
 type miniBomb struct {
 	OwnerID    string
-	Power      int
+	Power      uint
 	TargetType int
 	TargetX    int
 	TargetY    int
@@ -97,11 +100,19 @@ type miniBomb struct {
 
 type shockWave struct {
 	OwnerID    string
-	Power      int
+	Power      uint
 	TargetType int
 
 	count int
 	x, y  int
+}
+
+type recover struct {
+	OwnerID    string
+	Power      uint
+	TargetType int
+
+	count int
 }
 
 func Init() error {
@@ -154,6 +165,14 @@ func Init() error {
 		imgShockWave = append(imgShockWave, tmp[i])
 	}
 
+	fname = path + "リカバリー.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 8; i++ {
+		imgRecover = append(imgRecover, tmp[i])
+	}
+
 	return nil
 }
 
@@ -200,6 +219,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillShockWave:
 		px, py := field.GetPos(arg.OwnerID)
 		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, x: px, y: py}
+	case SkillRecover:
+		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -222,6 +243,10 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillLongSword
 	case chip.IDMiniBomb:
 		id = SkillMiniBomb
+	case chip.IDRecover10:
+		id = SkillRecover
+	default:
+		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
 	return Get(id, arg)
 }
@@ -251,7 +276,7 @@ func (p *cannon) Process() (bool, error) {
 		px, py := field.GetPos(p.OwnerID)
 		dm := damage.Damage{
 			PosY:          py,
-			Power:         p.Power,
+			Power:         int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeCannonHit,
@@ -311,7 +336,7 @@ func (p *sword) Process() (bool, error) {
 
 	if p.count == 1*delaySword {
 		dm := damage.Damage{
-			Power:         p.Power,
+			Power:         int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeNone,
@@ -383,7 +408,7 @@ func (p *miniBomb) Process() (bool, error) {
 		damage.New(damage.Damage{
 			PosX:          p.TargetX,
 			PosY:          p.TargetY,
-			Power:         p.Power,
+			Power:         int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeNone,
@@ -418,7 +443,7 @@ func (p *shockWave) Process() (bool, error) {
 		damage.New(damage.Damage{
 			PosX:          p.x,
 			PosY:          p.y,
-			Power:         p.Power,
+			Power:         int(p.Power),
 			TTL:           n - 2,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeNone,
@@ -439,5 +464,34 @@ func (p *shockWave) DamageProc(dm *damage.Damage) {
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+	}
+}
+
+func (p *recover) Draw() {
+	n := (p.count / delayRecover) % len(imgRecover)
+	if n >= 0 {
+		px, py := field.GetPos(p.OwnerID)
+		x, y := battlecommon.ViewPos(px, py)
+		dxlib.DrawRotaGraph(x, y, 1, 0, imgRecover[n], dxlib.TRUE)
+	}
+}
+
+func (p *recover) Process() (bool, error) {
+	// TODO(damage proc)
+
+	p.count++
+
+	if p.count > len(imgRecover)*delayRecover {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *recover) DamageProc(dm *damage.Damage) {
+}
+
+func (p *recover) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
 	}
 }

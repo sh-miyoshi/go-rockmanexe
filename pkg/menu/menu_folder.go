@@ -2,7 +2,6 @@ package menu
 
 import (
 	"fmt"
-	"math"
 	"strings"
 
 	"github.com/sh-miyoshi/dxlib"
@@ -107,8 +106,8 @@ func folderDraw() {
 	dxlib.DrawGraph(58, 65, info.Image, dxlib.TRUE)
 	draw.ChipCode(50, 165, c.Code, 100)
 	dxlib.DrawGraph(85, 165, chip.GetTypeImage(info.Type), dxlib.TRUE)
-	if info.Power != 0 {
-		draw.Number(115, 165, int32(math.Abs(float64(info.Power))), draw.NumberOption{
+	if info.Power > 0 {
+		draw.Number(115, 165, int32(info.Power), draw.NumberOption{
 			RightAligned: true,
 			Length:       4,
 		})

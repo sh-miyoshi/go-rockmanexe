@@ -30,6 +30,7 @@ const (
 	IDSword
 	IDWideSword
 	IDLongSword
+	IDRecover10
 
 	idMax
 )
@@ -132,6 +133,9 @@ func Init(fname string) error {
 	used = append(used, 55)
 	imgIcons[IDLongSword] = tmp[55]
 	imgMonoIcons[IDLongSword] = tmp2[55]
+	used = append(used, 108)
+	imgIcons[IDRecover10] = tmp[108]
+	imgMonoIcons[IDRecover10] = tmp2[108]
 
 	// Release unused images
 	for i := 0; i < 240; i++ {
