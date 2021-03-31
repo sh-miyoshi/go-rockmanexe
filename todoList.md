@@ -3,13 +3,10 @@
 ## バグ
 
 - ミニボムがplayer animとあってない
-- メットールが一体ずつ攻撃するようにする
 
 ## 初回リリースまでにやること
 
 - 全体の状態遷移
-- セーブ
-  - 勝利・敗北回数？
 - BGM
   - SE
 - Battle State Main
@@ -19,7 +16,6 @@
 - 敵追加
   - ビリー？
 - チップ追加
-  - リカバリー
   - もう一つ何か(ブーメラン、エアホッケー、サンダーボール、ワイドショット)
 
 ## 機能一覧
@@ -66,8 +62,6 @@
 
 - stateOpening
   - decide enemies
-  - show enemies
-  - force state change to chip select
 - stateMain
   - player action
     - damaged
@@ -78,7 +72,6 @@
     - ダメージ情報にのけぞるかのフラグ
     - 敵名表示
     - ヒット後貫通しない攻撃ならスキルを止める
-    - sort anim by type
 - stateResult
   - lose
   - win
@@ -93,25 +86,8 @@
   - チップの説明文
 - Go Battle
 - Record
+- (Settings)
 
 ### その他の状態
 
 - すべて
-
-## チップ情報
-
-### 優先的実装予定
-
-- リカバリー10
-
-### 後回し
-
-- クラックアウト
-- エリアスチール
-- アタック+10
-
-### 悩み中
-
-- エアシュート
-- バルカン1
-- ・・・
