@@ -71,7 +71,7 @@ const (
 
 var (
 	imgPlayers    [playerAnimMax][]int32
-	imgDelays     = [playerAnimMax]int{1, 1, 1, 6, 3, 4} // TODO: set correct value
+	imgDelays     = [playerAnimMax]int{1, 2, 1, 6, 3, 4}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -349,6 +349,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 			p.HP = uint(hp)
 		}
 		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY))
+		if dm.Power > 0 {
+			p.act.SetAnim(playerAnimDamage)
+		}
 		// TODO player anim, 無敵処理など
 		logger.Debug("Player damaged: %+v", *dm)
 	}
@@ -409,7 +412,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true)
 		}
-	case playerAnimCannon, playerAnimSword, playerAnimBomb:
+	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage:
 		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
