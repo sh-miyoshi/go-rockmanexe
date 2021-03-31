@@ -463,7 +463,7 @@ func (p *shockWave) DamageProc(dm *damage.Damage) {
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeEffect,
 	}
 }
 
