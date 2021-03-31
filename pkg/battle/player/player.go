@@ -98,6 +98,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
 	}
+	// TODO: srand
 	// Shuffle
 	for i := 0; i < 10; i++ {
 		for j := 0; j < len(res.ChipFolder); j++ {
@@ -306,9 +307,9 @@ func (p *BattlePlayer) Process() (bool, error) {
 			if c.PlayerAct != -1 {
 				p.act.SetAnim(c.PlayerAct)
 			}
-			anim.New(skill.Get(c.ID, skill.Argument{
+			anim.New(skill.GetByChip(c.ID, skill.Argument{
 				OwnerID:    p.ID,
-				Power:      int(c.Power),
+				Power:      c.Power,
 				TargetType: damage.TargetEnemy,
 			}))
 

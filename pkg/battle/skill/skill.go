@@ -9,12 +9,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 )
 
 const (
-	// Chip Base Skills
-
 	SkillCannon int = iota
 	SkillHighCannon
 	SkillMegaCannon
@@ -22,9 +21,6 @@ const (
 	SkillSword
 	SkillWideSword
 	SkillLongSword
-
-	// Char Skills
-
 	SkillShockWave
 
 	skillMax
@@ -207,6 +203,27 @@ func Get(skillID int, arg Argument) anim.Anim {
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
+}
+
+func GetByChip(chipID int, arg Argument) anim.Anim {
+	id := -1
+	switch chipID {
+	case chip.IDCannon:
+		id = SkillCannon
+	case chip.IDHighCannon:
+		id = SkillHighCannon
+	case chip.IDMegaCannon:
+		id = SkillMegaCannon
+	case chip.IDSword:
+		id = SkillSword
+	case chip.IDWideSword:
+		id = SkillWideSword
+	case chip.IDLongSword:
+		id = SkillLongSword
+	case chip.IDMiniBomb:
+		id = SkillMiniBomb
+	}
+	return Get(id, arg)
 }
 
 func (p *cannon) Draw() {
