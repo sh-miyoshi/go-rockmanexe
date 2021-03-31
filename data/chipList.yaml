@@ -40,3 +40,4 @@
   type: 6
   code: "al*"
   player_act: -1
+  for_me: true

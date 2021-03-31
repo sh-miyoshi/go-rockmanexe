@@ -477,7 +477,17 @@ func (p *recover) Draw() {
 }
 
 func (p *recover) Process() (bool, error) {
-	// TODO(damage proc)
+	if p.count == 0 {
+		px, py := field.GetPos(p.OwnerID)
+		damage.New(damage.Damage{
+			PosX:          px,
+			PosY:          py,
+			Power:         -int(p.Power),
+			TTL:           1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+		})
+	}
 
 	p.count++
 

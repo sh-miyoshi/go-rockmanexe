@@ -18,6 +18,7 @@ type Chip struct {
 	Type      int    `yaml:"type"`
 	Code      string `yaml:"code"`
 	PlayerAct int    `yaml:"player_act"`
+	ForMe     bool   `yaml:"for_me"`
 
 	Image int32
 }

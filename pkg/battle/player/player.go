@@ -2,7 +2,6 @@ package player
 
 import (
 	"fmt"
-	"math/rand"
 	"sort"
 
 	"github.com/google/uuid"
@@ -100,12 +99,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 	// TODO: srand
 	// Shuffle
-	for i := 0; i < 10; i++ {
-		for j := 0; j < len(res.ChipFolder); j++ {
-			n := rand.Intn(len(res.ChipFolder))
-			res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
-		}
-	}
+	// for i := 0; i < 10; i++ {
+	// 	for j := 0; j < len(res.ChipFolder); j++ {
+	// 		n := rand.Intn(len(res.ChipFolder))
+	// 		res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
+	// 	}
+	// }
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -307,10 +306,15 @@ func (p *BattlePlayer) Process() (bool, error) {
 			if c.PlayerAct != -1 {
 				p.act.SetAnim(c.PlayerAct)
 			}
+			target := damage.TargetEnemy
+			if c.ForMe {
+				target = damage.TargetPlayer
+			}
+
 			anim.New(skill.GetByChip(c.ID, skill.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power,
-				TargetType: damage.TargetEnemy,
+				TargetType: target,
 			}))
 
 			p.SelectedChips = p.SelectedChips[1:]
