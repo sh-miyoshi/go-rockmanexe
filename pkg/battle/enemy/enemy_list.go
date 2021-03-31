@@ -80,6 +80,10 @@ const (
 	delayMetallAtk = 3
 )
 
+var (
+	metallActor string
+)
+
 func getObject(id int, initParam EnemyParam) enemyObject {
 	switch id {
 	case IDMetall:
@@ -113,12 +117,13 @@ type metallAtk struct {
 }
 
 type enemyMetall struct {
-	pm        EnemyParam
-	imgMove   []int32
-	count     int
-	moveCount int
-	atkID     string
-	atk       metallAtk
+	pm              EnemyParam
+	imgMove         []int32
+	count           int
+	moveCount       int
+	moveFailedCount int
+	atkID           string
+	atk             metallAtk
 }
 
 func (e *enemyMetall) Init(objID string) error {
@@ -148,14 +153,23 @@ func (e *enemyMetall) End() {
 }
 
 func (e *enemyMetall) Process() (bool, error) {
-	e.count++
-
 	if e.pm.HP <= 0 {
 		return true, nil
 	}
 
+	if metallActor == "" {
+		// current metall actor is me
+		metallActor = e.pm.ObjectID
+	} else if metallActor != e.pm.ObjectID {
+		// other metall is acting
+		return false, nil
+	}
+
+	e.count++
+
 	const waitCount = 1 * 60
 	const actionInterval = 1 * 60
+	const forceAttackCount = 3
 
 	if e.atkID != "" {
 		// Anim end
@@ -172,17 +186,24 @@ func (e *enemyMetall) Process() (bool, error) {
 
 	if e.count%actionInterval == 0 {
 		_, py := field.GetPos(e.pm.PlayerID)
-		if py == e.pm.PosY {
+		if py == e.pm.PosY || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
 			e.atkID = anim.New(&e.atk)
+			e.moveFailedCount = 0
 		} else {
 			// Move
+			moved := false
 			if py > e.pm.PosY {
-				battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true)
+				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true)
 			} else {
-				battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true)
+				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true)
+			}
+			if moved {
+				e.moveFailedCount = 0
+			} else {
+				e.moveFailedCount++
 			}
 		}
 	}
@@ -200,7 +221,7 @@ func (e *enemyMetall) Draw() {
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+field.PanelSizeY-10, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(x, y-20, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -298,7 +319,7 @@ func (e *enemyTarget) Draw() {
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+field.PanelSizeY-10, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(x, y-55, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
