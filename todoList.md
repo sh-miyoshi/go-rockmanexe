@@ -9,9 +9,6 @@
 - 全体の状態遷移
 - BGM
   - SE
-- Battle State Main
-  - のけぞり処理
-  - 無敵処理
 - 勝利・敗北
 - 敵追加
   - ビリー？
@@ -63,13 +60,10 @@
 - stateOpening
   - decide enemies
 - stateMain
-  - player action
-    - damaged
-      - Animationや無敵処理など
-    - image delay
   - その他
     - チップ情報を左下に表示
     - ダメージ情報にのけぞるかのフラグ
+      - のけぞらない処理の追加
     - 敵名表示
     - ヒット後貫通しない攻撃ならスキルを止める
 - stateResult
