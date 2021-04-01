@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/title"
 )
 
 const (
@@ -27,19 +28,31 @@ var (
 func Process() error {
 	switch state {
 	case stateTitle:
-		// TODO
-		// show opening page
-		// select "はじめから" or "つづきから"
-		playerInfo = player.New()
-		stateChange(stateBattle)
-		return nil
+		if count == 0 {
+			if err := title.Init(); err != nil {
+				return fmt.Errorf("Game process in state title failed: %w", err)
+			}
+		}
+		if err := title.Process(); err != nil {
+			if errors.Is(err, title.ErrStartInit) {
+				playerInfo = player.New()
+			} else if errors.Is(err, title.ErrStartContinue) {
+				// TODO implement
+				return fmt.Errorf("Start with continue is not implemented yet")
+			} else {
+				return fmt.Errorf("Failed to process title: %w", err)
+			}
+			title.End()
+			stateChange(stateBattle) // debug
+			return nil
+		}
 	case stateMenu:
 		if count == 0 {
 			if err := menu.Init(playerInfo); err != nil {
 				return fmt.Errorf("Game process in state menu failed: %w", err)
 			}
 		}
-		// TODO error handling
+		// TODO error handling, End()
 		menu.Process()
 	case stateBattle:
 		if count == 0 {
@@ -48,6 +61,7 @@ func Process() error {
 			}
 		}
 		if err := battle.Process(); err != nil {
+			// TODO battle.End()
 			if errors.Is(err, battle.ErrWin) {
 				playerInfo.WinNum++
 				// TODO save
@@ -75,6 +89,8 @@ func Draw() {
 	}
 
 	switch state {
+	case stateTitle:
+		title.Draw()
 	case stateMenu:
 		menu.Draw()
 	case stateBattle:

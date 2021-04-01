@@ -5,6 +5,8 @@ const (
 	ScreenX = 480
 	// ScreenY is y size of screen
 	ScreenY = 320
+	// SaveFilePath ...
+	SaveFilePath = "data/save.dat"
 )
 
 const (
