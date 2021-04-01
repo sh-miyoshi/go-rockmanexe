@@ -61,12 +61,14 @@ type BattlePlayer struct {
 	SelectedChips []player.ChipInfo
 	NextAction    int
 
-	act act
+	act             act
+	invincibleCount int
 }
 
 const (
-	gaugeMaxCount = 1200
-	chargeTime    = 180 // TODO 変数化
+	gaugeMaxCount  = 1200
+	chargeTime     = 180 // TODO 変数化
+	invincibleTime = 120
 )
 
 var (
@@ -200,6 +202,10 @@ func (p *BattlePlayer) End() {
 
 // Draw ...
 func (p *BattlePlayer) Draw() {
+	if p.invincibleCount/5%2 != 0 {
+		return
+	}
+
 	x, y := battlecommon.ViewPos(p.PosX, p.PosY)
 	img := p.act.GetImage()
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
@@ -261,9 +267,16 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
+	if p.invincibleCount > 0 {
+		p.invincibleCount++
+		if p.invincibleCount > invincibleTime {
+			p.invincibleCount = 0
+		}
+	}
+
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
-	// TODO damage process
+	// TODO delete process
 	// TODO return true, nil and set NextActLose if dead
 
 	if p.act.Process() {
@@ -339,6 +352,11 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 	if dm == nil {
 		return
 	}
+
+	if p.invincibleCount > 0 {
+		return
+	}
+
 	if dm.TargetType&damage.TargetPlayer != 0 {
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
@@ -352,7 +370,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 		if dm.Power > 0 {
 			p.act.SetAnim(playerAnimDamage)
 		}
-		// TODO player anim, 無敵処理など
+		p.invincibleCount = 1
 		logger.Debug("Player damaged: %+v", *dm)
 	}
 }
