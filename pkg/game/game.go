@@ -43,17 +43,23 @@ func Process() error {
 				return fmt.Errorf("Failed to process title: %w", err)
 			}
 			title.End()
-			stateChange(stateBattle) // debug
+			stateChange(stateMenu) // debug
 			return nil
 		}
 	case stateMenu:
 		if count == 0 {
 			if err := menu.Init(playerInfo); err != nil {
-				return fmt.Errorf("Game process in state menu failed: %w", err)
+				return fmt.Errorf("Game process in state menu init failed: %w", err)
 			}
 		}
-		// TODO error handling, End()
-		menu.Process()
+		if err := menu.Process(); err != nil {
+			menu.End()
+			if errors.Is(err, menu.ErrGoBattle) {
+				stateChange(stateBattle)
+				return nil
+			}
+			return fmt.Errorf("Game process in state menu failed: %w", err)
+		}
 	case stateBattle:
 		if count == 0 {
 			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {

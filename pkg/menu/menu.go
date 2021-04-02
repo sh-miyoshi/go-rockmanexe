@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
@@ -22,8 +23,9 @@ const (
 var (
 	menuState int
 	menuCount int
+	imgBack   int32
 
-	imgBack int32
+	ErrGoBattle = errors.New("go to battle")
 )
 
 func Init(plyr *player.Player) error {
@@ -63,7 +65,7 @@ func End() {
 	recordEnd()
 }
 
-func Process() {
+func Process() error {
 	switch menuState {
 	case stateTop:
 		topProcess()
@@ -71,11 +73,13 @@ func Process() {
 		folderProcess()
 	case stateGoBattle:
 		if goBattleProcess() {
-			// TODO go to battle
+			return ErrGoBattle
 		}
 	case stateRecord:
 		recordProcess()
 	}
+
+	return nil
 }
 
 func Draw() {
