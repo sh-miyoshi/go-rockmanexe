@@ -88,6 +88,11 @@ func IsProcessing(id string) bool {
 	return exists
 }
 
+func Cleanup() {
+	anims = map[string]Anim{}
+	sortedAnimIDs = []string{}
+}
+
 func sortAnim() {
 	type sortParam struct {
 		Index int

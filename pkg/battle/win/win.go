@@ -34,6 +34,7 @@ var (
 func Init(gameTime int) error {
 	state = stateMsg
 	deleteTime = gameTime
+	count = 0
 
 	fname := common.ImagePath + "battle/result_frame.png"
 	imgFrame = dxlib.LoadGraph(fname)
@@ -62,6 +63,7 @@ func End() {
 	for _, img := range imgMsg {
 		dxlib.DeleteGraph(img)
 	}
+	imgMsg = []int32{}
 }
 
 func Process() bool {
@@ -88,6 +90,11 @@ func Process() bool {
 }
 
 func Draw() {
+	if len(imgMsg) == 0 {
+		// Waiting initialize
+		return
+	}
+
 	switch state {
 	case stateMsg:
 		drawMsg()
@@ -107,18 +114,13 @@ func Draw() {
 func stateChange(nextState int) {
 	logger.Info("Change battle result win state from %d to %d", state, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		panic(fmt.Sprintf("Invalid next battle result win state: %d", nextState))
 	}
 	state = nextState
 	count = 0
 }
 
 func drawMsg() {
-	if len(imgMsg) == 0 {
-		// Waiting initialize
-		return
-	}
-
 	imgNo := count / msgDelay
 	if imgNo >= len(imgMsg) {
 		imgNo = len(imgMsg) - 1

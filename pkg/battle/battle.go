@@ -71,11 +71,13 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 
 // End ...
 func End() {
+	anim.Cleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
 	enemy.End()
 	effect.End()
+	win.End()
 }
 
 // Process ...
