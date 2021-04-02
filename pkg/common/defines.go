@@ -23,4 +23,6 @@ const (
 var (
 	// ImagePath ...
 	ImagePath = "data/images/"
+
+	ProgramVersion = "development"
 )

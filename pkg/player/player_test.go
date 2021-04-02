@@ -15,7 +15,7 @@ func TestSave(t *testing.T) {
 		WinNum:  3,
 		LoseNum: 4,
 	}
-	expect := "1#2#3#4#"
+	expect := "development#1#2#3#4#"
 	for i := 0; i < FolderSize; i++ {
 		expect += "0#"
 	}

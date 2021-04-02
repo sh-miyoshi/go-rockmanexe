@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 )
 
 const (
@@ -99,6 +100,8 @@ func New() *Player {
 func (p *Player) Save(fname string, key []byte) error {
 	// Convert player info to string
 	var buf bytes.Buffer
+	buf.WriteString(common.ProgramVersion)
+	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))

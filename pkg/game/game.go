@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/title"
@@ -43,7 +44,7 @@ func Process() error {
 				return fmt.Errorf("Failed to process title: %w", err)
 			}
 			title.End()
-			stateChange(stateMenu) // debug
+			stateChange(stateBattle) // debug
 			return nil
 		}
 	case stateMenu:
@@ -67,15 +68,15 @@ func Process() error {
 			}
 		}
 		if err := battle.Process(); err != nil {
-			// TODO battle.End()
+			battle.End()
 			if errors.Is(err, battle.ErrWin) {
 				playerInfo.WinNum++
-				// TODO save
+				playerInfo.Save(common.SaveFilePath, nil) // TODO encryption
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, battle.ErrLose) {
 				playerInfo.LoseNum++
-				// TODO save
+				playerInfo.Save(common.SaveFilePath, nil) // TODO encryption
 				stateChange(stateMenu)
 				return nil
 			}
