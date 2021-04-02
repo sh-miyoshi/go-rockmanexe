@@ -70,7 +70,9 @@ func Process() {
 	case stateChipFolder:
 		folderProcess()
 	case stateGoBattle:
-		goBattleProcess()
+		if goBattleProcess() {
+			// TODO go to battle
+		}
 	case stateRecord:
 		recordProcess()
 	}
@@ -92,7 +94,7 @@ func Draw() {
 }
 
 func GetBattleEnemies() []enemy.EnemyParam {
-	// TODO
+	// TODO return battleEnemies()
 	return []enemy.EnemyParam{
 		{
 			CharID: enemy.IDTarget,
