@@ -3,6 +3,7 @@
 ## バグ
 
 - ミニボムがplayer animとあってない
+- リカバリーでインビジ状態になる
 
 ## マイルストーン
 
@@ -15,17 +16,16 @@
 - menu
   - Chip Folder
     - Chip Folder ListのCodeのフォント
-  - Go Battle
-  - Record
 - battle
   - 敵デリート時のアニメーション
 - チップ追加
-  - リカバリー30
   - バルカン1
   - スプレッドガン
 
 ### v1.1
 
+- menu
+  - Record
 - 勝利時にチップをゲット
 - フォルダ編集
 - 敵追加
