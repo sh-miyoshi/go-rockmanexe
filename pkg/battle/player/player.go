@@ -60,6 +60,7 @@ type BattlePlayer struct {
 	ChipFolder    []player.ChipInfo
 	SelectedChips []player.ChipInfo
 	NextAction    int
+	EnableAct     bool
 
 	act             act
 	invincibleCount int
@@ -91,6 +92,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		PosX:      1,
 		PosY:      1,
 		ShotPower: plyr.ShotPower,
+		EnableAct: true,
 	}
 	res.act.typ = -1
 	res.act.pPosX = &res.PosX
@@ -267,6 +269,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
+	if !p.EnableAct {
+		return false, nil
+	}
+
 	if p.invincibleCount > 0 {
 		p.invincibleCount++
 		if p.invincibleCount > invincibleTime {

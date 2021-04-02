@@ -319,6 +319,7 @@ func (e *enemyTarget) End() {
 
 func (e *enemyTarget) Process() (bool, error) {
 	if e.pm.HP <= 0 {
+		// TODO add delete effect(explode, char last image)
 		return true, nil
 	}
 	return false, nil

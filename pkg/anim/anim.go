@@ -33,7 +33,7 @@ var (
 )
 
 // MgrProcess ...
-func MgrProcess() error {
+func MgrProcess(enableDamage bool) error {
 	for id, anim := range anims {
 		end, err := anim.Process()
 		if err != nil {
@@ -51,12 +51,14 @@ func MgrProcess() error {
 	}
 
 	// Damage Process
-	for _, anim := range anims {
-		pm := anim.GetParam()
-		if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
-			anim.DamageProc(dm)
-			damage.Remove(dm.ID)
-			// TODO if !pm.Penetrate delete(anims, id)
+	if enableDamage {
+		for _, anim := range anims {
+			pm := anim.GetParam()
+			if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
+				anim.DamageProc(dm)
+				damage.Remove(dm.ID)
+				// TODO if !pm.Penetrate delete(anims, id)
+			}
 		}
 	}
 

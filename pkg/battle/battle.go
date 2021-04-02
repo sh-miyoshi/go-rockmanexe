@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/win"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
@@ -23,16 +24,17 @@ const (
 	stateChipSelect
 	stateBeforeMain
 	stateMain
-	stateResult
+	stateResultWin
 
 	stateMax
 )
 
 var (
-	battleCount = 0
-	battleState = stateOpening // debug
+	battleCount int
+	battleState int
 	playerInst  *battleplayer.BattlePlayer
 	enemyList   []enemy.EnemyParam
+	gameCount   int
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -41,6 +43,9 @@ var (
 // Init ...
 func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	enemyList = enemies
+	gameCount = 0
+	battleCount = 0
+	battleState = stateOpening
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -88,7 +93,7 @@ func Process() error {
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return fmt.Errorf("Enemy init failed: %w", err)
 			}
-			stateChange(stateChipSelect)
+			stateChange(stateMain) // debug
 			return nil
 		}
 	case stateChipSelect:
@@ -116,7 +121,8 @@ func Process() error {
 			return nil
 		}
 	case stateMain:
-		if err := anim.MgrProcess(); err != nil {
+		gameCount++
+		if err := anim.MgrProcess(true); err != nil {
 			return fmt.Errorf("Failed to handle animation: %w", err)
 		}
 
@@ -130,13 +136,29 @@ func Process() error {
 		}
 		if err := enemy.MgrProcess(); err != nil {
 			if errors.Is(err, enemy.ErrGameEnd) {
-				return ErrWin
+				playerInst.EnableAct = false
+				stateChange(stateResultWin)
+				return nil
 			}
 			return fmt.Errorf("Failed to process enemy: %w", err)
 		}
 		fieldUpdates()
 
 		damage.MgrProcess()
+	case stateResultWin:
+		if battleCount == 0 {
+			if err := win.Init(gameCount); err != nil {
+				return fmt.Errorf("Failed to initialize result win: %w", err)
+			}
+		}
+
+		if err := anim.MgrProcess(false); err != nil {
+			return fmt.Errorf("Failed to handle animation: %w", err)
+		}
+
+		if win.Process() {
+			return ErrWin
+		}
 	}
 
 	battleCount++
@@ -159,6 +181,9 @@ func Draw() {
 		b4main.Draw()
 	case stateMain:
 		playerInst.DrawFrame(false, true)
+	case stateResultWin:
+		playerInst.DrawFrame(false, true)
+		win.Draw()
 	}
 }
 
