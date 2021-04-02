@@ -94,7 +94,7 @@ func folderDraw() {
 		draw.String(250, y+5, 0xffffff, info.Name)
 		dxlib.DrawGraph(380, y, chip.GetTypeImage(info.Type), dxlib.TRUE)
 		// TODO font
-		draw.String(410, y+2, 0xffffff, strings.ToUpper(c.Code))
+		draw.String(412, y+5, 0xffffff, strings.ToUpper(c.Code))
 	}
 
 	// Show pointer
