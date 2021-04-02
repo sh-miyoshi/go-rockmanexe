@@ -3,7 +3,6 @@
 ## バグ
 
 - ミニボムがplayer animとあってない
-- リカバリーでインビジ状態になる
 
 ## マイルストーン
 
@@ -13,9 +12,6 @@
   - BGM
   - SE
 - セーブ・続きから
-- menu
-  - Chip Folder
-    - Chip Folder ListのCodeのフォント
 - battle
   - 敵デリート時のアニメーション
 - チップ追加
