@@ -3,41 +3,38 @@
 - name: "キャノン"
   power: 40
   type: 0
-  code: "abc*"
   player_act: 3
 - name: "ハイキャノン"
   power: 80
   type: 0
-  code: "cde"
   player_act: 3
 - name: "メガキャノン"
   power: 120
   type: 0
-  code: "efg"
   player_act: 3
 - name: "ミニボム"
   power: 50
   type: 0
-  code: "blt*"
   player_act: 5
 - name: "ソード"
   power: 80
   type: 3
-  code: "els*"
   player_act: 4
 - name: "ワイドソード"
   power: 80
   type: 3
-  code: "els"
   player_act: 4
 - name: "ロングソード"
   power: 80
   type: 3
-  code: "els"
   player_act: 4
 - name: "リカバリー10"
   power: 10
   type: 6
-  code: "al*"
+  player_act: -1
+  for_me: true
+- name: "リカバリー30"
+  power: 30
+  type: 6
   player_act: -1
   for_me: true

@@ -16,7 +16,6 @@ type Chip struct {
 	Name      string `yaml:"name"`
 	Power     uint   `yaml:"power"`
 	Type      int    `yaml:"type"`
-	Code      string `yaml:"code"`
 	PlayerAct int    `yaml:"player_act"`
 	ForMe     bool   `yaml:"for_me"`
 
@@ -32,6 +31,7 @@ const (
 	IDWideSword
 	IDLongSword
 	IDRecover10
+	IDRecover30
 
 	idMax
 )
@@ -137,6 +137,9 @@ func Init(fname string) error {
 	used = append(used, 108)
 	imgIcons[IDRecover10] = tmp[108]
 	imgMonoIcons[IDRecover10] = tmp2[108]
+	used = append(used, 109)
+	imgIcons[IDRecover30] = tmp[109]
+	imgMonoIcons[IDRecover30] = tmp2[109]
 
 	// Release unused images
 	for i := 0; i < 240; i++ {

@@ -42,6 +42,7 @@ func New() *Player {
 		HP:        defaultHP,
 		ShotPower: defaultShotPower,
 		ChipFolder: [FolderSize]ChipInfo{
+			{ID: chip.IDRecover30, Code: "*"},
 			{ID: chip.IDRecover10, Code: "*"},
 			{ID: chip.IDMiniBomb, Code: "l"},
 			{ID: chip.IDSword, Code: "a"},
@@ -51,7 +52,6 @@ func New() *Player {
 			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "c"},
 			{ID: chip.IDCannon, Code: "c"},
-			{ID: chip.IDCannon, Code: "*"},
 		},
 		WinNum:  0,
 		LoseNum: 0,

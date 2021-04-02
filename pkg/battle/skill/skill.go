@@ -245,6 +245,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillMiniBomb
 	case chip.IDRecover10:
 		id = SkillRecover
+	case chip.IDRecover30:
+		id = SkillRecover
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
