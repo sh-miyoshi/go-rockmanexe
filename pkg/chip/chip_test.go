@@ -56,6 +56,14 @@ func TestSelectable(t *testing.T) {
 			Target: SelectParam{Name: "name1", Code: "b"},
 			Expect: false,
 		},
+		{ // Case 6(Same name in list, and target is * code)
+			CurrentList: []SelectParam{
+				{Name: "name1", Code: "a"},
+				{Name: "name1", Code: "b"},
+			},
+			Target: SelectParam{Name: "name2", Code: "*"},
+			Expect: false,
+		},
 	}
 
 	for i, tc := range tt {

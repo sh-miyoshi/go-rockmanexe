@@ -166,8 +166,14 @@ func Selectable(target SelectParam, currentList []SelectParam) bool {
 		if c.Name != name {
 			name = "-"
 		}
-		if c.Code != code && code != "*" && c.Code != "*" {
-			code = "-"
+		if c.Code != code {
+			// If either c.Code or code is "*", set the other code
+			// Both of c.Code and code is not "*", set "-"
+			if code == "*" {
+				code = c.Code
+			} else if c.Code != "*" {
+				code = "-"
+			}
 		}
 	}
 
