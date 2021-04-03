@@ -38,6 +38,7 @@ const (
 )
 
 type act struct {
+	ID         string
 	MoveDirect int
 	Charged    bool
 	ShotPower  uint
@@ -337,7 +338,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 				target = damage.TargetPlayer
 			}
 
-			anim.New(skill.GetByChip(c.ID, skill.Argument{
+			p.act.ID = anim.New(skill.GetByChip(c.ID, skill.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power,
 				TargetType: target,
@@ -371,6 +372,12 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 	}
 
 	if dm.TargetType&damage.TargetPlayer != 0 {
+		// Stop current animation
+		if anim.IsProcessing(p.act.ID) {
+			anim.Delete(p.act.ID)
+			p.act.ID = ""
+		}
+
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
 			p.HP = 0

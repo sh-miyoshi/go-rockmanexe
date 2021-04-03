@@ -41,13 +41,7 @@ func MgrProcess(enableDamage bool) error {
 		}
 
 		if end {
-			delete(anims, id)
-			for i, sid := range sortedAnimIDs {
-				if sid == id {
-					sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
-					break
-				}
-			}
+			Delete(id)
 		}
 	}
 
@@ -99,6 +93,16 @@ func IsProcessing(id string) bool {
 func Cleanup() {
 	anims = map[string]Anim{}
 	sortedAnimIDs = []string{}
+}
+
+func Delete(id string) {
+	delete(anims, id)
+	for i, sid := range sortedAnimIDs {
+		if sid == id {
+			sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
+			break
+		}
+	}
 }
 
 func sortAnim() {
