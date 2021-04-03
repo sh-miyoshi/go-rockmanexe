@@ -27,6 +27,7 @@ const (
 	playerAnimCannon
 	playerAnimSword
 	playerAnimBomb
+	playerAnimBuster
 	playerAnimMax
 )
 
@@ -74,7 +75,7 @@ const (
 
 var (
 	imgPlayers    [playerAnimMax][]int32
-	imgDelays     = [playerAnimMax]int{1, 2, 1, 6, 3, 4}
+	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -149,6 +150,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[playerAnimBomb] = make([]int32, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb]); res == -1 {
 		return nil, fmt.Errorf("Failed to load player bomb image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_buster.png"
+	imgPlayers[playerAnimBuster] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimBuster]); res == -1 {
+		return nil, fmt.Errorf("Failed to load player buster image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
@@ -347,7 +354,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	} else if p.ChargeCount > 0 {
 		p.act.Charged = p.ChargeCount > chargeTime
 		p.act.ShotPower = p.ShotPower
-		p.act.SetAnim(playerAnimShot)
+		p.act.SetAnim(playerAnimBuster)
 		p.ChargeCount = 0
 	}
 
@@ -407,7 +414,7 @@ func (a *act) Process() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
-	case playerAnimShot:
+	case playerAnimBuster:
 		if a.count == 1 {
 			s := a.ShotPower
 			eff := effect.TypeHitSmall
@@ -436,7 +443,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true)
 		}
-	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage:
+	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage, playerAnimShot:
 		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
