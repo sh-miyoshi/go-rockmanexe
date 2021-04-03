@@ -22,6 +22,11 @@ type Chip struct {
 	Image int32
 }
 
+type SelectParam struct {
+	Name string
+	Code string
+}
+
 const (
 	// Must same as in chipList.yaml
 
@@ -152,4 +157,23 @@ func GetIcon(id int, colored bool) int32 {
 // GetTypeImage ...
 func GetTypeImage(typ int) int32 {
 	return imgTypes[typ]
+}
+
+func Selectable(target SelectParam, currentList []SelectParam) bool {
+	name := target.Name
+	code := target.Code
+	for _, c := range currentList {
+		if c.Name != name {
+			name = "-"
+		}
+		if c.Code != code && code != "*" && c.Code != "*" {
+			code = "-"
+		}
+	}
+
+	if name != "-" || code != "-" {
+		return true
+	}
+
+	return false
 }

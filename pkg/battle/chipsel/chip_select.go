@@ -163,37 +163,12 @@ func selectable(no int) bool {
 		return false
 	}
 
-	name := ""
-	code := ""
+	c := chip.Get(selectList[no].ID)
+	target := chip.SelectParam{Name: c.Name, Code: selectList[no].Code}
+	list := []chip.SelectParam{}
 	for _, s := range selected {
 		c := chip.Get(selectList[s].ID)
-		if name == "" {
-			name = c.Name
-		} else if name != c.Name {
-			if code == "-" {
-				return false
-			}
-			name = "-"
-		}
-		if code == "" || code == "*" {
-			code = selectList[s].Code
-		} else {
-			if code != selectList[s].Code {
-				if name == "-" {
-					return false
-				}
-				code = "-"
-			}
-		}
+		list = append(list, chip.SelectParam{Name: c.Name, Code: selectList[s].Code})
 	}
-
-	if name == "" || code == "" || code == "*" {
-		return true
-	}
-
-	if name != chip.Get(selectList[no].ID).Name && code != selectList[no].Code {
-		return false
-	}
-
-	return true
+	return chip.Selectable(target, list)
 }
