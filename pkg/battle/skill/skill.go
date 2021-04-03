@@ -181,21 +181,26 @@ func End() {
 		for j := 0; j < len(imgCannonAtk[i]); j++ {
 			dxlib.DeleteGraph(imgCannonAtk[i][j])
 		}
+		imgCannonAtk[i] = []int32{}
 		for j := 0; j < len(imgCannonBody[i]); j++ {
 			dxlib.DeleteGraph(imgCannonBody[i][j])
 		}
+		imgCannonBody[i] = []int32{}
 	}
 	for i := 0; i < 3; i++ {
 		for j := 0; j < len(imgSword[i]); j++ {
 			dxlib.DeleteGraph(imgSword[i][j])
 		}
+		imgSword[i] = []int32{}
 	}
 	for i := 0; i < len(imgMiniBomb); i++ {
 		dxlib.DeleteGraph(imgMiniBomb[i])
 	}
+	imgMiniBomb = []int32{}
 	for i := 0; i < len(imgShockWave); i++ {
 		dxlib.DeleteGraph(imgShockWave[i])
 	}
+	imgShockWave = []int32{}
 }
 
 // Get ...
