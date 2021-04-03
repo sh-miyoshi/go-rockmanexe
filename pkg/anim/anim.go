@@ -45,6 +45,7 @@ func MgrProcess(enableDamage bool) error {
 			for i, sid := range sortedAnimIDs {
 				if sid == id {
 					sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
+					break
 				}
 			}
 		}
@@ -52,14 +53,21 @@ func MgrProcess(enableDamage bool) error {
 
 	// Damage Process
 	if enableDamage {
+		hit := []string{}
 		for _, anim := range anims {
 			pm := anim.GetParam()
 			if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
 				anim.DamageProc(dm)
-				damage.Remove(dm.ID)
+				hit = append(hit, dm.ID)
 				// TODO if !pm.Penetrate delete(anims, id)
 			}
 		}
+
+		for _, h := range hit {
+			damage.Remove(h)
+		}
+
+		damage.MgrProcess()
 	}
 
 	sortAnim()

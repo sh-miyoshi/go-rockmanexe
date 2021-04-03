@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
@@ -95,7 +94,7 @@ func Process() error {
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return fmt.Errorf("Enemy init failed: %w", err)
 			}
-			stateChange(stateMain) // debug
+			stateChange(stateChipSelect) // debug
 			return nil
 		}
 	case stateChipSelect:
@@ -145,8 +144,6 @@ func Process() error {
 			return fmt.Errorf("Failed to process enemy: %w", err)
 		}
 		fieldUpdates()
-
-		damage.MgrProcess()
 	case stateResultWin:
 		if battleCount == 0 {
 			if err := win.Init(gameCount); err != nil {
