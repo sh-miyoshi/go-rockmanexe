@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 /*
@@ -342,6 +343,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) {
 	if dm == nil {
 		return
 	}
+	logger.Debug("Enemy Target damaged: %+v", *dm)
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
