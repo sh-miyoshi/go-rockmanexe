@@ -23,6 +23,7 @@ const (
 	SkillLongSword
 	SkillShockWave
 	SkillRecover
+	SkillSpreadGun
 
 	skillMax
 )
@@ -46,6 +47,7 @@ const (
 	delayMiniBomb   = 4
 	delayShockWave  = 5
 	delayRecover    = 1
+	delaySpreadGun  = 2
 )
 
 type Argument struct {
@@ -57,12 +59,14 @@ type Argument struct {
 }
 
 var (
-	imgCannonAtk  [3][]int32
-	imgCannonBody [3][]int32
-	imgSword      [3][]int32
-	imgMiniBomb   []int32
-	imgShockWave  []int32
-	imgRecover    []int32
+	imgCannonAtk     [3][]int32
+	imgCannonBody    [3][]int32
+	imgSword         [3][]int32
+	imgMiniBomb      []int32
+	imgShockWave     []int32
+	imgRecover       []int32
+	imgSpreadGunAtk  []int32
+	imgSpreadGunBody []int32
 )
 
 type cannon struct {
@@ -108,6 +112,14 @@ type shockWave struct {
 }
 
 type recover struct {
+	OwnerID    string
+	Power      uint
+	TargetType int
+
+	count int
+}
+
+type spreadGun struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -173,6 +185,21 @@ func Init() error {
 		imgRecover = append(imgRecover, tmp[i])
 	}
 
+	fname = path + "スプレッドガン_atk.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgSpreadGunAtk = append(imgSpreadGunAtk, tmp[i])
+	}
+	fname = path + "スプレッドガン_body.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgSpreadGunBody = append(imgSpreadGunBody, tmp[i])
+	}
+
 	return nil
 }
 
@@ -201,6 +228,14 @@ func End() {
 		dxlib.DeleteGraph(imgShockWave[i])
 	}
 	imgShockWave = []int32{}
+	for i := 0; i < len(imgSpreadGunAtk); i++ {
+		dxlib.DeleteGraph(imgSpreadGunAtk[i])
+	}
+	imgSpreadGunAtk = []int32{}
+	for i := 0; i < len(imgSpreadGunBody); i++ {
+		dxlib.DeleteGraph(imgSpreadGunBody[i])
+	}
+	imgSpreadGunBody = []int32{}
 }
 
 // Get ...
@@ -226,6 +261,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, x: px, y: py}
 	case SkillRecover:
 		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillSpreadGun:
+		return &spreadGun{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -252,6 +289,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillRecover
 	case chip.IDRecover30:
 		id = SkillRecover
+	case chip.IDSpreadGun:
+		id = SkillSpreadGun
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
@@ -508,6 +547,53 @@ func (p *recover) DamageProc(dm *damage.Damage) {
 }
 
 func (p *recover) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
+func (p *spreadGun) Draw() {
+	n := p.count / delaySpreadGun
+
+	// Show body
+	if n < len(imgSpreadGunBody) {
+		px, py := field.GetPos(p.OwnerID)
+		x, y := battlecommon.ViewPos(px, py)
+		dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
+	}
+
+	// Show atk
+	n = (p.count - 4) / delaySpreadGun
+	if n >= 0 && n < len(imgSpreadGunAtk) {
+		px, py := field.GetPos(p.OwnerID)
+		x, y := battlecommon.ViewPos(px, py)
+		dxlib.DrawRotaGraph(x+100, y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
+	}
+}
+
+func (p *spreadGun) Process() (bool, error) {
+	if p.count == 5 {
+		// TODO(ダメージ登録)
+		// If damaged, spreading
+	}
+
+	p.count++
+
+	max := len(imgSpreadGunAtk)
+	if len(imgSpreadGunBody) > max {
+		max = len(imgSpreadGunBody)
+	}
+
+	if p.count > max*delaySpreadGun {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *spreadGun) DamageProc(dm *damage.Damage) {
+}
+
+func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
 	}
