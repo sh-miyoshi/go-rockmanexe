@@ -12,7 +12,7 @@ import (
 
 // Chip ...
 type Chip struct {
-	ID        int
+	ID        int    `yaml:"id"`
 	Name      string `yaml:"name"`
 	Power     uint   `yaml:"power"`
 	Type      int    `yaml:"type"`
@@ -23,17 +23,18 @@ type Chip struct {
 }
 
 const (
-	IDCannon = iota
-	IDHighCannon
-	IDMegaCannon
-	IDMiniBomb
-	IDSword
-	IDWideSword
-	IDLongSword
-	IDRecover10
-	IDRecover30
+	// Must same as in chipList.yaml
 
-	idMax
+	IDCannon     = 1
+	IDHighCannon = 2
+	IDMegaCannon = 3
+	IDSpreadGun  = 8
+	IDMiniBomb   = 44
+	IDSword      = 54
+	IDWideSword  = 55
+	IDLongSword  = 56
+	IDRecover10  = 109
+	IDRecover30  = 110
 )
 
 const (
@@ -55,8 +56,8 @@ const (
 )
 
 var (
-	imgIcons     []int32
-	imgMonoIcons []int32
+	imgIcons     map[int]int32
+	imgMonoIcons map[int]int32
 	imgTypes     []int32
 	chipData     []Chip
 )
@@ -72,10 +73,8 @@ func Init(fname string) error {
 		return err
 	}
 
-	for i := 0; i < idMax; i++ {
-		chipData[i].ID = i
-
-		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, i)
+	for i, c := range chipData {
+		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, c.ID)
 		chipData[i].Image = dxlib.LoadGraph(fname)
 		if chipData[i].Image == -1 {
 			return fmt.Errorf("Failed to read chip detail image %s", fname)
@@ -108,38 +107,17 @@ func Init(fname string) error {
 		return fmt.Errorf("Failed to read chip monochro icon image %s", fname)
 	}
 
-	imgIcons = make([]int32, idMax)
-	imgMonoIcons = make([]int32, idMax)
+	imgIcons = make(map[int]int32)
+	imgMonoIcons = make(map[int]int32)
 	used := []int{}
 
 	// Set icons by manual
-	used = append(used, 0)
-	imgIcons[IDCannon] = tmp[0]
-	imgMonoIcons[IDCannon] = tmp2[0]
-	used = append(used, 1)
-	imgIcons[IDHighCannon] = tmp[1]
-	imgMonoIcons[IDHighCannon] = tmp2[1]
-	used = append(used, 2)
-	imgIcons[IDMegaCannon] = tmp[2]
-	imgMonoIcons[IDMegaCannon] = tmp2[2]
-	used = append(used, 43)
-	imgIcons[IDMiniBomb] = tmp[43]
-	imgMonoIcons[IDMiniBomb] = tmp2[43]
-	used = append(used, 53)
-	imgIcons[IDSword] = tmp[53]
-	imgMonoIcons[IDSword] = tmp2[53]
-	used = append(used, 54)
-	imgIcons[IDWideSword] = tmp[54]
-	imgMonoIcons[IDWideSword] = tmp2[54]
-	used = append(used, 55)
-	imgIcons[IDLongSword] = tmp[55]
-	imgMonoIcons[IDLongSword] = tmp2[55]
-	used = append(used, 108)
-	imgIcons[IDRecover10] = tmp[108]
-	imgMonoIcons[IDRecover10] = tmp2[108]
-	used = append(used, 109)
-	imgIcons[IDRecover30] = tmp[109]
-	imgMonoIcons[IDRecover30] = tmp2[109]
+	for _, c := range chipData {
+		// tmp and tmp2 start with 0, but chip id start with 1
+		imgIcons[c.ID] = tmp[c.ID-1]
+		imgMonoIcons[c.ID] = tmp2[c.ID-1]
+		used = append(used, c.ID-1)
+	}
 
 	// Release unused images
 	for i := 0; i < 240; i++ {
@@ -154,7 +132,13 @@ func Init(fname string) error {
 
 // Get ...
 func Get(id int) Chip {
-	return chipData[id]
+	for _, c := range chipData {
+		if c.ID == id {
+			return c
+		}
+	}
+
+	panic(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
 }
 
 // GetIcon ...

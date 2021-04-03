@@ -1,40 +1,54 @@
 # type: 0(無), 3(剣)
 # player_act.type: 3(cannon), 4(sword)
-- name: "キャノン"
+- id: 1
+  name: "キャノン"
   power: 40
   type: 0
   player_act: 3
-- name: "ハイキャノン"
+- id: 2
+  name: "ハイキャノン"
   power: 80
   type: 0
   player_act: 3
-- name: "メガキャノン"
+- id: 3
+  name: "メガキャノン"
   power: 120
   type: 0
   player_act: 3
-- name: "ミニボム"
+- id: 44
+  name: "ミニボム"
   power: 50
   type: 0
   player_act: 5
-- name: "ソード"
+- id: 54
+  name: "ソード"
   power: 80
   type: 3
   player_act: 4
-- name: "ワイドソード"
+- id: 55
+  name: "ワイドソード"
   power: 80
   type: 3
   player_act: 4
-- name: "ロングソード"
+- id: 56
+  name: "ロングソード"
   power: 80
   type: 3
   player_act: 4
-- name: "リカバリー10"
+- id: 109
+  name: "リカバリー10"
   power: 10
   type: 6
   player_act: -1
   for_me: true
-- name: "リカバリー30"
+- id: 110
+  name: "リカバリー30"
   power: 30
   type: 6
   player_act: -1
   for_me: true
+- id: 8
+  name: "スプレッドガン"
+  power: 30
+  type: 0
+  player_act: 2
