@@ -127,6 +127,14 @@ type spreadGun struct {
 	count int
 }
 
+type spreadHit struct {
+	Power      uint
+	TargetType int
+
+	count int
+	x, y  int
+}
+
 func Init() error {
 	path := common.ImagePath + "battle/skill/"
 
@@ -573,8 +581,40 @@ func (p *spreadGun) Draw() {
 
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
-		// TODO(ダメージ登録)
-		// If damaged, spreading
+		px, py := field.GetPos(p.OwnerID)
+		for x := px + 1; x < field.FieldNumX; x++ {
+			if field.GetPanelInfo(x, py).ObjectID != "" {
+				damage.New(damage.Damage{
+					PosX:          x,
+					PosY:          py,
+					Power:         int(p.Power),
+					TTL:           1,
+					TargetType:    p.TargetType,
+					HitEffectType: effect.TypeHitBig,
+				})
+				// Spreading
+				for sy := -1; sy <= 1; sy++ {
+					if py+sy < 0 || py+sy >= field.FieldNumY {
+						continue
+					}
+					for sx := -1; sx <= 1; sx++ {
+						if sy == 0 && sx == 0 {
+							continue
+						}
+						if x+sx >= 0 && x+sx < field.FieldNumX {
+							anim.New(&spreadHit{
+								Power:      p.Power,
+								TargetType: p.TargetType,
+								x:          x + sx,
+								y:          py + sy,
+							})
+						}
+					}
+				}
+
+				break
+			}
+		}
 	}
 
 	p.count++
@@ -594,6 +634,36 @@ func (p *spreadGun) DamageProc(dm *damage.Damage) {
 }
 
 func (p *spreadGun) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
+func (p *spreadHit) Draw() {
+}
+
+func (p *spreadHit) Process() (bool, error) {
+	p.count++
+	if p.count == 10 {
+		anim.New(effect.Get(effect.TypeSpreadHit, p.x, p.y))
+		damage.New(damage.Damage{
+			PosX:          p.x,
+			PosY:          p.y,
+			Power:         int(p.Power),
+			TTL:           1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+		})
+
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *spreadHit) DamageProc(dm *damage.Damage) {
+}
+
+func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
 	}

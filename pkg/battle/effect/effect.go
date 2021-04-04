@@ -16,6 +16,7 @@ const (
 	TypeHitBig
 	TypeExplode
 	TypeCannonHit
+	TypeSpreadHit
 )
 
 const (
@@ -27,6 +28,7 @@ var (
 	imgHitBigEffect    []int32
 	imgExplodeEffect   []int32
 	imgCannonHitEffect []int32
+	imgSpreadHitEffect []int32
 )
 
 type effect struct {
@@ -42,24 +44,29 @@ type noEffect struct{}
 
 func Init() error {
 	imgHitSmallEffect = make([]int32, 4)
-	fname := common.ImagePath + "battle/skill/バスター_hit_small.png"
+	fname := common.ImagePath + "battle/effect/hit_small.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, imgHitSmallEffect); res == -1 {
 		return fmt.Errorf("Failed to load hit small effect image %s", fname)
 	}
 	imgHitBigEffect = make([]int32, 6)
-	fname = common.ImagePath + "battle/skill/バスター_hit_big.png"
+	fname = common.ImagePath + "battle/effect/hit_big.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, imgHitBigEffect); res == -1 {
 		return fmt.Errorf("Failed to load hit big effect image %s", fname)
 	}
 	imgExplodeEffect = make([]int32, 16)
-	fname = common.ImagePath + "battle/skill/explode.png"
+	fname = common.ImagePath + "battle/effect/explode.png"
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, imgExplodeEffect); res == -1 {
 		return fmt.Errorf("Failed to load explode effect image %s", fname)
 	}
 	imgCannonHitEffect = make([]int32, 7)
-	fname = common.ImagePath + "battle/skill/キャノン_hit.png"
+	fname = common.ImagePath + "battle/effect/cannon_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, imgCannonHitEffect); res == -1 {
 		return fmt.Errorf("Failed to load cannon hit effect image %s", fname)
+	}
+	imgSpreadHitEffect = make([]int32, 6)
+	fname = common.ImagePath + "battle/effect/spread_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHitEffect); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
 	}
 
 	return nil
@@ -78,6 +85,9 @@ func End() {
 	for _, img := range imgCannonHitEffect {
 		dxlib.DeleteGraph(img)
 	}
+	for _, img := range imgSpreadHitEffect {
+		dxlib.DeleteGraph(img)
+	}
 }
 
 func Get(typ int, x, y int) anim.Anim {
@@ -92,6 +102,8 @@ func Get(typ int, x, y int) anim.Anim {
 		return &effect{X: x, Y: y, images: imgExplodeEffect, delay: explodeDelay}
 	case TypeCannonHit:
 		return &effect{X: x, Y: y, images: imgCannonHitEffect, delay: 1}
+	case TypeSpreadHit:
+		return &effect{X: x, Y: y, images: imgSpreadHitEffect, delay: 1}
 	}
 
 	panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
