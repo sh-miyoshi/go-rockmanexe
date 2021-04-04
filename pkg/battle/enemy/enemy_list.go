@@ -157,7 +157,13 @@ func (e *enemyMetall) End() {
 
 func (e *enemyMetall) Process() (bool, error) {
 	if e.pm.HP <= 0 {
-		// TODO(Delete animation)
+		// Delete Animation
+		img := &e.imgMove[0]
+		if e.atkID != "" {
+			img = &e.atk.images[e.atk.GetImageNo()]
+		}
+		newDelete(*img, e.pm.PosX, e.pm.PosY)
+		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
 		for i, id := range metallActQueue {
@@ -320,7 +326,8 @@ func (e *enemyTarget) End() {
 
 func (e *enemyTarget) Process() (bool, error) {
 	if e.pm.HP <= 0 {
-		// TODO add delete effect(explode, char last image)
+		newDelete(e.image, e.pm.PosX, e.pm.PosY)
+		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
 	return false, nil
