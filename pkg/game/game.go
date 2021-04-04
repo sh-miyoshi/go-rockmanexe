@@ -27,6 +27,14 @@ var (
 
 // Process ...
 func Process() error {
+	if playerInfo != nil {
+		playerInfo.PlayCount++
+		// Countermeasures against buffer overflow
+		if playerInfo.PlayCount >= common.MaxUint {
+			playerInfo.PlayCount = common.MaxUint - 1
+		}
+	}
+
 	switch state {
 	case stateTitle:
 		if count == 0 {

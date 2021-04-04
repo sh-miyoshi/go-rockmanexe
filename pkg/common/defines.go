@@ -7,6 +7,8 @@ const (
 	ScreenY = 320
 	// SaveFilePath ...
 	SaveFilePath = "data/save.dat"
+
+	MaxUint = ^uint(0)
 )
 
 const (

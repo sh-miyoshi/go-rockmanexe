@@ -32,9 +32,9 @@ type Player struct {
 	// Zenny      uint
 	ChipFolder [FolderSize]ChipInfo
 
-	WinNum  int
-	LoseNum int
-	// PlayTime
+	WinNum    int
+	LoseNum   int
+	PlayCount uint
 }
 
 // New returns player data with default values
@@ -43,16 +43,16 @@ func New() *Player {
 		HP:        defaultHP,
 		ShotPower: defaultShotPower,
 		ChipFolder: [FolderSize]ChipInfo{
-			{ID: chip.IDRecover30, Code: "*"},
-			{ID: chip.IDRecover10, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDSpreadGun, Code: "*"},
 			{ID: chip.IDMiniBomb, Code: "l"},
 			{ID: chip.IDSword, Code: "a"},
 			{ID: chip.IDWideSword, Code: "a"},
 			{ID: chip.IDLongSword, Code: "a"},
-			{ID: chip.IDCannon, Code: "b"},
-			{ID: chip.IDCannon, Code: "b"},
-			{ID: chip.IDCannon, Code: "c"},
-			{ID: chip.IDCannon, Code: "c"},
 		},
 		WinNum:  0,
 		LoseNum: 0,
@@ -101,6 +101,8 @@ func (p *Player) Save(fname string, key []byte) error {
 	// Convert player info to string
 	var buf bytes.Buffer
 	buf.WriteString(common.ProgramVersion)
+	buf.WriteString(separater)
+	buf.WriteString(strconv.FormatUint(uint64(p.PlayCount), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
 	buf.WriteString(separater)
