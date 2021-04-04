@@ -79,12 +79,13 @@ func Process() error {
 			battle.End()
 			if errors.Is(err, battle.ErrWin) {
 				playerInfo.WinNum++
-				playerInfo.Save(common.SaveFilePath, nil) // TODO encryption
+				// TODO Save data(release: encrypted, dev: no encryption)
+				// playerInfo.Save(common.SaveFilePath, nil)
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, battle.ErrLose) {
 				playerInfo.LoseNum++
-				playerInfo.Save(common.SaveFilePath, nil) // TODO encryption
+				// playerInfo.Save(common.SaveFilePath, nil)
 				stateChange(stateMenu)
 				return nil
 			}
