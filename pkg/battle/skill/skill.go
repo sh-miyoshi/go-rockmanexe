@@ -703,7 +703,6 @@ func (p *vulcan) Draw() {
 
 	// Show body
 	dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgVulcan[p.imageNo], dxlib.TRUE)
-	dxlib.DrawFormatString(400, 0, 0xff0000, "%d", p.imageNo)
 	// Show attack
 	if p.imageNo != 0 {
 		if p.imageNo%2 == 0 {
@@ -717,7 +716,7 @@ func (p *vulcan) Draw() {
 func (p *vulcan) Process() (bool, error) {
 	p.count++
 	if p.count >= delayVulcan*1 {
-		if p.count%(delayVulcan*6) == delayVulcan*1 {
+		if p.count%(delayVulcan*5) == delayVulcan*1 {
 			p.imageNo = p.imageNo%2 + 1
 			// TODO add damage
 			p.atkCount++
