@@ -52,3 +52,9 @@
   power: 30
   type: 0
   player_act: 2
+- id: 5
+  name: "バルカン1"
+  power: 10
+  type: 0
+  player_act: 2
+  keep_cnt: 6

@@ -43,10 +43,11 @@ type act struct {
 	Charged    bool
 	ShotPower  uint
 
-	typ   int
-	count int
-	pPosX *int
-	pPosY *int
+	typ       int
+	count     int
+	keepCount int
+	pPosX     *int
+	pPosY     *int
 }
 
 // BattlePlayer ...
@@ -321,7 +322,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false) {
 			p.act.MoveDirect = moveDirect
-			p.act.SetAnim(playerAnimMove)
+			p.act.SetAnim(playerAnimMove, 0)
 			return false, nil
 		}
 	}
@@ -331,7 +332,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if len(p.SelectedChips) > 0 {
 			c := chip.Get(p.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
-				p.act.SetAnim(c.PlayerAct)
+				p.act.SetAnim(c.PlayerAct, c.KeepCount)
 			}
 			target := damage.TargetEnemy
 			if c.ForMe {
@@ -355,7 +356,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	} else if p.ChargeCount > 0 {
 		p.act.Charged = p.ChargeCount > chargeTime
 		p.act.ShotPower = p.ShotPower
-		p.act.SetAnim(playerAnimBuster)
+		p.act.SetAnim(playerAnimBuster, 0)
 		p.ChargeCount = 0
 	}
 
@@ -388,7 +389,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 		}
 		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY))
 		if dm.Power > 0 {
-			p.act.SetAnim(playerAnimDamage)
+			p.act.SetAnim(playerAnimDamage, 0)
 			p.invincibleCount = 1
 		}
 		logger.Debug("Player damaged: %+v", *dm)
@@ -458,18 +459,21 @@ func (a *act) Process() bool {
 
 	a.count++
 
-	if a.count > len(imgPlayers[a.typ])*imgDelays[a.typ] {
+	num := len(imgPlayers[a.typ]) + a.keepCount
+	if a.count > num*imgDelays[a.typ] {
 		// Reset params
 		a.typ = -1
 		a.count = 0
+		a.keepCount = 0
 		return false // finished
 	}
 	return true // processing now
 }
 
-func (a *act) SetAnim(animType int) {
+func (a *act) SetAnim(animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
+	a.keepCount = keepCount
 }
 
 func (a *act) GetImage() int32 {
@@ -478,6 +482,10 @@ func (a *act) GetImage() int32 {
 		return imgPlayers[playerAnimMove][0]
 	}
 
-	imgNo := (a.count / imgDelays[a.typ]) % len(imgPlayers[a.typ])
+	imgNo := (a.count / imgDelays[a.typ])
+	if imgNo >= len(imgPlayers[a.typ]) {
+		imgNo = len(imgPlayers[a.typ]) - 1
+	}
+
 	return imgPlayers[a.typ][imgNo]
 }

@@ -18,6 +18,7 @@ type Chip struct {
 	Type      int    `yaml:"type"`
 	PlayerAct int    `yaml:"player_act"`
 	ForMe     bool   `yaml:"for_me"`
+	KeepCount int    `yaml:"keep_cnt"`
 
 	Image int32
 }
@@ -33,6 +34,7 @@ const (
 	IDCannon     = 1
 	IDHighCannon = 2
 	IDMegaCannon = 3
+	IDVulcan1    = 5
 	IDSpreadGun  = 8
 	IDMiniBomb   = 44
 	IDSword      = 54

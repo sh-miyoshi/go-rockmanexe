@@ -24,6 +24,7 @@ const (
 	SkillShockWave
 	SkillRecover
 	SkillSpreadGun
+	SkillVulcan1
 
 	skillMax
 )
@@ -48,14 +49,13 @@ const (
 	delayShockWave  = 5
 	delayRecover    = 1
 	delaySpreadGun  = 2
+	delayVulcan     = 2
 )
 
 type Argument struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
-	TargetX    int
-	TargetY    int
 }
 
 var (
@@ -67,6 +67,7 @@ var (
 	imgRecover       []int32
 	imgSpreadGunAtk  []int32
 	imgSpreadGunBody []int32
+	imgVulcan        []int32
 )
 
 type cannon struct {
@@ -133,6 +134,17 @@ type spreadHit struct {
 
 	count int
 	x, y  int
+}
+
+type vulcan struct {
+	OwnerID    string
+	Power      uint
+	TargetType int
+	Times      int
+
+	count    int
+	imageNo  int
+	atkCount int
 }
 
 func Init() error {
@@ -208,6 +220,14 @@ func Init() error {
 		imgSpreadGunBody = append(imgSpreadGunBody, tmp[i])
 	}
 
+	fname = path + "バルカン.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, tmp); res == -1 {
+		return fmt.Errorf("Failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgVulcan = append(imgVulcan, tmp[i])
+	}
+
 	return nil
 }
 
@@ -244,6 +264,10 @@ func End() {
 		dxlib.DeleteGraph(imgSpreadGunBody[i])
 	}
 	imgSpreadGunBody = []int32{}
+	for i := 0; i < len(imgVulcan); i++ {
+		dxlib.DeleteGraph(imgVulcan[i])
+	}
+	imgVulcan = []int32{}
 }
 
 // Get ...
@@ -271,6 +295,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillSpreadGun:
 		return &spreadGun{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+	case SkillVulcan1:
+		return &vulcan{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -299,6 +325,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillRecover
 	case chip.IDSpreadGun:
 		id = SkillSpreadGun
+	case chip.IDVulcan1:
+		id = SkillVulcan1
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
@@ -664,6 +692,49 @@ func (p *spreadHit) DamageProc(dm *damage.Damage) {
 }
 
 func (p *spreadHit) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeEffect,
+	}
+}
+
+func (p *vulcan) Draw() {
+	px, py := field.GetPos(p.OwnerID)
+	x, y := battlecommon.ViewPos(px, py)
+
+	// Show body
+	dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgVulcan[p.imageNo], dxlib.TRUE)
+	dxlib.DrawFormatString(400, 0, 0xff0000, "%d", p.imageNo)
+	// Show attack
+	if p.imageNo != 0 {
+		if p.imageNo%2 == 0 {
+			dxlib.DrawRotaGraph(x+100, y-10, 1, 0, imgVulcan[3], dxlib.TRUE)
+		} else {
+			dxlib.DrawRotaGraph(x+100, y-15, 1, 0, imgVulcan[3], dxlib.TRUE)
+		}
+	}
+}
+
+func (p *vulcan) Process() (bool, error) {
+	p.count++
+	if p.count >= delayVulcan*1 {
+		if p.count%(delayVulcan*6) == delayVulcan*1 {
+			p.imageNo = p.imageNo%2 + 1
+			// TODO add damage
+			p.atkCount++
+			if p.atkCount == p.Times {
+				return true, nil
+			}
+		}
+
+	}
+
+	return false, nil
+}
+
+func (p *vulcan) DamageProc(dm *damage.Damage) {
+}
+
+func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
 	}
