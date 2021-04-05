@@ -35,23 +35,23 @@ func Init(plyr *player.Player) error {
 	fname := common.ImagePath + "menu/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("Failed to load menu back image %s", fname)
+		return fmt.Errorf("failed to load menu back image %s", fname)
 	}
 
 	if err := topInit(); err != nil {
-		return fmt.Errorf("Failed to init menu top: %w", err)
+		return fmt.Errorf("failed to init menu top: %w", err)
 	}
 
 	if err := folderInit(plyr); err != nil {
-		return fmt.Errorf("Failed to init menu folder: %w", err)
+		return fmt.Errorf("failed to init menu folder: %w", err)
 	}
 
 	if err := goBattleInit(); err != nil {
-		return fmt.Errorf("Failed to init menu go battle: %w", err)
+		return fmt.Errorf("failed to init menu go battle: %w", err)
 	}
 
 	if err := recordInit(); err != nil {
-		return fmt.Errorf("Failed to init menu record: %w", err)
+		return fmt.Errorf("failed to init menu record: %w", err)
 	}
 
 	return nil

@@ -34,13 +34,13 @@ func Init(folder []player.ChipInfo) error {
 		fname := common.ImagePath + "battle/chip_select_frame.png"
 		imgFrame = dxlib.LoadGraph(fname)
 		if imgFrame == -1 {
-			return fmt.Errorf("Failed to read frame image: %s", fname)
+			return fmt.Errorf("failed to read frame image: %s", fname)
 		}
 
 		fname = common.ImagePath + "battle/pointer.png"
 		res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, imgPointer)
 		if res == -1 {
-			return fmt.Errorf("Failed to read pointer image: %s", fname)
+			return fmt.Errorf("failed to read pointer image: %s", fname)
 		}
 	}
 

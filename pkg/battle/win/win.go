@@ -39,19 +39,19 @@ func Init(gameTime int) error {
 	fname := common.ImagePath + "battle/result_frame.png"
 	imgFrame = dxlib.LoadGraph(fname)
 	if imgFrame == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	imgMsg = make([]int32, 3)
 	fname = common.ImagePath + "battle/msg_win.png"
 	if res := dxlib.LoadDivGraph(fname, 3, 1, 3, 272, 32, imgMsg); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/win_icon.png"
 	imgWinIcon = dxlib.LoadGraph(fname)
 	if imgWinIcon == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	return nil

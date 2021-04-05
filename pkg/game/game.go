@@ -49,7 +49,7 @@ func Process() error {
 				// TODO implement
 				return fmt.Errorf("Start with continue is not implemented yet")
 			} else {
-				return fmt.Errorf("Failed to process title: %w", err)
+				return fmt.Errorf("failed to process title: %w", err)
 			}
 			title.End()
 			stateChange(stateBattle) // debug

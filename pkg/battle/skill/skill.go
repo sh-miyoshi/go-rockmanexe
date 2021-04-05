@@ -25,8 +25,6 @@ const (
 	SkillRecover
 	SkillSpreadGun
 	SkillVulcan1
-
-	skillMax
 )
 
 const (
@@ -153,7 +151,7 @@ func Init() error {
 	tmp := make([]int32, 24)
 	fname := path + "キャノン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgCannonAtk[0] = append(imgCannonAtk[0], tmp[i])
@@ -162,7 +160,7 @@ func Init() error {
 	}
 	fname = path + "キャノン_body.png"
 	if res := dxlib.LoadDivGraph(fname, 15, 5, 3, 46, 40, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		imgCannonBody[0] = append(imgCannonBody[0], tmp[i])
@@ -172,7 +170,7 @@ func Init() error {
 
 	fname = path + "ミニボム.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		imgMiniBomb = append(imgMiniBomb, tmp[i])
@@ -180,7 +178,7 @@ func Init() error {
 
 	fname = path + "ソード.png"
 	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		// Note: In the image, the order of wide sword and long sword is swapped.
@@ -191,7 +189,7 @@ func Init() error {
 
 	fname = path + "ショックウェーブ.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 7; i++ {
 		imgShockWave = append(imgShockWave, tmp[i])
@@ -199,7 +197,7 @@ func Init() error {
 
 	fname = path + "リカバリー.png"
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgRecover = append(imgRecover, tmp[i])
@@ -207,14 +205,14 @@ func Init() error {
 
 	fname = path + "スプレッドガン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgSpreadGunAtk = append(imgSpreadGunAtk, tmp[i])
 	}
 	fname = path + "スプレッドガン_body.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgSpreadGunBody = append(imgSpreadGunBody, tmp[i])
@@ -222,7 +220,7 @@ func Init() error {
 
 	fname = path + "バルカン.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, tmp); res == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgVulcan = append(imgVulcan, tmp[i])

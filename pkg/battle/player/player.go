@@ -116,13 +116,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[playerAnimMove]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player move image: %s", fname)
+		return nil, fmt.Errorf("failed to load player move image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
 	imgPlayers[playerAnimDamage] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimDamage]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player damage image: %s", fname)
+		return nil, fmt.Errorf("failed to load player damage image: %s", fname)
 	}
 	// 1 -> 2,3  2-4 3-5
 	imgPlayers[playerAnimDamage][4] = imgPlayers[playerAnimDamage][2]
@@ -133,53 +133,53 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname = common.ImagePath + "battle/character/player_shot.png"
 	imgPlayers[playerAnimShot] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimShot]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player shot image: %s", fname)
+		return nil, fmt.Errorf("failed to load player shot image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
 	imgPlayers[playerAnimCannon] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[playerAnimCannon]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player cannon image: %s", fname)
+		return nil, fmt.Errorf("failed to load player cannon image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_sword.png"
 	imgPlayers[playerAnimSword] = make([]int32, 7)
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[playerAnimSword]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player sword image: %s", fname)
+		return nil, fmt.Errorf("failed to load player sword image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
 	imgPlayers[playerAnimBomb] = make([]int32, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player bomb image: %s", fname)
+		return nil, fmt.Errorf("failed to load player bomb image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_buster.png"
 	imgPlayers[playerAnimBuster] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimBuster]); res == -1 {
-		return nil, fmt.Errorf("Failed to load player buster image: %s", fname)
+		return nil, fmt.Errorf("failed to load player buster image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
 	if imgHPFrame < 0 {
-		return nil, fmt.Errorf("Failed to read hp frame image %s", fname)
+		return nil, fmt.Errorf("failed to read hp frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge.png"
 	imgGaugeFrame = dxlib.LoadGraph(fname)
 	if imgGaugeFrame < 0 {
-		return nil, fmt.Errorf("Failed to read gauge frame image %s", fname)
+		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
 	imgGaugeMax = make([]int32, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
-		return nil, fmt.Errorf("Failed to read gauge max image %s", fname)
+		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/skill/charge.png"
 	tmp := make([]int32, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
-		return nil, fmt.Errorf("Failed to load image %s", fname)
+		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgCharge[0] = append(imgCharge[0], tmp[i])

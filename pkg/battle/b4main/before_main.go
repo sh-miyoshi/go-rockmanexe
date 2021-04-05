@@ -19,7 +19,7 @@ func Init() error {
 	imgMsg = make([]int32, 3)
 	fname := common.ImagePath + "battle/msg_start.png"
 	if res := dxlib.LoadDivGraph(fname, 3, 1, 3, 274, 32, imgMsg); res == -1 {
-		return fmt.Errorf("Failed to load start message image %s", fname)
+		return fmt.Errorf("failed to load start message image %s", fname)
 	}
 	return nil
 }

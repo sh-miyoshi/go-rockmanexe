@@ -100,7 +100,7 @@ func Process() error {
 	case stateChipSelect:
 		if battleCount == 0 {
 			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
-				return fmt.Errorf("Failed to initialize chip select: %w", err)
+				return fmt.Errorf("failed to initialize chip select: %w", err)
 			}
 		}
 		if chipsel.Process() {
@@ -112,7 +112,7 @@ func Process() error {
 	case stateBeforeMain:
 		if battleCount == 0 {
 			if err := b4main.Init(); err != nil {
-				return fmt.Errorf("Failed to initialize before main: %w", err)
+				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
 		}
 
@@ -124,7 +124,7 @@ func Process() error {
 	case stateMain:
 		gameCount++
 		if err := anim.MgrProcess(true); err != nil {
-			return fmt.Errorf("Failed to handle animation: %w", err)
+			return fmt.Errorf("failed to handle animation: %w", err)
 		}
 
 		switch playerInst.NextAction {
@@ -141,18 +141,18 @@ func Process() error {
 				stateChange(stateResultWin)
 				return nil
 			}
-			return fmt.Errorf("Failed to process enemy: %w", err)
+			return fmt.Errorf("failed to process enemy: %w", err)
 		}
 		fieldUpdates()
 	case stateResultWin:
 		if battleCount == 0 {
 			if err := win.Init(gameCount); err != nil {
-				return fmt.Errorf("Failed to initialize result win: %w", err)
+				return fmt.Errorf("failed to initialize result win: %w", err)
 			}
 		}
 
 		if err := anim.MgrProcess(false); err != nil {
-			return fmt.Errorf("Failed to handle animation: %w", err)
+			return fmt.Errorf("failed to handle animation: %w", err)
 		}
 
 		if win.Process() {

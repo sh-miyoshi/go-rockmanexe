@@ -32,13 +32,13 @@ func folderInit(plyr *player.Player) error {
 	fname := common.ImagePath + "menu/chip_frame.png"
 	imgChipFrame = dxlib.LoadGraph(fname)
 	if imgChipFrame == -1 {
-		return fmt.Errorf("Failed to load menu chip frame image %s", fname)
+		return fmt.Errorf("failed to load menu chip frame image %s", fname)
 	}
 
 	fname = common.ImagePath + "menu/pointer.png"
 	imgPointer = dxlib.LoadGraph(fname)
 	if imgPointer == -1 {
-		return fmt.Errorf("Failed to load menu pointer image %s", fname)
+		return fmt.Errorf("failed to load menu pointer image %s", fname)
 	}
 
 	return nil

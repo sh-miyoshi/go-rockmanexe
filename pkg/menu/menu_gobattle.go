@@ -112,7 +112,7 @@ func goBattleInit() error {
 	}
 	for id, img := range images {
 		if img == -1 {
-			return fmt.Errorf("Failed to load enemy %d image", id)
+			return fmt.Errorf("failed to load enemy %d image", id)
 		}
 	}
 
