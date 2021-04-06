@@ -66,15 +66,6 @@ func (e *enemy) GetParam() anim.Param {
 const (
 	IDMetall int = iota
 	IDTarget
-
-	idMax
-)
-
-const (
-	animMove int = iota
-	animAtk1
-
-	animMax
 )
 
 const (
@@ -121,7 +112,6 @@ type enemyMetall struct {
 	pm              EnemyParam
 	imgMove         []int32
 	count           int
-	moveCount       int
 	moveFailedCount int
 	atkID           string
 	atk             metallAtk

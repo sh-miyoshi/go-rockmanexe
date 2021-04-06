@@ -46,9 +46,5 @@ func Draw() {
 
 func Process() bool {
 	count++
-
-	if count >= len(imgMsg)*delay+20 {
-		return true
-	}
-	return false
+	return count >= len(imgMsg)*delay+20
 }

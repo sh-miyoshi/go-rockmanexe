@@ -49,20 +49,20 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	var err error
 	playerInst, err = battleplayer.New(plyr)
 	if err != nil {
-		return fmt.Errorf("Battle player init failed: %w", err)
+		return fmt.Errorf("battle player init failed: %w", err)
 	}
 	anim.New(playerInst)
 
 	if err := field.Init(); err != nil {
-		return fmt.Errorf("Battle field init failed: %w", err)
+		return fmt.Errorf("battle field init failed: %w", err)
 	}
 
 	if err := skill.Init(); err != nil {
-		return fmt.Errorf("Skill init failed: %w", err)
+		return fmt.Errorf("skill init failed: %w", err)
 	}
 
 	if err := effect.Init(); err != nil {
-		return fmt.Errorf("Effect init failed: %w", err)
+		return fmt.Errorf("effect init failed: %w", err)
 	}
 
 	return nil
@@ -85,14 +85,14 @@ func Process() error {
 	case stateOpening:
 		if battleCount == 0 {
 			if err := opening.Init(enemyList); err != nil {
-				return fmt.Errorf("Opening init failed: %w", err)
+				return fmt.Errorf("opening init failed: %w", err)
 			}
 		}
 
 		if opening.Process() {
 			opening.End()
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
-				return fmt.Errorf("Enemy init failed: %w", err)
+				return fmt.Errorf("enemy init failed: %w", err)
 			}
 			stateChange(stateChipSelect) // debug
 			return nil
@@ -192,9 +192,7 @@ func fieldUpdates() {
 	}
 
 	enemies := enemy.GetEnemyPositions()
-	for _, e := range enemies {
-		objs = append(objs, e)
-	}
+	objs = append(objs, enemies...)
 
 	field.UpdateObjectPos(objs)
 }

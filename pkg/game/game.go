@@ -39,7 +39,7 @@ func Process() error {
 	case stateTitle:
 		if count == 0 {
 			if err := title.Init(); err != nil {
-				return fmt.Errorf("Game process in state title failed: %w", err)
+				return fmt.Errorf("game process in state title failed: %w", err)
 			}
 		}
 		if err := title.Process(); err != nil {
@@ -47,7 +47,7 @@ func Process() error {
 				playerInfo = player.New()
 			} else if errors.Is(err, title.ErrStartContinue) {
 				// TODO implement
-				return fmt.Errorf("Start with continue is not implemented yet")
+				return fmt.Errorf("start with continue is not implemented yet")
 			} else {
 				return fmt.Errorf("failed to process title: %w", err)
 			}
@@ -58,7 +58,7 @@ func Process() error {
 	case stateMenu:
 		if count == 0 {
 			if err := menu.Init(playerInfo); err != nil {
-				return fmt.Errorf("Game process in state menu init failed: %w", err)
+				return fmt.Errorf("game process in state menu init failed: %w", err)
 			}
 		}
 		if err := menu.Process(); err != nil {
@@ -67,12 +67,12 @@ func Process() error {
 				stateChange(stateBattle)
 				return nil
 			}
-			return fmt.Errorf("Game process in state menu failed: %w", err)
+			return fmt.Errorf("game process in state menu failed: %w", err)
 		}
 	case stateBattle:
 		if count == 0 {
 			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
-				return fmt.Errorf("Game process in state battle failed: %w", err)
+				return fmt.Errorf("game process in state battle failed: %w", err)
 			}
 		}
 		if err := battle.Process(); err != nil {
@@ -90,7 +90,7 @@ func Process() error {
 				return nil
 			}
 
-			return fmt.Errorf("Battle process failed: % w", err)
+			return fmt.Errorf("battle process failed: % w", err)
 		}
 	}
 	count++
