@@ -252,7 +252,7 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
 	}
 }
 
@@ -353,7 +353,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) {
 	logger.Debug("Enemy Target damaged: %+v", *dm)
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
 	}
 }
 

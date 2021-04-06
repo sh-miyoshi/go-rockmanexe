@@ -387,7 +387,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 		} else {
 			p.HP = uint(hp)
 		}
-		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY))
+		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY, 5))
 		if dm.Power > 0 {
 			p.act.SetAnim(playerAnimDamage, 0)
 			p.invincibleCount = 1

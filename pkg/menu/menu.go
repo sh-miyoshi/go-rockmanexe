@@ -22,7 +22,6 @@ const (
 
 var (
 	menuState int
-	menuCount int
 	imgBack   int32
 
 	ErrGoBattle = errors.New("go to battle")
@@ -30,7 +29,6 @@ var (
 
 func Init(plyr *player.Player) error {
 	menuState = stateTop
-	menuCount = 0
 
 	fname := common.ImagePath + "menu/back.png"
 	imgBack = dxlib.LoadGraph(fname)
@@ -106,6 +104,12 @@ func GetBattleEnemies() []enemy.EnemyParam {
 			PosY:   1,
 			HP:     1000,
 		},
+		{
+			CharID: enemy.IDTarget,
+			PosX:   5,
+			PosY:   1,
+			HP:     1000,
+		},
 	}
 }
 
@@ -115,5 +119,4 @@ func stateChange(nextState int) {
 		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	menuState = nextState
-	menuCount = 0
 }

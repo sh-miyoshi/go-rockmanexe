@@ -25,7 +25,7 @@ func newDelete(image int32, x, y int) {
 func (p *deleteAction) Process() (bool, error) {
 	p.count++
 	if p.count == 1 {
-		anim.New(effect.Get(effect.TypeExplode, p.x, p.y))
+		anim.New(effect.Get(effect.TypeExplode, p.x, p.y, 0))
 	}
 	if p.count == 15 {
 		dxlib.DeleteGraph(p.image)

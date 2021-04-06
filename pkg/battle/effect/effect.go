@@ -2,6 +2,7 @@ package effect
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
@@ -17,6 +18,8 @@ const (
 	TypeExplode
 	TypeCannonHit
 	TypeSpreadHit
+	TypeVulcanHit1
+	TypeVulcanHit2
 )
 
 const (
@@ -24,11 +27,13 @@ const (
 )
 
 var (
-	imgHitSmallEffect  []int32
-	imgHitBigEffect    []int32
-	imgExplodeEffect   []int32
-	imgCannonHitEffect []int32
-	imgSpreadHitEffect []int32
+	imgHitSmallEffect   []int32
+	imgHitBigEffect     []int32
+	imgExplodeEffect    []int32
+	imgCannonHitEffect  []int32
+	imgSpreadHitEffect  []int32
+	imgVulcanHit1Effect []int32
+	imgVulcanHit2Effect []int32
 )
 
 type effect struct {
@@ -38,6 +43,8 @@ type effect struct {
 	count  int
 	images []int32
 	delay  int
+	ofsX   int32
+	ofsY   int32
 }
 
 type noEffect struct{}
@@ -68,6 +75,17 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHitEffect); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	tmp := make([]int32, 8)
+	fname = common.ImagePath + "battle/effect/vulcan_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	imgVulcanHit1Effect = []int32{}
+	imgVulcanHit2Effect = []int32{}
+	for i := 0; i < 4; i++ {
+		imgVulcanHit1Effect = append(imgVulcanHit1Effect, tmp[i])
+		imgVulcanHit2Effect = append(imgVulcanHit2Effect, tmp[i+4])
+	}
 
 	return nil
 }
@@ -88,22 +106,35 @@ func End() {
 	for _, img := range imgSpreadHitEffect {
 		dxlib.DeleteGraph(img)
 	}
+	for _, img := range imgVulcanHit1Effect {
+		dxlib.DeleteGraph(img)
+	}
+	for _, img := range imgVulcanHit2Effect {
+		dxlib.DeleteGraph(img)
+	}
 }
 
-func Get(typ int, x, y int) anim.Anim {
+func Get(typ int, x, y int, randRange int) anim.Anim {
+	ofsX := rand.Intn(2*randRange) - randRange
+	ofsY := rand.Intn(2*randRange) - randRange
+
 	switch typ {
 	case TypeNone:
 		return &noEffect{}
 	case TypeHitSmall:
-		return &effect{X: x, Y: y, images: imgHitSmallEffect, delay: 1}
+		return &effect{X: x, Y: y, images: imgHitSmallEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
 	case TypeHitBig:
-		return &effect{X: x, Y: y, images: imgHitBigEffect, delay: 1}
+		return &effect{X: x, Y: y, images: imgHitBigEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
 	case TypeExplode:
-		return &effect{X: x, Y: y, images: imgExplodeEffect, delay: explodeDelay}
+		return &effect{X: x, Y: y, images: imgExplodeEffect, delay: explodeDelay, ofsX: int32(ofsX), ofsY: int32(ofsY)}
 	case TypeCannonHit:
-		return &effect{X: x, Y: y, images: imgCannonHitEffect, delay: 1}
+		return &effect{X: x, Y: y, images: imgCannonHitEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
 	case TypeSpreadHit:
-		return &effect{X: x, Y: y, images: imgSpreadHitEffect, delay: 1}
+		return &effect{X: x, Y: y, images: imgSpreadHitEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+	case TypeVulcanHit1:
+		return &effect{X: x, Y: y, images: imgVulcanHit1Effect, delay: 2, ofsX: int32(ofsX), ofsY: int32(ofsY) - 30}
+	case TypeVulcanHit2:
+		return &effect{X: x, Y: y, images: imgVulcanHit2Effect, delay: 2, ofsX: int32(ofsX), ofsY: int32(ofsY) - 10}
 	}
 
 	panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
@@ -121,7 +152,7 @@ func (e *effect) Draw() {
 	}
 
 	x, y := battlecommon.ViewPos(e.X, e.Y)
-	dxlib.DrawRotaGraph(x, y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(x+e.ofsX, y+e.ofsY+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
 
 func (e *effect) DamageProc(dm *damage.Damage) {

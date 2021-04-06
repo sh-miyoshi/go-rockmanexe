@@ -143,6 +143,7 @@ type vulcan struct {
 	count    int
 	imageNo  int
 	atkCount int
+	hit      bool
 }
 
 func Init() error {
@@ -484,7 +485,7 @@ func (p *miniBomb) Process() (bool, error) {
 
 	if p.dx >= p.dist+38 {
 		// TODO 不発処理(画面外やパネル状況など)
-		anim.New(effect.Get(effect.TypeExplode, p.TargetX, p.TargetY))
+		anim.New(effect.Get(effect.TypeExplode, p.TargetX, p.TargetY, 0))
 		damage.New(damage.Damage{
 			PosX:          p.TargetX,
 			PosY:          p.TargetY,
@@ -671,7 +672,7 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		anim.New(effect.Get(effect.TypeSpreadHit, p.x, p.y))
+		anim.New(effect.Get(effect.TypeSpreadHit, p.x, p.y, 5))
 		damage.New(damage.Damage{
 			PosX:          p.x,
 			PosY:          p.y,
@@ -716,7 +717,36 @@ func (p *vulcan) Process() (bool, error) {
 	if p.count >= delayVulcan*1 {
 		if p.count%(delayVulcan*5) == delayVulcan*1 {
 			p.imageNo = p.imageNo%2 + 1
-			// TODO add damage
+			// Add damage
+			px, py := field.GetPos(p.OwnerID)
+			hit := false
+			for x := px + 1; x < field.FieldNumX; x++ {
+				if field.GetPanelInfo(x, py).ObjectID != "" {
+					damage.New(damage.Damage{
+						PosX:          x,
+						PosY:          py,
+						Power:         int(p.Power),
+						TTL:           1,
+						TargetType:    p.TargetType,
+						HitEffectType: effect.TypeSpreadHit,
+					})
+					anim.New(effect.Get(effect.TypeVulcanHit1, x, py, 20))
+					if p.hit && x < field.FieldNumX-1 {
+						anim.New(effect.Get(effect.TypeVulcanHit2, x+1, py, 20))
+						damage.New(damage.Damage{
+							PosX:          x + 1,
+							PosY:          py,
+							Power:         int(p.Power),
+							TTL:           1,
+							TargetType:    p.TargetType,
+							HitEffectType: effect.TypeNone,
+						})
+					}
+					hit = true
+					break
+				}
+			}
+			p.hit = hit
 			p.atkCount++
 			if p.atkCount == p.Times {
 				return true, nil
