@@ -115,8 +115,12 @@ func End() {
 }
 
 func Get(typ int, x, y int, randRange int) anim.Anim {
-	ofsX := rand.Intn(2*randRange) - randRange
-	ofsY := rand.Intn(2*randRange) - randRange
+	ofsX := 0
+	ofsY := 0
+	if randRange > 0 {
+		ofsX = rand.Intn(2*randRange) - randRange
+		ofsY = rand.Intn(2*randRange) - randRange
+	}
 
 	switch typ {
 	case TypeNone:
