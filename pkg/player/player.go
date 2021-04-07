@@ -16,7 +16,7 @@ const (
 	separater             = "#"
 
 	// FolderSize ...
-	FolderSize = 10 // debug
+	FolderSize = 30
 )
 
 // ChipInfo ...
@@ -43,56 +43,41 @@ func New() *Player {
 		HP:        defaultHP,
 		ShotPower: defaultShotPower,
 		ChipFolder: [FolderSize]ChipInfo{
-			{ID: chip.IDSpreadGun, Code: "*"},
-			{ID: chip.IDSpreadGun, Code: "*"},
-			{ID: chip.IDSpreadGun, Code: "*"},
-			{ID: chip.IDSpreadGun, Code: "*"},
-			{ID: chip.IDSpreadGun, Code: "*"},
-			{ID: chip.IDSpreadGun, Code: "*"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDHighCannon, Code: "d"},
+			{ID: chip.IDHighCannon, Code: "d"},
 			{ID: chip.IDMiniBomb, Code: "l"},
-			{ID: chip.IDSword, Code: "a"},
-			{ID: chip.IDWideSword, Code: "a"},
-			{ID: chip.IDLongSword, Code: "a"},
+			{ID: chip.IDMiniBomb, Code: "l"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDRecover10, Code: "l"},
+			{ID: chip.IDRecover10, Code: "l"},
+			{ID: chip.IDRecover10, Code: "*"},
+			{ID: chip.IDRecover10, Code: "*"},
+			{ID: chip.IDRecover30, Code: "l"},
+			{ID: chip.IDRecover30, Code: "l"},
+			{ID: chip.IDVulcan1, Code: "b"},
+			{ID: chip.IDVulcan1, Code: "b"},
+			{ID: chip.IDVulcan1, Code: "d"},
+			{ID: chip.IDVulcan1, Code: "d"},
+			{ID: chip.IDSpreadGun, Code: "n"},
+			{ID: chip.IDSpreadGun, Code: "n"},
+			{ID: chip.IDSpreadGun, Code: "m"},
+			{ID: chip.IDSpreadGun, Code: "m"},
 		},
 		WinNum:  0,
 		LoseNum: 0,
 	}
 
-	/* Correct Init Chip Folder
-	ChipFolder: [FolderSize]ChipInfo{
-		{ID: chip.IDCannon, Code: "b"},
-		{ID: chip.IDCannon, Code: "b"},
-		{ID: chip.IDCannon, Code: "c"},
-		{ID: chip.IDCannon, Code: "c"},
-		{ID: chip.IDHighCannon, Code: "d"},
-		{ID: chip.IDHighCannon, Code: "d"},
-		{ID: chip.IDMiniBomb, Code: "l"},
-		{ID: chip.IDMiniBomb, Code: "l"},
-		{ID: chip.IDMiniBomb, Code: "*"},
-		{ID: chip.IDMiniBomb, Code: "*"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDWideSword, Code: "s"},
-		{ID: chip.IDWideSword, Code: "s"},
-		{ID: chip.IDRecover10, Code: "l"},
-		{ID: chip.IDRecover10, Code: "l"},
-		{ID: chip.IDRecover10, Code: "*"},
-		{ID: chip.IDRecover10, Code: "*"},
-
-		{ID: chip.IDRecover30, Code: "l"},
-		{ID: chip.IDRecover30, Code: "l"},
-		{ID: chip.IDバルカン1, Code: "b"},
-		{ID: chip.IDバルカン1, Code: "b"},
-		{ID: chip.IDバルカン1, Code: "d"},
-		{ID: chip.IDバルカン1, Code: "d"},
-		{ID: chip.IDスプレッドガン, Code: "n"},
-		{ID: chip.IDスプレッドガン, Code: "n"},
-		{ID: chip.IDスプレッドガン, Code: "m"},
-		{ID: chip.IDスプレッドガン, Code: "m"},
-	}
-	*/
 }
 
 // TODO NewWithSaveData(fname string) (*Player, error)
