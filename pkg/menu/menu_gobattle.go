@@ -144,7 +144,6 @@ func goBattleProcess() bool {
 }
 
 func goBattleDraw() {
-	// TODO show name, preview image
 	dxlib.DrawBox(20, 30, common.ScreenX-20, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
 	dxlib.DrawBox(30, 40, 210, int32(len(goBattleSelectData)*35)+50, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
 
@@ -165,6 +164,19 @@ func goBattleDraw() {
 }
 
 func battleEnemies() []enemy.EnemyParam {
+	if len(goBattleSelectData) == 0 {
+		// Start from battle mode for debug
+		// return debug data
+		return []enemy.EnemyParam{
+			{
+				CharID: enemy.IDTarget,
+				PosX:   4,
+				PosY:   1,
+				HP:     1000,
+			},
+		}
+	}
+
 	res := []enemy.EnemyParam{}
 	for _, e := range goBattleSelectData[goBattleCursor].Enemies {
 		res = append(res, e.BattleParam)

@@ -96,21 +96,7 @@ func Draw() {
 }
 
 func GetBattleEnemies() []enemy.EnemyParam {
-	// TODO return battleEnemies()
-	return []enemy.EnemyParam{
-		{
-			CharID: enemy.IDTarget,
-			PosX:   4,
-			PosY:   1,
-			HP:     1000,
-		},
-		{
-			CharID: enemy.IDTarget,
-			PosX:   5,
-			PosY:   1,
-			HP:     1000,
-		},
-	}
+	return battleEnemies()
 }
 
 func stateChange(nextState int) {
