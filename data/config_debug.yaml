@@ -3,3 +3,4 @@ log:
 debug:
   enabled: true
   skip_title: true
+  skip_menu: true

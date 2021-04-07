@@ -14,6 +14,7 @@ type Config struct {
 	Debug struct {
 		Enabled   bool `yaml:"enabled"`
 		SkipTitle bool `yaml:"skip_title"`
+		SkipMenu  bool `yaml:"skip_menu"`
 	} `yaml:"debug"`
 }
 

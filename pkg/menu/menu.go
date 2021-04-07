@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
@@ -64,6 +65,10 @@ func End() {
 }
 
 func Process() error {
+	if config.Get().Debug.SkipMenu {
+		return ErrGoBattle
+	}
+
 	switch menuState {
 	case stateTop:
 		topProcess()
