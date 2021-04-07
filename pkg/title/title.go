@@ -41,12 +41,12 @@ func Init() error {
 	fname := common.ImagePath + "title/logo.png"
 	imgLogo = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 	fname = common.ImagePath + "title/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("Failed to load image %s", fname)
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	return nil
@@ -95,7 +95,7 @@ func Process() error {
 			case 1:
 				return ErrStartContinue
 			default:
-				return fmt.Errorf("Unrecognized cursor %d was specified", cursor)
+				return fmt.Errorf("unrecognized cursor %d was specified", cursor)
 			}
 		} else if inputs.CheckKey(inputs.KeyUp) == 1 && cursor > 0 {
 			cursor--
