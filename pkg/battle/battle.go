@@ -94,7 +94,7 @@ func Process() error {
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return fmt.Errorf("enemy init failed: %w", err)
 			}
-			stateChange(stateChipSelect) // debug
+			stateChange(stateChipSelect)
 			return nil
 		}
 	case stateChipSelect:

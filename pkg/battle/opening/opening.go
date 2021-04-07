@@ -43,16 +43,16 @@ func End() {
 }
 
 func Process() bool {
-	// count++
-	// if count > viewCount {
-	// 	count = 0
-	// 	showCount++
-	// 	if showCount >= len(enemies) {
-	// 		return true
-	// 	}
-	// }
-	// return false
-	return true // debug
+	count++
+	if count > viewCount {
+		count = 0
+		showCount++
+		if showCount >= len(enemies) {
+			return true
+		}
+	}
+	return false
+	// return true // debug
 }
 
 func Draw() {

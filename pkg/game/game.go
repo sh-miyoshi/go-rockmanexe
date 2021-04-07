@@ -52,7 +52,7 @@ func Process() error {
 				return fmt.Errorf("failed to process title: %w", err)
 			}
 			title.End()
-			stateChange(stateBattle) // debug
+			stateChange(stateMenu)
 			return nil
 		}
 	case stateMenu:
