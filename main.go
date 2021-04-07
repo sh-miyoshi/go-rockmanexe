@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"math/rand"
 	"runtime"
+	"time"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
@@ -23,6 +25,8 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "run as debug mode")
 	flag.StringVar(&logfile, "logfile", common.DefaultLogFile, "file path of application log")
 	flag.Parse()
+
+	rand.Seed(time.Now().Unix())
 
 	dxlib.Init("data/DxLib.dll")
 

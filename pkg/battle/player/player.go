@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 
 	"github.com/google/uuid"
@@ -104,14 +105,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
 	}
-	// TODO: srand
-	// Shuffle
-	// for i := 0; i < 10; i++ {
-	// 	for j := 0; j < len(res.ChipFolder); j++ {
-	// 		n := rand.Intn(len(res.ChipFolder))
-	// 		res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
-	// 	}
-	// }
+	// Shuffle folder
+	for i := 0; i < 10; i++ {
+		for j := 0; j < len(res.ChipFolder); j++ {
+			n := rand.Intn(len(res.ChipFolder))
+			res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
+		}
+	}
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
