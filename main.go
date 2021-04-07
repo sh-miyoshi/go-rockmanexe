@@ -19,15 +19,20 @@ func init() {
 
 func main() {
 	var debug bool
+	var logfile string
 	flag.BoolVar(&debug, "debug", false, "run as debug mode")
+	flag.StringVar(&logfile, "logfile", common.DefaultLogFile, "file path of application log")
 	flag.Parse()
+
+	dxlib.Init("data/DxLib.dll")
 
 	if debug {
 		common.ImagePath = "data/private/images/"
-		logger.InitLogger(true, "")
+		dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
+	} else {
+		dxlib.SetOutApplicationLogValidFlag(dxlib.FALSE)
 	}
-
-	dxlib.Init("DxLib.dll")
+	logger.InitLogger(debug, logfile)
 
 	fname := "data/font.ttf"
 	if res := dxlib.AddFontFile(fname); res == nil {
@@ -37,7 +42,6 @@ func main() {
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
 	dxlib.SetGraphMode(common.ScreenX, common.ScreenY)
-	dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
 
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
