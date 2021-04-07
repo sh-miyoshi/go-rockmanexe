@@ -2,3 +2,4 @@ Log.txt
 *.exe
 tmp/
 save.dat
+*.log
