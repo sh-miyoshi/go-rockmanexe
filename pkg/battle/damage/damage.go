@@ -49,3 +49,7 @@ func Get(x, y int) *Damage {
 func Remove(id string) {
 	delete(damages, id)
 }
+
+func RemoveAll() {
+	damages = make(map[string]*Damage)
+}

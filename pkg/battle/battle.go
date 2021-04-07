@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
@@ -71,6 +72,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 // End ...
 func End() {
 	anim.Cleanup()
+	damage.RemoveAll()
 	field.End()
 	playerInst.End()
 	skill.End()
