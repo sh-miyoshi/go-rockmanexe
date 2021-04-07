@@ -11,7 +11,8 @@ type NumberOption struct {
 	Color        int // defualt is NumberColorWhite
 	Centered     bool
 	RightAligned bool
-	Length       int // Required if RightAligned is true
+	Padding      *int
+	Length       int // Required if RightAligned is true or Padding is set
 }
 
 const (
@@ -130,6 +131,12 @@ func Number(x int32, y int32, number int32, opts ...NumberOption) {
 				panic(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
 			}
 			x += int32(n * numberSizeX)
+		} else if opts[0].Padding != nil {
+			v := *opts[0].Padding
+			n := opts[0].Length - len(nums)
+			for i := 0; i < n; i++ {
+				nums = append([]int{v}, nums...)
+			}
 		}
 	}
 

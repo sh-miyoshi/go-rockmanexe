@@ -108,6 +108,7 @@ func Draw() {
 		dxlib.DrawGraph(45, 30, imgFrame, dxlib.TRUE)
 		dxlib.DrawGraph(285, 180, imgWinIcon, dxlib.TRUE)
 		draw.String(105, 230, 0xffffff, "Winner バッチ")
+		showDeleteTime()
 	}
 }
 
@@ -126,4 +127,21 @@ func drawMsg() {
 		imgNo = len(imgMsg) - 1
 	}
 	dxlib.DrawGraph(105, 125, imgMsg[imgNo], dxlib.TRUE)
+}
+
+func showDeleteTime() {
+	tm := deleteTime / 60
+	if tm == 0 {
+		tm = 1
+	}
+
+	min := tm / 60
+	sec := tm % 60
+	if min > 99 {
+		min = 99
+	}
+	zero := 0
+	draw.Number(300, 77, int32(min), draw.NumberOption{Padding: &zero, Length: 2})
+	draw.String(333, 80, 0xffffff, "：")
+	draw.Number(350, 77, int32(sec), draw.NumberOption{Padding: &zero, Length: 2})
 }
