@@ -12,9 +12,8 @@
   - BGM
   - SE
 - 仕上げ
-  - debug, TODOの削除
+  - player lose
   - logの埋め込み
-  - ログをファイル出力
   - release方法確立
 
 ### v1.1

@@ -8,8 +8,7 @@ const (
 	// SaveFilePath ...
 	SaveFilePath = "data/save.dat"
 
-	MaxUint        = ^uint(0)
-	DefaultLogFile = "application.log"
+	MaxUint = ^uint(0)
 )
 
 const (

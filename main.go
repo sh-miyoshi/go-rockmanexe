@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"math/rand"
 	"runtime"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -20,23 +22,25 @@ func init() {
 }
 
 func main() {
-	var debug bool
-	var logfile string
-	flag.BoolVar(&debug, "debug", false, "run as debug mode")
-	flag.StringVar(&logfile, "logfile", common.DefaultLogFile, "file path of application log")
+	var confFile string
+	flag.StringVar(&confFile, "config", "data/config.yaml", "file path of config")
 	flag.Parse()
 
-	rand.Seed(time.Now().Unix())
+	if err := config.Init(confFile); err != nil {
+		msg := fmt.Sprintf("failed to init config: %v", err)
+		panic(msg)
+	}
 
+	rand.Seed(time.Now().Unix())
 	dxlib.Init("data/DxLib.dll")
 
-	if debug {
+	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
 		dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
 	} else {
 		dxlib.SetOutApplicationLogValidFlag(dxlib.FALSE)
 	}
-	logger.InitLogger(debug, logfile)
+	logger.InitLogger(config.Get().Debug.Enabled, config.Get().Log.FileName)
 
 	fname := "data/font.ttf"
 	if res := dxlib.AddFontFile(fname); res == nil {

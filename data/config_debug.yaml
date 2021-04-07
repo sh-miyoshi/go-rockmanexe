@@ -1,0 +1,5 @@
+log:
+  file: ""
+debug:
+  enabled: true
+  skip_title: true

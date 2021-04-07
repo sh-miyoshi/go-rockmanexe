@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 )
@@ -81,6 +82,10 @@ func Draw() {
 }
 
 func Process() error {
+	if config.Get().Debug.SkipTitle {
+		return ErrStartInit
+	}
+
 	switch state {
 	case stateBegin:
 		count++
