@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -48,6 +49,10 @@ func Init() error {
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	if err := sound.BGMPlay(sound.BGMTitle); err != nil {
+		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
 	return nil

@@ -23,8 +23,8 @@ const (
 )
 
 var (
-	// ImagePath ...
 	ImagePath = "data/images/"
+	SoundPath = "data/sounds/"
 
 	ProgramVersion = "development"
 )

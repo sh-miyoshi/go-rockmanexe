@@ -36,6 +36,7 @@ func main() {
 
 	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
+		common.SoundPath = "data/private/sounds/"
 		dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
 	} else {
 		dxlib.SetOutApplicationLogValidFlag(dxlib.FALSE)

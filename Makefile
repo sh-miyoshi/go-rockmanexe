@@ -7,3 +7,5 @@ dev:
 release:
 	.\tmp\DXArchive\DxaEncode.exe .\data\private\images
 	move .\data\private\images.dxa ".\data\"
+	.\tmp\DXArchive\DxaEncode.exe .\data\private\sounds
+	move .\data\private\sounds.dxa ".\data\"
