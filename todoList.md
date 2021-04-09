@@ -60,6 +60,38 @@
 - エンディング
 - シナリオ
 
+## Sound Effects
+
+### シーンごと
+
+- title
+  - [ ] 選択
+  - [x] 決定
+- menu
+  - top
+    - [x] 選択
+    - [ ] 決定
+  - folder
+    - [ ] スクロール
+    - [ ] キャンセル
+    - [ ] Denied(のちに決定)
+  - gobattle
+    - [ ] 選択
+    - [ ] キャンセル
+    - [ ] 決定(敵登場)
+  - record
+    - [ ] キャンセル
+- battle
+  - opening
+  - chip select
+  - before main
+  - main
+  - result win
+
+### 項目ごと
+
+- skill
+
 ## 未実装項目
 
 ### 全体

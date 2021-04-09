@@ -2,7 +2,7 @@ log:
   file: ""
 debug:
   enabled: true
-  skip_title: false
+  skip_title: true
   skip_menu: false
 bgm:
   disabled: true
