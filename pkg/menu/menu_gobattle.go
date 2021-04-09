@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 type selectEnemyData struct {
@@ -128,15 +129,19 @@ func goBattleEnd() {
 
 func goBattleProcess() bool {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
+		sound.On(sound.SECancel)
 		stateChange(stateTop)
 		return false
 	}
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		sound.On(sound.SEGoBattle)
 		return true
 	}
 	if inputs.CheckKey(inputs.KeyUp) == 1 && goBattleCursor > 0 {
+		sound.On(sound.SESelect)
 		goBattleCursor--
 	} else if inputs.CheckKey(inputs.KeyDown) == 1 && goBattleCursor < len(goBattleSelectData)-1 {
+		sound.On(sound.SESelect)
 		goBattleCursor++
 	}
 
