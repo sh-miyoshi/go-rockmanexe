@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
@@ -44,6 +45,10 @@ func End() {
 }
 
 func Process() bool {
+	if config.Get().Debug.SkipBattleOpening {
+		return true
+	}
+
 	if count == 0 {
 		sound.On(sound.SEEnemyAppear)
 	}
@@ -57,7 +62,6 @@ func Process() bool {
 		}
 	}
 	return false
-	// return true // debug
 }
 
 func Draw() {

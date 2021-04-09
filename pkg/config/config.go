@@ -12,9 +12,10 @@ type Config struct {
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
 	Debug struct {
-		Enabled   bool `yaml:"enabled"`
-		SkipTitle bool `yaml:"skip_title"`
-		SkipMenu  bool `yaml:"skip_menu"`
+		Enabled           bool `yaml:"enabled"`
+		SkipTitle         bool `yaml:"skip_title"`
+		SkipMenu          bool `yaml:"skip_menu"`
+		SkipBattleOpening bool `yaml:"skip_battle_opening"`
 	} `yaml:"debug"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`
