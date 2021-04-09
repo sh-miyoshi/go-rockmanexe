@@ -55,6 +55,7 @@ func folderProcess() {
 		sound.On(sound.SEDenied)
 	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		stateChange(stateTop)
+		sound.On(sound.SECancel)
 	} else {
 		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 			if folderPointer > 0 {
