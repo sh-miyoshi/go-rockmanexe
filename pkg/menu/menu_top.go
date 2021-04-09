@@ -28,6 +28,7 @@ func topEnd() {
 
 func topProcess() {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		sound.On(sound.SEMenuEnter)
 		switch topPointer {
 		case topSelectChipFolder:
 			stateChange(stateChipFolder)
