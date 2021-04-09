@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -43,6 +44,10 @@ func End() {
 }
 
 func Process() bool {
+	if count == 0 {
+		sound.On(sound.SEEnemyAppear)
+	}
+
 	count++
 	if count > viewCount {
 		count = 0

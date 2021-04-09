@@ -16,6 +16,7 @@ const (
 	SEDenied
 	SECancel
 	SEGoBattle
+	SEEnemyAppear
 
 	seMax
 )
@@ -33,6 +34,7 @@ func Init() error {
 	soundEffects[SEDenied] = dxlib.LoadSoundMem(basePath + "denied.mp3")
 	soundEffects[SECancel] = dxlib.LoadSoundMem(basePath + "cancel.mp3")
 	soundEffects[SEGoBattle] = dxlib.LoadSoundMem(basePath + "go_battle.mp3")
+	soundEffects[SEEnemyAppear] = dxlib.LoadSoundMem(basePath + "enemy_appear.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
