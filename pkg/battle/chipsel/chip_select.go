@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -60,6 +61,8 @@ func Init(folder []player.ChipInfo) error {
 	if num > 0 {
 		pointer = 0
 	}
+
+	sound.On(sound.SEChipSelectOpen)
 
 	return nil
 }
