@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 func init() {
@@ -62,6 +63,10 @@ func main() {
 	}
 	if err := draw.Init(); err != nil {
 		logger.Error("Failed to init drawing data: %+v", err)
+		return
+	}
+	if err := sound.Init(); err != nil {
+		logger.Error("Failed to init sound data: %+v", err)
 		return
 	}
 

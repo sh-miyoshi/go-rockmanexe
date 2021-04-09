@@ -16,7 +16,7 @@ const (
 
 var (
 	bgmFiles = [bgmTypeMax]string{
-		"bgm_title.mp3",
+		"title.mp3",
 	}
 )
 
@@ -27,7 +27,7 @@ func BGMPlay(typ int) error {
 
 	BGMStop()
 
-	fname := common.SoundPath + bgmFiles[typ]
+	fname := common.SoundPath + "bgm/" + bgmFiles[typ]
 	if res := dxlib.PlaySoundFile(fname, dxlib.DX_PLAYTYPE_LOOP); res == -1 {
 		return fmt.Errorf("failed to play BGM: %s", fname)
 	}

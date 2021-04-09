@@ -28,12 +28,14 @@ var (
 	state     int
 	cursor    int
 	selectMax int
+	waiting   int
 )
 
 func Init() error {
 	state = stateBegin
 	count = 0
 	cursor = 0
+	waiting = 0
 
 	selectMax = 1
 	if _, err := os.Stat(common.SaveFilePath); err == nil {
@@ -98,15 +100,24 @@ func Process() error {
 			state = stateSelect
 		}
 	case stateSelect:
-		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			switch cursor {
-			case 0:
-				return ErrStartInit
-			case 1:
-				return ErrStartContinue
-			default:
-				return fmt.Errorf("unrecognized cursor %d was specified", cursor)
+		if waiting > 0 {
+			waiting++
+			if waiting > 30 {
+				switch cursor {
+				case 0:
+					return ErrStartInit
+				case 1:
+					return ErrStartContinue
+				default:
+					return fmt.Errorf("unrecognized cursor %d was specified", cursor)
+				}
 			}
+			return nil
+		}
+
+		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			sound.On(sound.SETitleEnter)
+			waiting++
 		} else if inputs.CheckKey(inputs.KeyUp) == 1 && cursor > 0 {
 			cursor--
 		} else if inputs.CheckKey(inputs.KeyDown) == 1 && cursor < selectMax-1 {
