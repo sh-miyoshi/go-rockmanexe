@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 func recordInit() error {
@@ -15,6 +16,7 @@ func recordEnd() {
 
 func recordProcess() {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
+		sound.On(sound.SECancel)
 		stateChange(stateTop)
 	}
 }
