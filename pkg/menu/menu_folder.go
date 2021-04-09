@@ -50,7 +50,10 @@ func folderEnd() {
 }
 
 func folderProcess() {
-	if inputs.CheckKey(inputs.KeyCancel) == 1 {
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		// TODO chip exchange
+		sound.On(sound.SEDenied)
+	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		stateChange(stateTop)
 	} else {
 		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {

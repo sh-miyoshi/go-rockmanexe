@@ -13,6 +13,7 @@ const (
 	SETitleEnter SEType = iota
 	SESelect
 	SEMenuEnter
+	SEDenied
 
 	seMax
 )
@@ -27,6 +28,7 @@ func Init() error {
 	soundEffects[SETitleEnter] = dxlib.LoadSoundMem(basePath + "title_enter.mp3")
 	soundEffects[SESelect] = dxlib.LoadSoundMem(basePath + "select.mp3")
 	soundEffects[SEMenuEnter] = dxlib.LoadSoundMem(basePath + "menu_enter.mp3")
+	soundEffects[SEDenied] = dxlib.LoadSoundMem(basePath + "denied.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
