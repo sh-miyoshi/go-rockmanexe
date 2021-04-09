@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -52,16 +53,20 @@ func folderProcess() {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		stateChange(stateTop)
 	} else {
-		if inputs.CheckKey(inputs.KeyUp)%20 == 1 {
+		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 			if folderPointer > 0 {
+				sound.On(sound.SESelect)
 				folderPointer--
 			} else if folderScroll > 0 {
+				sound.On(sound.SESelect)
 				folderScroll--
 			}
-		} else if inputs.CheckKey(inputs.KeyDown)%20 == 1 {
+		} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
 			if folderPointer < folderShowNum-1 {
+				sound.On(sound.SESelect)
 				folderPointer++
 			} else if folderScroll < player.FolderSize-folderShowNum {
+				sound.On(sound.SESelect)
 				folderScroll++
 			}
 		}
