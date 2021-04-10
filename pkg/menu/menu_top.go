@@ -40,12 +40,12 @@ func topProcess() {
 	} else {
 		if inputs.CheckKey(inputs.KeyUp) == 1 {
 			if topPointer > 0 {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				topPointer--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
 			if topPointer < topSelectMax-1 {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				topPointer++
 			}
 		}

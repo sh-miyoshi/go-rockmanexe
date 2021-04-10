@@ -138,10 +138,10 @@ func goBattleProcess() bool {
 		return true
 	}
 	if inputs.CheckKey(inputs.KeyUp) == 1 && goBattleCursor > 0 {
-		sound.On(sound.SESelect)
+		sound.On(sound.SECursorMove)
 		goBattleCursor--
 	} else if inputs.CheckKey(inputs.KeyDown) == 1 && goBattleCursor < len(goBattleSelectData)-1 {
-		sound.On(sound.SESelect)
+		sound.On(sound.SECursorMove)
 		goBattleCursor++
 	}
 

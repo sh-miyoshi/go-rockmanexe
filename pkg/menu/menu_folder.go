@@ -59,18 +59,18 @@ func folderProcess() {
 	} else {
 		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 			if folderPointer > 0 {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				folderPointer--
 			} else if folderScroll > 0 {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				folderScroll--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
 			if folderPointer < folderShowNum-1 {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				folderPointer++
 			} else if folderScroll < player.FolderSize-folderShowNum {
-				sound.On(sound.SESelect)
+				sound.On(sound.SECursorMove)
 				folderScroll++
 			}
 		}
