@@ -11,8 +11,11 @@
 - 音楽関係
   - BGM
   - SE
+- player lose
+  - lose effect
+  - game over画面
+  - titleに戻る
 - 仕上げ
-  - player lose
   - logの埋め込み
   - release方法確立
 
@@ -65,7 +68,6 @@
 ### シーンごと
 
 - title
-  - [ ] 選択
   - [x] 決定
 - menu
   - top
@@ -85,11 +87,11 @@
   - opening
     - [x] 敵登場
   - chip select
-    - [ ] フレームイン
-    - [ ] カーソル移動
-    - [ ] チップ選択
-    - [ ] キャンセル
-    - [ ] 決定
+    - [x] フレームイン
+    - [x] カーソル移動
+    - [x] チップ選択
+    - [x] キャンセル
+    - [x] 決定
   - before main
   - main
     - [ ] キャラアニメーション
