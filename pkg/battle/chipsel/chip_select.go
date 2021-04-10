@@ -121,7 +121,7 @@ func Process() bool {
 
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if pointer == sendBtnNo {
-			// TODO
+			sound.On(sound.SEChipSelectEnd)
 			return true
 		}
 		if selectable(pointer) {

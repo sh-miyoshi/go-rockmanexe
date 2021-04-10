@@ -19,6 +19,7 @@ const (
 	SEEnemyAppear
 	SEChipSelectOpen
 	SESelect
+	SEChipSelectEnd
 
 	seMax
 )
@@ -39,6 +40,7 @@ func Init() error {
 	soundEffects[SEEnemyAppear] = dxlib.LoadSoundMem(basePath + "enemy_appear.mp3")
 	soundEffects[SEChipSelectOpen] = dxlib.LoadSoundMem(basePath + "chip_select_open.mp3")
 	soundEffects[SESelect] = dxlib.LoadSoundMem(basePath + "select.mp3")
+	soundEffects[SEChipSelectEnd] = dxlib.LoadSoundMem(basePath + "chip_select_end.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
