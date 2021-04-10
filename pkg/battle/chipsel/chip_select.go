@@ -78,10 +78,12 @@ func Draw() {
 
 	// Show chip data
 	for i, s := range selectList {
-		// Show Icon
 		x := i*32 + 17
-		dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, selectable(i)), dxlib.TRUE)
 		draw.ChipCode(int32(x+10), 240, s.Code, 50)
+		if !slice.Contains(selected, i) {
+			// Show Icon
+			dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, selectable(i)), dxlib.TRUE)
+		}
 
 		// Show Detail Data
 		if i == pointer {
@@ -119,10 +121,14 @@ func Process() bool {
 
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if pointer == sendBtnNo {
+			// TODO
 			return true
 		}
 		if selectable(pointer) {
+			sound.On(sound.SESelect)
 			selected = append(selected, pointer)
+		} else {
+			sound.On(sound.SEDenied)
 		}
 	} else {
 		if max == 0 {
@@ -131,9 +137,11 @@ func Process() bool {
 
 		if inputs.CheckKey(inputs.KeyCancel) == 1 {
 			if len(selected) > 0 {
+				sound.On(sound.SECancel)
 				selected = selected[:len(selected)-1]
 			}
 		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+			sound.On(sound.SECursorMove)
 			if pointer == max-1 {
 				pointer = sendBtnNo
 			} else if pointer == sendBtnNo {
@@ -142,6 +150,7 @@ func Process() bool {
 				pointer++
 			}
 		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+			sound.On(sound.SECursorMove)
 			if pointer == sendBtnNo {
 				pointer = max - 1
 			} else if pointer == 0 {
