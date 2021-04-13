@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	defaultHP        uint = 10
+	defaultHP        uint = 100
 	defaultShotPower uint = 1
 	separater             = "#"
 
