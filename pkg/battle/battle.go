@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
@@ -14,7 +13,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/win"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 )
@@ -25,6 +26,7 @@ const (
 	stateBeforeMain
 	stateMain
 	stateResultWin
+	stateResultLose
 
 	stateMax
 )
@@ -35,6 +37,8 @@ var (
 	playerInst  *battleplayer.BattlePlayer
 	enemyList   []enemy.EnemyParam
 	gameCount   int
+	b4mainInst  *titlemsg.TitleMsg
+	loseInst    *titlemsg.TitleMsg
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -46,6 +50,8 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	gameCount = 0
 	battleCount = 0
 	battleState = stateOpening
+	b4mainInst = nil
+	loseInst = nil
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -113,13 +119,16 @@ func Process() error {
 		}
 	case stateBeforeMain:
 		if battleCount == 0 {
-			if err := b4main.Init(); err != nil {
+			fname := common.ImagePath + "battle/msg_start.png"
+			var err error
+			b4mainInst, err = titlemsg.New(fname)
+			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
 		}
 
-		if b4main.Process() {
-			b4main.End()
+		if b4mainInst.Process() {
+			b4mainInst.End()
 			stateChange(stateMain)
 			return nil
 		}
@@ -134,8 +143,9 @@ func Process() error {
 			stateChange(stateChipSelect)
 			playerInst.NextAction = battleplayer.NextActNone
 			return nil
-		case battleplayer.MextActLose:
-			return ErrLose
+		case battleplayer.NextActLose:
+			stateChange(stateResultLose)
+			return nil
 		}
 		if err := enemy.MgrProcess(); err != nil {
 			if errors.Is(err, enemy.ErrGameEnd) {
@@ -160,6 +170,22 @@ func Process() error {
 		if win.Process() {
 			return ErrWin
 		}
+	case stateResultLose:
+		if battleCount == 0 {
+			fname := common.ImagePath + "battle/msg_lose.png"
+			var err error
+			loseInst, err = titlemsg.New(fname)
+			if err != nil {
+				return fmt.Errorf("failed to initialize lose: %w", err)
+			}
+		}
+
+		if loseInst.Process() {
+			loseInst.End()
+			// TODO battleplayer.End(), anim.Delete(battleplayer.ID)
+			// TODO return ErrLose
+			return nil
+		}
 	}
 
 	battleCount++
@@ -179,12 +205,19 @@ func Draw() {
 		chipsel.Draw()
 	case stateBeforeMain:
 		playerInst.DrawFrame(false, true)
-		b4main.Draw()
+		if b4mainInst != nil {
+			b4mainInst.Draw()
+		}
 	case stateMain:
 		playerInst.DrawFrame(false, true)
 	case stateResultWin:
 		playerInst.DrawFrame(false, true)
 		win.Draw()
+	case stateResultLose:
+		playerInst.DrawFrame(false, false)
+		if loseInst != nil {
+			loseInst.Draw()
+		}
 	}
 }
 

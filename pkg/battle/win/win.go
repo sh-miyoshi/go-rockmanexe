@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -18,17 +19,13 @@ const (
 	stateMax
 )
 
-const (
-	msgDelay = 4
-)
-
 var (
 	imgFrame   int32
-	imgMsg     []int32
 	imgWinIcon int32
 	count      int
 	state      int
 	deleteTime int
+	winMsgInst *titlemsg.TitleMsg
 )
 
 func Init(gameTime int) error {
@@ -42,28 +39,24 @@ func Init(gameTime int) error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	imgMsg = make([]int32, 3)
-	fname = common.ImagePath + "battle/msg_win.png"
-	if res := dxlib.LoadDivGraph(fname, 3, 1, 3, 272, 32, imgMsg); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
 	fname = common.ImagePath + "battle/win_icon.png"
 	imgWinIcon = dxlib.LoadGraph(fname)
 	if imgWinIcon == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	return nil
+	fname = common.ImagePath + "battle/msg_win.png"
+	var err error
+	winMsgInst, err = titlemsg.New(fname)
+
+	return err
 }
 
 func End() {
 	dxlib.DeleteGraph(imgFrame)
 	dxlib.DeleteGraph(imgWinIcon)
-	for _, img := range imgMsg {
-		dxlib.DeleteGraph(img)
-	}
-	imgMsg = []int32{}
+	winMsgInst.End()
+	winMsgInst = nil
 }
 
 func Process() bool {
@@ -71,7 +64,7 @@ func Process() bool {
 
 	switch state {
 	case stateMsg:
-		if count >= len(imgMsg)*msgDelay+20 {
+		if winMsgInst != nil && winMsgInst.Process() {
 			stateChange(stateFrameIn)
 			return false
 		}
@@ -90,14 +83,11 @@ func Process() bool {
 }
 
 func Draw() {
-	if len(imgMsg) == 0 {
-		// Waiting initialize
-		return
-	}
-
 	switch state {
 	case stateMsg:
-		drawMsg()
+		if winMsgInst != nil {
+			winMsgInst.Draw()
+		}
 	case stateFrameIn:
 		x := int32(count * 2)
 		if x > 45 {
@@ -119,14 +109,6 @@ func stateChange(nextState int) {
 	}
 	state = nextState
 	count = 0
-}
-
-func drawMsg() {
-	imgNo := count / msgDelay
-	if imgNo >= len(imgMsg) {
-		imgNo = len(imgMsg) - 1
-	}
-	dxlib.DrawGraph(105, 125, imgMsg[imgNo], dxlib.TRUE)
 }
 
 func showDeleteTime() {

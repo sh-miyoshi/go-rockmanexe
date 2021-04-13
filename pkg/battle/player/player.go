@@ -35,7 +35,7 @@ const (
 const (
 	NextActNone int = iota
 	NextActChipSelect
-	MextActLose
+	NextActLose
 )
 
 type act struct {
@@ -49,6 +49,12 @@ type act struct {
 	keepCount int
 	pPosX     *int
 	pPosY     *int
+}
+
+type deleteAction struct {
+	image int32
+	x, y  int
+	count int
 }
 
 // BattlePlayer ...
@@ -282,6 +288,17 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
+	if p.HP <= 0 {
+		// Player deleted
+		img := &imgPlayers[playerAnimDamage][1]
+		newDelete(*img, p.PosX, p.PosY)
+		*img = -1 // DeleteGraph at delete animation
+		p.NextAction = NextActLose
+		p.EnableAct = false
+		p.invincibleCount = 15 // do not show player image
+		return false, nil
+	}
+
 	if p.invincibleCount > 0 {
 		p.invincibleCount++
 		if p.invincibleCount > invincibleTime {
@@ -290,9 +307,6 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	p.GaugeCount += 4 // TODO GaugeSpeed
-
-	// TODO delete process
-	// TODO return true, nil and set NextActLose if dead
 
 	if p.act.Process() {
 		return false, nil
@@ -488,4 +502,42 @@ func (a *act) GetImage() int32 {
 	}
 
 	return imgPlayers[a.typ][imgNo]
+}
+
+func newDelete(image int32, x, y int) {
+	anim.New(&deleteAction{
+		image: image,
+		x:     x,
+		y:     y,
+	})
+}
+
+func (p *deleteAction) Process() (bool, error) {
+	p.count++
+	if p.count == 15 {
+		dxlib.DeleteGraph(p.image)
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *deleteAction) Draw() {
+	x, y := battlecommon.ViewPos(p.x, p.y)
+
+	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
+	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
+	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
+	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+}
+
+func (p *deleteAction) DamageProc(dm *damage.Damage) {
+}
+
+func (p *deleteAction) GetParam() anim.Param {
+	return anim.Param{
+		PosX:     p.x,
+		PosY:     p.y,
+		AnimType: anim.TypeObject,
+	}
 }
