@@ -84,7 +84,6 @@ func Process() error {
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, battle.ErrLose) {
-				playerInfo.LoseNum++
 				// playerInfo.Save(common.SaveFilePath, nil)
 				stateChange(stateMenu)
 				return nil

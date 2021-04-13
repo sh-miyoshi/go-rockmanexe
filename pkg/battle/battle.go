@@ -182,9 +182,7 @@ func Process() error {
 
 		if loseInst.Process() {
 			loseInst.End()
-			// TODO battleplayer.End(), anim.Delete(battleplayer.ID)
-			// TODO return ErrLose
-			return nil
+			return ErrLose
 		}
 	}
 

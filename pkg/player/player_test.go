@@ -12,10 +12,9 @@ func TestSave(t *testing.T) {
 		ShotPower:  2,
 		ChipFolder: [FolderSize]ChipInfo{},
 
-		WinNum:  3,
-		LoseNum: 4,
+		WinNum: 3,
 	}
-	expect := "development#1#2#3#4#"
+	expect := "development#0#1#2#3#"
 	for i := 0; i < FolderSize; i++ {
 		expect += "0#"
 	}

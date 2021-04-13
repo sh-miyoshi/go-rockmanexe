@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	defaultHP        uint = 100
+	defaultHP        uint = 10
 	defaultShotPower uint = 1
 	separater             = "#"
 
@@ -33,7 +33,6 @@ type Player struct {
 	ChipFolder [FolderSize]ChipInfo
 
 	WinNum    int
-	LoseNum   int
 	PlayCount uint
 }
 
@@ -74,8 +73,7 @@ func New() *Player {
 			{ID: chip.IDSpreadGun, Code: "m"},
 			{ID: chip.IDSpreadGun, Code: "m"},
 		},
-		WinNum:  0,
-		LoseNum: 0,
+		WinNum: 0,
 	}
 
 }
@@ -94,8 +92,6 @@ func (p *Player) Save(fname string, key []byte) error {
 	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatInt(int64(p.LoseNum), 10))
 	buf.WriteString(separater)
 	for _, c := range p.ChipFolder {
 		buf.WriteString(fmt.Sprintf("%d%s#", c.ID, c.Code))
