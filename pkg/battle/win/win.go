@@ -55,8 +55,10 @@ func Init(gameTime int) error {
 func End() {
 	dxlib.DeleteGraph(imgFrame)
 	dxlib.DeleteGraph(imgWinIcon)
-	winMsgInst.End()
-	winMsgInst = nil
+	if winMsgInst != nil {
+		winMsgInst.End()
+		winMsgInst = nil
+	}
 }
 
 func Process() bool {
