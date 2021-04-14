@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -353,7 +354,9 @@ func (p *cannon) Draw() {
 
 func (p *cannon) Process() (bool, error) {
 	p.count++
+
 	if p.count == 20 {
+		sound.On(sound.SECannon)
 		px, py := field.GetPos(p.OwnerID)
 		dm := damage.Damage{
 			PosY:          py,
