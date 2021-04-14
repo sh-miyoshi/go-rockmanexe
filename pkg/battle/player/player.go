@@ -78,9 +78,10 @@ type BattlePlayer struct {
 }
 
 const (
-	gaugeMaxCount  = 1200
-	chargeTime     = 180 // TODO 変数化
-	invincibleTime = 120
+	gaugeMaxCount   = 1200
+	chargeTime      = 180 // TODO 変数化
+	invincibleTime  = 120
+	chargeViewDelay = 20
 )
 
 var (
@@ -229,7 +230,7 @@ func (p *BattlePlayer) Draw() {
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 
 	// Show charge image
-	if p.ChargeCount > 20 {
+	if p.ChargeCount > chargeViewDelay {
 		n := 0
 		if p.ChargeCount > chargeTime {
 			n = 1
@@ -372,6 +373,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 	// Rock buster
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		p.ChargeCount++
+		if p.ChargeCount == chargeViewDelay {
+			sound.On(sound.SEBusterCharging)
+		}
+		if p.ChargeCount == chargeTime {
+			sound.On(sound.SEBusterCharged)
+		}
 	} else if p.ChargeCount > 0 {
 		p.act.Charged = p.ChargeCount > chargeTime
 		p.act.ShotPower = p.ShotPower
