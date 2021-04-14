@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -313,6 +314,10 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if p.GaugeCount >= gaugeMaxCount {
+		if p.GaugeCount == gaugeMaxCount {
+			sound.On(sound.SEGaugeMax)
+		}
+
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
 			p.GaugeCount = 0

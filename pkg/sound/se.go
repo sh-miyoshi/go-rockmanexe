@@ -20,6 +20,7 @@ const (
 	SEChipSelectOpen
 	SESelect
 	SEChipSelectEnd
+	SEGaugeMax
 
 	seMax
 )
@@ -41,6 +42,7 @@ func Init() error {
 	soundEffects[SEChipSelectOpen] = dxlib.LoadSoundMem(basePath + "chip_select_open.mp3")
 	soundEffects[SESelect] = dxlib.LoadSoundMem(basePath + "select.mp3")
 	soundEffects[SEChipSelectEnd] = dxlib.LoadSoundMem(basePath + "chip_select_end.mp3")
+	soundEffects[SEGaugeMax] = dxlib.LoadSoundMem(basePath + "gauge_max.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
