@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
@@ -169,7 +170,7 @@ func goBattleDraw() {
 }
 
 func battleEnemies() []enemy.EnemyParam {
-	if len(goBattleSelectData) == 0 {
+	if config.Get().Debug.SkipMenu {
 		// Start from battle mode for debug
 		// return debug data
 		return []enemy.EnemyParam{
