@@ -11,10 +11,6 @@
 - 音楽関係
   - BGM
   - SE
-- player lose
-  - lose effect
-  - game over画面
-  - titleに戻る
 - 仕上げ
   - logの埋め込み
   - release方法確立
@@ -96,16 +92,31 @@
   - main
     - [ ] キャラアニメーション
     - [ ] スキル
-    - [ ] カスタムゲージマックス
+    - [x] カスタムゲージマックス
   - result win
     - [ ] 敵デリート
     - [ ] アイテム登場
     - [ ] 決定
+  - result lose
+    - [ ] player dead
 
 ### 項目ごと
 
 - skill
+  - [ ] Cannon
+  - [ ] HighCannon
+  - [ ] MegaCannon
+  - [ ] MiniBomb
+  - [ ] Sword
+  - [ ] WideSword
+  - [ ] LongSword
+  - [ ] ShockWave
+  - [ ] Recover
+  - [ ] SpreadGun
+  - [ ] Vulcan1
 - animation
+  - player
+    - [ ] buster
 
 ## 未実装項目
 
