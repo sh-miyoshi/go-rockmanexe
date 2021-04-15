@@ -5,8 +5,13 @@ const (
 	ScreenX = 480
 	// ScreenY is y size of screen
 	ScreenY = 320
-	// SaveFilePath ...
-	SaveFilePath = "data/save.dat"
+
+	SaveFilePath      = "data/save.dat"
+	DefaultLogFile    = "application.log"
+	DefaultConfigFile = "data/config.yaml"
+	DxlibDLLFilePath  = "data/Dxlib.dll"
+	FontFilePath      = "data/font.ttf"
+	ChipFilePath      = "data/chipList.yaml"
 
 	MaxUint = ^uint(0)
 )

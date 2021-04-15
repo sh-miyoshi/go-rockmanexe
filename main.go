@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -24,7 +25,7 @@ func init() {
 
 func main() {
 	var confFile string
-	flag.StringVar(&confFile, "config", "data/config.yaml", "file path of config")
+	flag.StringVar(&confFile, "config", common.DefaultConfigFile, "file path of config")
 	flag.Parse()
 
 	if err := config.Init(confFile); err != nil {
@@ -33,7 +34,7 @@ func main() {
 	}
 
 	rand.Seed(time.Now().Unix())
-	dxlib.Init("data/DxLib.dll")
+	dxlib.Init(common.DxlibDLLFilePath)
 
 	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
@@ -44,9 +45,8 @@ func main() {
 	}
 	logger.InitLogger(config.Get().Debug.Enabled, config.Get().Log.FileName)
 
-	fname := "data/font.ttf"
-	if res := dxlib.AddFontFile(fname); res == nil {
-		logger.Error("Failed to load font data %s", fname)
+	if res := dxlib.AddFontFile(common.FontFilePath); res == nil {
+		logger.Error("Failed to load font data %s", common.FontFilePath)
 		return
 	}
 
@@ -56,28 +56,20 @@ func main() {
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
-	inputs.InitByDefault()
-	if err := chip.Init("data/chipList.yaml"); err != nil {
-		logger.Error("Failed to init chip data: %+v", err)
-		return
-	}
-	if err := draw.Init(); err != nil {
-		logger.Error("Failed to init drawing data: %+v", err)
-		return
-	}
-	if err := sound.Init(); err != nil {
-		logger.Error("Failed to init sound data: %+v", err)
-		return
-	}
-
 	count := 0
+	var exitErr error
+
+	if err := appInit(); err != nil {
+		logger.Error("Failed to init application: %+v", err)
+		exitErr = errors.New("ゲーム初期化時")
+	}
 
 MAIN:
-	for dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
+	for exitErr == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
 		if err := game.Process(); err != nil {
 			logger.Error("Failed to play game: %+v", err)
-			// TODO show to user
+			exitErr = errors.New("ゲームプレイ中")
 			break MAIN
 		}
 		game.Draw()
@@ -89,5 +81,28 @@ MAIN:
 
 	}
 
+	if exitErr != nil {
+		dxlib.ClearDrawScreen()
+		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", exitErr.Error())
+		dxlib.DrawFormatString(10, 40, 0xff0000, "詳細はログを参照してください。")
+		dxlib.ScreenFlip()
+		dxlib.WaitKey()
+	}
+
 	dxlib.DxLib_End()
+}
+
+func appInit() error {
+	inputs.InitByDefault()
+	if err := chip.Init(common.ChipFilePath); err != nil {
+		return fmt.Errorf("chip init failed: %w", err)
+	}
+	if err := draw.Init(); err != nil {
+		return fmt.Errorf("drawing data init failed: %w", err)
+	}
+	if err := sound.Init(); err != nil {
+		return fmt.Errorf("sound init failed: %w", err)
+	}
+
+	return nil
 }
