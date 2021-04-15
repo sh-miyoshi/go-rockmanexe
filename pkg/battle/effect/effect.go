@@ -9,6 +9,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -20,6 +21,8 @@ const (
 	TypeSpreadHit
 	TypeVulcanHit1
 	TypeVulcanHit2
+
+	typeMax
 )
 
 const (
@@ -34,11 +37,13 @@ var (
 	imgSpreadHitEffect  []int32
 	imgVulcanHit1Effect []int32
 	imgVulcanHit2Effect []int32
+	sounds              [typeMax]sound.SEType
 )
 
 type effect struct {
-	X int
-	Y int
+	X    int
+	Y    int
+	Type int
 
 	count  int
 	images []int32
@@ -87,6 +92,11 @@ func Init() error {
 		imgVulcanHit2Effect = append(imgVulcanHit2Effect, tmp[i+4])
 	}
 
+	for i := 0; i < typeMax; i++ {
+		sounds[i] = -1
+	}
+	sounds[TypeCannonHit] = sound.SECannonHit
+
 	return nil
 }
 
@@ -122,30 +132,51 @@ func Get(typ int, x, y int, randRange int) anim.Anim {
 		ofsY = rand.Intn(2*randRange) - randRange
 	}
 
+	res := &effect{
+		Type:  typ,
+		X:     x,
+		Y:     y,
+		delay: 1,
+		ofsX:  int32(ofsX),
+		ofsY:  int32(ofsY),
+	}
+
 	switch typ {
 	case TypeNone:
 		return &noEffect{}
 	case TypeHitSmall:
-		return &effect{X: x, Y: y, images: imgHitSmallEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+		res.images = imgHitSmallEffect
 	case TypeHitBig:
-		return &effect{X: x, Y: y, images: imgHitBigEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+		res.images = imgHitBigEffect
 	case TypeExplode:
-		return &effect{X: x, Y: y, images: imgExplodeEffect, delay: explodeDelay, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+		res.images = imgExplodeEffect
+		res.delay = explodeDelay
 	case TypeCannonHit:
-		return &effect{X: x, Y: y, images: imgCannonHitEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+		res.images = imgCannonHitEffect
 	case TypeSpreadHit:
-		return &effect{X: x, Y: y, images: imgSpreadHitEffect, delay: 1, ofsX: int32(ofsX), ofsY: int32(ofsY)}
+		res.images = imgSpreadHitEffect
 	case TypeVulcanHit1:
-		return &effect{X: x, Y: y, images: imgVulcanHit1Effect, delay: 2, ofsX: int32(ofsX), ofsY: int32(ofsY) - 30}
+		res.images = imgVulcanHit1Effect
+		res.ofsY -= 30
 	case TypeVulcanHit2:
-		return &effect{X: x, Y: y, images: imgVulcanHit2Effect, delay: 2, ofsX: int32(ofsX), ofsY: int32(ofsY) - 10}
+		res.images = imgVulcanHit2Effect
+		res.ofsY -= 10
+	default:
+		panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
 	}
 
-	panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
+	return res
 }
 
 func (e *effect) Process() (bool, error) {
 	e.count++
+
+	if e.count == 1 {
+		if sounds[e.Type] != -1 {
+			sound.On(sounds[e.Type])
+		}
+	}
+
 	return e.count >= len(e.images)*e.delay, nil
 }
 
