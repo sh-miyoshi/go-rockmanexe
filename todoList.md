@@ -93,6 +93,7 @@
     - [ ] キャラアニメーション
     - [ ] スキル
     - [x] カスタムゲージマックス
+    - [ ] フォルダオープン
   - result win
     - [ ] 敵デリート
     - [ ] アイテム登場
@@ -103,9 +104,9 @@
 ### 項目ごと
 
 - skill
-  - [ ] Cannon
-  - [ ] HighCannon
-  - [ ] MegaCannon
+  - [x] Cannon
+  - [x] HighCannon
+  - [x] MegaCannon
   - [ ] MiniBomb
   - [ ] Sword
   - [ ] WideSword
@@ -116,7 +117,18 @@
   - [ ] Vulcan1
 - animation
   - player
-    - [ ] buster
+    - [ ] damaged
+    - [x] buster
+    - [x] charge
+    - [x] charged
+- effect
+  - [ ] TypeHitSmall
+  - [ ] TypeHitBig
+  - [ ] TypeExplode
+  - [ ] TypeCannonHit
+  - [ ] TypeSpreadHit
+  - [ ] TypeVulcanHit1
+  - [ ] TypeVulcanHit2
 
 ## 未実装項目
 
