@@ -380,6 +380,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			sound.On(sound.SEBusterCharged)
 		}
 	} else if p.ChargeCount > 0 {
+		sound.On(sound.SEBusterShot)
 		p.act.Charged = p.ChargeCount > chargeTime
 		p.act.ShotPower = p.ShotPower
 		p.act.SetAnim(playerAnimBuster, 0)

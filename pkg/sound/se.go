@@ -24,6 +24,7 @@ const (
 	SECannon
 	SEBusterCharging
 	SEBusterCharged
+	SEBusterShot
 
 	seMax
 )
@@ -49,12 +50,15 @@ func Init() error {
 	soundEffects[SECannon] = dxlib.LoadSoundMem(basePath + "cannon.mp3")
 	soundEffects[SEBusterCharging] = dxlib.LoadSoundMem(basePath + "buster_charging.mp3")
 	soundEffects[SEBusterCharged] = dxlib.LoadSoundMem(basePath + "buster_charged.mp3")
+	soundEffects[SEBusterShot] = dxlib.LoadSoundMem(basePath + "buster_shot.wav")
 
 	for i, s := range soundEffects {
 		if s == -1 {
 			return fmt.Errorf("failed to load %d sound", i)
 		}
 	}
+
+	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEBusterShot])
 
 	return nil
 }
