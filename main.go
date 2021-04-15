@@ -64,6 +64,7 @@ func main() {
 		exitErr = errors.New("ゲーム初期化時")
 	}
 
+	logger.Info("Successfully init application.")
 MAIN:
 	for exitErr == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
@@ -75,6 +76,7 @@ MAIN:
 		game.Draw()
 
 		if dxlib.CheckHitKey(dxlib.KEY_INPUT_ESCAPE) == 1 {
+			logger.Info("Game end by escape command")
 			break MAIN
 		}
 		count++
