@@ -488,6 +488,7 @@ func (p *miniBomb) Process() (bool, error) {
 
 	if p.dx >= p.dist+38 {
 		// TODO 不発処理(画面外やパネル状況など)
+		sound.On(sound.SEExplode)
 		anim.New(effect.Get(effect.TypeExplode, p.TargetX, p.TargetY, 0))
 		damage.New(damage.Damage{
 			PosX:          p.TargetX,
