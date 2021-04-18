@@ -46,6 +46,8 @@ var (
 
 // Init ...
 func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
+	logger.Info("Init battle data ...")
+
 	enemyList = enemies
 	gameCount = 0
 	battleCount = 0
