@@ -3,6 +3,7 @@
 ## バグ
 
 - ミニボムがplayer animとあってない
+- ダメージ発生時にリカバリーのエフェクト(処理)が消える
 
 ## マイルストーン
 
@@ -108,11 +109,11 @@
   - [x] HighCannon
   - [x] MegaCannon
   - [ ] MiniBomb
-  - [ ] Sword
-  - [ ] WideSword
-  - [ ] LongSword
+  - [x] Sword
+  - [x] WideSword
+  - [x] LongSword
   - [ ] ShockWave
-  - [ ] Recover
+  - [x] Recover
   - [ ] SpreadGun
   - [ ] Vulcan1
 - animation
@@ -122,10 +123,10 @@
     - [x] charge
     - [x] charged
 - effect
-  - [ ] TypeHitSmall
-  - [ ] TypeHitBig
-  - [ ] TypeExplode
-  - [ ] TypeCannonHit
+  - [x] TypeHitSmall
+  - [x] TypeHitBig
+  - [x] TypeExplode
+  - [x] TypeCannonHit
   - [ ] TypeSpreadHit
   - [ ] TypeVulcanHit1
   - [ ] TypeVulcanHit2
