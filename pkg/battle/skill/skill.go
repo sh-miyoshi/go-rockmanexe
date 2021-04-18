@@ -268,6 +268,10 @@ func End() {
 		dxlib.DeleteGraph(imgVulcan[i])
 	}
 	imgVulcan = []int32{}
+	for i := 0; i < len(imgRecover); i++ {
+		dxlib.DeleteGraph(imgRecover[i])
+	}
+	imgRecover = []int32{}
 }
 
 // Get ...
@@ -565,6 +569,7 @@ func (p *recover) Draw() {
 
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
+		sound.On(sound.SERecover)
 		px, py := field.GetPos(p.OwnerID)
 		damage.New(damage.Damage{
 			PosX:          px,
