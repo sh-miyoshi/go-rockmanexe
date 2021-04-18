@@ -96,6 +96,8 @@ func Init() error {
 		sounds[i] = -1
 	}
 	sounds[TypeCannonHit] = sound.SECannonHit
+	sounds[TypeHitSmall] = sound.SEBusterHit
+	sounds[TypeHitBig] = sound.SEBusterHit
 
 	return nil
 }
