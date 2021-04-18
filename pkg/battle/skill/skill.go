@@ -419,6 +419,8 @@ func (p *sword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*delaySword {
+		sound.On(sound.SESword)
+
 		dm := damage.Damage{
 			Power:         int(p.Power),
 			TTL:           1,
