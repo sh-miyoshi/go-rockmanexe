@@ -9,3 +9,5 @@ release:
 	move .\data\private\images.dxa ".\data\"
 	.\tmp\DXArchive\DxaEncode.exe .\data\private\sounds
 	move .\data\private\sounds.dxa ".\data\"
+	git add .\data\images.dxa .\data\sounds.dxa
+	git commit -m "update resources"
