@@ -620,7 +620,7 @@ func (p *spreadGun) Draw() {
 
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
-		sound.On(sound.SESpreadGun)
+		sound.On(sound.SEGun)
 
 		px, py := field.GetPos(p.OwnerID)
 		for x := px + 1; x < field.FieldNumX; x++ {
@@ -730,6 +730,8 @@ func (p *vulcan) Process() (bool, error) {
 	p.count++
 	if p.count >= delayVulcan*1 {
 		if p.count%(delayVulcan*5) == delayVulcan*1 {
+			sound.On(sound.SEGun)
+
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
 			px, py := field.GetPos(p.OwnerID)
