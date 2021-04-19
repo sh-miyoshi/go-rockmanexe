@@ -620,6 +620,8 @@ func (p *spreadGun) Draw() {
 
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
+		sound.On(sound.SESpreadGun)
+
 		px, py := field.GetPos(p.OwnerID)
 		for x := px + 1; x < field.FieldNumX; x++ {
 			if field.GetPanelInfo(x, py).ObjectID != "" {

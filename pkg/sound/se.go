@@ -31,6 +31,7 @@ const (
 	SESword
 	SERecover
 	SEShockWave
+	SESpreadGun
 
 	seMax
 )
@@ -63,6 +64,7 @@ func Init() error {
 	soundEffects[SESword] = dxlib.LoadSoundMem(basePath + "sword.mp3")
 	soundEffects[SERecover] = dxlib.LoadSoundMem(basePath + "recover.mp3")
 	soundEffects[SEShockWave] = dxlib.LoadSoundMem(basePath + "shock_wave.mp3")
+	soundEffects[SESpreadGun] = dxlib.LoadSoundMem(basePath + "spread_gun.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
