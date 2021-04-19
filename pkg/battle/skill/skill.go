@@ -529,6 +529,7 @@ func (p *shockWave) Draw() {
 func (p *shockWave) Process() (bool, error) {
 	n := len(imgShockWave) * delayShockWave
 	if p.count%(n) == 0 {
+		sound.On(sound.SEShockWave)
 		// TODO Player Shock Wave
 		p.x--
 		damage.New(damage.Damage{
