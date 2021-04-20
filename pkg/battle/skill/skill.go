@@ -759,6 +759,7 @@ func (p *vulcan) Process() (bool, error) {
 						})
 					}
 					hit = true
+					sound.On(sound.SECannonHit)
 					break
 				}
 			}

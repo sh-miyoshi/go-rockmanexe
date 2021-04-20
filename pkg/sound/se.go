@@ -82,7 +82,9 @@ func Init() error {
 
 func On(typ SEType) {
 	if dxlib.CheckSoundMem(soundEffects[typ]) == 1 {
-		dxlib.StopSoundMem(soundEffects[typ])
+		if typ != SECannonHit {
+			dxlib.StopSoundMem(soundEffects[typ])
+		}
 	}
 	dxlib.PlaySoundMem(soundEffects[typ], dxlib.DX_PLAYTYPE_BACK, dxlib.TRUE)
 }
