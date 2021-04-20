@@ -112,10 +112,10 @@
   - [x] Sword
   - [x] WideSword
   - [x] LongSword
-  - [ ] ShockWave
+  - [x] ShockWave
   - [x] Recover
-  - [ ] SpreadGun
-  - [ ] Vulcan1
+  - [x] SpreadGun
+  - [x] Vulcan1
 - animation
   - player
     - [ ] damaged
@@ -128,8 +128,7 @@
   - [x] TypeExplode
   - [x] TypeCannonHit
   - [ ] TypeSpreadHit
-  - [ ] TypeVulcanHit1
-  - [ ] TypeVulcanHit2
+  - [x] TypeVulcanHit
 
 ## 未実装項目
 
