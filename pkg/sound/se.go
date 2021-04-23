@@ -34,6 +34,7 @@ const (
 	SEGun
 	SESpreadHit
 	SEBombThrow
+	SEPlayerDeleted
 
 	seMax
 )
@@ -69,6 +70,7 @@ func Init() error {
 	soundEffects[SEGun] = dxlib.LoadSoundMem(basePath + "gun.mp3")
 	soundEffects[SESpreadHit] = dxlib.LoadSoundMem(basePath + "shot_hit.wav")
 	soundEffects[SEBombThrow] = dxlib.LoadSoundMem(basePath + "bomb_throw.mp3")
+	soundEffects[SEPlayerDeleted] = dxlib.LoadSoundMem(basePath + "player_deleted.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

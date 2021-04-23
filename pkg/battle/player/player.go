@@ -292,6 +292,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.HP <= 0 {
 		// Player deleted
+		sound.On(sound.SEPlayerDeleted)
 		img := &imgPlayers[playerAnimDamage][1]
 		newDelete(*img, p.PosX, p.PosY)
 		*img = -1 // DeleteGraph at delete animation
