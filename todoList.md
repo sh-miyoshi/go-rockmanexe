@@ -92,7 +92,7 @@
   - before main
   - main
     - [ ] キャラアニメーション
-    - [ ] スキル
+    - [x] スキル
     - [x] カスタムゲージマックス
     - [ ] フォルダオープン
   - result win
@@ -108,7 +108,7 @@
   - [x] Cannon
   - [x] HighCannon
   - [x] MegaCannon
-  - [ ] MiniBomb
+  - [x] MiniBomb
   - [x] Sword
   - [x] WideSword
   - [x] LongSword
@@ -127,7 +127,7 @@
   - [x] TypeHitBig
   - [x] TypeExplode
   - [x] TypeCannonHit
-  - [ ] TypeSpreadHit
+  - [x] TypeSpreadHit
   - [x] TypeVulcanHit
 
 ## 未実装項目
