@@ -401,6 +401,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 	}
 
 	if dm.TargetType&damage.TargetPlayer != 0 {
+		sound.On(sound.SEDamaged)
+
 		// Stop current animation
 		if anim.IsProcessing(p.act.ID) {
 			anim.Delete(p.act.ID)
