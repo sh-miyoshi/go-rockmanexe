@@ -625,6 +625,9 @@ func (p *spreadGun) Process() (bool, error) {
 		px, py := field.GetPos(p.OwnerID)
 		for x := px + 1; x < field.FieldNumX; x++ {
 			if field.GetPanelInfo(x, py).ObjectID != "" {
+				// Hit
+				sound.On(sound.SESpreadHit)
+
 				damage.New(damage.Damage{
 					PosX:          x,
 					PosY:          py,
