@@ -483,6 +483,8 @@ func (p *miniBomb) Process() (bool, error) {
 		p.baseX, p.baseY = battlecommon.ViewPos(px, py)
 		// TODO: yが等しい場合でかつプレイヤー側のみ
 		p.dist = (p.TargetX - px) * field.PanelSizeX
+
+		sound.On(sound.SEBombThrow)
 	}
 
 	// y = ax^2 + bx +c
