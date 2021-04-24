@@ -6,6 +6,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 type deleteAction struct {
@@ -15,6 +16,8 @@ type deleteAction struct {
 }
 
 func newDelete(image int32, x, y int) {
+	sound.On(sound.SEEnemyDeleted)
+
 	anim.New(&deleteAction{
 		image: image,
 		x:     x,
