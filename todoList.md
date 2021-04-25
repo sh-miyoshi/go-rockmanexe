@@ -3,8 +3,6 @@
 ## バグ
 
 - ミニボムがplayer animとあってない
-- ダメージ発生時にリカバリーのエフェクト(処理)が消える
-- メットールの二回目以降の攻撃早すぎ
 
 ## マイルストーン
 
@@ -12,7 +10,6 @@
 
 - 音楽関係
   - BGM
-  - SE
 - 仕上げ
   - logの埋め込み
   - release方法確立
@@ -60,76 +57,6 @@
 - ゲームオーバー
 - エンディング
 - シナリオ
-
-## Sound Effects
-
-### シーンごと
-
-- title
-  - [x] 決定
-- menu
-  - top
-    - [x] 選択
-    - [x] 決定
-  - folder
-    - [x] スクロール
-    - [x] キャンセル
-    - [x] Denied(のちに決定)
-  - gobattle
-    - [x] 選択
-    - [x] キャンセル
-    - [x] 決定(敵登場)
-  - record
-    - [x] キャンセル
-- battle
-  - opening
-    - [x] 敵登場
-  - chip select
-    - [x] フレームイン
-    - [x] カーソル移動
-    - [x] チップ選択
-    - [x] キャンセル
-    - [x] 決定
-  - before main
-  - main
-    - [ ] キャラアニメーション
-    - [x] スキル
-    - [x] カスタムゲージマックス
-    - [ ] フォルダオープン
-  - result win
-    - [ ] 敵デリート
-    - [ ] アイテム登場
-    - [ ] 決定
-  - result lose
-    - [x] player dead
-
-### 項目ごと
-
-- skill
-  - [x] Cannon
-  - [x] HighCannon
-  - [x] MegaCannon
-  - [x] MiniBomb
-  - [x] Sword
-  - [x] WideSword
-  - [x] LongSword
-  - [x] ShockWave
-  - [x] Recover
-  - [x] SpreadGun
-  - [x] Vulcan1
-- animation
-  - player
-    - [ ] damaged
-    - [x] buster
-    - [x] charge
-    - [x] charged
-- effect
-  - [x] TypeHitSmall
-  - [x] TypeHitBig
-  - [x] TypeExplode
-  - [x] TypeCannonHit
-  - [x] TypeSpreadHit
-  - [x] TypeVulcanHit
 
 ## 未実装項目
 
