@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -73,10 +74,12 @@ func Process() bool {
 	case stateFrameIn:
 		if count > 60 {
 			stateChange(stateResult)
+			sound.On(sound.SEGotItem)
 			return false
 		}
 	case stateResult:
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			sound.On(sound.SESelect)
 			return true
 		}
 	}
