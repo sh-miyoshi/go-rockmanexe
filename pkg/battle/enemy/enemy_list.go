@@ -176,8 +176,9 @@ func (e *enemyMetall) Process() (bool, error) {
 			metallActQueue = append(metallActQueue, e.pm.ObjectID)
 
 			e.atkID = ""
-			e.count = waitCount + 1 // Skip initial wait
+			e.count = 0
 		}
+		return false, nil
 	}
 
 	if metallActQueue[0] != e.pm.ObjectID {
