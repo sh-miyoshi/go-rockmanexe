@@ -401,14 +401,6 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 	}
 
 	if dm.TargetType&damage.TargetPlayer != 0 {
-		sound.On(sound.SEDamaged)
-
-		// Stop current animation
-		if anim.IsProcessing(p.act.ID) {
-			anim.Delete(p.act.ID)
-			p.act.ID = ""
-		}
-
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
 			p.HP = 0
@@ -418,10 +410,22 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 			p.HP = uint(hp)
 		}
 		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY, 5))
-		if dm.Power > 0 {
-			p.act.SetAnim(playerAnimDamage, 0)
-			p.invincibleCount = 1
+
+		if dm.Power <= 0 {
+			// Not damage, maybe recover or special anim
+			return
 		}
+
+		sound.On(sound.SEDamaged)
+
+		// Stop current animation
+		if anim.IsProcessing(p.act.ID) {
+			anim.Delete(p.act.ID)
+			p.act.ID = ""
+		}
+
+		p.act.SetAnim(playerAnimDamage, 0)
+		p.invincibleCount = 1
 		logger.Debug("Player damaged: %+v", *dm)
 	}
 }
