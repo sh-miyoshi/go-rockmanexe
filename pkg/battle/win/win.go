@@ -50,6 +50,10 @@ func Init(gameTime int) error {
 	var err error
 	winMsgInst, err = titlemsg.New(fname)
 
+	if err := sound.BGMPlay(sound.BGMWin); err != nil {
+		return fmt.Errorf("failed to play bgm: %v", err)
+	}
+
 	return err
 }
 

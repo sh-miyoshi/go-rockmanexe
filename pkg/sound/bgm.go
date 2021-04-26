@@ -10,6 +10,10 @@ import (
 
 const (
 	BGMTitle int = iota
+	BGMMenu
+	BGMBattle
+	BGMWin
+	BGMLose
 
 	bgmTypeMax
 )
@@ -17,7 +21,12 @@ const (
 var (
 	bgmFiles = [bgmTypeMax]string{
 		"title.mp3",
+		"menu.mp3",
+		"battle.mp3",
+		"win.mp3",
+		"lose.mp3",
 	}
+	bgmHandle int32 = -1
 )
 
 func BGMPlay(typ int) error {
@@ -28,15 +37,17 @@ func BGMPlay(typ int) error {
 	BGMStop()
 
 	fname := common.SoundPath + "bgm/" + bgmFiles[typ]
-	if res := dxlib.PlaySoundFile(fname, dxlib.DX_PLAYTYPE_LOOP); res == -1 {
-		return fmt.Errorf("failed to play BGM: %s", fname)
+	if bgmHandle = dxlib.LoadSoundMem(fname); bgmHandle == -1 {
+		return fmt.Errorf("failed to load BGM: %s", fname)
 	}
+
+	dxlib.PlaySoundMem(bgmHandle, dxlib.DX_PLAYTYPE_LOOP, dxlib.TRUE)
 
 	return nil
 }
 
 func BGMStop() {
-	if dxlib.CheckSoundFile() == 1 {
-		dxlib.StopSoundFile()
+	if bgmHandle != -1 && dxlib.CheckSoundMem(bgmHandle) == 1 {
+		dxlib.StopSoundMem(bgmHandle)
 	}
 }

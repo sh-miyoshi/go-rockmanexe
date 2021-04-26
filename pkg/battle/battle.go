@@ -18,6 +18,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -72,6 +73,10 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 
 	if err := effect.Init(); err != nil {
 		return fmt.Errorf("effect init failed: %w", err)
+	}
+
+	if err := sound.BGMPlay(sound.BGMBattle); err != nil {
+		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
 	return nil

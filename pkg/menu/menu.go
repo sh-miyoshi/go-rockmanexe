@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 const (
@@ -51,6 +52,10 @@ func Init(plyr *player.Player) error {
 
 	if err := recordInit(); err != nil {
 		return fmt.Errorf("failed to init menu record: %w", err)
+	}
+
+	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
+		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
 	return nil
