@@ -472,7 +472,7 @@ func (p *miniBomb) Draw() {
 	if n >= 0 {
 		vx := p.baseX + int32(p.dx)
 		vy := p.baseY + int32(p.dy)
-		dxlib.DrawRotaGraph(vx-38, vy-28, 1, 0, imgMiniBomb[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(vx-38, vy, 1, 0, imgMiniBomb[n], dxlib.TRUE)
 	}
 }
 

@@ -157,10 +157,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
-	imgPlayers[playerAnimBomb] = make([]int32, 5)
+	imgPlayers[playerAnimBomb] = make([]int32, 7)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[playerAnimBomb]); res == -1 {
 		return nil, fmt.Errorf("failed to load player bomb image: %s", fname)
 	}
+	imgPlayers[playerAnimBomb][5] = imgPlayers[playerAnimBomb][4]
+	imgPlayers[playerAnimBomb][6] = imgPlayers[playerAnimBomb][4]
 
 	fname = common.ImagePath + "battle/character/player_buster.png"
 	imgPlayers[playerAnimBuster] = make([]int32, 6)
