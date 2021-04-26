@@ -90,6 +90,7 @@ func Init() error {
 	dxlib.ChangeVolumeSoundMem(128, soundEffects[SEBusterCharging])
 	dxlib.ChangeVolumeSoundMem(128, soundEffects[SESpreadHit])
 	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEEnemyDeleted])
+	dxlib.ChangeVolumeSoundMem(192, soundEffects[SEPlayerDeleted])
 
 	return nil
 }
