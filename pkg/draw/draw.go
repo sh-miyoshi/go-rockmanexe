@@ -47,6 +47,8 @@ func Init() error {
 		return fmt.Errorf("failed to create font")
 	}
 
+	// TODO: text font param: size=24, thick=4
+
 	// Load chip code
 	imgCode = make([]int32, 27)
 	fname := common.ImagePath + "chipInfo/chip_code.png"
