@@ -31,11 +31,13 @@ const (
 var (
 	goBattleSelectData []selectValue
 	goBattleCursor     int
+	goBattleWaitCount  int
 	images             = make(map[int]int32)
 )
 
 func goBattleInit() error {
 	goBattleCursor = 0
+	goBattleWaitCount = 0
 
 	goBattleSelectData = []selectValue{
 		{
@@ -129,6 +131,11 @@ func goBattleEnd() {
 }
 
 func goBattleProcess() bool {
+	if goBattleWaitCount > 0 {
+		goBattleWaitCount++
+		return goBattleWaitCount > 30
+	}
+
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(sound.SECancel)
 		stateChange(stateTop)
@@ -136,7 +143,8 @@ func goBattleProcess() bool {
 	}
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		sound.On(sound.SEGoBattle)
-		return true
+		goBattleWaitCount++
+		return false
 	}
 	if inputs.CheckKey(inputs.KeyUp) == 1 && goBattleCursor > 0 {
 		sound.On(sound.SECursorMove)
