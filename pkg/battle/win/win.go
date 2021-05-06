@@ -24,7 +24,7 @@ const (
 
 var (
 	imgFrame      int32
-	imgWinIcon    int32
+	imgZenny      int32
 	count         int
 	state         int
 	deleteTimeSec int
@@ -46,9 +46,9 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/win_icon.png"
-	imgWinIcon = dxlib.LoadGraph(fname)
-	if imgWinIcon == -1 {
+	fname = common.ImagePath + "battle/zenny.png"
+	imgZenny = dxlib.LoadGraph(fname)
+	if imgZenny == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
@@ -63,7 +63,7 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 	lv := calcBustingLevel()
 
 	list := []rewardInfo{
-		{Type: rewardTypeMoney, Name: "ゼニー", Value: getMoney(lv), Image: imgWinIcon}, // debug
+		{Type: rewardTypeMoney, Name: "ゼニー", Value: getMoney(lv), Image: imgZenny},
 	}
 	enemyIDs := map[int]int{}
 	for _, e := range deletedEnemies {
@@ -91,7 +91,7 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 
 func End() {
 	dxlib.DeleteGraph(imgFrame)
-	dxlib.DeleteGraph(imgWinIcon)
+	dxlib.DeleteGraph(imgZenny)
 	if winMsgInst != nil {
 		winMsgInst.End()
 		winMsgInst = nil
@@ -137,7 +137,7 @@ func Draw() {
 		dxlib.DrawGraph(x, 30, imgFrame, dxlib.TRUE)
 	case stateResult:
 		dxlib.DrawGraph(45, 30, imgFrame, dxlib.TRUE)
-		dxlib.DrawGraph(285, 180, reward.Image, dxlib.TRUE)
+		dxlib.DrawGraph(272, 174, reward.Image, dxlib.TRUE)
 		draw.String(105, 230, 0xffffff, reward.Name)
 		showDeleteTime()
 	}
