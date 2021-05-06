@@ -5,9 +5,16 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 )
 
-// EnemyParam ...
+type EnemyChipInfo struct {
+	CharID        int
+	ChipID        int
+	Code          string
+	RequiredLevel int
+}
+
 type EnemyParam struct {
 	CharID   int
 	ObjectID string
@@ -26,6 +33,10 @@ type enemyObject interface {
 var (
 	ErrGameEnd = errors.New("game end")
 	enemies    = make(map[string]enemyObject)
+
+	enemyChipList = []EnemyChipInfo{
+		{CharID: IDMetall, ChipID: chip.IDCannon, Code: "a", RequiredLevel: 5},
+	}
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {
@@ -76,6 +87,16 @@ func GetEnemyPositions() []field.ObjectPosition {
 			X:  pm.PosX,
 			Y:  pm.PosY,
 		})
+	}
+	return res
+}
+
+func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
+	res := []EnemyChipInfo{}
+	for _, c := range enemyChipList {
+		if c.CharID == id && bustingLv >= c.RequiredLevel {
+			res = append(res, c)
+		}
 	}
 	return res
 }

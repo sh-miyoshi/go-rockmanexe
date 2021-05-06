@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/titlemsg"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -21,17 +23,21 @@ const (
 )
 
 var (
-	imgFrame   int32
-	imgWinIcon int32
-	count      int
-	state      int
-	deleteTime int
-	winMsgInst *titlemsg.TitleMsg
+	imgFrame      int32
+	imgWinIcon    int32
+	count         int
+	state         int
+	deleteTimeSec int
+	reward        rewardInfo
+	winMsgInst    *titlemsg.TitleMsg
 )
 
-func Init(gameTime int) error {
+func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 	state = stateMsg
-	deleteTime = gameTime
+	deleteTimeSec = gameTime / 60
+	if deleteTimeSec == 0 {
+		deleteTimeSec = 1
+	}
 	count = 0
 
 	fname := common.ImagePath + "battle/result_frame.png"
@@ -53,6 +59,32 @@ func Init(gameTime int) error {
 	if err := sound.BGMPlay(sound.BGMWin); err != nil {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
+
+	lv := calcBustingLevel()
+
+	list := []rewardInfo{
+		{Type: rewardTypeMoney, Name: "ゼニー", Value: getMoney(lv), Image: imgWinIcon}, // debug
+	}
+	enemyIDs := map[int]int{}
+	for _, e := range deletedEnemies {
+		enemyIDs[e.CharID] = e.CharID
+	}
+	for _, id := range enemyIDs {
+		for _, c := range enemy.GetEnemyChip(id, lv) {
+			chipInfo := chip.Get(c.ChipID)
+			list = append(list, rewardInfo{
+				Type:  rewardTypeChip,
+				Name:  chipInfo.Name,
+				Value: c.Code,
+				Image: chipInfo.Image,
+			})
+		}
+	}
+	logger.Debug("Reward list: %+v", list)
+
+	reward = getReward(list)
+	rewardProc(reward)
+	logger.Info("Got reward: %+v", reward)
 
 	return err
 }
@@ -105,8 +137,8 @@ func Draw() {
 		dxlib.DrawGraph(x, 30, imgFrame, dxlib.TRUE)
 	case stateResult:
 		dxlib.DrawGraph(45, 30, imgFrame, dxlib.TRUE)
-		dxlib.DrawGraph(285, 180, imgWinIcon, dxlib.TRUE)
-		draw.String(105, 230, 0xffffff, "Winner バッチ")
+		dxlib.DrawGraph(285, 180, reward.Image, dxlib.TRUE)
+		draw.String(105, 230, 0xffffff, reward.Name)
 		showDeleteTime()
 	}
 }
@@ -121,10 +153,7 @@ func stateChange(nextState int) {
 }
 
 func showDeleteTime() {
-	tm := deleteTime / 60
-	if tm == 0 {
-		tm = 1
-	}
+	tm := deleteTimeSec
 
 	min := tm / 60
 	sec := tm % 60
@@ -135,4 +164,52 @@ func showDeleteTime() {
 	draw.Number(300, 77, int32(min), draw.NumberOption{Padding: &zero, Length: 2})
 	draw.String(333, 80, 0xffffff, "：")
 	draw.Number(350, 77, int32(sec), draw.NumberOption{Padding: &zero, Length: 2})
+}
+
+func calcBustingLevel() int {
+	// バスティングレベルの決定
+	// ウィルス戦
+	//   ～ 5秒:	7point
+	//   ～12秒:	6point
+	//   ～36秒:	5point
+	//   それ以降:	4point
+	// ナビ戦
+	//   ～30秒:	10point
+	//   ～40秒:	 8point
+	//   ～50秒:	 6point
+	//   それ以降:	 4point
+	// 攻撃を受けた回数(のけぞった回数)
+	//   0回:		+1point
+	//   1回:		+0point
+	//   2回:		-1point
+	//   3回:		-2point
+	//   4回以上:	-3point
+	// 移動したマス
+	//   ～2マス:	1point
+	//   3マス以上:	0point
+	// 同時に倒す
+	//   2体同時:	2point
+	//   3体同時:	4point
+
+	lv := 4
+	// TODO v.s. Navi
+	deadlines := []int{36, 12, 5, -1}
+	for i := 0; i < len(deadlines); i++ {
+		if deleteTimeSec > deadlines[i] {
+			lv += i
+			break
+		}
+	}
+
+	// TODO 時間以外のバスティングの決定
+
+	return lv
+}
+
+func getMoney(bustingLv int) int {
+	table := []int{30, 30, 30, 30, 30, 50, 100, 200, 400, 500, 1000}
+	if bustingLv < len(table) {
+		return table[bustingLv]
+	}
+	return 2000
 }
