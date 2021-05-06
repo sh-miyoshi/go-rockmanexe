@@ -33,13 +33,14 @@ const (
 )
 
 var (
-	battleCount int
-	battleState int
-	playerInst  *battleplayer.BattlePlayer
-	enemyList   []enemy.EnemyParam
-	gameCount   int
-	b4mainInst  *titlemsg.TitleMsg
-	loseInst    *titlemsg.TitleMsg
+	battleCount    int
+	battleState    int
+	playerInst     *battleplayer.BattlePlayer
+	enemyList      []enemy.EnemyParam
+	gameCount      int
+	b4mainInst     *titlemsg.TitleMsg
+	loseInst       *titlemsg.TitleMsg
+	basePlayerInst *player.Player
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -55,6 +56,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	battleState = stateOpening
 	b4mainInst = nil
 	loseInst = nil
+	basePlayerInst = plyr
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -165,7 +167,7 @@ func Process() error {
 		fieldUpdates()
 	case stateResultWin:
 		if battleCount == 0 {
-			if err := win.Init(gameCount, enemyList); err != nil {
+			if err := win.Init(gameCount, enemyList, basePlayerInst); err != nil {
 				return fmt.Errorf("failed to initialize result win: %w", err)
 			}
 		}

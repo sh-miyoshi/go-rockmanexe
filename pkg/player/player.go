@@ -27,9 +27,9 @@ type ChipInfo struct {
 
 // Player ...
 type Player struct {
-	HP        uint
-	ShotPower uint
-	// Zenny      uint
+	HP         uint
+	ShotPower  uint
+	Zenny      uint
 	ChipFolder [FolderSize]ChipInfo
 
 	WinNum    int
@@ -41,6 +41,7 @@ func New() *Player {
 	return &Player{
 		HP:        defaultHP,
 		ShotPower: defaultShotPower,
+		Zenny:     0,
 		ChipFolder: [FolderSize]ChipInfo{
 			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "b"},
@@ -90,6 +91,8 @@ func (p *Player) Save(fname string, key []byte) error {
 	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))
+	buf.WriteString(separater)
+	buf.WriteString(strconv.FormatUint(uint64(p.Zenny), 10))
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
 	buf.WriteString(separater)

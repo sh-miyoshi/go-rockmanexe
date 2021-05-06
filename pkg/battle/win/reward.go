@@ -1,6 +1,10 @@
 package win
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
+)
 
 const (
 	rewardTypeMoney int = iota
@@ -24,6 +28,11 @@ func getReward(all []rewardInfo) rewardInfo {
 	return all[n]
 }
 
-func rewardProc(data rewardInfo) {
-	// TODO implement this
+func rewardProc(data rewardInfo, plyr *player.Player) {
+	switch data.Type {
+	case rewardTypeMoney:
+		plyr.Zenny += uint(data.Value.(int))
+	case rewardTypeChip:
+		// TODO implement this
+	}
 }

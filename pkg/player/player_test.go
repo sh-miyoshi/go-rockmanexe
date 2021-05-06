@@ -10,11 +10,12 @@ func TestSave(t *testing.T) {
 	player := Player{
 		HP:         1,
 		ShotPower:  2,
+		Zenny:      4,
 		ChipFolder: [FolderSize]ChipInfo{},
 
 		WinNum: 3,
 	}
-	expect := "development#0#1#2#3#"
+	expect := "development#0#1#2#4#3#"
 	for i := 0; i < FolderSize; i++ {
 		expect += "0#"
 	}

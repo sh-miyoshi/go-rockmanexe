@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
@@ -32,7 +33,7 @@ var (
 	winMsgInst    *titlemsg.TitleMsg
 )
 
-func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
+func Init(gameTime int, deletedEnemies []enemy.EnemyParam, plyr *player.Player) error {
 	state = stateMsg
 	deleteTimeSec = gameTime / 60
 	if deleteTimeSec == 0 {
@@ -62,8 +63,9 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 
 	lv := calcBustingLevel()
 
+	m := getMoney(lv)
 	list := []rewardInfo{
-		{Type: rewardTypeMoney, Name: "ゼニー", Value: getMoney(lv), Image: imgZenny},
+		{Type: rewardTypeMoney, Name: fmt.Sprintf("%d ゼニー", m), Value: m, Image: imgZenny},
 	}
 	enemyIDs := map[int]int{}
 	for _, e := range deletedEnemies {
@@ -83,7 +85,7 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam) error {
 	logger.Debug("Reward list: %+v", list)
 
 	reward = getReward(list)
-	rewardProc(reward)
+	rewardProc(reward, plyr)
 	logger.Info("Got reward: %+v", reward)
 
 	return err
