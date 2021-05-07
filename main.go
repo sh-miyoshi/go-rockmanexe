@@ -86,6 +86,7 @@ MAIN:
 	}
 
 	if exitErr != nil {
+		sound.BGMStop()
 		dxlib.ClearDrawScreen()
 		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", exitErr.Error())
 		dxlib.DrawFormatString(10, 40, 0xff0000, "詳細はログを参照してください。")
