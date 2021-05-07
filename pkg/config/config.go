@@ -16,6 +16,7 @@ type Config struct {
 		SkipTitle         bool `yaml:"skip_title"`
 		SkipMenu          bool `yaml:"skip_menu"`
 		SkipBattleOpening bool `yaml:"skip_battle_opening"`
+		StartContinue     bool `yaml:"start_continue"`
 	} `yaml:"debug"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`

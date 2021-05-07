@@ -90,6 +90,9 @@ func Draw() {
 
 func Process() error {
 	if config.Get().Debug.SkipTitle {
+		if config.Get().Debug.StartContinue {
+			return ErrStartContinue
+		}
 		return ErrStartInit
 	}
 
