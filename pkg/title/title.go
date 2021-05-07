@@ -34,13 +34,14 @@ var (
 func Init() error {
 	state = stateBegin
 	count = 0
-	cursor = 0
 	waiting = 0
 
 	selectMax = 1
 	if _, err := os.Stat(common.SaveFilePath); err == nil {
 		selectMax = 2
 	}
+
+	cursor = selectMax - 1
 
 	fname := common.ImagePath + "title/logo.png"
 	imgLogo = dxlib.LoadGraph(fname)
