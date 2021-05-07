@@ -56,6 +56,8 @@ func main() {
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
+	logger.Info("Program version: %s", common.ProgramVersion)
+
 	count := 0
 	var exitErr error
 
