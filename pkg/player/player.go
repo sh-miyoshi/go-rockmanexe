@@ -2,7 +2,11 @@ package player
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"strconv"
 
@@ -105,7 +109,23 @@ func (p *Player) Save(fname string, key []byte) error {
 	if key == nil {
 		dst = buf.Bytes()
 	} else {
-		// TODO Encryption
+		src := buf.Bytes()
+		block, err := aes.NewCipher(key)
+		if err != nil {
+			return fmt.Errorf("failed to init AES: %w", err)
+		}
+
+		// The IV needs to be unique, but not secure. Therefore it's common to
+		// include it at the beginning of the ciphertext.
+		dst = make([]byte, aes.BlockSize+len(src))
+		iv := dst[:aes.BlockSize]
+		if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+			return fmt.Errorf("failed to read IV: %w", err)
+		}
+
+		// Encrypt data with AES-CTR mode
+		stream := cipher.NewCTR(block, iv)
+		stream.XORKeyStream(dst[aes.BlockSize:], src)
 	}
 
 	return ioutil.WriteFile(fname, dst, 0644)

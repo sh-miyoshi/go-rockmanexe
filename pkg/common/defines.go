@@ -32,4 +32,5 @@ var (
 	SoundPath = "data/sounds/"
 
 	ProgramVersion = "development"
+	EncryptKey     = ""
 )
