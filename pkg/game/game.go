@@ -46,8 +46,18 @@ func Process() error {
 			if errors.Is(err, title.ErrStartInit) {
 				playerInfo = player.New()
 			} else if errors.Is(err, title.ErrStartContinue) {
-				// TODO implement
-				return fmt.Errorf("start with continue is not implemented yet")
+				var key []byte
+				if common.EncryptKey == "" {
+					key = nil
+				} else {
+					key = []byte(common.EncryptKey)
+				}
+
+				var err error
+				playerInfo, err = player.NewWithSaveData(common.SaveFilePath, key)
+				if err != nil {
+					return fmt.Errorf("failed to continue")
+				}
 			} else {
 				return fmt.Errorf("failed to process title: %w", err)
 			}

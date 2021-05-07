@@ -9,9 +9,11 @@ import (
 	"io"
 	"io/ioutil"
 	"strconv"
+	"strings"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -83,7 +85,72 @@ func New() *Player {
 
 }
 
-// TODO NewWithSaveData(fname string) (*Player, error)
+func NewWithSaveData(fname string, key []byte) (*Player, error) {
+	var bin []byte
+
+	if key == nil {
+		var err error
+		bin, err = ioutil.ReadFile(fname)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read save data: %w", err)
+		}
+	} else {
+		return nil, fmt.Errorf("not implement yet")
+	}
+
+	data := strings.Split(string(bin), separater)
+	if len(data) != 6+FolderSize+1 {
+		logger.Error("save data requires %d data, but got %d", 6+FolderSize+1, len(data))
+		return nil, fmt.Errorf("save data maybe broken or invalid version")
+	}
+
+	version := data[0]
+	if version != common.ProgramVersion {
+		logger.Error("Invalid version save data. expect %s, but got %s", common.ProgramVersion, version)
+		return nil, fmt.Errorf("version miss matched")
+	}
+
+	playCnt, err := strconv.ParseUint(data[1], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse play count: %w", err)
+	}
+	hp, err := strconv.ParseUint(data[2], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse hp: %w", err)
+	}
+	shot, err := strconv.ParseUint(data[3], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse shot power: %w", err)
+	}
+	zenny, err := strconv.ParseUint(data[4], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse zenny: %w", err)
+	}
+	win, err := strconv.ParseInt(data[5], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse win num: %w", err)
+	}
+
+	res := &Player{
+		PlayCount: uint(playCnt),
+		HP:        uint(hp),
+		ShotPower: uint(shot),
+		Zenny:     uint(zenny),
+		WinNum:    int(win),
+	}
+
+	for i := 0; i < FolderSize; i++ {
+		var id int
+		var code string
+		if _, err := fmt.Sscanf(data[6+i], "%d%s", &id, &code); err != nil {
+			return nil, fmt.Errorf("failed to parse chip %d: %w", i, err)
+		}
+		res.ChipFolder[i].ID = id
+		res.ChipFolder[i].Code = code
+	}
+
+	return res, nil
+}
 
 func (p *Player) Save(fname string, key []byte) error {
 	// Convert player info to string
@@ -101,7 +168,7 @@ func (p *Player) Save(fname string, key []byte) error {
 	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
 	buf.WriteString(separater)
 	for _, c := range p.ChipFolder {
-		buf.WriteString(fmt.Sprintf("%d%s#", c.ID, c.Code))
+		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
 	}
 
 	var dst []byte
