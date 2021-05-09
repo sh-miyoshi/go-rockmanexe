@@ -42,6 +42,7 @@ const (
 	IDLongSword  = 56
 	IDRecover10  = 109
 	IDRecover30  = 110
+	IDShockWave  = 228
 )
 
 const (

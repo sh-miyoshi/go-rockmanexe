@@ -30,6 +30,7 @@ const (
 	playerAnimSword
 	playerAnimBomb
 	playerAnimBuster
+	playerAnimPick
 	playerAnimMax
 )
 
@@ -86,7 +87,7 @@ const (
 
 var (
 	imgPlayers    [playerAnimMax][]int32
-	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1}
+	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1, 3}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -168,6 +169,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[playerAnimBuster] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[playerAnimBuster]); res == -1 {
 		return nil, fmt.Errorf("failed to load player buster image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_pick.png"
+	imgPlayers[playerAnimPick] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgPlayers[playerAnimPick]); res == -1 {
+		return nil, fmt.Errorf("failed to load player pick image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
@@ -487,7 +494,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true)
 		}
-	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage, playerAnimShot:
+	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage, playerAnimShot, playerAnimPick:
 		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
