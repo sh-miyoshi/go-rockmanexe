@@ -5,6 +5,6 @@ debug:
   skip_title: true
   skip_menu: true
   skip_battle_opening: true
-  start_continue: true
+  start_continue: false
 bgm:
   disabled: true

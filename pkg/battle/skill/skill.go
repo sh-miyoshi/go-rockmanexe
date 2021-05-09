@@ -26,6 +26,7 @@ const (
 	SkillRecover
 	SkillSpreadGun
 	SkillVulcan1
+	SkillPlayerShockWave
 )
 
 const (
@@ -106,6 +107,7 @@ type shockWave struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
+	Direct     int
 
 	count int
 	x, y  int
@@ -294,13 +296,16 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
 		px, py := field.GetPos(arg.OwnerID)
-		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, x: px, y: py}
+		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, x: px, y: py}
 	case SkillRecover:
 		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillSpreadGun:
 		return &spreadGun{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillVulcan1:
 		return &vulcan{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
+	case SkillPlayerShockWave:
+		px, py := field.GetPos(arg.OwnerID)
+		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, x: px, y: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -331,6 +336,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillSpreadGun
 	case chip.IDVulcan1:
 		id = SkillVulcan1
+	case chip.IDShockWave:
+		id = SkillPlayerShockWave
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
@@ -524,16 +531,27 @@ func (p *shockWave) Draw() {
 	n := (p.count / delayShockWave) % len(imgShockWave)
 	if n >= 0 {
 		vx, vy := battlecommon.ViewPos(p.x, p.y)
-		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
+		if p.Direct == common.DirectLeft {
+			dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
+		} else if p.Direct == common.DirectRight {
+			ofsx := int32(100 / 2)
+			ofsy := int32(140 / 2)
+			dxlib.DrawTurnGraph(vx-ofsx, vy-ofsy, imgShockWave[n], dxlib.TRUE)
+		}
 	}
+
+	// TODO show pick
 }
 
 func (p *shockWave) Process() (bool, error) {
 	n := len(imgShockWave) * delayShockWave
 	if p.count%(n) == 0 {
 		sound.On(sound.SEShockWave)
-		// TODO Player Shock Wave
-		p.x--
+		if p.Direct == common.DirectLeft {
+			p.x--
+		} else if p.Direct == common.DirectRight {
+			p.x++
+		}
 		damage.New(damage.Damage{
 			PosX:          p.x,
 			PosY:          p.y,
