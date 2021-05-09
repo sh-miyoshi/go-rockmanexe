@@ -35,7 +35,7 @@ var (
 	enemies    = make(map[string]enemyObject)
 
 	enemyChipList = []EnemyChipInfo{
-		{CharID: IDMetall, ChipID: chip.IDCannon, Code: "a", RequiredLevel: 5},
+		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
 	}
 )
 
