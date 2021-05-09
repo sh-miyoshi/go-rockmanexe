@@ -149,6 +149,16 @@ func Get(id int) Chip {
 	panic(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
 }
 
+func GetByName(name string) Chip {
+	for _, c := range chipData {
+		if c.Name == name {
+			return c
+		}
+	}
+
+	panic(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
+}
+
 // GetIcon ...
 func GetIcon(id int, colored bool) int32 {
 	if colored {

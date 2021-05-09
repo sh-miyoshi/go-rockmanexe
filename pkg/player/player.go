@@ -37,9 +37,9 @@ type Player struct {
 	ShotPower  uint
 	Zenny      uint
 	ChipFolder [FolderSize]ChipInfo
-
-	WinNum    int
-	PlayCount uint
+	WinNum     int
+	PlayCount  uint
+	BackPack   []ChipInfo
 }
 
 // New returns player data with default values
@@ -49,6 +49,7 @@ func New() *Player {
 		ShotPower: defaultShotPower,
 		Zenny:     0,
 		WinNum:    0,
+		BackPack:  []ChipInfo{},
 	}
 	res.setChipFolder()
 	return res
@@ -100,6 +101,8 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		return nil, fmt.Errorf("failed to parse win num: %w", err)
 	}
 
+	// TODO BackPack
+
 	res := &Player{
 		PlayCount: uint(playCnt),
 		HP:        uint(hp),
@@ -136,6 +139,9 @@ func (p *Player) Save(fname string, key []byte) error {
 	buf.WriteString(separater)
 	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
 	buf.WriteString(separater)
+
+	// TODO BackPack
+
 	for _, c := range p.ChipFolder {
 		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
 	}
@@ -168,6 +174,40 @@ func (p *Player) Save(fname string, key []byte) error {
 }
 
 func (p *Player) setChipFolder() {
+	// For debug
+	// p.ChipFolder = [FolderSize]ChipInfo{
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// 	{ID: chip.IDShockWave, Code: "*"},
+	// }
+
 	// For production
 	p.ChipFolder = [FolderSize]ChipInfo{
 		{ID: chip.IDCannon, Code: "b"},
