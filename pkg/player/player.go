@@ -44,45 +44,14 @@ type Player struct {
 
 // New returns player data with default values
 func New() *Player {
-	return &Player{
+	res := &Player{
 		HP:        defaultHP,
 		ShotPower: defaultShotPower,
 		Zenny:     0,
-		ChipFolder: [FolderSize]ChipInfo{
-			{ID: chip.IDCannon, Code: "b"},
-			{ID: chip.IDCannon, Code: "b"},
-			{ID: chip.IDCannon, Code: "c"},
-			{ID: chip.IDCannon, Code: "c"},
-			{ID: chip.IDHighCannon, Code: "d"},
-			{ID: chip.IDHighCannon, Code: "d"},
-			{ID: chip.IDMiniBomb, Code: "l"},
-			{ID: chip.IDMiniBomb, Code: "l"},
-			{ID: chip.IDMiniBomb, Code: "*"},
-			{ID: chip.IDMiniBomb, Code: "*"},
-			{ID: chip.IDSword, Code: "s"},
-			{ID: chip.IDSword, Code: "s"},
-			{ID: chip.IDSword, Code: "s"},
-			{ID: chip.IDSword, Code: "s"},
-			{ID: chip.IDWideSword, Code: "s"},
-			{ID: chip.IDWideSword, Code: "s"},
-			{ID: chip.IDRecover10, Code: "l"},
-			{ID: chip.IDRecover10, Code: "l"},
-			{ID: chip.IDRecover10, Code: "*"},
-			{ID: chip.IDRecover10, Code: "*"},
-			{ID: chip.IDRecover30, Code: "l"},
-			{ID: chip.IDRecover30, Code: "l"},
-			{ID: chip.IDVulcan1, Code: "b"},
-			{ID: chip.IDVulcan1, Code: "b"},
-			{ID: chip.IDVulcan1, Code: "d"},
-			{ID: chip.IDVulcan1, Code: "d"},
-			{ID: chip.IDSpreadGun, Code: "n"},
-			{ID: chip.IDSpreadGun, Code: "n"},
-			{ID: chip.IDSpreadGun, Code: "m"},
-			{ID: chip.IDSpreadGun, Code: "m"},
-		},
-		WinNum: 0,
+		WinNum:    0,
 	}
-
+	res.setChipFolder()
+	return res
 }
 
 func NewWithSaveData(fname string, key []byte) (*Player, error) {
@@ -196,4 +165,40 @@ func (p *Player) Save(fname string, key []byte) error {
 	}
 
 	return ioutil.WriteFile(fname, dst, 0644)
+}
+
+func (p *Player) setChipFolder() {
+	// For production
+	p.ChipFolder = [FolderSize]ChipInfo{
+		{ID: chip.IDCannon, Code: "b"},
+		{ID: chip.IDCannon, Code: "b"},
+		{ID: chip.IDCannon, Code: "c"},
+		{ID: chip.IDCannon, Code: "c"},
+		{ID: chip.IDHighCannon, Code: "d"},
+		{ID: chip.IDHighCannon, Code: "d"},
+		{ID: chip.IDMiniBomb, Code: "l"},
+		{ID: chip.IDMiniBomb, Code: "l"},
+		{ID: chip.IDMiniBomb, Code: "*"},
+		{ID: chip.IDMiniBomb, Code: "*"},
+		{ID: chip.IDSword, Code: "s"},
+		{ID: chip.IDSword, Code: "s"},
+		{ID: chip.IDSword, Code: "s"},
+		{ID: chip.IDSword, Code: "s"},
+		{ID: chip.IDWideSword, Code: "s"},
+		{ID: chip.IDWideSword, Code: "s"},
+		{ID: chip.IDRecover10, Code: "l"},
+		{ID: chip.IDRecover10, Code: "l"},
+		{ID: chip.IDRecover10, Code: "*"},
+		{ID: chip.IDRecover10, Code: "*"},
+		{ID: chip.IDRecover30, Code: "l"},
+		{ID: chip.IDRecover30, Code: "l"},
+		{ID: chip.IDVulcan1, Code: "b"},
+		{ID: chip.IDVulcan1, Code: "b"},
+		{ID: chip.IDVulcan1, Code: "d"},
+		{ID: chip.IDVulcan1, Code: "d"},
+		{ID: chip.IDSpreadGun, Code: "n"},
+		{ID: chip.IDSpreadGun, Code: "n"},
+		{ID: chip.IDSpreadGun, Code: "m"},
+		{ID: chip.IDSpreadGun, Code: "m"},
+	}
 }
