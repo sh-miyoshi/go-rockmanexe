@@ -87,7 +87,7 @@ const (
 
 var (
 	imgPlayers    [playerAnimMax][]int32
-	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1, 3}
+	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1, 4}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -172,10 +172,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 
 	fname = common.ImagePath + "battle/character/player_pick.png"
-	imgPlayers[playerAnimPick] = make([]int32, 4)
+	imgPlayers[playerAnimPick] = make([]int32, 6)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgPlayers[playerAnimPick]); res == -1 {
 		return nil, fmt.Errorf("failed to load player pick image: %s", fname)
 	}
+	imgPlayers[playerAnimPick][4] = imgPlayers[playerAnimPick][3]
+	imgPlayers[playerAnimPick][5] = imgPlayers[playerAnimPick][3]
 
 	fname = common.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)

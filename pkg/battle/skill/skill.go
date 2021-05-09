@@ -46,10 +46,10 @@ const (
 	delayCannonBody = 6
 	delaySword      = 3
 	delayMiniBomb   = 4
-	delayShockWave  = 5
 	delayRecover    = 1
 	delaySpreadGun  = 2
 	delayVulcan     = 2
+	delayPick       = 3
 )
 
 type Argument struct {
@@ -68,6 +68,7 @@ var (
 	imgSpreadGunAtk  []int32
 	imgSpreadGunBody []int32
 	imgVulcan        []int32
+	imgPick          []int32
 )
 
 type cannon struct {
@@ -108,9 +109,13 @@ type shockWave struct {
 	Power      uint
 	TargetType int
 	Direct     int
+	ShowPick   bool
+	Speed      int
+	InitWait   int
 
-	count int
-	x, y  int
+	count    int
+	x, y     int
+	showWave bool
 }
 
 type recover struct {
@@ -230,6 +235,16 @@ func Init() error {
 		imgVulcan = append(imgVulcan, tmp[i])
 	}
 
+	fname = path + "ウェーブ_body.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgPick = append(imgPick, tmp[i])
+	}
+	imgPick = append(imgPick, tmp[3])
+	imgPick = append(imgPick, tmp[3])
+
 	return nil
 }
 
@@ -274,6 +289,10 @@ func End() {
 		dxlib.DeleteGraph(imgRecover[i])
 	}
 	imgRecover = []int32{}
+	for i := 0; i < len(imgPick); i++ {
+		dxlib.DeleteGraph(imgPick[i])
+	}
+	imgPick = []int32{}
 }
 
 // Get ...
@@ -296,7 +315,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
 		px, py := field.GetPos(arg.OwnerID)
-		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, x: px, y: py}
+		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
 	case SkillRecover:
 		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillSpreadGun:
@@ -305,7 +324,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &vulcan{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
 	case SkillPlayerShockWave:
 		px, py := field.GetPos(arg.OwnerID)
-		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, x: px, y: py}
+		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -528,8 +547,8 @@ func (p *miniBomb) GetParam() anim.Param {
 }
 
 func (p *shockWave) Draw() {
-	n := (p.count / delayShockWave) % len(imgShockWave)
-	if n >= 0 {
+	n := (p.count / p.Speed) % len(imgShockWave)
+	if p.showWave && n >= 0 {
 		vx, vy := battlecommon.ViewPos(p.x, p.y)
 		if p.Direct == common.DirectLeft {
 			dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
@@ -540,12 +559,25 @@ func (p *shockWave) Draw() {
 		}
 	}
 
-	// TODO show pick
+	if p.ShowPick {
+		n = (p.count / delayPick)
+		if n < len(imgPick) {
+			px, py := field.GetPos(p.OwnerID)
+			vx, vy := battlecommon.ViewPos(px, py)
+			dxlib.DrawRotaGraph(vx, vy-15, 1, 0, imgPick[n], dxlib.TRUE)
+		}
+	}
 }
 
 func (p *shockWave) Process() (bool, error) {
-	n := len(imgShockWave) * delayShockWave
+	if p.count < p.InitWait {
+		p.count++
+		return false, nil
+	}
+
+	n := len(imgShockWave) * p.Speed
 	if p.count%(n) == 0 {
+		p.showWave = true
 		sound.On(sound.SEShockWave)
 		if p.Direct == common.DirectLeft {
 			p.x--
