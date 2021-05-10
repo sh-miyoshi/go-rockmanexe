@@ -23,8 +23,9 @@ const (
 )
 
 var (
-	menuState int
-	imgBack   int32
+	menuState      int
+	imgBack        int32
+	menuFolderInst *menuFolder
 
 	ErrGoBattle = errors.New("go to battle")
 )
@@ -42,7 +43,9 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu top: %w", err)
 	}
 
-	if err := folderInit(plyr); err != nil {
+	var err error
+	menuFolderInst, err = folderNew(plyr)
+	if err != nil {
 		return fmt.Errorf("failed to init menu folder: %w", err)
 	}
 
@@ -64,7 +67,9 @@ func Init(plyr *player.Player) error {
 func End() {
 	dxlib.DeleteGraph(imgBack)
 	topEnd()
-	folderEnd()
+	if menuFolderInst != nil {
+		menuFolderInst.End()
+	}
 	goBattleEnd()
 	recordEnd()
 }
@@ -78,7 +83,7 @@ func Process() error {
 	case stateTop:
 		topProcess()
 	case stateChipFolder:
-		folderProcess()
+		menuFolderInst.Process()
 	case stateGoBattle:
 		if goBattleProcess() {
 			return ErrGoBattle
@@ -97,7 +102,7 @@ func Draw() {
 	case stateTop:
 		topDraw()
 	case stateChipFolder:
-		folderDraw()
+		menuFolderInst.Draw()
 	case stateGoBattle:
 		goBattleDraw()
 	case stateRecord:
