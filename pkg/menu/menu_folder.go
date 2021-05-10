@@ -250,21 +250,47 @@ func (f *menuFolder) drawChipDetail(index int) {
 
 func (f *menuFolder) exchange(sel1, sel2 int) error {
 	var target1, target2 *player.ChipInfo
+	t := 1
+	folderSel := 0
+	backPackSel := 0
 
 	if sel1 >= player.FolderSize {
 		target1 = &f.playerInfo.BackPack[sel1-player.FolderSize]
+		backPackSel = sel1 - player.FolderSize
+		t *= -1
 	} else {
 		target1 = &f.playerInfo.ChipFolder[sel1]
+		folderSel = sel1
 	}
 
 	if sel2 >= player.FolderSize {
 		target2 = &f.playerInfo.BackPack[sel2-player.FolderSize]
+		backPackSel = sel2 - player.FolderSize
+		t *= -1
 	} else {
 		target2 = &f.playerInfo.ChipFolder[sel2]
+		folderSel = sel2
 	}
 
 	// Validation
-	// TODO 片方がFolderで、もう片方がBackPackなら同盟チップの枚数チェック
+	if t < 0 { // 片方がFolderで、もう片方がBackPackなら
+		// Check the number of same name chips in folder
+		n := 0
+		id := f.playerInfo.ChipFolder[backPackSel].ID
+
+		for i := 0; i < player.FolderSize; i++ {
+			if i == folderSel {
+				continue
+			}
+			if f.playerInfo.ChipFolder[i].ID == id {
+				n++
+			}
+		}
+
+		if n >= player.SameChipNumInFolder {
+			return fmt.Errorf("同名チップは%d枚までしか入れられません", player.SameChipNumInFolder)
+		}
+	}
 
 	*target1, *target2 = *target2, *target1
 	return nil

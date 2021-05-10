@@ -21,8 +21,8 @@ const (
 	defaultShotPower uint = 1
 	separater             = "#"
 
-	// FolderSize ...
-	FolderSize = 30
+	FolderSize          = 30
+	SameChipNumInFolder = 4
 )
 
 // ChipInfo ...
