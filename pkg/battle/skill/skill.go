@@ -27,6 +27,7 @@ const (
 	SkillSpreadGun
 	SkillVulcan1
 	SkillPlayerShockWave
+	SkillThunderBall
 )
 
 const (
@@ -42,14 +43,15 @@ const (
 )
 
 const (
-	delayCannonAtk  = 2
-	delayCannonBody = 6
-	delaySword      = 3
-	delayMiniBomb   = 4
-	delayRecover    = 1
-	delaySpreadGun  = 2
-	delayVulcan     = 2
-	delayPick       = 3
+	delayCannonAtk   = 2
+	delayCannonBody  = 6
+	delaySword       = 3
+	delayMiniBomb    = 4
+	delayRecover     = 1
+	delaySpreadGun   = 2
+	delayVulcan      = 2
+	delayPick        = 3
+	delayThunderBall = 6
 )
 
 type Argument struct {
@@ -69,6 +71,7 @@ var (
 	imgSpreadGunBody []int32
 	imgVulcan        []int32
 	imgPick          []int32
+	imgThunderBall   []int32
 )
 
 type cannon struct {
@@ -152,6 +155,17 @@ type vulcan struct {
 	imageNo  int
 	atkCount int
 	hit      bool
+}
+
+type thunderBall struct {
+	OwnerID      string
+	Power        uint
+	TargetType   int
+	MaxMoveCount int
+
+	count            int
+	x, y             int
+	targetX, targetY int
 }
 
 func Init() error {
@@ -245,6 +259,14 @@ func Init() error {
 	imgPick = append(imgPick, tmp[3])
 	imgPick = append(imgPick, tmp[3])
 
+	fname = path + "サンダーボール.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 80, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgThunderBall = append(imgThunderBall, tmp[i])
+	}
+
 	return nil
 }
 
@@ -293,6 +315,10 @@ func End() {
 		dxlib.DeleteGraph(imgPick[i])
 	}
 	imgPick = []int32{}
+	for i := 0; i < len(imgThunderBall); i++ {
+		dxlib.DeleteGraph(imgThunderBall[i])
+	}
+	imgThunderBall = []int32{}
 }
 
 // Get ...
@@ -325,6 +351,10 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillPlayerShockWave:
 		px, py := field.GetPos(arg.OwnerID)
 		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
+	case SkillThunderBall:
+		px, py := field.GetPos(arg.OwnerID)
+		max := 8 // debug
+		return &thunderBall{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -836,5 +866,21 @@ func (p *vulcan) DamageProc(dm *damage.Damage) {
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+	}
+}
+
+func (p *thunderBall) Draw() {
+}
+
+func (p *thunderBall) Process() (bool, error) {
+	return false, nil
+}
+
+func (p *thunderBall) DamageProc(dm *damage.Damage) {
+}
+
+func (p *thunderBall) GetParam() anim.Param {
+	return anim.Param{
+		AnimType: anim.TypeObject,
 	}
 }

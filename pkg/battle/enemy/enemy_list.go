@@ -372,12 +372,13 @@ const (
 
 const (
 	delayBillyMove = 1
-	delayBillyAtk  = 1
+	delayBillyAtk  = 5
 )
 
 type billyAct struct {
 	MoveDirect int
 
+	ownerID  string
 	count    int
 	typ      int
 	endCount int
@@ -399,6 +400,7 @@ func (e *enemyBilly) Init(objID string) error {
 	e.act.pPosX = &e.pm.PosX
 	e.act.pPosY = &e.pm.PosY
 	e.act.typ = -1
+	e.act.ownerID = objID
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBilly)
@@ -410,7 +412,7 @@ func (e *enemyBilly) Init(objID string) error {
 
 	e.imgAttack = make([]int32, 8)
 	fname = name + "_atk" + ext
-	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 112, 114, e.imgAttack); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 124, 114, e.imgAttack); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -468,7 +470,7 @@ func (e *enemyBilly) Process() (bool, error) {
 			e.moveCount++
 		} else {
 			// Attack
-			// TODO
+			e.act.SetAnim(billyActAttack, len(e.imgAttack)*delayBillyAtk)
 			e.moveCount = 0
 			e.count = 0
 		}
@@ -540,11 +542,15 @@ func (a *billyAct) Process() bool {
 	case -1: // No animation
 		return false
 	case billyActAttack:
-		// nカウント後に攻撃登録
-		// TODO
+		if a.count == 5*delayBillyAtk {
+			anim.New(skill.Get(skill.SkillThunderBall, skill.Argument{
+				OwnerID:    a.ownerID,
+				Power:      20, // TODO: ダメージ
+				TargetType: damage.TargetPlayer,
+			}))
+		}
 	case billyActMove:
-		// nカウント後に移動
-		if a.count == 4 {
+		if a.count == 4*delayBillyMove {
 			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypeEnemy, true)
 		}
 	}
