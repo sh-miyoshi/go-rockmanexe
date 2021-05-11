@@ -212,7 +212,11 @@ func (f *menuFolder) Draw() {
 		if f.selected != -1 && (f.count/2)%2 == 0 {
 			win := f.selected / player.FolderSize
 			if win == f.currentWindow {
-				p := f.selected % folderShowNum
+				sel := f.selected
+				if sel >= player.FolderSize {
+					sel -= player.FolderSize
+				}
+				p := sel % folderShowNum
 				dxlib.DrawGraph(tx+2, 80+int32(p)*30, f.imgPointer, dxlib.TRUE)
 			}
 		}
@@ -311,7 +315,7 @@ func (f *menuFolder) exchange(sel1, sel2 int) error {
 	if t < 0 { // 片方がFolderで、もう片方がBackPackなら
 		// Check the number of same name chips in folder
 		n := 0
-		id := f.playerInfo.ChipFolder[backPackSel].ID
+		id := f.playerInfo.BackPack[backPackSel].ID
 
 		for i := 0; i < player.FolderSize; i++ {
 			if i == folderSel {
