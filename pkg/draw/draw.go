@@ -31,23 +31,31 @@ const (
 )
 
 var (
-	fontHandle int32 = -1
-	imgCode    []int32
-	imgNumber  [numberColorMax][]int32
+	defaultFont int32 = -1
+	msgFont     int32 = -1
+	imgCode     []int32
+	imgNumber   [numberColorMax][]int32
 )
 
 func Init() error {
 	// Set font
-	fontHandle = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
+	defaultFont = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
 		FontName: dxlib.StringPtr("k8x12"),
 		Size:     dxlib.Int32Ptr(22),
 		Thick:    dxlib.Int32Ptr(7),
 	})
-	if fontHandle == -1 {
-		return fmt.Errorf("failed to create font")
+	if defaultFont == -1 {
+		return fmt.Errorf("failed to create default font")
 	}
 
-	// TODO: text font param: size=24, thick=4
+	msgFont = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
+		FontName: dxlib.StringPtr("k8x12"),
+		Size:     dxlib.Int32Ptr(24),
+		Thick:    dxlib.Int32Ptr(4),
+	})
+	if msgFont == -1 {
+		return fmt.Errorf("failed to create message font")
+	}
 
 	// Load chip code
 	imgCode = make([]int32, 27)
@@ -85,7 +93,11 @@ func Init() error {
 }
 
 func String(x int32, y int32, color uint32, format string, a ...interface{}) {
-	dxlib.DrawFormatStringToHandle(x, y, color, fontHandle, format, a...)
+	dxlib.DrawFormatStringToHandle(x, y, color, defaultFont, format, a...)
+}
+
+func MessageText(x int32, y int32, color uint32, format string, a ...interface{}) {
+	dxlib.DrawFormatStringToHandle(x, y, color, msgFont, format, a...)
 }
 
 func ChipCode(x int32, y int32, code string, percent int32) {
