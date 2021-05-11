@@ -208,6 +208,15 @@ func (f *menuFolder) Draw() {
 		if f.currentWindow == folderWindowTypeBackPack {
 			tx = 30
 		}
+
+		if f.selected != -1 && (f.count/2)%2 == 0 {
+			win := f.selected / player.FolderSize
+			if win == f.currentWindow {
+				p := f.selected % folderShowNum
+				dxlib.DrawGraph(tx+2, 80+int32(p)*30, f.imgPointer, dxlib.TRUE)
+			}
+		}
+
 		dxlib.DrawGraph(tx, 78+int32(f.pointer[f.currentWindow])*30, f.imgPointer, dxlib.TRUE)
 	}
 
