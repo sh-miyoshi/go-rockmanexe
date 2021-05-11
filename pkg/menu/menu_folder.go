@@ -135,12 +135,12 @@ func (f *menuFolder) Process() {
 		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
 			if f.currentWindow == folderWindowTypeBackPack {
 				f.currentWindow = folderWindowTypeFolder
-				// TODO sound
+				sound.On(sound.SEWindowChange)
 			}
 		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 			if f.currentWindow == folderWindowTypeFolder {
 				f.currentWindow = folderWindowTypeBackPack
-				// TODO sound
+				sound.On(sound.SEWindowChange)
 			}
 		}
 	}
