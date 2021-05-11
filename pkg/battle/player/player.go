@@ -446,6 +446,7 @@ func (p *BattlePlayer) GetParam() anim.Param {
 		PosX:     p.PosX,
 		PosY:     p.PosY,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypePlayer,
 	}
 }
 
@@ -570,5 +571,6 @@ func (p *deleteAction) GetParam() anim.Param {
 		PosX:     p.x,
 		PosY:     p.y,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }

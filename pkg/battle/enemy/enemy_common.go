@@ -55,5 +55,6 @@ func (p *deleteAction) GetParam() anim.Param {
 		PosX:     p.x,
 		PosY:     p.y,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }

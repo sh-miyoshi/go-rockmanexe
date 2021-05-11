@@ -13,10 +13,17 @@ const (
 	TypeEffect
 )
 
+const (
+	ObjTypePlayer int = iota
+	ObjTypeEnemy
+	ObjTypeNone // 当たり判定なし
+)
+
 type Param struct {
 	PosX     int
 	PosY     int
 	AnimType int
+	ObjType  int
 }
 
 // Anim ...

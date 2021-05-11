@@ -200,6 +200,7 @@ func (e *effect) GetParam() anim.Param {
 		PosX:     e.X,
 		PosY:     e.Y,
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -217,5 +218,6 @@ func (e *noEffect) DamageProc(dm *damage.Damage) {
 func (e *noEffect) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }

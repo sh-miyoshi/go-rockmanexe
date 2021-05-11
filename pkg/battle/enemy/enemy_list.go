@@ -59,6 +59,7 @@ func (e *enemy) GetParam() anim.Param {
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeEnemy,
 	}
 }
 
@@ -258,6 +259,7 @@ func (e *enemyMetall) GetParam() anim.Param {
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeEnemy,
 	}
 }
 
@@ -285,6 +287,7 @@ func (a *metallAtk) DamageProc(dm *damage.Damage) {
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -359,6 +362,7 @@ func (e *enemyTarget) GetParam() anim.Param {
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeEnemy,
 	}
 }
 
@@ -508,6 +512,7 @@ func (e *enemyBilly) GetParam() anim.Param {
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeEnemy,
 	}
 }
 

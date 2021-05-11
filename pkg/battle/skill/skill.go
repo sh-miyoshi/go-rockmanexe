@@ -462,6 +462,7 @@ func (p *cannon) DamageProc(dm *damage.Damage) {
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -520,6 +521,7 @@ func (p *sword) DamageProc(dm *damage.Damage) {
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -573,6 +575,7 @@ func (p *miniBomb) DamageProc(dm *damage.Damage) {
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -638,6 +641,7 @@ func (p *shockWave) DamageProc(dm *damage.Damage) {
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -678,6 +682,7 @@ func (p *recover) DamageProc(dm *damage.Damage) {
 func (p *recover) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -762,6 +767,7 @@ func (p *spreadGun) DamageProc(dm *damage.Damage) {
 func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -792,6 +798,7 @@ func (p *spreadHit) DamageProc(dm *damage.Damage) {
 func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
@@ -866,13 +873,26 @@ func (p *vulcan) DamageProc(dm *damage.Damage) {
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeEffect,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
 
 func (p *thunderBall) Draw() {
+	x, y := battlecommon.ViewPos(p.x, p.y)
+	n := (p.count / delayThunderBall) % len(imgThunderBall)
+
+	// TODO offset
+
+	dxlib.DrawRotaGraph(x, y+25, 1, 0, imgThunderBall[n], dxlib.TRUE)
 }
 
 func (p *thunderBall) Process() (bool, error) {
+	const nextStepCount = 80
+	if p.count%nextStepCount == 0 {
+
+	}
+
+	p.count++
 	return false, nil
 }
 
@@ -882,5 +902,6 @@ func (p *thunderBall) DamageProc(dm *damage.Damage) {
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
 	}
 }
