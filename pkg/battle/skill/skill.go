@@ -182,6 +182,7 @@ type thunderBall struct {
 	targetX, targetY int
 	beforeX, beforeY int
 	moveCount        int
+	damageID         string
 }
 
 func Init() error {
@@ -921,6 +922,14 @@ func (p *thunderBall) Draw() {
 }
 
 func (p *thunderBall) Process() (bool, error) {
+	halfNext := thunderBallNextStepCount / 2
+	if p.damageID != "" {
+		if !damage.Exists(p.damageID) && p.count%halfNext != 0 {
+			// attack hit to target
+			return true, nil
+		}
+	}
+
 	if p.count%thunderBallNextStepCount == 0 {
 		// Set current position
 		p.beforeX = p.x
@@ -941,18 +950,16 @@ func (p *thunderBall) Process() (bool, error) {
 			xdif := objs[0].PosX - p.x
 			ydif := objs[0].PosY - p.y
 
-			if xdif == 0 && ydif == 0 {
-				return true, nil
-			}
-
-			if common.Abs(xdif) > common.Abs(ydif) {
-				// move to x
-				p.targetX = p.x + (xdif / common.Abs(xdif))
-				p.targetY = p.y
-			} else {
-				// move to y
-				p.targetX = p.x
-				p.targetY = p.y + (ydif / common.Abs(ydif))
+			if xdif != 0 || ydif != 0 {
+				if common.Abs(xdif) > common.Abs(ydif) {
+					// move to x
+					p.targetX = p.x + (xdif / common.Abs(xdif))
+					p.targetY = p.y
+				} else {
+					// move to y
+					p.targetX = p.x
+					p.targetY = p.y + (ydif / common.Abs(ydif))
+				}
 			}
 		}
 
@@ -961,19 +968,21 @@ func (p *thunderBall) Process() (bool, error) {
 			return true, nil
 		}
 
-		// TODO 画面外
+		if p.x < 0 || p.x > field.FieldNumX || p.y < 0 || p.y > field.FieldNumY {
+			return true, nil
+		}
 	}
-	// if p.count%(nextStepCount/2) == 0 {
-	// 	damage.New(damage.Damage{
-	// 		PosX:          p.x,
-	// 		PosY:          p.y,
-	// 		Power:         int(p.Power),
-	// 		TTL:           (nextStepCount / 2) - 2,
-	// 		TargetType:    p.TargetType,
-	// 		HitEffectType: effect.TypeNone,
-	// 		ShowHitArea:   true,
-	// 	})
-	// }
+	if p.count%halfNext == 0 {
+		p.damageID = damage.New(damage.Damage{
+			PosX:          p.x,
+			PosY:          p.y,
+			Power:         int(p.Power),
+			TTL:           halfNext,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+			ShowHitArea:   true,
+		})
+	}
 
 	p.count++
 	return false, nil

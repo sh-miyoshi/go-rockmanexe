@@ -23,9 +23,10 @@ var (
 	damages = make(map[string]*Damage)
 )
 
-func New(dm Damage) {
+func New(dm Damage) string {
 	dm.ID = uuid.New().String()
 	damages[dm.ID] = &dm
+	return dm.ID
 }
 
 func MgrProcess() {
@@ -44,6 +45,11 @@ func Get(x, y int) *Damage {
 		}
 	}
 	return nil
+}
+
+func Exists(id string) bool {
+	_, ok := damages[id]
+	return ok
 }
 
 func Remove(id string) {
