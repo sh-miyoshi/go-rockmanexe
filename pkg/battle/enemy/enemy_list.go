@@ -457,7 +457,7 @@ func (e *enemyBilly) Process() (bool, error) {
 
 	const waitCount = 45
 	const actionInterval = 75
-	const moveNum = 3
+	const moveNum = 4
 
 	e.count++
 

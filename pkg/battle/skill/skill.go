@@ -377,7 +377,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 			tx = px - 1
 		}
 
-		max := 8 // debug
+		max := 6 // debug
 		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py, targetX: tx, targetY: py}
 	}
 
