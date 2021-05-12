@@ -1,6 +1,7 @@
 package enemy
 
 import (
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -10,6 +11,7 @@ import (
 )
 
 type deleteAction struct {
+	id    string
 	image int32
 	x, y  int
 	count int
@@ -19,6 +21,7 @@ func newDelete(image int32, x, y int) {
 	sound.On(sound.SEEnemyDeleted)
 
 	anim.New(&deleteAction{
+		id:    uuid.New().String(),
 		image: image,
 		x:     x,
 		y:     y,
@@ -52,6 +55,7 @@ func (p *deleteAction) DamageProc(dm *damage.Damage) {
 
 func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.id,
 		PosX:     p.x,
 		PosY:     p.y,
 		AnimType: anim.TypeObject,

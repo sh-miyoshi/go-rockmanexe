@@ -3,6 +3,7 @@ package skill
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -75,6 +76,7 @@ var (
 )
 
 type cannon struct {
+	ID         string
 	Type       int
 	OwnerID    string
 	Power      uint
@@ -84,6 +86,7 @@ type cannon struct {
 }
 
 type sword struct {
+	ID         string
 	Type       int
 	OwnerID    string
 	Power      uint
@@ -93,6 +96,7 @@ type sword struct {
 }
 
 type miniBomb struct {
+	ID         string
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -108,6 +112,7 @@ type miniBomb struct {
 }
 
 type shockWave struct {
+	ID         string
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -122,6 +127,7 @@ type shockWave struct {
 }
 
 type recover struct {
+	ID         string
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -130,6 +136,7 @@ type recover struct {
 }
 
 type spreadGun struct {
+	ID         string
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -138,6 +145,7 @@ type spreadGun struct {
 }
 
 type spreadHit struct {
+	ID         string
 	Power      uint
 	TargetType int
 
@@ -146,6 +154,7 @@ type spreadHit struct {
 }
 
 type vulcan struct {
+	ID         string
 	OwnerID    string
 	Power      uint
 	TargetType int
@@ -158,6 +167,7 @@ type vulcan struct {
 }
 
 type thunderBall struct {
+	ID           string
 	OwnerID      string
 	Power        uint
 	TargetType   int
@@ -323,38 +333,40 @@ func End() {
 
 // Get ...
 func Get(skillID int, arg Argument) anim.Anim {
+	objID := uuid.New().String()
+
 	switch skillID {
 	case SkillCannon:
-		return &cannon{OwnerID: arg.OwnerID, Type: typeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillHighCannon:
-		return &cannon{OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMegaCannon:
-		return &cannon{OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMiniBomb:
-		px, py := field.GetPos(arg.OwnerID)
-		return &miniBomb{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
+		px, py := anim.GetObjPos(arg.OwnerID)
+		return &miniBomb{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
 	case SkillSword:
-		return &sword{OwnerID: arg.OwnerID, Type: typeSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillWideSword:
-		return &sword{OwnerID: arg.OwnerID, Type: typeWideSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeWideSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillLongSword:
-		return &sword{OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
-		px, py := field.GetPos(arg.OwnerID)
-		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
+		px, py := anim.GetObjPos(arg.OwnerID)
+		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
 	case SkillRecover:
-		return &recover{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+		return &recover{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillSpreadGun:
-		return &spreadGun{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+		return &spreadGun{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillVulcan1:
-		return &vulcan{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
+		return &vulcan{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
 	case SkillPlayerShockWave:
-		px, py := field.GetPos(arg.OwnerID)
-		return &shockWave{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
+		px, py := anim.GetObjPos(arg.OwnerID)
+		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
 	case SkillThunderBall:
-		px, py := field.GetPos(arg.OwnerID)
+		px, py := anim.GetObjPos(arg.OwnerID)
 		max := 8 // debug
-		return &thunderBall{OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py}
+		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -394,7 +406,7 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 }
 
 func (p *cannon) Draw() {
-	px, py := field.GetPos(p.OwnerID)
+	px, py := anim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := p.count / delayCannonBody
@@ -417,7 +429,7 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		dm := damage.Damage{
 			PosY:          py,
 			Power:         int(p.Power),
@@ -461,13 +473,14 @@ func (p *cannon) DamageProc(dm *damage.Damage) {
 
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
 
 func (p *sword) Draw() {
-	px, py := field.GetPos(p.OwnerID)
+	px, py := anim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := (p.count - 5) / delaySword
@@ -489,7 +502,7 @@ func (p *sword) Process() (bool, error) {
 			HitEffectType: effect.TypeNone,
 		}
 
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 
 		dm.PosX = px + 1
 		dm.PosY = py
@@ -520,6 +533,7 @@ func (p *sword) DamageProc(dm *damage.Damage) {
 
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -537,7 +551,7 @@ func (p *miniBomb) Draw() {
 func (p *miniBomb) Process() (bool, error) {
 	if p.count == 0 {
 		// Initialize
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		p.baseX, p.baseY = battlecommon.ViewPos(px, py)
 		// TODO: yが等しい場合でかつプレイヤー側のみ
 		p.dist = (p.TargetX - px) * field.PanelSizeX
@@ -574,6 +588,7 @@ func (p *miniBomb) DamageProc(dm *damage.Damage) {
 
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -595,7 +610,7 @@ func (p *shockWave) Draw() {
 	if p.ShowPick {
 		n = (p.count / delayPick)
 		if n < len(imgPick) {
-			px, py := field.GetPos(p.OwnerID)
+			px, py := anim.GetObjPos(p.OwnerID)
 			vx, vy := battlecommon.ViewPos(px, py)
 			dxlib.DrawRotaGraph(vx, vy-15, 1, 0, imgPick[n], dxlib.TRUE)
 		}
@@ -640,6 +655,7 @@ func (p *shockWave) DamageProc(dm *damage.Damage) {
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -648,7 +664,7 @@ func (p *shockWave) GetParam() anim.Param {
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x, y, 1, 0, imgRecover[n], dxlib.TRUE)
 	}
@@ -657,7 +673,7 @@ func (p *recover) Draw() {
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SERecover)
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		damage.New(damage.Damage{
 			PosX:          px,
 			PosY:          py,
@@ -681,6 +697,7 @@ func (p *recover) DamageProc(dm *damage.Damage) {
 
 func (p *recover) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -691,7 +708,7 @@ func (p *spreadGun) Draw() {
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
 	}
@@ -699,7 +716,7 @@ func (p *spreadGun) Draw() {
 	// Show atk
 	n = (p.count - 4) / delaySpreadGun
 	if n >= 0 && n < len(imgSpreadGunAtk) {
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x+100, y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
 	}
@@ -709,7 +726,7 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		px, py := field.GetPos(p.OwnerID)
+		px, py := anim.GetObjPos(p.OwnerID)
 		for x := px + 1; x < field.FieldNumX; x++ {
 			if field.GetPanelInfo(x, py).ObjectID != "" {
 				// Hit
@@ -766,6 +783,7 @@ func (p *spreadGun) DamageProc(dm *damage.Damage) {
 
 func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -797,13 +815,14 @@ func (p *spreadHit) DamageProc(dm *damage.Damage) {
 
 func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
 
 func (p *vulcan) Draw() {
-	px, py := field.GetPos(p.OwnerID)
+	px, py := anim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	// Show body
@@ -826,7 +845,7 @@ func (p *vulcan) Process() (bool, error) {
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			px, py := field.GetPos(p.OwnerID)
+			px, py := anim.GetObjPos(p.OwnerID)
 			hit := false
 			for x := px + 1; x < field.FieldNumX; x++ {
 				if field.GetPanelInfo(x, py).ObjectID != "" {
@@ -872,6 +891,7 @@ func (p *vulcan) DamageProc(dm *damage.Damage) {
 
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -901,6 +921,7 @@ func (p *thunderBall) DamageProc(dm *damage.Damage) {
 
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}

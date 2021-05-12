@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -56,6 +57,7 @@ func (e *enemy) DamageProc(dm *damage.Damage) {
 
 func (e *enemy) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
@@ -110,6 +112,7 @@ func GetStandImageFile(id int) (name, ext string) {
 //-----------------------------------
 
 type metallAtk struct {
+	id      string
 	ownerID string
 	count   int
 	images  []int32
@@ -128,6 +131,7 @@ func (e *enemyMetall) Init(objID string) error {
 	name, ext := GetStandImageFile(IDMetall)
 
 	e.pm.ObjectID = objID
+	e.atk.id = uuid.New().String()
 	e.imgMove = make([]int32, 1)
 	fname := name + "_move" + ext
 	e.imgMove[0] = dxlib.LoadGraph(fname)
@@ -201,7 +205,7 @@ func (e *enemyMetall) Process() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		_, py := field.GetPos(e.pm.PlayerID)
+		_, py := anim.GetObjPos(e.pm.PlayerID)
 		if py == e.pm.PosY || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
@@ -256,6 +260,7 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) {
 
 func (e *enemyMetall) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
@@ -286,6 +291,7 @@ func (a *metallAtk) DamageProc(dm *damage.Damage) {
 
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    a.id,
 		AnimType: anim.TypeObject,
 		ObjType:  anim.ObjTypeNone,
 	}
@@ -359,6 +365,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) {
 
 func (e *enemyTarget) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,
@@ -509,6 +516,7 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) {
 
 func (e *enemyBilly) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
 		AnimType: anim.TypeObject,

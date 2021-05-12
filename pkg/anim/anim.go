@@ -9,17 +9,24 @@ import (
 )
 
 const (
-	TypeObject int = iota
+	TypeObject int = 1 << iota
 	TypeEffect
 )
 
 const (
-	ObjTypePlayer int = iota
+	ObjTypeNone int = 1 << iota // 当たり判定なし
+	ObjTypePlayer
 	ObjTypeEnemy
-	ObjTypeNone // 当たり判定なし
 )
 
+type Filter struct {
+	ObjID    string
+	AnimType int
+	ObjType  int
+}
+
 type Param struct {
+	ObjID    string
 	PosX     int
 	PosY     int
 	AnimType int
@@ -92,8 +99,8 @@ func New(anim Anim) string {
 }
 
 // IsProcessing ...
-func IsProcessing(id string) bool {
-	_, exists := anims[id]
+func IsProcessing(animID string) bool {
+	_, exists := anims[animID]
 	return exists
 }
 
@@ -102,14 +109,49 @@ func Cleanup() {
 	sortedAnimIDs = []string{}
 }
 
-func Delete(id string) {
-	delete(anims, id)
+func Delete(animID string) {
+	delete(anims, animID)
 	for i, sid := range sortedAnimIDs {
-		if sid == id {
+		if sid == animID {
 			sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
 			break
 		}
 	}
+}
+
+func GetObjPos(objID string) (x, y int) {
+	for _, anim := range anims {
+		pm := anim.GetParam()
+		if pm.ObjID == objID {
+			return pm.PosX, pm.PosY
+		}
+	}
+
+	return -1, -1
+}
+
+func GetObjs(filter Filter) []Param {
+	res := []Param{}
+	if filter.ObjID != "" {
+		for _, anim := range anims {
+			pm := anim.GetParam()
+			res = append(res, pm)
+		}
+		return res
+	}
+
+	for _, anim := range anims {
+		pm := anim.GetParam()
+		if filter.AnimType&pm.AnimType != 0 {
+			res = append(res, pm)
+			continue
+		}
+		if filter.ObjType&pm.ObjType != 0 {
+			res = append(res, pm)
+		}
+	}
+
+	return res
 }
 
 func sortAnim() {

@@ -164,7 +164,7 @@ func Process() error {
 			}
 			return fmt.Errorf("failed to process enemy: %w", err)
 		}
-		fieldUpdates()
+		field.Update()
 	case stateResultWin:
 		if battleCount == 0 {
 			if err := win.Init(gameCount, enemyList, basePlayerInst); err != nil {
@@ -226,17 +226,6 @@ func Draw() {
 			loseInst.Draw()
 		}
 	}
-}
-
-func fieldUpdates() {
-	objs := []field.ObjectPosition{
-		{X: playerInst.PosX, Y: playerInst.PosY, ID: playerInst.ID},
-	}
-
-	enemies := enemy.GetEnemyPositions()
-	objs = append(objs, enemies...)
-
-	field.UpdateObjectPos(objs)
 }
 
 func stateChange(nextState int) {

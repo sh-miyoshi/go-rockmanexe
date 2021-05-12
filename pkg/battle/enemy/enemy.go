@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
 )
 
@@ -76,19 +75,6 @@ func MgrProcess() error {
 	}
 
 	return nil
-}
-
-func GetEnemyPositions() []field.ObjectPosition {
-	res := []field.ObjectPosition{}
-	for id, e := range enemies {
-		pm := e.GetParam()
-		res = append(res, field.ObjectPosition{
-			ID: id,
-			X:  pm.PosX,
-			Y:  pm.PosY,
-		})
-	}
-	return res
 }
 
 func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {

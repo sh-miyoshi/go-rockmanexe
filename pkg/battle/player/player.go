@@ -54,6 +54,7 @@ type act struct {
 }
 
 type deleteAction struct {
+	id    string
 	image int32
 	x, y  int
 	count int
@@ -121,6 +122,8 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
 		}
 	}
+
+	logger.Debug("Player info: %+v", res)
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	imgPlayers[playerAnimMove] = make([]int32, 4)
@@ -443,6 +446,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 
 func (p *BattlePlayer) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.ID,
 		PosX:     p.PosX,
 		PosY:     p.PosY,
 		AnimType: anim.TypeObject,
@@ -538,6 +542,7 @@ func (a *act) GetImage() int32 {
 
 func newDelete(image int32, x, y int) {
 	anim.New(&deleteAction{
+		id:    uuid.New().String(),
 		image: image,
 		x:     x,
 		y:     y,
@@ -568,6 +573,7 @@ func (p *deleteAction) DamageProc(dm *damage.Damage) {
 
 func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    p.id,
 		PosX:     p.x,
 		PosY:     p.y,
 		AnimType: anim.TypeObject,

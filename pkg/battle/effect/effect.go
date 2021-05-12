@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/battle/common"
@@ -41,6 +42,7 @@ var (
 )
 
 type effect struct {
+	ID   string
 	X    int
 	Y    int
 	Type int
@@ -135,6 +137,7 @@ func Get(typ int, x, y int, randRange int) anim.Anim {
 	}
 
 	res := &effect{
+		ID:    uuid.New().String(),
 		Type:  typ,
 		X:     x,
 		Y:     y,
@@ -197,6 +200,7 @@ func (e *effect) DamageProc(dm *damage.Damage) {
 
 func (e *effect) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    e.ID,
 		PosX:     e.X,
 		PosY:     e.Y,
 		AnimType: anim.TypeEffect,
@@ -217,6 +221,7 @@ func (e *noEffect) DamageProc(dm *damage.Damage) {
 
 func (e *noEffect) GetParam() anim.Param {
 	return anim.Param{
+		ObjID:    uuid.New().String(), // set dummy param
 		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}

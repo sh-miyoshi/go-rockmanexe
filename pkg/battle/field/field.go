@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -28,12 +29,6 @@ const (
 
 	panelTypeMax
 )
-
-// ObjectPosition ...
-type ObjectPosition struct {
-	ID   string
-	X, Y int
-}
 
 type PanelInfo struct {
 	Type     int
@@ -111,29 +106,11 @@ func Draw() {
 	}
 }
 
-// UpdateObjectPos ...
-func UpdateObjectPos(positions []ObjectPosition) {
-	// Cleanup at first
-	for x := 0; x < FieldNumX; x++ {
-		for y := 0; y < FieldNumY; y++ {
-			panels[x][y].ObjectID = ""
-		}
+func Update() {
+	objs := anim.GetObjs(anim.Filter{ObjType: anim.ObjTypePlayer | anim.ObjTypeEnemy})
+	for _, obj := range objs {
+		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
 	}
-
-	for _, pos := range positions {
-		panels[pos.X][pos.Y].ObjectID = pos.ID
-	}
-}
-
-func GetPos(objID string) (x, y int) {
-	for x := 0; x < FieldNumX; x++ {
-		for y := 0; y < FieldNumY; y++ {
-			if panels[x][y].ObjectID == objID {
-				return x, y
-			}
-		}
-	}
-	return -1, -1
 }
 
 func GetPanelInfo(x, y int) PanelInfo {

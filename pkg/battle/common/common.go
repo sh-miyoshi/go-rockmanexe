@@ -6,7 +6,7 @@ import (
 )
 
 // MoveObject ...
-func MoveObject(x, y *int, direct int, objType int, isMove bool) bool {
+func MoveObject(x, y *int, direct int, objPanelType int, isMove bool) bool {
 	nx := *x
 	ny := *y
 
@@ -39,7 +39,7 @@ func MoveObject(x, y *int, direct int, objType int, isMove bool) bool {
 		return false
 	}
 	// Check panel type
-	if objType != pn.Type {
+	if objPanelType != pn.Type {
 		return false
 	}
 
