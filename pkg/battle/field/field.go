@@ -107,6 +107,13 @@ func Draw() {
 }
 
 func Update() {
+	// Cleanup at first
+	for x := 0; x < len(panels); x++ {
+		for y := 0; y < len(panels[x]); y++ {
+			panels[x][y].ObjectID = ""
+		}
+	}
+
 	objs := anim.GetObjs(anim.Filter{ObjType: anim.ObjTypePlayer | anim.ObjTypeEnemy})
 	for _, obj := range objs {
 		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
