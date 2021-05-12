@@ -58,11 +58,16 @@ func ViewPos(x, y int) (viewX, viewY int32) {
 }
 
 func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int {
+	// if cnt < total_count/2
+	//   init_offset = (before - now) * size / 2
+	//   offset = init_offset - (before - now)*(count*size/total_count))
+
+	var res int
 	if cnt < totalCnt/2 {
-		initOfs := (beforePos - nowPos) * size / 2
-		return initOfs - (beforePos-nowPos)*(cnt*size/totalCnt)
+		res = (beforePos - nowPos)
 	} else {
-		initOfs := (nowPos - nextPos) * size / 2
-		return initOfs - (nowPos-nextPos)*(cnt*size/totalCnt)
+		res = (nowPos - nextPos)
 	}
+
+	return res * size * (totalCnt - 2*cnt) / (totalCnt * 2)
 }
