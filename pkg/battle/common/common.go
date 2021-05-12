@@ -56,3 +56,13 @@ func ViewPos(x, y int) (viewX, viewY int32) {
 	viewY = int32(field.DrawPanelTopY + field.PanelSizeY*y - 10)
 	return viewX, viewY
 }
+
+func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int {
+	if cnt < totalCnt/2 {
+		initOfs := (beforePos - nowPos) * size / 2
+		return initOfs - (beforePos-nowPos)*(cnt*size/totalCnt)
+	} else {
+		initOfs := (nowPos - nextPos) * size / 2
+		return initOfs - (nowPos-nextPos)*(cnt*size/totalCnt)
+	}
+}

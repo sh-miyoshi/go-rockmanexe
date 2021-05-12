@@ -55,6 +55,10 @@ const (
 	delayThunderBall = 6
 )
 
+const (
+	thunderBallNextStepCount = 80
+)
+
 type Argument struct {
 	OwnerID    string
 	Power      uint
@@ -176,6 +180,8 @@ type thunderBall struct {
 	count            int
 	x, y             int
 	targetX, targetY int
+	beforeX, beforeY int
+	moveCount        int
 }
 
 func Init() error {
@@ -365,8 +371,13 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
 	case SkillThunderBall:
 		px, py := anim.GetObjPos(arg.OwnerID)
+		tx := px + 1
+		if arg.TargetType == damage.TargetPlayer {
+			tx = px - 1
+		}
+
 		max := 8 // debug
-		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py}
+		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py, targetX: tx, targetY: py}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -901,16 +912,68 @@ func (p *thunderBall) Draw() {
 	x, y := battlecommon.ViewPos(p.x, p.y)
 	n := (p.count / delayThunderBall) % len(imgThunderBall)
 
-	// TODO offset
-
-	dxlib.DrawRotaGraph(x, y+25, 1, 0, imgThunderBall[n], dxlib.TRUE)
+	c := p.count % thunderBallNextStepCount
+	if c != 0 {
+		ofsx := battlecommon.GetOffset(p.targetX, p.x, p.beforeX, c, thunderBallNextStepCount, field.PanelSizeX)
+		ofsy := battlecommon.GetOffset(p.targetY, p.y, p.beforeY, c, thunderBallNextStepCount, field.PanelSizeY)
+		dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgThunderBall[n], dxlib.TRUE)
+	}
 }
 
 func (p *thunderBall) Process() (bool, error) {
-	const nextStepCount = 80
-	if p.count%nextStepCount == 0 {
+	if p.count%thunderBallNextStepCount == 0 {
+		// Set current position
+		p.beforeX = p.x
+		p.beforeY = p.y
+		p.x = p.targetX
+		p.y = p.targetY
 
+		// Decide next position
+		objs := anim.GetObjs(anim.Filter{ObjType: anim.ObjTypePlayer}) // todo
+		if len(objs) == 0 {
+			// no target
+			if p.TargetType == damage.TargetPlayer {
+				p.targetX--
+			} else {
+				p.targetX++
+			}
+		} else {
+			xdif := objs[0].PosX - p.x
+			ydif := objs[0].PosY - p.y
+
+			if xdif == 0 && ydif == 0 {
+				return true, nil
+			}
+
+			if common.Abs(xdif) > common.Abs(ydif) {
+				// move to x
+				p.targetX = p.x + (xdif / common.Abs(xdif))
+				p.targetY = p.y
+			} else {
+				// move to y
+				p.targetX = p.x
+				p.targetY = p.y + (ydif / common.Abs(ydif))
+			}
+		}
+
+		p.moveCount++
+		if p.moveCount > p.MaxMoveCount {
+			return true, nil
+		}
+
+		// TODO 画面外
 	}
+	// if p.count%(nextStepCount/2) == 0 {
+	// 	damage.New(damage.Damage{
+	// 		PosX:          p.x,
+	// 		PosY:          p.y,
+	// 		Power:         int(p.Power),
+	// 		TTL:           (nextStepCount / 2) - 2,
+	// 		TargetType:    p.TargetType,
+	// 		HitEffectType: effect.TypeNone,
+	// 		ShowHitArea:   true,
+	// 	})
+	// }
 
 	p.count++
 	return false, nil
