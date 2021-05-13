@@ -101,7 +101,7 @@ func (f *menuFolder) Process() {
 
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		c := f.currentWindow
-		sel := c*player.FolderSize + f.scroll[c]*folderShowNum + f.pointer[c]
+		sel := c*player.FolderSize + f.scroll[c] + f.pointer[c]
 
 		if f.currentWindow == folderWindowTypeBackPack && f.listNum[f.currentWindow] == 0 {
 			sound.On(sound.SEDenied)
@@ -216,8 +216,13 @@ func (f *menuFolder) Draw() {
 				if sel >= player.FolderSize {
 					sel -= player.FolderSize
 				}
-				p := sel % folderShowNum
-				dxlib.DrawGraph(tx+2, 80+int32(p)*30, f.imgPointer, dxlib.TRUE)
+
+				areaBegin := f.scroll[f.currentWindow]
+				areaEnd := f.scroll[f.currentWindow] + folderShowNum
+				if areaBegin <= sel && sel <= areaEnd {
+					p := sel - areaBegin
+					dxlib.DrawGraph(tx+2, 80+int32(p)*30, f.imgPointer, dxlib.TRUE)
+				}
 			}
 		}
 
@@ -232,6 +237,8 @@ func (f *menuFolder) Draw() {
 		dxlib.DrawGraph(40, 205, f.imgMsgFrame, dxlib.TRUE)
 		draw.MessageText(120, 220, 0x000000, f.msg)
 	}
+
+	dxlib.DrawFormatString(400, 0, 0, "%d", f.selected)
 }
 
 func (f *menuFolder) drawBackGround() {
