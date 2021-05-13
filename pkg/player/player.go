@@ -173,6 +173,41 @@ func (p *Player) Save(fname string, key []byte) error {
 	return ioutil.WriteFile(fname, dst, 0644)
 }
 
+func (p *Player) UpdateMoney(diff int) {
+	tmp := int(p.Zenny) + diff
+	if tmp > common.MaxZenny {
+		tmp = common.MaxZenny
+	} else if tmp < 0 {
+		tmp = 0
+	}
+
+	p.Zenny = uint(tmp)
+}
+
+func (p *Player) AddChip(id int, code string) error {
+	n := 0
+	for _, c := range p.ChipFolder {
+		if c.ID == id && c.Code == code {
+			n++
+		}
+	}
+	for _, c := range p.BackPack {
+		if c.ID == id && c.Code == code {
+			n++
+		}
+	}
+
+	if n >= common.MaxChipNum {
+		return fmt.Errorf("reached to max chip num")
+	}
+
+	p.BackPack = append(p.BackPack, ChipInfo{
+		ID:   id,
+		Code: code,
+	})
+	return nil
+}
+
 func (p *Player) setChipFolder() {
 	// For debug
 	// p.ChipFolder = [FolderSize]ChipInfo{

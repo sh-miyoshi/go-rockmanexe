@@ -32,12 +32,9 @@ func getReward(all []rewardInfo) rewardInfo {
 func rewardProc(data rewardInfo, plyr *player.Player) {
 	switch data.Type {
 	case rewardTypeMoney:
-		plyr.Zenny += uint(data.Value.(int))
+		plyr.UpdateMoney(data.Value.(int))
 	case rewardTypeChip:
 		c := chip.GetByName(data.Name)
-		plyr.BackPack = append(plyr.BackPack, player.ChipInfo{
-			ID:   c.ID,
-			Code: data.Value.(string),
-		})
+		plyr.AddChip(c.ID, data.Value.(string))
 	}
 }

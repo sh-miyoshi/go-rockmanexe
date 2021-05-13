@@ -13,7 +13,9 @@ const (
 	FontFilePath      = "data/font.ttf"
 	ChipFilePath      = "data/chipList.yaml"
 
-	MaxUint = ^uint(0)
+	MaxUint    = ^uint(0)
+	MaxZenny   = 9999999
+	MaxChipNum = 99
 )
 
 const (
