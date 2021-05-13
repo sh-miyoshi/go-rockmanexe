@@ -26,6 +26,7 @@ var (
 	menuState      int
 	imgBack        int32
 	menuFolderInst *menuFolder
+	menuRecordInst *menuRecord
 
 	ErrGoBattle = errors.New("go to battle")
 )
@@ -53,7 +54,8 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu go battle: %w", err)
 	}
 
-	if err := recordInit(); err != nil {
+	menuRecordInst, err = recordNew(plyr)
+	if err != nil {
 		return fmt.Errorf("failed to init menu record: %w", err)
 	}
 
@@ -71,7 +73,9 @@ func End() {
 		menuFolderInst.End()
 	}
 	goBattleEnd()
-	recordEnd()
+	if menuRecordInst != nil {
+		menuRecordInst.End()
+	}
 }
 
 func Process() error {
@@ -89,7 +93,7 @@ func Process() error {
 			return ErrGoBattle
 		}
 	case stateRecord:
-		recordProcess()
+		menuRecordInst.Process()
 	}
 
 	return nil
@@ -106,7 +110,7 @@ func Draw() {
 	case stateGoBattle:
 		goBattleDraw()
 	case stateRecord:
-		recordDraw()
+		menuRecordInst.Draw()
 	}
 }
 

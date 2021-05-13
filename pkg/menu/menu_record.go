@@ -1,26 +1,42 @@
 package menu
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
-func recordInit() error {
-	return nil
+type menuRecord struct {
+	playerInfo *player.Player
 }
 
-func recordEnd() {
+func recordNew(plyr *player.Player) (*menuRecord, error) {
+	res := menuRecord{
+		playerInfo: plyr,
+	}
+	return &res, nil
 }
 
-func recordProcess() {
+func (r *menuRecord) End() {
+}
+
+func (r *menuRecord) Process() {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(sound.SECancel)
 		stateChange(stateTop)
 	}
 }
 
-func recordDraw() {
-	draw.String(common.ScreenX/2-20, common.ScreenY/2-20, 0, "未実装")
+func (r *menuRecord) Draw() {
+	// get game count as seconds (FPS: 60)
+	tm := r.playerInfo.PlayCount / 60
+	if tm > 999*12*60 {
+		tm = 999 * 12 * 60
+	}
+	tm /= 60 // change to minutes
+
+	draw.String(80, 50, 0, "プレイ時間       %03d：%02d", tm/12, tm%12)
+	draw.String(80, 90, 0, "バトルチップ")
+	draw.String(80, 130, 0, "お金")
 }
