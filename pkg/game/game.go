@@ -56,7 +56,7 @@ func Process() error {
 				var err error
 				playerInfo, err = player.NewWithSaveData(common.SaveFilePath, key)
 				if err != nil {
-					return fmt.Errorf("failed to continue")
+					return fmt.Errorf("failed to continue: %w", err)
 				}
 			} else {
 				return fmt.Errorf("failed to process title: %w", err)
