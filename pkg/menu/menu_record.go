@@ -36,7 +36,10 @@ func (r *menuRecord) Draw() {
 	}
 	tm /= 60 // change to minutes
 
-	draw.String(80, 50, 0, "プレイ時間       %03d：%02d", tm/12, tm%12)
-	draw.String(80, 90, 0, "バトルチップ")
-	draw.String(80, 130, 0, "お金")
+	chipNum := player.FolderSize
+	chipNum += len(r.playerInfo.BackPack)
+
+	draw.String(80, 50, 0, "プレイ時間                 %03d：%02d", tm/12, tm%12)
+	draw.String(80, 90, 0, "バトルチップ              %6d枚", chipNum)
+	draw.String(80, 130, 0, "お金                    %7d ゼニー", r.playerInfo.Zenny)
 }
