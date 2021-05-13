@@ -69,8 +69,8 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	}
 
 	data := strings.Split(string(bin), separater)
-	if len(data) != 6+FolderSize+1 {
-		logger.Error("save data requires %d data, but got %d", 6+FolderSize+1, len(data))
+	if len(data) < 7+FolderSize+1 {
+		logger.Error("save data requires %d data at least, but got %d", 7+FolderSize+1, len(data))
 		return nil, fmt.Errorf("save data maybe broken or invalid version")
 	}
 
@@ -101,8 +101,6 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		return nil, fmt.Errorf("failed to parse win num: %w", err)
 	}
 
-	// TODO BackPack
-
 	res := &Player{
 		PlayCount: uint(playCnt),
 		HP:        uint(hp),
@@ -119,6 +117,26 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		}
 		res.ChipFolder[i].ID = id
 		res.ChipFolder[i].Code = code
+	}
+
+	// back pack data
+	n, err := strconv.ParseInt(data[6+FolderSize], 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse back pack chip num: %w", err)
+	}
+	bpIndex := 7 + FolderSize
+	logger.Debug("%d chips in a back pack", n)
+	if len(data)-(bpIndex+1) != int(n) {
+		logger.Error("required %d chips in a back pack, but got %d", len(data)-(bpIndex+1), n)
+		return nil, fmt.Errorf("failed to get back pack chips")
+	}
+	for i := 0; i < int(n); i++ {
+		var id int
+		var code string
+		if _, err := fmt.Sscanf(data[bpIndex+i], "%d%s", &id, &code); err != nil {
+			return nil, fmt.Errorf("failed to parse chip %d in back pack: %w", i, err)
+		}
+		res.BackPack = append(res.BackPack, ChipInfo{ID: id, Code: code})
 	}
 
 	return res, nil
@@ -140,9 +158,14 @@ func (p *Player) Save(fname string, key []byte) error {
 	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
 	buf.WriteString(separater)
 
-	// TODO BackPack
-
 	for _, c := range p.ChipFolder {
+		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
+	}
+
+	// back pack chips
+	buf.WriteString(strconv.FormatInt(int64(len(p.BackPack)), 10))
+	buf.WriteString(separater)
+	for _, c := range p.BackPack {
 		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
 	}
 
