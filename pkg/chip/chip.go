@@ -31,18 +31,19 @@ type SelectParam struct {
 const (
 	// Must same as in chipList.yaml
 
-	IDCannon     = 1
-	IDHighCannon = 2
-	IDMegaCannon = 3
-	IDVulcan1    = 5
-	IDSpreadGun  = 8
-	IDMiniBomb   = 44
-	IDSword      = 54
-	IDWideSword  = 55
-	IDLongSword  = 56
-	IDRecover10  = 109
-	IDRecover30  = 110
-	IDShockWave  = 229
+	IDCannon      = 1
+	IDHighCannon  = 2
+	IDMegaCannon  = 3
+	IDVulcan1     = 5
+	IDSpreadGun   = 8
+	IDThunderBall = 15
+	IDMiniBomb    = 44
+	IDSword       = 54
+	IDWideSword   = 55
+	IDLongSword   = 56
+	IDRecover10   = 109
+	IDRecover30   = 110
+	IDShockWave   = 229
 )
 
 const (

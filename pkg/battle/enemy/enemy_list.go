@@ -15,7 +15,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 /*
@@ -557,7 +556,6 @@ func (a *billyAct) Process() bool {
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			sound.On(sound.SEThunderBall)
 			anim.New(skill.Get(skill.SkillThunderBall, skill.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20, // TODO: ダメージ

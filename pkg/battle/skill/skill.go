@@ -411,6 +411,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillVulcan1
 	case chip.IDShockWave:
 		id = SkillPlayerShockWave
+	case chip.IDThunderBall:
+		id = SkillThunderBall
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
@@ -922,6 +924,10 @@ func (p *thunderBall) Draw() {
 }
 
 func (p *thunderBall) Process() (bool, error) {
+	if p.count == 0 {
+		sound.On(sound.SEThunderBall)
+	}
+
 	halfNext := thunderBallNextStepCount / 2
 	if p.damageID != "" {
 		if !damage.Exists(p.damageID) && p.count%halfNext != 0 {
@@ -938,7 +944,12 @@ func (p *thunderBall) Process() (bool, error) {
 		p.y = p.targetY
 
 		// Decide next position
-		objs := anim.GetObjs(anim.Filter{ObjType: anim.ObjTypePlayer}) // todo
+		objType := anim.ObjTypePlayer
+		if p.TargetType == damage.TargetEnemy {
+			objType = anim.ObjTypeEnemy
+		}
+
+		objs := anim.GetObjs(anim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
 			if p.TargetType == damage.TargetPlayer {

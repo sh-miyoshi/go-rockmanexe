@@ -1,4 +1,4 @@
-# type: 0(無), 3(剣)
+# type: 0(無), 3(剣), 11(電気)
 # player_act.type: 3(cannon), 4(sword)
 - id: 1
   name: "キャノン"
@@ -63,3 +63,8 @@
   power: 40
   type: 0
   player_act: 7
+- id: 15
+  name: "サンダーボール1"
+  power: 40
+  type: 11
+  player_act: -1
