@@ -2,6 +2,7 @@ package win
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/enemy"
@@ -141,6 +142,11 @@ func Draw() {
 		dxlib.DrawGraph(45, 30, imgFrame, dxlib.TRUE)
 		dxlib.DrawGraph(272, 174, reward.Image, dxlib.TRUE)
 		draw.String(105, 230, 0xffffff, reward.Name)
+		if reward.Type == rewardTypeChip {
+			// Show chip code
+			c := strings.ToUpper(reward.Value.(string))
+			draw.String(240, 230, 0xffffff, c)
+		}
 		showDeleteTime()
 	}
 }
