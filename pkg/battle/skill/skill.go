@@ -29,6 +29,7 @@ const (
 	SkillVulcan1
 	SkillPlayerShockWave
 	SkillThunderBall
+	SkillWideShot
 )
 
 const (
@@ -53,10 +54,17 @@ const (
 	delayVulcan      = 2
 	delayPick        = 3
 	delayThunderBall = 6
+	delayWideShot    = 4
 )
 
 const (
 	thunderBallNextStepCount = 80
+	wideShotNextStepCount    = 8
+)
+
+const (
+	wideShotStateBegin int = iota
+	wideShotStateMove
 )
 
 type Argument struct {
@@ -77,6 +85,9 @@ var (
 	imgVulcan        []int32
 	imgPick          []int32
 	imgThunderBall   []int32
+	imgWideShotBody  []int32
+	imgWideShotBegin []int32
+	imgWideShotMove  []int32
 )
 
 type cannon struct {
@@ -185,6 +196,18 @@ type thunderBall struct {
 	damageID         string
 }
 
+type wideShot struct {
+	ID         string
+	OwnerID    string
+	Power      uint
+	TargetType int
+	Direct     int
+
+	state int
+	count int
+	x, y  int
+}
+
 func Init() error {
 	path := common.ImagePath + "battle/skill/"
 
@@ -284,6 +307,28 @@ func Init() error {
 		imgThunderBall = append(imgThunderBall, tmp[i])
 	}
 
+	fname = path + "ワイドショット_body.png"
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 3; i++ {
+		imgWideShotBody = append(imgWideShotBody, tmp[i])
+	}
+	fname = path + "ワイドショット_begin.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgWideShotBegin = append(imgWideShotBegin, tmp[i])
+	}
+	fname = path + "ワイドショット_move.png"
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 3; i++ {
+		imgWideShotMove = append(imgWideShotMove, tmp[i])
+	}
+
 	return nil
 }
 
@@ -336,6 +381,18 @@ func End() {
 		dxlib.DeleteGraph(imgThunderBall[i])
 	}
 	imgThunderBall = []int32{}
+	for i := 0; i < len(imgWideShotBody); i++ {
+		dxlib.DeleteGraph(imgWideShotBody[i])
+	}
+	imgWideShotBody = []int32{}
+	for i := 0; i < len(imgWideShotBegin); i++ {
+		dxlib.DeleteGraph(imgWideShotBegin[i])
+	}
+	imgWideShotBegin = []int32{}
+	for i := 0; i < len(imgWideShotMove); i++ {
+		dxlib.DeleteGraph(imgWideShotMove[i])
+	}
+	imgWideShotMove = []int32{}
 }
 
 // Get ...
@@ -379,6 +436,10 @@ func Get(skillID int, arg Argument) anim.Anim {
 
 		max := 6 // debug
 		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py, targetX: tx, targetY: py}
+	case SkillWideShot:
+		px, py := anim.GetObjPos(arg.OwnerID)
+		direct := common.DirectRight // debug
+		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, x: px, y: py, state: wideShotStateBegin}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -413,6 +474,8 @@ func GetByChip(chipID int, arg Argument) anim.Anim {
 		id = SkillPlayerShockWave
 	case chip.IDThunderBall:
 		id = SkillThunderBall
+	case chip.IDWideShot:
+		id = SkillWideShot
 	default:
 		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
@@ -1003,6 +1066,80 @@ func (p *thunderBall) DamageProc(dm *damage.Damage) {
 }
 
 func (p *thunderBall) GetParam() anim.Param {
+	return anim.Param{
+		ObjID:    p.ID,
+		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeNone,
+	}
+}
+
+func (p *wideShot) Draw() {
+	switch p.state {
+	case wideShotStateBegin:
+		x, y := battlecommon.ViewPos(p.x, p.y)
+		n := (p.count / delayWideShot)
+
+		if n < len(imgWideShotBody) {
+			dxlib.DrawRotaGraph(x+40, y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE)
+		}
+		if n >= len(imgWideShotBegin) {
+			n = len(imgWideShotBegin) - 1
+		}
+		dxlib.DrawRotaGraph(x+62, y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE)
+	case wideShotStateMove:
+		x, y := battlecommon.ViewPos(p.x, p.y)
+		n := (p.count / delayWideShot) % len(imgWideShotMove)
+		next := p.x + 1
+		prev := p.x - 1
+		if p.Direct == common.DirectLeft {
+			next, prev = prev, next
+		}
+
+		c := p.count % wideShotNextStepCount
+		if c != 0 {
+			ofsx := battlecommon.GetOffset(next, p.x, prev, c, wideShotNextStepCount, field.PanelSizeX)
+			dxlib.DrawRotaGraph(x+int32(ofsx), y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE)
+		}
+	}
+}
+
+func (p *wideShot) Process() (bool, error) {
+	switch p.state {
+	case wideShotStateBegin:
+		// TODO sound
+		max := len(imgWideShotBody)
+		if len(imgWideShotBegin) > max {
+			max = len(imgWideShotBegin)
+		}
+		max *= delayWideShot
+		if p.count > max {
+			p.state = wideShotStateMove
+			p.count = 0
+			return false, nil
+		}
+	case wideShotStateMove:
+		if p.count%wideShotNextStepCount == 0 {
+			if p.Direct == common.DirectRight {
+				p.x++
+			} else if p.Direct == common.DirectLeft {
+				p.x--
+			}
+			// TODO add damage
+			// TODO 貫通しない
+			if p.x >= field.FieldNumX {
+				return true, nil
+			}
+		}
+	}
+
+	p.count++
+	return false, nil
+}
+
+func (p *wideShot) DamageProc(dm *damage.Damage) {
+}
+
+func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.TypeObject,

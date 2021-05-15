@@ -68,3 +68,8 @@
   power: 40
   type: 11
   player_act: -1
+- id: 18
+  name: "ワイドショット1"
+  power: 60
+  type: 10
+  player_act: 2

@@ -37,6 +37,7 @@ const (
 	IDVulcan1     = 5
 	IDSpreadGun   = 8
 	IDThunderBall = 15
+	IDWideShot    = 18
 	IDMiniBomb    = 44
 	IDSword       = 54
 	IDWideSword   = 55
