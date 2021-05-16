@@ -203,9 +203,10 @@ type wideShot struct {
 	TargetType int
 	Direct     int
 
-	state int
-	count int
-	x, y  int
+	state    int
+	count    int
+	x, y     int
+	damageID [3]string
 }
 
 func Init() error {
@@ -1104,6 +1105,15 @@ func (p *wideShot) Draw() {
 }
 
 func (p *wideShot) Process() (bool, error) {
+	for _, did := range p.damageID {
+		if did != "" {
+			if !damage.Exists(did) && p.count%wideShotNextStepCount != 0 {
+				// attack hit to target
+				return true, nil
+			}
+		}
+	}
+
 	switch p.state {
 	case wideShotStateBegin:
 		// TODO sound
@@ -1124,10 +1134,25 @@ func (p *wideShot) Process() (bool, error) {
 			} else if p.Direct == common.DirectLeft {
 				p.x--
 			}
-			// TODO add damage
-			// TODO 貫通しない
-			if p.x >= field.FieldNumX {
+
+			if p.x >= field.FieldNumX || p.x < 0 {
 				return true, nil
+			}
+
+			for i := -1; i <= 1; i++ {
+				y := p.y + i
+				if y < 0 || y >= field.FieldNumY {
+					continue
+				}
+
+				p.damageID[i+1] = damage.New(damage.Damage{
+					PosX:          p.x,
+					PosY:          y,
+					Power:         int(p.Power),
+					TTL:           wideShotNextStepCount,
+					TargetType:    p.TargetType,
+					HitEffectType: effect.TypeNone,
+				})
 			}
 		}
 	}
