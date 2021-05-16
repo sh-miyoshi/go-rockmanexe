@@ -12,6 +12,7 @@ const (
 	IDMetall int = iota
 	IDTarget
 	IDBilly
+	IDLark
 )
 
 type EnemyChipInfo struct {
@@ -97,13 +98,17 @@ func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
 func GetStandImageFile(id int) (name, ext string) {
 	ext = ".png"
 
+	path := common.ImagePath + "battle/character/"
+
 	switch id {
 	case IDMetall:
-		name = common.ImagePath + "battle/character/メットール"
+		name = path + "メットール"
 	case IDTarget:
-		name = common.ImagePath + "battle/character/的"
+		name = path + "的"
 	case IDBilly:
-		name = common.ImagePath + "battle/character/ビリー"
+		name = path + "ビリー"
+	case IDLark:
+		name = path + "ゲイラーク"
 	}
 	return
 }
@@ -116,6 +121,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyTarget{pm: initParam}
 	case IDBilly:
 		return &enemyBilly{pm: initParam}
+	case IDLark:
+		return &enemyLark{pm: initParam}
 	}
 	return nil
 }
