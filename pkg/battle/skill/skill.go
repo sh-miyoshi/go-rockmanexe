@@ -1116,7 +1116,10 @@ func (p *wideShot) Process() (bool, error) {
 
 	switch p.state {
 	case wideShotStateBegin:
-		// TODO sound
+		if p.count == 0 {
+			sound.On(sound.SEWideShot)
+		}
+
 		max := len(imgWideShotBody)
 		if len(imgWideShotBegin) > max {
 			max = len(imgWideShotBegin)
