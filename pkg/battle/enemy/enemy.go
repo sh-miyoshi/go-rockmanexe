@@ -5,6 +5,13 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
+)
+
+const (
+	IDMetall int = iota
+	IDTarget
+	IDBilly
 )
 
 type EnemyChipInfo struct {
@@ -86,3 +93,79 @@ func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
 	}
 	return res
 }
+
+func GetStandImageFile(id int) (name, ext string) {
+	ext = ".png"
+
+	switch id {
+	case IDMetall:
+		name = common.ImagePath + "battle/character/メットール"
+	case IDTarget:
+		name = common.ImagePath + "battle/character/的"
+	case IDBilly:
+		name = common.ImagePath + "battle/character/ビリー"
+	}
+	return
+}
+
+func getObject(id int, initParam EnemyParam) enemyObject {
+	switch id {
+	case IDMetall:
+		return &enemyMetall{pm: initParam}
+	case IDTarget:
+		return &enemyTarget{pm: initParam}
+	case IDBilly:
+		return &enemyBilly{pm: initParam}
+	}
+	return nil
+}
+
+/*
+Enemy template
+
+type enemy struct {
+	pm EnemyParam
+}
+
+func (e *enemy) Init(objID string) error {
+	e.pm.ObjectID = objID
+
+	// Load Images
+	return nil
+}
+
+func (e *enemy) End() {
+	// Delete Images
+}
+
+func (e *enemy) Process() (bool, error) {
+	// Return true if finished(e.g. hp=0)
+	// Enemy Logic
+	return false, nil
+}
+
+func (e *enemy) Draw() {
+	// Show Enemy Images
+}
+
+func (e *enemy) DamageProc(dm *damage.Damage) {
+	if dm == nil {
+		return
+	}
+	if dm.TargetType|damage.TargetEnemy != 0 {
+		e.pm.HP -= dm.Power
+		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+	}
+}
+
+func (e *enemy) GetParam() anim.Param {
+	return anim.Param{
+		ObjID:    e.pm.ObjectID,
+		PosX:     e.pm.PosX,
+		PosY:     e.pm.PosY,
+		AnimType: anim.TypeObject,
+		ObjType:  anim.ObjTypeEnemy,
+	}
+}
+
+*/

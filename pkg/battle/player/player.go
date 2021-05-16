@@ -53,13 +53,6 @@ type act struct {
 	pPosY     *int
 }
 
-type deleteAction struct {
-	id    string
-	image int32
-	x, y  int
-	count int
-}
-
 // BattlePlayer ...
 type BattlePlayer struct {
 	ID            string
@@ -306,9 +299,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.HP <= 0 {
 		// Player deleted
-		sound.On(sound.SEPlayerDeleted)
 		img := &imgPlayers[playerAnimDamage][1]
-		newDelete(*img, p.PosX, p.PosY)
+		battlecommon.NewDelete(*img, p.PosX, p.PosY, true)
 		*img = -1 // DeleteGraph at delete animation
 		p.NextAction = NextActLose
 		p.EnableAct = false
@@ -538,45 +530,4 @@ func (a *act) GetImage() int32 {
 	}
 
 	return imgPlayers[a.typ][imgNo]
-}
-
-func newDelete(image int32, x, y int) {
-	anim.New(&deleteAction{
-		id:    uuid.New().String(),
-		image: image,
-		x:     x,
-		y:     y,
-	})
-}
-
-func (p *deleteAction) Process() (bool, error) {
-	p.count++
-	if p.count == 15 {
-		dxlib.DeleteGraph(p.image)
-		return true, nil
-	}
-	return false, nil
-}
-
-func (p *deleteAction) Draw() {
-	x, y := battlecommon.ViewPos(p.x, p.y)
-
-	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
-	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
-	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-}
-
-func (p *deleteAction) DamageProc(dm *damage.Damage) {
-}
-
-func (p *deleteAction) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    p.id,
-		PosX:     p.x,
-		PosY:     p.y,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypeNone,
-	}
 }
