@@ -154,7 +154,7 @@ func (e *enemyMetall) Draw() {
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y-20, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
