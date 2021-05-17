@@ -92,6 +92,12 @@ func Draw() {
 			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
 			draw.String(20, 25, 0x000000, "%s", c.Name)
 			draw.ChipCode(30, 163, s.Code, 100)
+			if c.Power != 0 {
+				draw.Number(110, 163, int32(c.Power), draw.NumberOption{
+					Color:  draw.NumberColorWhite,
+					Length: 3,
+				})
+			}
 		}
 	}
 
