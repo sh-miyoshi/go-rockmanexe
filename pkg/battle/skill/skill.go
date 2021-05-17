@@ -59,7 +59,6 @@ const (
 
 const (
 	thunderBallNextStepCount = 80
-	wideShotNextStepCount    = 8
 )
 
 const (
@@ -197,11 +196,12 @@ type thunderBall struct {
 }
 
 type wideShot struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
-	Direct     int
+	ID            string
+	OwnerID       string
+	Power         uint
+	TargetType    int
+	Direct        int
+	NextStepCount int
 
 	state    int
 	count    int
@@ -439,8 +439,13 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py, targetX: tx, targetY: py}
 	case SkillWideShot:
 		px, py := anim.GetObjPos(arg.OwnerID)
-		direct := common.DirectRight // debug
-		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, x: px, y: py, state: wideShotStateBegin}
+		direct := common.DirectRight
+		nextStep := 8
+		if arg.TargetType == damage.TargetPlayer {
+			direct = common.DirectLeft
+			nextStep = 16
+		}
+		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, x: px, y: py, state: wideShotStateBegin}
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -1075,18 +1080,26 @@ func (p *thunderBall) GetParam() anim.Param {
 }
 
 func (p *wideShot) Draw() {
+	opt := dxlib.DrawRotaGraphOption{}
+	ofs := int32(1)
+	if p.Direct == common.DirectLeft {
+		xflip := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &xflip
+		ofs = -1
+	}
+
 	switch p.state {
 	case wideShotStateBegin:
 		x, y := battlecommon.ViewPos(p.x, p.y)
 		n := (p.count / delayWideShot)
 
-		if n < len(imgWideShotBody) {
-			dxlib.DrawRotaGraph(x+40, y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE)
+		if n < len(imgWideShotBody) && p.TargetType == damage.TargetEnemy {
+			dxlib.DrawRotaGraph(x+40, y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE, opt)
 		}
 		if n >= len(imgWideShotBegin) {
 			n = len(imgWideShotBegin) - 1
 		}
-		dxlib.DrawRotaGraph(x+62, y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(x+62*ofs, y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE, opt)
 	case wideShotStateMove:
 		x, y := battlecommon.ViewPos(p.x, p.y)
 		n := (p.count / delayWideShot) % len(imgWideShotMove)
@@ -1096,10 +1109,10 @@ func (p *wideShot) Draw() {
 			next, prev = prev, next
 		}
 
-		c := p.count % wideShotNextStepCount
+		c := p.count % p.NextStepCount
 		if c != 0 {
-			ofsx := battlecommon.GetOffset(next, p.x, prev, c, wideShotNextStepCount, field.PanelSizeX)
-			dxlib.DrawRotaGraph(x+int32(ofsx), y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE)
+			ofsx := battlecommon.GetOffset(next, p.x, prev, c, p.NextStepCount, field.PanelSizeX)
+			dxlib.DrawRotaGraph(x+int32(ofsx), y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE, opt)
 		}
 	}
 }
@@ -1107,7 +1120,7 @@ func (p *wideShot) Draw() {
 func (p *wideShot) Process() (bool, error) {
 	for _, did := range p.damageID {
 		if did != "" {
-			if !damage.Exists(did) && p.count%wideShotNextStepCount != 0 {
+			if !damage.Exists(did) && p.count%p.NextStepCount != 0 {
 				// attack hit to target
 				return true, nil
 			}
@@ -1131,7 +1144,7 @@ func (p *wideShot) Process() (bool, error) {
 			return false, nil
 		}
 	case wideShotStateMove:
-		if p.count%wideShotNextStepCount == 0 {
+		if p.count%p.NextStepCount == 0 {
 			if p.Direct == common.DirectRight {
 				p.x++
 			} else if p.Direct == common.DirectLeft {
@@ -1152,7 +1165,7 @@ func (p *wideShot) Process() (bool, error) {
 					PosX:          p.x,
 					PosY:          y,
 					Power:         int(p.Power),
-					TTL:           wideShotNextStepCount,
+					TTL:           p.NextStepCount,
 					TargetType:    p.TargetType,
 					HitEffectType: effect.TypeNone,
 				})

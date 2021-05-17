@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 )
 
@@ -119,11 +120,10 @@ func (e *enemyLark) Process() (bool, error) {
 	np := (e.movePointer + 1) % 6
 
 	if cnt == larkMoveNextStepCount/2 {
-		if e.moveCount >= moveNum {
+		if e.moveCount >= moveNum && e.pm.PosY != 1 {
 			e.moveCount = 0
-			// TODO
-			// e.atk.SetAtttack()
-			// return false, nil
+			e.atk.SetAtttack()
+			return false, nil
 		}
 
 		// 次の移動地点を決定
@@ -203,7 +203,16 @@ func (a *larkAtk) SetAtttack() {
 }
 
 func (a *larkAtk) Process() {
-	// TODO damage登録
+	if a.count == 1*delayBillyAtk {
+		anim.New(skill.Get(
+			skill.SkillWideShot,
+			skill.Argument{
+				OwnerID:    a.ownerID,
+				Power:      20, // TODO: ダメージ
+				TargetType: damage.TargetPlayer,
+			},
+		))
+	}
 
 	a.count++
 
