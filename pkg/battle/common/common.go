@@ -63,6 +63,24 @@ func MoveObject(x, y *int, direct int, objPanelType int, isMove bool) bool {
 	return true
 }
 
+func MoveObjectDirect(x, y *int, targetX, targetY int, objPanelType int, isMove bool) bool {
+	pn := field.GetPanelInfo(targetX, targetY)
+	if pn.ObjectID != "" {
+		return false
+	}
+	// Check panel type
+	if objPanelType != pn.Type {
+		return false
+	}
+
+	if isMove {
+		*x = targetX
+		*y = targetY
+	}
+
+	return true
+}
+
 func ViewPos(x, y int) (viewX, viewY int32) {
 	viewX = int32(field.PanelSizeX*x + field.PanelSizeX/2)
 	viewY = int32(field.DrawPanelTopY + field.PanelSizeY*y - 10)

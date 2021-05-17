@@ -9,7 +9,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
 )
 
@@ -17,7 +16,7 @@ const (
 	delayLarkMove = 8
 	delayLarkAtk  = 2
 
-	larkMoveNextStepCount = 40
+	larkMoveNextStepCount = 80
 )
 
 type larkAtk struct {
@@ -35,11 +34,21 @@ type enemyLark struct {
 
 	movePoint   [6][2]int
 	movePointer int
+	moveCount   int
+
+	nextX int
+	nextY int
+	prevX int
+	prevY int
 }
 
 func (e *enemyLark) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.atk.ownerID = objID
+	e.nextX = e.pm.PosX
+	e.nextY = e.pm.PosY
+	e.prevX = e.pm.PosX
+	e.prevY = e.pm.PosY
 
 	for i := 0; i < 6; i++ {
 		// x座標
@@ -92,7 +101,7 @@ func (e *enemyLark) End() {
 
 func (e *enemyLark) Process() (bool, error) {
 	e.count++
-	// Return true if finished(e.g. hp=0)
+	// TODO Return true if finished(e.g. hp=0)
 
 	if e.atk.attacking {
 		e.atk.Process()
@@ -100,38 +109,41 @@ func (e *enemyLark) Process() (bool, error) {
 	}
 
 	const waitCount = 20
+	const moveNum = 4
 
 	if e.count < waitCount {
 		return false, nil
 	}
 
-	if e.count%larkMoveNextStepCount == 0 {
-		np := (e.movePointer + 1) % 6
-		var direct int
-		if e.movePoint[e.movePointer][0] != e.movePoint[np][0] {
-			// x座標が移動しているなら
-			if e.movePoint[e.movePointer][0] > e.movePoint[np][0] {
-				direct = common.DirectLeft
-			} else {
-				direct = common.DirectRight
-			}
-		} else {
-			// y座標が移動しているなら
-			if e.movePoint[e.movePointer][1] > e.movePoint[np][1] {
-				direct = common.DirectUp
-			} else {
-				direct = common.DirectDown
-			}
+	cnt := e.count % larkMoveNextStepCount
+	np := (e.movePointer + 1) % 6
+
+	if cnt == larkMoveNextStepCount/2 {
+		if e.moveCount >= moveNum {
+			e.moveCount = 0
+			// TODO
+			// e.atk.SetAtttack()
+			// return false, nil
 		}
 
-		if battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, direct, field.PanelTypeEnemy, true) {
+		// 次の移動地点を決定
+		e.moveCount++
+		tx := e.movePoint[np][0]
+		ty := e.movePoint[np][1]
+		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, tx, ty, field.PanelTypeEnemy, false) {
+			e.nextX = tx
+			e.nextY = ty
+		}
+		return false, nil
+	}
+	if cnt == 0 {
+		// 実際に移動
+		e.prevX = e.pm.PosX
+		e.prevY = e.pm.PosY
+		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, e.nextX, e.nextY, field.PanelTypeEnemy, true) {
 			e.movePointer = np
 		}
 	}
-
-	// if e.count == 20 {
-	// 	e.atk.SetAtttack()
-	// }
 
 	return false, nil
 }
@@ -149,13 +161,12 @@ func (e *enemyLark) Draw() {
 		return
 	}
 
-	// TODO offset
-	// c := e.count % larkMoveNextStepCount
-	// ofsx := battlecommon.GetOffset(e.targetX, e.pm.PosX, e.prevX, c, larkMoveNextStepCount, field.PanelSizeX)
-	// ofsy := battlecommon.GetOffset(e.targetY, e.pm.PosY, e.prevY, c, larkMoveNextStepCount, field.PanelSizeY)
+	c := e.count % larkMoveNextStepCount
+	ofsx := battlecommon.GetOffset(e.nextX, e.pm.PosX, e.prevX, c, larkMoveNextStepCount, field.PanelSizeX)
+	ofsy := battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, larkMoveNextStepCount, field.PanelSizeY)
 
 	n := (e.count / delayLarkMove) % len(e.imgMove)
-	dxlib.DrawRotaGraph(x+20, y, 1, 0, e.imgMove[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, e.imgMove[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 
 	// Show HP
 	if e.pm.HP > 0 {
