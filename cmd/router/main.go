@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
@@ -10,14 +11,17 @@ import (
 	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/dstream"
 )
 
 func main() {
+	var exitErr chan error
+
 	var confFile string
 	flag.StringVar(&confFile, "config", "config.yaml", "file path of config")
 	flag.Parse()
 
-	// initialize config
+	// Initialize config
 	if err := config.Init(confFile); err != nil {
 		fmt.Printf("Failed to init config: %v", err)
 		os.Exit(1)
@@ -31,15 +35,37 @@ func main() {
 		os.Exit(1)
 	}
 
-	// set API
-	r := mux.NewRouter()
-	setAPI(r)
+	// Listen API request
+	logger.Info("start API server with %s", c.APIAddr)
+	go func() {
+		r := mux.NewRouter()
+		setAPI(r)
 
-	// listen data connection
+		if err := http.ListenAndServe(c.APIAddr, r); err != nil {
+			logger.Error("Failed to run API server: %v", err)
+			exitErr <- err
+		}
+	}()
+
+	// Listen data connection
+	logger.Info("start data stream with %s", c.DataStreamAddr)
+	go func() {
+		r := mux.NewRouter()
+		r.HandleFunc("/data", dstream.DataHandler)
+
+		if err := http.ListenAndServe(c.DataStreamAddr, r); err != nil {
+			logger.Error("Failed to run data stream: %v", err)
+			exitErr <- err
+		}
+	}()
+
+	<-exitErr
 }
 
 func setAPI(r *mux.Router) {
-	basePath := "api/v1"
+	basePath := "/api/v1"
 
+	r.HandleFunc(basePath+"/client", routerapi.ClientGetV1).Methods("GET")
 	r.HandleFunc(basePath+"/client", routerapi.ClientAddV1).Methods("POST")
+	r.HandleFunc(basePath+"/client/{clientID}", routerapi.ClientDeleteV1).Methods("DELETE")
 }
