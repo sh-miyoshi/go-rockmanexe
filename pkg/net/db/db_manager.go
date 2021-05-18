@@ -33,3 +33,33 @@ func InitManager(dbType string, connStr string) error {
 
 	return nil
 }
+
+func GetInst() *Manager {
+	return inst
+}
+
+func (m *Manager) ClientAdd(ent model.ClientInfo) error {
+	// TODO validation
+	return m.client.Add(ent)
+}
+
+func (m *Manager) ClientDelete(clientID string) error {
+	return m.client.Delete(clientID)
+}
+
+func (m *Manager) ClientGet() ([]model.ClientInfo, error) {
+	return m.client.Get()
+}
+
+func (m *Manager) RouteAdd(ent model.RouteInfo) error {
+	// TODO validation
+	return m.route.Add(ent)
+}
+
+func (m *Manager) RouteDelete(routeID string) error {
+	return m.route.Delete(routeID)
+}
+
+func (m *Manager) RouteGet() ([]model.RouteInfo, error) {
+	return m.route.Get()
+}
