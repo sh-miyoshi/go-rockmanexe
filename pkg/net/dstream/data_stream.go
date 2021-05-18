@@ -1,29 +1,18 @@
 package dstream
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gorilla/websocket"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
-var upgrader = websocket.Upgrader{} // use default options
+type RouterStream struct {
+}
 
-func DataHandler(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		logger.Info("Failed to upgrade to web socket: %v", err)
-		return
-	}
-	defer c.Close()
+func (s *RouterStream) SendAction(ctx context.Context, action *pb.Action) (*pb.Result, error) {
+	return nil, nil
+}
 
-	// Read data
-	for {
-		_, data, err := c.ReadMessage()
-		if err != nil {
-			logger.Error("Failed to read data")
-			break
-		}
-		logger.Info("Read data: %v", data)
-	}
+func (s *RouterStream) PublishData(*pb.AuthRequest, pb.Router_PublishDataServer) error {
+	return nil
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/dstream"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -50,11 +53,17 @@ func main() {
 	// Listen data connection
 	logger.Info("start data stream with %s", c.DataStreamAddr)
 	go func() {
-		r := mux.NewRouter()
-		r.HandleFunc("/data", dstream.DataHandler)
+		listen, err := net.Listen("tcp", c.DataStreamAddr)
+		if err != nil {
+			logger.Error("Failed to listen data stream: %v", err)
+			exitErr <- err
+		}
 
-		if err := http.ListenAndServe(c.DataStreamAddr, r); err != nil {
-			logger.Error("Failed to run data stream: %v", err)
+		s := grpc.NewServer()
+		pb.RegisterRouterServer(s, &dstream.RouterStream{})
+
+		if err = s.Serve(listen); err != nil {
+			logger.Error("Failed to start data stream: %v", err)
 			exitErr <- err
 		}
 	}()

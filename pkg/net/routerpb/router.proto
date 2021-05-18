@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package router;
+option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb";
+
+service Router {
+    rpc SendAction(Action) returns (Result) {}
+    rpc PublishData(AuthRequest) returns (stream Data) {}
+}
+
+message Action {
+    string sessionID = 1;
+    string clientID = 2;
+
+    // TODO action data
+}
+
+message Result {
+    bool success = 1;
+    string errMsg = 2;
+}
+
+message AuthRequest {
+    string id = 1;
+    string key = 2;
+    string version = 3;
+}
+
+message Data {
+    enum MsgType {
+        AUTHRESPONSE = 0;
+        UPDATESTATUS = 1;
+        DATA = 2;
+    }
+
+    enum Status {
+        DISCONNECTED = 0;
+        WAITING = 1;
+        CONNECTED = 2;
+    }
+
+    MsgType type = 1;
+    oneof data {
+        AuthResponse authRes = 2;
+        Status status = 3;
+        bytes rawData = 4;
+    }
+}
+
+message AuthResponse {
+    bool success = 1;
+    string errMsg = 2;
+    string sessionID = 3;
+}
