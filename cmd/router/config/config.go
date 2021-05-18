@@ -14,6 +14,10 @@ type Config struct {
 		Type       string `yaml:"type"`
 		ConnString string `yaml:"conn_string"`
 	} `yaml:"db"`
+	Log struct {
+		DebugLog bool   `yaml:"debug_log"`
+		FileName string `yaml:"file"`
+	} `yaml:"log"`
 }
 
 var (

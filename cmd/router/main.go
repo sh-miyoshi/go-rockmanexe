@@ -2,12 +2,14 @@ package main
 
 import (
 	"flag"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/router/config"
 	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/api/router"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/db"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 func main() {
@@ -17,7 +19,15 @@ func main() {
 
 	// initialize config
 	if err := config.Init(confFile); err != nil {
-		log.Fatalf("Failed to init config: %v", err)
+		fmt.Printf("Failed to init config: %v", err)
+		os.Exit(1)
+	}
+
+	c := config.Get()
+	logger.InitLogger(c.Log.DebugLog, c.Log.FileName)
+
+	if err := db.InitManager(c.DB.Type, c.DB.ConnString); err != nil {
+		logger.Error("Failed ot init DB manager: %v", err)
 		os.Exit(1)
 	}
 
