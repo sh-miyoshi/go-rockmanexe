@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/router/config"
-	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/api/router"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/db"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 )
 
 func main() {

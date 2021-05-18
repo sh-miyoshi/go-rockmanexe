@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 func init() {
