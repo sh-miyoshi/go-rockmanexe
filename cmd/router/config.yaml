@@ -1,0 +1,5 @@
+api_addr: "0.0.0.0:8080"
+data_stream_addr: "0.0.0.0:80"
+db:
+  type: "memory"
+  conn_string: ""
