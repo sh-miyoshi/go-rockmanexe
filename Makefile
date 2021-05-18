@@ -11,3 +11,6 @@ res:
 	move .\data\private\sounds.dxa ".\data\"
 	git add .\data\images.dxa .\data\sounds.dxa
 	git commit -m "update resources"
+router:
+	go build .\cmd\router
+	router.exe --config cmd/router/config.yaml
