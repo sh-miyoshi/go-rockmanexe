@@ -40,8 +40,16 @@ func main() {
 		log.Fatalf("Failed to get data stream: %v", err)
 	}
 
-	log.Printf("data stream: %v", dataStream)
-	// TODO recv data from stream
+	// Recv data from stream
+	for {
+		data, err := dataStream.Recv()
+		if err != nil {
+			log.Fatalf("Failed to recv data: %v", err)
+			break
+		}
+
+		log.Printf("got data: %+v", data)
+	}
 }
 
 func clientAdd() routerapi.ClientInfo {

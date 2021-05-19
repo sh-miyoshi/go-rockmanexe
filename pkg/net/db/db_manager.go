@@ -78,3 +78,19 @@ func (m *Manager) RouteDelete(routeID string) error {
 func (m *Manager) RouteGet() ([]model.RouteInfo, error) {
 	return m.route.Get()
 }
+
+func (m *Manager) RouteGetByClient(clientID string) (*model.RouteInfo, error) {
+	// TODO refactoring
+	routes, err := m.route.Get()
+	if err != nil {
+		return nil, err
+	}
+	for _, r := range routes {
+		for _, c := range r.Clients {
+			if c == clientID {
+				return &r, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("no route for client %s", clientID)
+}

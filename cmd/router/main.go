@@ -60,7 +60,7 @@ func main() {
 		}
 
 		s := grpc.NewServer()
-		pb.RegisterRouterServer(s, &dstream.RouterStream{})
+		pb.RegisterRouterServer(s, dstream.New())
 
 		if err = s.Serve(listen); err != nil {
 			logger.Error("Failed to start data stream: %v", err)
