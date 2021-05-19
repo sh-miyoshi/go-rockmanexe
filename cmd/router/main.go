@@ -77,4 +77,8 @@ func setAPI(r *mux.Router) {
 	r.HandleFunc(basePath+"/client", routerapi.ClientGetV1).Methods("GET")
 	r.HandleFunc(basePath+"/client", routerapi.ClientAddV1).Methods("POST")
 	r.HandleFunc(basePath+"/client/{clientID}", routerapi.ClientDeleteV1).Methods("DELETE")
+
+	r.HandleFunc(basePath+"/route", routerapi.RouteGetV1).Methods("GET")
+	r.HandleFunc(basePath+"/route", routerapi.RouteAddV1).Methods("POST")
+	r.HandleFunc(basePath+"/route/{routeID}", routerapi.RouteDeleteV1).Methods("DELETE")
 }
