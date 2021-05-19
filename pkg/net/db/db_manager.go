@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -49,6 +50,20 @@ func (m *Manager) ClientDelete(clientID string) error {
 
 func (m *Manager) ClientGet() ([]model.ClientInfo, error) {
 	return m.client.Get()
+}
+
+func (m *Manager) ClientGetByID(id string) (*model.ClientInfo, error) {
+	// TODO refactoring
+	clients, err := m.client.Get()
+	if err != nil {
+		return nil, err
+	}
+	for _, c := range clients {
+		if c.ID == id {
+			return &c, nil
+		}
+	}
+	return nil, errors.New("no such client")
 }
 
 func (m *Manager) RouteAdd(ent model.RouteInfo) error {
