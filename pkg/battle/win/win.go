@@ -30,13 +30,21 @@ var (
 	count         int
 	state         int
 	deleteTimeSec int
+	bustingLevel  int
 	reward        rewardInfo
 	winMsgInst    *titlemsg.TitleMsg
 )
 
-func Init(gameTime int, deletedEnemies []enemy.EnemyParam, plyr *player.Player) error {
+type WinArg struct {
+	GameTime        int
+	DeletedEnemies  []enemy.EnemyParam
+	PlayerMoveNum   int
+	PlayerDamageNum int
+}
+
+func Init(args WinArg, plyr *player.Player) error {
 	state = stateMsg
-	deleteTimeSec = gameTime / 60
+	deleteTimeSec = args.GameTime / 60
 	if deleteTimeSec == 0 {
 		deleteTimeSec = 1
 	}
@@ -62,18 +70,18 @@ func Init(gameTime int, deletedEnemies []enemy.EnemyParam, plyr *player.Player) 
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
-	lv := calcBustingLevel()
+	bustingLevel = calcBustingLevel(args.PlayerMoveNum, args.PlayerDamageNum)
 
-	m := getMoney(lv)
+	m := getMoney(bustingLevel)
 	list := []rewardInfo{
 		{Type: rewardTypeMoney, Name: fmt.Sprintf("%d ゼニー", m), Value: m, Image: imgZenny},
 	}
 	enemyIDs := map[int]int{}
-	for _, e := range deletedEnemies {
+	for _, e := range args.DeletedEnemies {
 		enemyIDs[e.CharID] = e.CharID
 	}
 	for _, id := range enemyIDs {
-		for _, c := range enemy.GetEnemyChip(id, lv) {
+		for _, c := range enemy.GetEnemyChip(id, bustingLevel) {
 			chipInfo := chip.Get(c.ChipID)
 			list = append(list, rewardInfo{
 				Type:  rewardTypeChip,
@@ -148,6 +156,7 @@ func Draw() {
 			draw.String(240, 230, 0xffffff, c)
 		}
 		showDeleteTime()
+		draw.Number(360, 125, int32(bustingLevel))
 	}
 }
 
@@ -174,7 +183,7 @@ func showDeleteTime() {
 	draw.Number(350, 77, int32(sec), draw.NumberOption{Padding: &zero, Length: 2})
 }
 
-func calcBustingLevel() int {
+func calcBustingLevel(moveNum, damageNum int) int {
 	// バスティングレベルの決定
 	// ウィルス戦
 	//   ～ 5秒:	7point
@@ -209,7 +218,23 @@ func calcBustingLevel() int {
 		}
 	}
 
-	// TODO 時間以外のバスティングの決定
+	switch damageNum {
+	case 0:
+		lv++
+	case 1:
+	case 2:
+		lv--
+	case 3:
+		lv -= 2
+	default:
+		lv -= 3
+	}
+
+	if moveNum < 3 {
+		lv++
+	}
+
+	// TODO 同時に倒す
 
 	return lv
 }

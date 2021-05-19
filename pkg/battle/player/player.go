@@ -67,6 +67,8 @@ type BattlePlayer struct {
 	SelectedChips []player.ChipInfo
 	NextAction    int
 	EnableAct     bool
+	MoveNum       int
+	DamageNum     int
 
 	act             act
 	invincibleCount int
@@ -350,6 +352,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false) {
 			p.act.MoveDirect = moveDirect
 			p.act.SetAnim(playerAnimMove, 0)
+			p.MoveNum++
 			return false, nil
 		}
 	}
@@ -432,6 +435,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 
 		p.act.SetAnim(playerAnimDamage, 0)
 		p.invincibleCount = 1
+		p.DamageNum++
 		logger.Debug("Player damaged: %+v", *dm)
 	}
 }
