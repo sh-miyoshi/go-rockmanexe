@@ -101,8 +101,15 @@ func (e *enemyLark) End() {
 }
 
 func (e *enemyLark) Process() (bool, error) {
+	if e.pm.HP <= 0 {
+		// Delete Animation
+		img := e.getCurrentImagePointer()
+		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		*img = -1 // DeleteGraph at delete animation
+		return true, nil
+	}
 	e.count++
-	// TODO Return true if finished(e.g. hp=0)
 
 	if e.atk.attacking {
 		e.atk.Process()
@@ -151,13 +158,10 @@ func (e *enemyLark) Process() (bool, error) {
 func (e *enemyLark) Draw() {
 	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
 	xflip := int32(dxlib.TRUE)
+	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		n := (e.count / delayLarkAtk)
-		if n >= len(e.atk.images) {
-			n = len(e.atk.images) - 1
-		}
-		dxlib.DrawRotaGraph(x+20, y, 1, 0, e.atk.images[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(x+20, y, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		return
 	}
 
@@ -165,8 +169,7 @@ func (e *enemyLark) Draw() {
 	ofsx := battlecommon.GetOffset(e.nextX, e.pm.PosX, e.prevX, c, larkMoveNextStepCount, field.PanelSizeX)
 	ofsy := battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, larkMoveNextStepCount, field.PanelSizeY)
 
-	n := (e.count / delayLarkMove) % len(e.imgMove)
-	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, e.imgMove[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 
 	// Show HP
 	if e.pm.HP > 0 {
@@ -221,4 +224,17 @@ func (a *larkAtk) Process() {
 		a.count = 0
 		a.attacking = false
 	}
+}
+
+func (e *enemyLark) getCurrentImagePointer() *int32 {
+	if e.atk.attacking {
+		n := (e.count / delayLarkAtk)
+		if n >= len(e.atk.images) {
+			n = len(e.atk.images) - 1
+		}
+		return &e.atk.images[n]
+	}
+
+	n := (e.count / delayLarkMove) % len(e.imgMove)
+	return &e.imgMove[n]
 }
