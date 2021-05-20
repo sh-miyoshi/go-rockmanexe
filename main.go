@@ -19,6 +19,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
+var (
+	version = ""
+	encKey  = ""
+)
+
 func init() {
 	runtime.LockOSThread()
 }
@@ -35,6 +40,13 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 	dxlib.Init(common.DxlibDLLFilePath)
+
+	if version != "" {
+		common.ProgramVersion = version
+	}
+	if encKey != "" {
+		common.EncryptKey = encKey
+	}
 
 	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
