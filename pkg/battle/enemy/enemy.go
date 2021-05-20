@@ -43,6 +43,9 @@ var (
 
 	enemyChipList = []EnemyChipInfo{
 		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
+		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
+		{CharID: IDBilly, ChipID: chip.IDThunderBall, Code: "l", RequiredLevel: 7},
+		{CharID: IDLark, ChipID: chip.IDWideShot, Code: "c", RequiredLevel: 7},
 	}
 )
 
