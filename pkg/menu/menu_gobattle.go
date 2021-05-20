@@ -91,6 +91,56 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "跡追いする電気玉",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDBilly,
+						PosX:   5,
+						PosY:   1,
+						HP:     50,
+					},
+					ViewPosX: viewCenterX + 20,
+					ViewPosY: viewCenterY - 10,
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDMetall,
+						PosX:   3,
+						PosY:   0,
+						HP:     40,
+					},
+					ViewPosX: viewCenterX - 30,
+					ViewPosY: viewCenterY + 10,
+				},
+			},
+		},
+		{
+			Name: "遊泳するものたち",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDLark,
+						PosX:   3,
+						PosY:   0,
+						HP:     60,
+					},
+					ViewPosX: viewCenterX + 10,
+					ViewPosY: viewCenterY - 25,
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDLark,
+						PosX:   4,
+						PosY:   1,
+						HP:     60,
+					},
+					ViewPosX: viewCenterX - 10,
+					ViewPosY: viewCenterY + 25,
+				},
+			},
+		},
+		{
 			Name: "練習",
 			Enemies: []selectEnemyData{
 				{
