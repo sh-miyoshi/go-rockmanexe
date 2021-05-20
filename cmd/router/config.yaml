@@ -5,4 +5,4 @@ db:
   conn_string: ""
 log:
   debug_log: true
-  file: ""
+  file: "router.log"

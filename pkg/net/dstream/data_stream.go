@@ -3,32 +3,20 @@ package dstream
 import (
 	"context"
 	"errors"
-	"fmt"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 )
-
-const (
-	publishInterval = 500 * time.Millisecond // debug
-)
-
-type session struct {
-	routeID string
-	clients [2]string
-	// TODO app data
-}
 
 type RouterStream struct {
-	sessions map[string]*session
+	sendQueue chan []byte
 }
 
 func New() *RouterStream {
 	return &RouterStream{
-		sessions: make(map[string]*session),
+		sendQueue: make(chan []byte),
 	}
 }
 
@@ -50,7 +38,7 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 	}
 
 	// Add to sessionList
-	sid, err := s.addSession(c.ID)
+	sid, err := session.Add(c.ID, s.sendQueue)
 	if err != nil {
 		logger.Error("Failed to add session: %v", err)
 	}
@@ -66,37 +54,14 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 		},
 	})
 
-	// TODO Publish data
+	// Publish data
 	for {
-		// debug
-		time.Sleep(publishInterval)
+		data := <-s.sendQueue
+		dataStream.Send(&pb.Data{
+			Type: pb.Data_DATA,
+			Data: &pb.Data_RawData{
+				RawData: data,
+			},
+		})
 	}
-}
-
-func (s *RouterStream) addSession(clientID string) (string, error) {
-	route, err := db.GetInst().RouteGetByClient(clientID)
-	if err != nil {
-		return "", fmt.Errorf("route get failed: %v", err)
-	}
-
-	for sid, se := range s.sessions {
-		if se.routeID == route.ID {
-			if se.clients[0] == "" {
-				se.clients[0] = clientID
-			} else if se.clients[1] == "" {
-				se.clients[1] = clientID
-			}
-			return sid, nil
-		}
-	}
-
-	// no session in the list
-	// so create new session
-	sessionID := uuid.New().String()
-	s.sessions[sessionID] = &session{
-		routeID: route.ID,
-		clients: route.Clients,
-	}
-
-	return sessionID, nil
 }
