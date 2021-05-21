@@ -195,7 +195,8 @@ func (e *effect) Draw() {
 	dxlib.DrawRotaGraph(x+e.ofsX, y+e.ofsY+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
 
-func (e *effect) DamageProc(dm *damage.Damage) {
+func (e *effect) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (e *effect) GetParam() anim.Param {
@@ -216,7 +217,8 @@ func (e *noEffect) Process() (bool, error) {
 func (e *noEffect) Draw() {
 }
 
-func (e *noEffect) DamageProc(dm *damage.Damage) {
+func (e *noEffect) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (e *noEffect) GetParam() anim.Param {

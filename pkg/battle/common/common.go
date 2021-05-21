@@ -136,7 +136,8 @@ func (p *deleteAction) Draw() {
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 }
 
-func (p *deleteAction) DamageProc(dm *damage.Damage) {
+func (p *deleteAction) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *deleteAction) GetParam() anim.Param {
@@ -144,7 +145,7 @@ func (p *deleteAction) GetParam() anim.Param {
 		ObjID:    p.id,
 		PosX:     p.x,
 		PosY:     p.y,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeEffect,
 		ObjType:  anim.ObjTypeNone,
 	}
 }

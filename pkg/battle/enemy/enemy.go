@@ -158,14 +158,16 @@ func (e *enemy) Draw() {
 	// Show Enemy Images
 }
 
-func (e *enemy) DamageProc(dm *damage.Damage) {
+func (e *enemy) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
-		return
+		return false
 	}
 	if dm.TargetType|damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		return true
 	}
+	return false
 }
 
 func (e *enemy) GetParam() anim.Param {

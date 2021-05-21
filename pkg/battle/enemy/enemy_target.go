@@ -56,15 +56,17 @@ func (e *enemyTarget) Draw() {
 	}
 }
 
-func (e *enemyTarget) DamageProc(dm *damage.Damage) {
+func (e *enemyTarget) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
-		return
+		return false
 	}
 	logger.Debug("Enemy Target damaged: %+v", *dm)
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		return true
 	}
+	return false
 }
 
 func (e *enemyTarget) GetParam() anim.Param {

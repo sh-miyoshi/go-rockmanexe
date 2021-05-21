@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	TypeObject int = 1 << iota
+	TypeObject int = iota + 1
+	TypeSkill
 	TypeEffect
 )
 
@@ -37,7 +38,7 @@ type Param struct {
 type Anim interface {
 	Process() (bool, error)
 	Draw()
-	DamageProc(dm *damage.Damage)
+	DamageProc(dm *damage.Damage) bool
 	GetParam() Param
 }
 
@@ -65,9 +66,9 @@ func MgrProcess(enableDamage bool) error {
 		for _, anim := range anims {
 			pm := anim.GetParam()
 			if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
-				anim.DamageProc(dm)
-				hit = append(hit, dm.ID)
-				// TODO if !pm.Penetrate delete(anims, id)
+				if anim.DamageProc(dm) {
+					hit = append(hit, dm.ID)
+				}
 			}
 		}
 

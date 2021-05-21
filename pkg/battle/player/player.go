@@ -400,13 +400,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
+func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
-		return
+		return false
 	}
 
 	if p.invincibleCount > 0 {
-		return
+		return false
 	}
 
 	if dm.TargetType&damage.TargetPlayer != 0 {
@@ -422,7 +422,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 
 		if dm.Power <= 0 {
 			// Not damage, maybe recover or special anim
-			return
+			return true
 		}
 
 		sound.On(sound.SEDamaged)
@@ -437,7 +437,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) {
 		p.invincibleCount = 1
 		p.DamageNum++
 		logger.Debug("Player damaged: %+v", *dm)
+		return true
 	}
+	return false
 }
 
 func (p *BattlePlayer) GetParam() anim.Param {
