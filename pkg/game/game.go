@@ -91,10 +91,14 @@ func Process() error {
 				playerInfo.WinNum++
 				if common.EncryptKey == "" {
 					// Save without encryption(debug mode)
-					playerInfo.Save(common.SaveFilePath, nil)
+					if err := playerInfo.Save(common.SaveFilePath, nil); err != nil {
+						return fmt.Errorf("save failed: %w", err)
+					}
 				} else {
 					key := []byte(common.EncryptKey)
-					playerInfo.Save(common.SaveFilePath, key)
+					if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+						return fmt.Errorf("save failed: %w", err)
+					}
 				}
 				stateChange(stateMenu)
 				return nil
