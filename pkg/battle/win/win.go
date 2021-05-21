@@ -107,6 +107,7 @@ func End() {
 		winMsgInst.End()
 		winMsgInst = nil
 	}
+	state = stateMsg
 }
 
 func Process() bool {
