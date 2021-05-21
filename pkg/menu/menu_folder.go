@@ -237,8 +237,6 @@ func (f *menuFolder) Draw() {
 		dxlib.DrawGraph(40, 205, f.imgMsgFrame, dxlib.TRUE)
 		draw.MessageText(120, 220, 0x000000, f.msg)
 	}
-
-	dxlib.DrawFormatString(400, 0, 0, "%d", f.selected)
 }
 
 func (f *menuFolder) drawBackGround() {
