@@ -147,7 +147,7 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
 		return false
 	}
-	if dm.TargetType|damage.TargetEnemy != 0 {
+	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 7))
 		return true
