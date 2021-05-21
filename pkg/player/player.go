@@ -65,7 +65,25 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 			return nil, fmt.Errorf("failed to read save data: %w", err)
 		}
 	} else {
-		return nil, fmt.Errorf("not implement yet")
+		src, err := ioutil.ReadFile(fname)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read save data: %w", err)
+		}
+		block, err := aes.NewCipher(key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to init AES: %w", err)
+		}
+
+		iv := src[:aes.BlockSize]
+		src = src[aes.BlockSize:]
+		if len(bin)%aes.BlockSize != 0 {
+			return nil, fmt.Errorf("save data is not a multiple of the block size")
+		}
+
+		// Decrypt data with AES-CTR mode
+		bin = make([]byte, len(src))
+		stream := cipher.NewCTR(block, iv)
+		stream.XORKeyStream(bin, src)
 	}
 
 	data := strings.Split(string(bin), separater)
@@ -172,8 +190,10 @@ func (p *Player) Save(fname string, key []byte) error {
 	var dst []byte
 
 	if key == nil {
+		logger.Info("Save with no encryption")
 		dst = buf.Bytes()
 	} else {
+		logger.Info("Save with encryption")
 		src := buf.Bytes()
 		block, err := aes.NewCipher(key)
 		if err != nil {
