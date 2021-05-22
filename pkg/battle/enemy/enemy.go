@@ -29,6 +29,7 @@ type EnemyParam struct {
 	PosX     int
 	PosY     int
 	HP       int
+	ActNo    int
 }
 
 type enemyObject interface {
@@ -50,8 +51,9 @@ var (
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {
-	for _, e := range enemyList {
+	for i, e := range enemyList {
 		e.PlayerID = playerID
+		e.ActNo = i
 		obj := getObject(e.CharID, e)
 		objID := anim.New(obj)
 		enemies[objID] = obj

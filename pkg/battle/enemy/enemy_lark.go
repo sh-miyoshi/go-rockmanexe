@@ -20,6 +20,10 @@ const (
 	larkMoveNextStepCount = 80
 )
 
+var (
+	attacker string = ""
+)
+
 type larkAtk struct {
 	ownerID   string
 	count     int
@@ -50,6 +54,7 @@ func (e *enemyLark) Init(objID string) error {
 	e.nextY = e.pm.PosY
 	e.prevX = e.pm.PosX
 	e.prevY = e.pm.PosY
+	e.count = e.pm.ActNo
 
 	for i := 0; i < 6; i++ {
 		// x座標
@@ -127,7 +132,8 @@ func (e *enemyLark) Process() (bool, error) {
 	np := (e.movePointer + 1) % 6
 
 	if cnt == larkMoveNextStepCount/2 {
-		if e.moveCount >= moveNum && e.pm.PosY != 1 {
+		if e.moveCount >= moveNum && e.pm.PosY != 1 && attacker == "" {
+			attacker = e.pm.ObjectID
 			e.moveCount = 0
 			e.atk.SetAtttack()
 			return false, nil
@@ -225,6 +231,7 @@ func (a *larkAtk) Process() {
 		// Reset params
 		a.count = 0
 		a.attacking = false
+		attacker = ""
 	}
 }
 
