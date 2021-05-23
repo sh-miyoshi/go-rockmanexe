@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
 const (
@@ -16,7 +17,7 @@ const (
 type clientInfo struct {
 	active    bool
 	clientID  string
-	sendQueue chan []byte
+	sendQueue chan pb.Data
 }
 
 type session struct {
@@ -32,7 +33,7 @@ var (
 	sessionList = []*session{}
 )
 
-func Add(clientID string, sendQueue chan []byte) (string, error) {
+func Add(clientID string, sendQueue chan pb.Data) (string, error) {
 	route, err := db.GetInst().RouteGetByClient(clientID)
 	if err != nil {
 		return "", fmt.Errorf("route get failed: %v", err)
@@ -47,8 +48,6 @@ func Add(clientID string, sendQueue chan []byte) (string, error) {
 				se.clients[1].active = true
 				se.clients[1].sendQueue = sendQueue
 			}
-
-			// TODO update status(両方activeなら通信開始状態にする)
 
 			return se.sessionID, nil
 		}
@@ -88,7 +87,12 @@ func (s *session) Process() {
 		for _, c := range s.clients {
 			if c.active {
 				logger.Debug("Send data to client %s", c.clientID)
-				c.sendQueue <- []byte("test") // debug
+				c.sendQueue <- pb.Data{
+					Type: pb.Data_DATA,
+					Data: &pb.Data_RawData{
+						RawData: []byte("test"), // debug
+					},
+				}
 			}
 		}
 	}

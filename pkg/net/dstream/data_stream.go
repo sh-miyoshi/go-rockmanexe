@@ -11,12 +11,12 @@ import (
 )
 
 type RouterStream struct {
-	sendQueue chan []byte
+	sendQueue chan pb.Data
 }
 
 func New() *RouterStream {
 	return &RouterStream{
-		sendQueue: make(chan []byte),
+		sendQueue: make(chan pb.Data),
 	}
 }
 
@@ -57,11 +57,6 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 	// Publish data
 	for {
 		data := <-s.sendQueue
-		dataStream.Send(&pb.Data{
-			Type: pb.Data_DATA,
-			Data: &pb.Data_RawData{
-				RawData: data,
-			},
-		})
+		dataStream.Send(&data)
 	}
 }
