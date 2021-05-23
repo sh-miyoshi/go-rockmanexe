@@ -82,7 +82,6 @@ func topDraw() {
 	case topSelectChipFolder:
 		draw.String(270, 70, 0xffffff, "チップフォルダを閲覧し")
 		draw.String(270, 100, 0xffffff, "ます")
-		draw.String(270, 130, 0xffffff, "まだ編集はできません")
 	case topSelectGoBattle:
 		draw.String(270, 70, 0xffffff, "ウィルスバスティングを")
 		draw.String(270, 100, 0xffffff, "行います")

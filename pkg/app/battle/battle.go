@@ -167,7 +167,12 @@ func Process() error {
 		field.Update()
 	case stateResultWin:
 		if battleCount == 0 {
-			if err := win.Init(gameCount, enemyList, basePlayerInst); err != nil {
+			if err := win.Init(win.WinArg{
+				GameTime:        gameCount,
+				DeletedEnemies:  enemyList,
+				PlayerMoveNum:   playerInst.MoveNum,
+				PlayerDamageNum: playerInst.DamageNum,
+			}, basePlayerInst); err != nil {
 				return fmt.Errorf("failed to initialize result win: %w", err)
 			}
 		}

@@ -551,13 +551,14 @@ func (p *cannon) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *cannon) DamageProc(dm *damage.Damage) {
+func (p *cannon) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
@@ -611,13 +612,14 @@ func (p *sword) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *sword) DamageProc(dm *damage.Damage) {
+func (p *sword) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
@@ -666,13 +668,14 @@ func (p *miniBomb) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *miniBomb) DamageProc(dm *damage.Damage) {
+func (p *miniBomb) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
@@ -733,13 +736,14 @@ func (p *shockWave) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *shockWave) DamageProc(dm *damage.Damage) {
+func (p *shockWave) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
@@ -775,7 +779,8 @@ func (p *recover) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *recover) DamageProc(dm *damage.Damage) {
+func (p *recover) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *recover) GetParam() anim.Param {
@@ -861,7 +866,8 @@ func (p *spreadGun) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *spreadGun) DamageProc(dm *damage.Damage) {
+func (p *spreadGun) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *spreadGun) GetParam() anim.Param {
@@ -893,7 +899,8 @@ func (p *spreadHit) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *spreadHit) DamageProc(dm *damage.Damage) {
+func (p *spreadHit) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *spreadHit) GetParam() anim.Param {
@@ -969,7 +976,8 @@ func (p *vulcan) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *vulcan) DamageProc(dm *damage.Damage) {
+func (p *vulcan) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *vulcan) GetParam() anim.Param {
@@ -1068,13 +1076,14 @@ func (p *thunderBall) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *thunderBall) DamageProc(dm *damage.Damage) {
+func (p *thunderBall) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }
@@ -1177,13 +1186,14 @@ func (p *wideShot) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *wideShot) DamageProc(dm *damage.Damage) {
+func (p *wideShot) DamageProc(dm *damage.Damage) bool {
+	return false
 }
 
 func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeObject,
+		AnimType: anim.TypeSkill,
 		ObjType:  anim.ObjTypeNone,
 	}
 }

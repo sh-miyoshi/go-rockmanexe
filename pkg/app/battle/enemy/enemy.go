@@ -29,6 +29,7 @@ type EnemyParam struct {
 	PosX     int
 	PosY     int
 	HP       int
+	ActNo    int
 }
 
 type enemyObject interface {
@@ -43,12 +44,16 @@ var (
 
 	enemyChipList = []EnemyChipInfo{
 		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
+		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
+		{CharID: IDBilly, ChipID: chip.IDThunderBall, Code: "l", RequiredLevel: 7},
+		{CharID: IDLark, ChipID: chip.IDWideShot, Code: "c", RequiredLevel: 7},
 	}
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {
-	for _, e := range enemyList {
+	for i, e := range enemyList {
 		e.PlayerID = playerID
+		e.ActNo = i
 		obj := getObject(e.CharID, e)
 		objID := anim.New(obj)
 		enemies[objID] = obj
@@ -155,14 +160,16 @@ func (e *enemy) Draw() {
 	// Show Enemy Images
 }
 
-func (e *enemy) DamageProc(dm *damage.Damage) {
+func (e *enemy) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
-		return
+		return false
 	}
-	if dm.TargetType|damage.TargetEnemy != 0 {
+	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		return true
 	}
+	return false
 }
 
 func (e *enemy) GetParam() anim.Param {

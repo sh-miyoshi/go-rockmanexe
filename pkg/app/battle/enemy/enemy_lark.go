@@ -20,6 +20,10 @@ const (
 	larkMoveNextStepCount = 80
 )
 
+var (
+	attacker string = ""
+)
+
 type larkAtk struct {
 	ownerID   string
 	count     int
@@ -50,6 +54,7 @@ func (e *enemyLark) Init(objID string) error {
 	e.nextY = e.pm.PosY
 	e.prevX = e.pm.PosX
 	e.prevY = e.pm.PosY
+	e.count = e.pm.ActNo
 
 	for i := 0; i < 6; i++ {
 		// x座標
@@ -101,8 +106,15 @@ func (e *enemyLark) End() {
 }
 
 func (e *enemyLark) Process() (bool, error) {
+	if e.pm.HP <= 0 {
+		// Delete Animation
+		img := e.getCurrentImagePointer()
+		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		*img = -1 // DeleteGraph at delete animation
+		return true, nil
+	}
 	e.count++
-	// TODO Return true if finished(e.g. hp=0)
 
 	if e.atk.attacking {
 		e.atk.Process()
@@ -120,7 +132,8 @@ func (e *enemyLark) Process() (bool, error) {
 	np := (e.movePointer + 1) % 6
 
 	if cnt == larkMoveNextStepCount/2 {
-		if e.moveCount >= moveNum && e.pm.PosY != 1 {
+		if e.moveCount >= moveNum && e.pm.PosY != 1 && attacker == "" {
+			attacker = e.pm.ObjectID
 			e.moveCount = 0
 			e.atk.SetAtttack()
 			return false, nil
@@ -151,13 +164,10 @@ func (e *enemyLark) Process() (bool, error) {
 func (e *enemyLark) Draw() {
 	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
 	xflip := int32(dxlib.TRUE)
+	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		n := (e.count / delayLarkAtk)
-		if n >= len(e.atk.images) {
-			n = len(e.atk.images) - 1
-		}
-		dxlib.DrawRotaGraph(x+20, y, 1, 0, e.atk.images[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(x+20, y, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		return
 	}
 
@@ -165,8 +175,7 @@ func (e *enemyLark) Draw() {
 	ofsx := battlecommon.GetOffset(e.nextX, e.pm.PosX, e.prevX, c, larkMoveNextStepCount, field.PanelSizeX)
 	ofsy := battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, larkMoveNextStepCount, field.PanelSizeY)
 
-	n := (e.count / delayLarkMove) % len(e.imgMove)
-	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, e.imgMove[n], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 
 	// Show HP
 	if e.pm.HP > 0 {
@@ -177,14 +186,16 @@ func (e *enemyLark) Draw() {
 	}
 }
 
-func (e *enemyLark) DamageProc(dm *damage.Damage) {
+func (e *enemyLark) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
-		return
+		return false
 	}
-	if dm.TargetType|damage.TargetEnemy != 0 {
+	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		return true
 	}
+	return false
 }
 
 func (e *enemyLark) GetParam() anim.Param {
@@ -220,5 +231,19 @@ func (a *larkAtk) Process() {
 		// Reset params
 		a.count = 0
 		a.attacking = false
+		attacker = ""
 	}
+}
+
+func (e *enemyLark) getCurrentImagePointer() *int32 {
+	if e.atk.attacking {
+		n := (e.count / delayLarkAtk)
+		if n >= len(e.atk.images) {
+			n = len(e.atk.images) - 1
+		}
+		return &e.atk.images[n]
+	}
+
+	n := (e.count / delayLarkMove) % len(e.imgMove)
+	return &e.imgMove[n]
 }
