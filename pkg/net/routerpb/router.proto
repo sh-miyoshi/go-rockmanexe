@@ -34,9 +34,10 @@ message Data {
     }
 
     enum Status {
-        DISCONNECTED = 0;
-        WAITING = 1;
-        CONNECTED = 2;
+        CONNECTWAIT = 0;
+        CHIPSELECTWAIT = 1;
+        ACTING = 2;
+        GAMEEND = 3;
     }
 
     MsgType type = 1;
