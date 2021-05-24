@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db/model"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/dstream"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
@@ -36,6 +38,18 @@ func main() {
 	if err := db.InitManager(c.DB.Type, c.DB.ConnString); err != nil {
 		logger.Error("Failed ot init DB manager: %v", err)
 		os.Exit(1)
+	}
+
+	// Add debug clients and route
+	if c.Debug.Enabled {
+		db.GetInst().ClientAdd(model.ClientInfo{ID: c.Debug.Client1ID, Key: c.Debug.Client1Key})
+		db.GetInst().ClientAdd(model.ClientInfo{ID: c.Debug.Client2ID, Key: c.Debug.Client2Key})
+		route := model.RouteInfo{
+			ID:      uuid.New().String(),
+			Clients: [2]string{c.Debug.Client1ID, c.Debug.Client2ID},
+		}
+		db.GetInst().RouteAdd(route)
+		logger.Info("Add debug clients")
 	}
 
 	// Listen API request

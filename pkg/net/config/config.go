@@ -18,6 +18,13 @@ type Config struct {
 		DebugLog bool   `yaml:"debug_log"`
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
+	Debug struct {
+		Enabled    bool   `yaml:"enabled"`
+		Client1ID  string `yaml:"client1_id"`
+		Client1Key string `yaml:"client1_key"`
+		Client2ID  string `yaml:"client2_id"`
+		Client2Key string `yaml:"client2_key"`
+	} `yaml:"debug"`
 }
 
 var (

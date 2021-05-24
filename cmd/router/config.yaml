@@ -6,3 +6,9 @@ db:
 log:
   debug_log: true
   file: "router.log"
+debug:
+  enabled: true
+  client1_id: "tester1"
+  client1_key: "testtest"
+  client2_id: "tester2"
+  client2_key: "testtest"
