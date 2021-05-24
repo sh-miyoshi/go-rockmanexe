@@ -3,9 +3,9 @@ package enemy
 import (
 	"errors"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 )
 
 const (

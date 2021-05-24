@@ -3,8 +3,8 @@ package common
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
