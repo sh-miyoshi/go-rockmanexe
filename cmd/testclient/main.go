@@ -24,7 +24,7 @@ func main() {
 	client2 := clientAdd()
 	routeAdd(client1.ID, client2.ID)
 
-	var exitErr chan error
+	exitErr := make(chan error)
 	go clientProc(exitErr, client1)
 	go clientProc(exitErr, client2)
 

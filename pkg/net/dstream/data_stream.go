@@ -59,7 +59,7 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 	// Publish data
 	for {
 		data := <-s.sendQueue
-		logger.Debug("Send to client: %+v", data)
+		logger.Debug("Send to client %s: %+v", c.ID, data)
 
 		dataStream.Send(data)
 	}
