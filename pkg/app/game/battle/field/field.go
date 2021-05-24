@@ -5,8 +5,8 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 

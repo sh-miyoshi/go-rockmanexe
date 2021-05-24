@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 

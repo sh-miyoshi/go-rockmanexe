@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/enemy"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"

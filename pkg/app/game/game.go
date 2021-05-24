@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/menu"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/title"
 )
 
 const (

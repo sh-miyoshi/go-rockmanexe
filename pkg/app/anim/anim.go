@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 )
 
 const (

@@ -2,9 +2,9 @@ package opening
 
 import (
 	"github.com/sh-miyoshi/dxlib"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
