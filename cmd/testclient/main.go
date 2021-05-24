@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -23,33 +24,12 @@ func main() {
 	client2 := clientAdd()
 	routeAdd(client1.ID, client2.ID)
 
-	conn, err := grpc.Dial(streamAddr, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Failed to connect server: %v", err)
-	}
-	defer conn.Close()
+	var exitErr chan error
+	go clientProc(exitErr, client1)
+	go clientProc(exitErr, client2)
 
-	client := pb.NewRouterClient(conn)
-	req := &pb.AuthRequest{
-		Id:      client1.ID,
-		Key:     client1.Key,
-		Version: "test",
-	}
-	dataStream, err := client.PublishData(context.TODO(), req)
-	if err != nil {
-		log.Fatalf("Failed to get data stream: %v", err)
-	}
-
-	// Recv data from stream
-	for {
-		data, err := dataStream.Recv()
-		if err != nil {
-			log.Fatalf("Failed to recv data: %v", err)
-			break
-		}
-
-		log.Printf("got data: %+v", data)
-	}
+	err := <-exitErr
+	log.Fatalf("Run failed: %v", err)
 }
 
 func clientAdd() routerapi.ClientInfo {
@@ -93,4 +73,55 @@ func routeAdd(id1, id2 string) routerapi.RouteInfo {
 		log.Fatalf("Route add request returns unexpected status %s", httpRes.Status)
 	}
 	return res
+}
+
+func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
+	conn, err := grpc.Dial(streamAddr, grpc.WithInsecure())
+	if err != nil {
+		exitErr <- fmt.Errorf("failed to connect server: %w", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewRouterClient(conn)
+	req := &pb.AuthRequest{
+		Id:      clientInfo.ID,
+		Key:     clientInfo.Key,
+		Version: "test",
+	}
+	dataStream, err := client.PublishData(context.TODO(), req)
+	if err != nil {
+		exitErr <- fmt.Errorf("failed to get data stream: %w", err)
+	}
+
+	// At first, receive authenticate response
+	authRes, err := dataStream.Recv()
+	if err != nil {
+		exitErr <- fmt.Errorf("failed to recv authenticate res: %w", err)
+	}
+	if authRes.GetType() != pb.Data_AUTHRESPONSE {
+		exitErr <- fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
+	}
+	if res := authRes.GetAuthRes(); !res.Success {
+		exitErr <- fmt.Errorf("failed to auth request: %s", res.ErrMsg)
+	}
+
+	// Recv data from stream
+	for {
+		data, err := dataStream.Recv()
+		if err != nil {
+			exitErr <- fmt.Errorf("failed to recv data: %w", err)
+			return
+		}
+
+		switch data.Type {
+		case pb.Data_UPDATESTATUS:
+			log.Printf("got status update data: %+v", data)
+			// TODO
+		case pb.Data_DATA:
+			log.Printf("got data: %+v", data)
+		default:
+			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)
+			return
+		}
+	}
 }

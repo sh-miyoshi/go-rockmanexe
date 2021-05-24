@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,13 +12,19 @@ import (
 )
 
 const (
-	publishInterval = 5 * time.Second // debug
+	publishInterval = 500 * time.Millisecond // debug
+)
+
+const (
+	statusConnectWait int = iota
+	statusChipSelectWait
+	statusActing
 )
 
 type clientInfo struct {
 	active    bool
 	clientID  string
-	sendQueue chan pb.Data
+	sendQueue chan *pb.Data
 }
 
 type session struct {
@@ -25,19 +32,25 @@ type session struct {
 	routeID   string
 	clients   [2]clientInfo
 
-	// status  int
+	started bool
+	status  int
 	// // TODO app data
 }
 
 var (
-	sessionList = []*session{}
+	// TODO lock
+	sessionMutex sync.Mutex
+	sessionList  = []*session{}
 )
 
-func Add(clientID string, sendQueue chan pb.Data) (string, error) {
+func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 	route, err := db.GetInst().RouteGetByClient(clientID)
 	if err != nil {
 		return "", fmt.Errorf("route get failed: %v", err)
 	}
+
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
 
 	for _, se := range sessionList {
 		if se.routeID == route.ID {
@@ -59,6 +72,8 @@ func Add(clientID string, sendQueue chan pb.Data) (string, error) {
 	v := session{
 		sessionID: sessionID,
 		routeID:   route.ID,
+		status:    statusConnectWait,
+		started:   false,
 	}
 	v.clients[0] = clientInfo{
 		active:    true,
@@ -72,9 +87,24 @@ func Add(clientID string, sendQueue chan pb.Data) (string, error) {
 
 	sessionList = append(sessionList, &v)
 
-	go v.Process()
-
 	return sessionID, nil
+}
+
+func Run(sessionID string) {
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+
+	// Run method will be called after session.Add()
+	// so the target session is almost in the last.
+	for i := len(sessionList) - 1; i >= 0; i-- {
+		if sessionList[i].sessionID == sessionID {
+			if !sessionList[i].started {
+				sessionList[i].started = true
+				go sessionList[i].Process()
+			}
+			return
+		}
+	}
 }
 
 func (s *session) Process() {
@@ -84,16 +114,37 @@ func (s *session) Process() {
 	// publish via data stream
 	for {
 		time.Sleep(publishInterval)
-		for _, c := range s.clients {
-			if c.active {
-				logger.Debug("Send data to client %s", c.clientID)
-				c.sendQueue <- pb.Data{
-					Type: pb.Data_DATA,
-					Data: &pb.Data_RawData{
-						RawData: []byte("test"), // debug
+
+		// TODO data send
+
+		switch s.status {
+		case statusConnectWait:
+			// check ready
+			if s.clients[0].active && s.clients[1].active {
+				d := &pb.Data{
+					Type: pb.Data_UPDATESTATUS,
+					Data: &pb.Data_Status_{
+						Status: pb.Data_CHIPSELECTWAIT,
 					},
 				}
+
+				s.clients[0].sendQueue <- d
+				s.clients[1].sendQueue <- d
+				s.status = statusChipSelectWait
 			}
+		case statusChipSelectWait:
+			// TODO
+			// if s.clients[0 and 1].SendAction(SelectedChip)
+			//   s.clients[0 and 1].sendQueue <- statusActing
+			//   s.status = statusActing
+		case statusActing:
+			// TODO
+			// if s.clients[0 or 1].SendAction(MoveToChipSel)
+			//   s.clients[0 and 1].sendQueue <- statusChipSelectWait
+			//   s.status = statusChipSelectWait
+			// else if s.clients[0 or 1].SendAction(Win or Lose?)
+			//   s.clients[0 and? 1].sendQueue <- statusGameEnd
+			//   remove(session)?
 		}
 	}
 }
