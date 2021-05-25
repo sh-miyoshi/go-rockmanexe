@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
@@ -32,9 +33,9 @@ type session struct {
 	routeID   string
 	clients   [2]clientInfo
 
-	started bool
-	status  int
-	// // TODO app data
+	started   bool
+	status    int
+	fieldInfo field.Info
 }
 
 var (
@@ -75,6 +76,8 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 		status:    statusConnectWait,
 		started:   false,
 	}
+	v.fieldInfo.Init()
+
 	v.clients[0] = clientInfo{
 		active:    true,
 		clientID:  route.Clients[0],
@@ -115,7 +118,18 @@ func (s *session) Process() {
 	for {
 		time.Sleep(publishInterval)
 
-		// TODO data send
+		// Field data send
+		if s.status == statusChipSelectWait || s.status == statusActing {
+			d := &pb.Data{
+				Type: pb.Data_DATA,
+				Data: &pb.Data_RawData{
+					RawData: field.Marshal(s.fieldInfo),
+				},
+			}
+
+			s.clients[0].sendQueue <- d
+			s.clients[1].sendQueue <- d
+		}
 
 		switch s.status {
 		case statusConnectWait:

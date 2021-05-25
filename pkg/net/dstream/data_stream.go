@@ -3,6 +3,7 @@ package dstream
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
@@ -21,7 +22,7 @@ func New() *RouterStream {
 }
 
 func (s *RouterStream) SendAction(ctx context.Context, action *pb.Action) (*pb.Result, error) {
-	return nil, nil
+	return nil, fmt.Errorf("not implemented yet")
 }
 
 func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router_PublishDataServer) error {
