@@ -21,6 +21,10 @@ type Config struct {
 	BGM struct {
 		Disabled bool `yaml:"disabled"`
 	} `yaml:"bgm"`
+	Net struct {
+		ClientID  string `yaml:"client_id"`
+		ClientKey string `yaml:"client_key"`
+	} `yaml:"net"`
 }
 
 var (

@@ -8,3 +8,6 @@ debug:
   start_continue: false
 bgm:
   disabled: true
+net:
+  client_id: "tester1"
+  client_key: "testtest"
