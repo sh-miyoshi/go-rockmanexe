@@ -115,7 +115,7 @@ func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
 			log.Printf("got status update data: %+v", data)
 			playerStatusUpdate(data.GetStatus())
 		case pb.Data_DATA:
-			log.Printf("got data: %+v", data)
+			// log.Printf("got data: %+v", data)
 			playerFieldUpdate(data.GetRawData())
 		default:
 			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)

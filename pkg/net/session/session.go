@@ -91,7 +91,6 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 	v.clients[1] = clientInfo{
 		clientID: route.Clients[1],
 	}
-	logger.Debug("new session info: %+v", v)
 
 	sessionList = append(sessionList, &v)
 
@@ -118,12 +117,22 @@ func Run(sessionID string) {
 func ActionProc(action *pb.Action) error {
 	for _, s := range sessionList {
 		if s.sessionID == action.SessionID {
-			if s.clients[0].clientID == action.ClientID {
-				// TODO
-			} else if s.clients[1].clientID == action.ClientID {
-				// TODO
-			} else {
-				return fmt.Errorf("invalid client")
+			switch action.Type {
+			case pb.Action_NEWOBJECT:
+				s.fieldLock.Lock()
+				defer s.fieldLock.Unlock()
+
+				var obj field.Object
+				field.UnmarshalObject(&obj, action.GetObjectInfo())
+				for _, c := range s.clients {
+					if c.clientID == action.ClientID {
+						s.fieldInfo[c.clientID].MyArea[obj.X][obj.Y] = obj
+					} else {
+						s.fieldInfo[c.clientID].EnemyArea[obj.X][obj.Y] = obj
+					}
+				}
+			default:
+				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
 			return nil
 		}

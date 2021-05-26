@@ -50,18 +50,12 @@ func playerProc(exitErr chan error) {
 		case statusWaiting:
 			// nothing to do
 		case statusChipSelect:
-			// TODO 使用するチップを選択し、SendAction
 			// Select using chip
 			n := rand.Intn(2) + 1
 			time.Sleep(time.Duration(n) * time.Second)
 
 			// Finished chip select, so send action
-			req := pb.Action{
-				SessionID: sessionID,
-				ClientID:  clientID,
-				// TODO
-			}
-			res, err := playerActClient.SendAction(context.TODO(), &req)
+			res, err := playerActClient.SendAction(context.TODO(), makeChipSendReq())
 			if err != nil {
 				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
@@ -70,7 +64,7 @@ func playerProc(exitErr chan error) {
 			if res.Success {
 				statusChange(statusWaitActing)
 			} else {
-				// TODO 再度トライ
+				// TODO リトライ
 				exitErr <- fmt.Errorf("failed to send chip selected action: %w", err)
 				return
 			}
@@ -108,10 +102,22 @@ func playerStatusUpdate(status pb.Data_Status) {
 
 func playerFieldUpdate(data []byte) {
 	field.Unmarshal(&fieldInfo, data)
-	log.Printf("Update field data to %+v", fieldInfo)
+	// log.Printf("Update field data to %+v", fieldInfo)
 }
 
 func statusChange(next int) {
 	log.Printf("player status change from %d to %d", playerStatus, next)
 	playerStatus = next
+}
+
+func makeChipSendReq() *pb.Action {
+	sendChips := "1,3" // debug
+
+	req := pb.Action{
+		SessionID: sessionID,
+		ClientID:  clientID,
+		Type:      pb.Action_CHIPSEND,
+		Data:      &pb.Action_ChipList{ChipList: sendChips},
+	}
+	return &req
 }
