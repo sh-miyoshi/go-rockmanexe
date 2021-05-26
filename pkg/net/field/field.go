@@ -10,11 +10,12 @@ const (
 )
 
 type Object struct {
-	ID   string
-	Type int
-	HP   int
-	X    int
-	Y    int
+	ID    string
+	Type  int
+	HP    int
+	X     int
+	Y     int
+	Chips []int
 	// TODO ...
 }
 

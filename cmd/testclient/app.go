@@ -53,9 +53,10 @@ func playerProc(exitErr chan error) {
 			// Select using chip
 			n := rand.Intn(2) + 1
 			time.Sleep(time.Duration(n) * time.Second)
+			playerObject.Chips = []int{1, 3} // debug
 
 			// Finished chip select, so send action
-			res, err := playerActClient.SendAction(context.TODO(), makeChipSendReq())
+			res, err := playerActClient.SendAction(context.TODO(), makePlayerObj())
 			if err != nil {
 				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
@@ -110,14 +111,13 @@ func statusChange(next int) {
 	playerStatus = next
 }
 
-func makeChipSendReq() *pb.Action {
-	sendChips := "1,3" // debug
-
-	req := pb.Action{
+func makePlayerObj() *pb.Action {
+	return &pb.Action{
 		SessionID: sessionID,
 		ClientID:  clientID,
-		Type:      pb.Action_CHIPSEND,
-		Data:      &pb.Action_ChipList{ChipList: sendChips},
+		Type:      pb.Action_UPDATEOBJECT,
+		Data: &pb.Action_ObjectInfo{
+			ObjectInfo: field.MarshalObject(playerObject),
+		},
 	}
-	return &req
 }

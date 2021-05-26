@@ -7,7 +7,6 @@ import (
 	"log"
 
 	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
 )
@@ -84,15 +83,7 @@ func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
 	sessionID = authRes.GetAuthRes().SessionID
 
 	// Add player object
-	objReq := &pb.Action{
-		SessionID: sessionID,
-		ClientID:  clientID,
-		Type:      pb.Action_NEWOBJECT,
-		Data: &pb.Action_ObjectInfo{
-			ObjectInfo: field.MarshalObject(playerObject),
-		},
-	}
-	objRes, err := playerActClient.SendAction(context.TODO(), objReq)
+	objRes, err := playerActClient.SendAction(context.TODO(), makePlayerObj())
 	if err != nil {
 		exitErr <- fmt.Errorf("add player object failed by error: %w", err)
 		return

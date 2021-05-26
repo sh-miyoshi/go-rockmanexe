@@ -118,7 +118,7 @@ func ActionProc(action *pb.Action) error {
 	for _, s := range sessionList {
 		if s.sessionID == action.SessionID {
 			switch action.Type {
-			case pb.Action_NEWOBJECT:
+			case pb.Action_UPDATEOBJECT:
 				s.fieldLock.Lock()
 				defer s.fieldLock.Unlock()
 
