@@ -11,6 +11,11 @@ service Router {
 message Action {
     enum ActionType {
         UPDATEOBJECT = 0;
+        SENDSIGNAL = 1;
+    }
+
+    enum SignalType {
+        CHIPSEND = 0;
     }
 
     string sessionID = 1;
@@ -18,6 +23,7 @@ message Action {
     ActionType type = 3;
 
     oneof data {
+        SignalType signal = 4;
         bytes objectInfo = 5;
     }
 }

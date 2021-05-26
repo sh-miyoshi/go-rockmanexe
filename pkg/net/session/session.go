@@ -24,6 +24,7 @@ const (
 
 type clientInfo struct {
 	active    bool
+	chipSent  bool
 	clientID  string
 	sendQueue chan *pb.Data
 }
@@ -40,7 +41,6 @@ type session struct {
 }
 
 var (
-	// TODO lock
 	sessionLock sync.Mutex
 	sessionList = []*session{}
 )
@@ -131,6 +131,16 @@ func ActionProc(action *pb.Action) error {
 						s.fieldInfo[c.clientID].EnemyArea[obj.X][obj.Y] = obj
 					}
 				}
+			case pb.Action_SENDSIGNAL:
+				switch action.GetSignal() {
+				case pb.Action_CHIPSEND:
+					for i, c := range s.clients {
+						if c.clientID == action.ClientID {
+							s.clients[i].chipSent = true
+							break
+						}
+					}
+				}
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
@@ -181,10 +191,21 @@ func (s *session) Process() {
 				s.status = statusChipSelectWait
 			}
 		case statusChipSelectWait:
-			// TODO
-			// if s.clients[0 and 1].SendAction(SelectedChip)
-			//   s.clients[0 and 1].sendQueue <- statusActing
-			//   s.status = statusActing
+			if s.clients[0].chipSent && s.clients[1].chipSent {
+				d := &pb.Data{
+					Type: pb.Data_UPDATESTATUS,
+					Data: &pb.Data_Status_{
+						Status: pb.Data_ACTING,
+					},
+				}
+
+				s.clients[0].sendQueue <- d
+				s.clients[1].sendQueue <- d
+				s.clients[0].chipSent = false
+				s.clients[1].chipSent = false
+				s.status = statusActing
+			}
+
 		case statusActing:
 			// TODO
 			// if s.clients[0 or 1].SendAction(MoveToChipSel)

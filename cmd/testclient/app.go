@@ -53,22 +53,25 @@ func playerProc(exitErr chan error) {
 			// Select using chip
 			n := rand.Intn(2) + 1
 			time.Sleep(time.Duration(n) * time.Second)
-			playerObject.Chips = []int{1, 3} // debug
+			playerObject.Chips = []int{1, 3, -1} // debug
 
 			// Finished chip select, so send action
-			res, err := playerActClient.SendAction(context.TODO(), makePlayerObj())
-			if err != nil {
+			if _, err := playerActClient.SendAction(context.TODO(), makePlayerObj()); err != nil {
 				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
 			}
 
-			if res.Success {
-				statusChange(statusWaitActing)
-			} else {
-				// TODO リトライ
-				exitErr <- fmt.Errorf("failed to send chip selected action: %w", err)
+			if _, err := playerActClient.SendAction(context.TODO(), &pb.Action{
+				SessionID: sessionID,
+				ClientID:  clientID,
+				Type:      pb.Action_SENDSIGNAL,
+				Data:      &pb.Action_Signal{Signal: pb.Action_CHIPSEND},
+			}); err != nil {
+				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
 			}
+
+			statusChange(statusWaitActing)
 		case statusWaitActing:
 			// 相手がselect完了になるのを待つ
 		case statusActing:
@@ -77,11 +80,6 @@ func playerProc(exitErr chan error) {
 		time.Sleep(16 * time.Millisecond)
 	}
 }
-
-// func playerDraw() {
-// 	time.Sleep(time.Second)
-// 	fmt.Printf("Field Info: %+v", fieldInfo)
-// }
 
 func playerStatusUpdate(status pb.Data_Status) {
 	switch status {
