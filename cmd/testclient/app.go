@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
@@ -23,6 +24,7 @@ var (
 	playerStatus    = statusWaiting
 	playerActClient pb.RouterClient
 	fieldInfo       field.Info
+	playerObject    field.Object
 )
 
 func playerInit() error {
@@ -31,6 +33,14 @@ func playerInit() error {
 		return fmt.Errorf("grpc dial failed: %w", err)
 	}
 	playerActClient = pb.NewRouterClient(conn)
+
+	playerObject = field.Object{
+		ID:   uuid.New().String(),
+		Type: field.ObjectTypeRockman,
+		HP:   100,
+		X:    1,
+		Y:    1,
+	}
 	return nil
 }
 

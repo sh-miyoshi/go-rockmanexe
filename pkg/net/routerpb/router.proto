@@ -9,10 +9,23 @@ service Router {
 }
 
 message Action {
+    enum ActionType {
+        CHIPSEND = 0;
+        USECHIP = 1;
+        BUSTER = 2;
+        MOVE = 3;
+        DAMAGED = 4;
+        NEWOBJECT = 5;
+    }
+
     string sessionID = 1;
     string clientID = 2;
+    ActionType type = 3;
 
-    // TODO action data
+    oneof data {
+        string chipList = 4; // a list of chip id separated by ,
+        bytes objectInfo = 5;
+    }
 }
 
 message Result {

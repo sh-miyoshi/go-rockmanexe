@@ -7,6 +7,7 @@ import (
 	"log"
 
 	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
 )
@@ -50,6 +51,7 @@ func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
 	conn, err := grpc.Dial(streamAddr, grpc.WithInsecure())
 	if err != nil {
 		exitErr <- fmt.Errorf("failed to connect server: %w", err)
+		return
 	}
 	defer conn.Close()
 
@@ -62,20 +64,43 @@ func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
 	dataStream, err := client.PublishData(context.TODO(), req)
 	if err != nil {
 		exitErr <- fmt.Errorf("failed to get data stream: %w", err)
+		return
 	}
 
 	// At first, receive authenticate response
 	authRes, err := dataStream.Recv()
 	if err != nil {
 		exitErr <- fmt.Errorf("failed to recv authenticate res: %w", err)
+		return
 	}
 	if authRes.GetType() != pb.Data_AUTHRESPONSE {
 		exitErr <- fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
+		return
 	}
 	if res := authRes.GetAuthRes(); !res.Success {
 		exitErr <- fmt.Errorf("failed to auth request: %s", res.ErrMsg)
+		return
 	}
 	sessionID = authRes.GetAuthRes().SessionID
+
+	// Add player object
+	objReq := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  clientID,
+		Type:      pb.Action_NEWOBJECT,
+		Data: &pb.Action_ObjectInfo{
+			ObjectInfo: field.MarshalObject(playerObject),
+		},
+	}
+	objRes, err := playerActClient.SendAction(context.TODO(), objReq)
+	if err != nil {
+		exitErr <- fmt.Errorf("add player object failed by error: %w", err)
+		return
+	}
+	if !objRes.Success {
+		exitErr <- fmt.Errorf("add player object failed: %s", objRes.ErrMsg)
+		return
+	}
 
 	// Recv data from stream
 	for {

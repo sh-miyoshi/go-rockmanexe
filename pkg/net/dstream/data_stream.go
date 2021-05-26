@@ -22,7 +22,13 @@ func New() *RouterStream {
 }
 
 func (s *RouterStream) SendAction(ctx context.Context, action *pb.Action) (*pb.Result, error) {
-	return nil, fmt.Errorf("not implemented yet")
+	if err := session.ActionProc(action); err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+
+	return &pb.Result{
+		Success: true,
+	}, nil
 }
 
 func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router_PublishDataServer) error {

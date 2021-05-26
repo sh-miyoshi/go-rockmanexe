@@ -35,13 +35,14 @@ type session struct {
 
 	started   bool
 	status    int
-	fieldInfo field.Info
+	fieldLock sync.Mutex
+	fieldInfo map[string]*field.Info
 }
 
 var (
 	// TODO lock
-	sessionMutex sync.Mutex
-	sessionList  = []*session{}
+	sessionLock sync.Mutex
+	sessionList = []*session{}
 )
 
 func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
@@ -50,8 +51,8 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 		return "", fmt.Errorf("route get failed: %v", err)
 	}
 
-	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
 
 	for _, se := range sessionList {
 		if se.routeID == route.ID {
@@ -75,8 +76,12 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 		routeID:   route.ID,
 		status:    statusConnectWait,
 		started:   false,
+		fieldInfo: make(map[string]*field.Info),
 	}
-	v.fieldInfo.Init()
+	v.fieldInfo[route.Clients[0]] = &field.Info{}
+	v.fieldInfo[route.Clients[0]].Init()
+	v.fieldInfo[route.Clients[1]] = &field.Info{}
+	v.fieldInfo[route.Clients[1]].Init()
 
 	v.clients[0] = clientInfo{
 		active:    true,
@@ -94,8 +99,8 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 }
 
 func Run(sessionID string) {
-	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
 
 	// Run method will be called after session.Add()
 	// so the target session is almost in the last.
@@ -108,6 +113,23 @@ func Run(sessionID string) {
 			return
 		}
 	}
+}
+
+func ActionProc(action *pb.Action) error {
+	for _, s := range sessionList {
+		if s.sessionID == action.SessionID {
+			if s.clients[0].clientID == action.ClientID {
+				// TODO
+			} else if s.clients[1].clientID == action.ClientID {
+				// TODO
+			} else {
+				return fmt.Errorf("invalid client")
+			}
+			return nil
+		}
+	}
+
+	return fmt.Errorf("no such session")
 }
 
 func (s *session) Process() {
@@ -123,11 +145,14 @@ func (s *session) Process() {
 			d := &pb.Data{
 				Type: pb.Data_DATA,
 				Data: &pb.Data_RawData{
-					RawData: field.Marshal(s.fieldInfo),
+					RawData: field.Marshal(s.fieldInfo[s.clients[0].clientID]),
 				},
 			}
-
 			s.clients[0].sendQueue <- d
+
+			d.Data = &pb.Data_RawData{
+				RawData: field.Marshal(s.fieldInfo[s.clients[1].clientID]),
+			}
 			s.clients[1].sendQueue <- d
 		}
 
