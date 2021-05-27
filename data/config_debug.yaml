@@ -3,7 +3,7 @@ log:
 debug:
   enabled: true
   skip_title: true
-  skip_menu: true
+  skip_menu: false
   skip_battle_opening: true
   start_continue: false
 bgm:
@@ -11,3 +11,4 @@ bgm:
 net:
   client_id: "tester1"
   client_key: "testtest"
+  addr: "localhost:80"

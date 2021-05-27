@@ -11,6 +11,7 @@ const (
 	topSelectChipFolder int = iota
 	topSelectGoBattle
 	topSelectRecord
+	topSelectNetBattle
 
 	topSelectMax
 )
@@ -36,6 +37,8 @@ func topProcess() {
 			stateChange(stateGoBattle)
 		case topSelectRecord:
 			stateChange(stateRecord)
+		case topSelectNetBattle:
+			stateChange(stateNetBattle)
 		}
 	} else {
 		if inputs.CheckKey(inputs.KeyUp) == 1 {
@@ -57,6 +60,7 @@ func topDraw() {
 		"チップフォルダ",
 		"バトル",
 		"戦績",
+		"ネット対戦",
 	}
 
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
@@ -88,5 +92,8 @@ func topDraw() {
 	case topSelectRecord:
 		draw.String(270, 70, 0xffffff, "今までの戦績を確認しま")
 		draw.String(270, 100, 0xffffff, "す")
+	case topSelectNetBattle:
+		draw.String(270, 70, 0xffffff, "インターネットを経由し")
+		draw.String(270, 100, 0xffffff, "て対戦します")
 	}
 }

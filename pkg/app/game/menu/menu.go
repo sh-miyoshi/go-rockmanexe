@@ -18,15 +18,17 @@ const (
 	stateChipFolder
 	stateGoBattle
 	stateRecord
+	stateNetBattle
 
 	stateMax
 )
 
 var (
-	menuState      int
-	imgBack        int32
-	menuFolderInst *menuFolder
-	menuRecordInst *menuRecord
+	menuState         int
+	imgBack           int32
+	menuFolderInst    *menuFolder
+	menuRecordInst    *menuRecord
+	menuNetBattleInst *menuNetBattle
 
 	ErrGoBattle = errors.New("go to battle")
 )
@@ -57,6 +59,11 @@ func Init(plyr *player.Player) error {
 	menuRecordInst, err = recordNew(plyr)
 	if err != nil {
 		return fmt.Errorf("failed to init menu record: %w", err)
+	}
+
+	menuNetBattleInst, err = netBattleNew()
+	if err != nil {
+		return fmt.Errorf("failed to init menu net battle: %w", err)
 	}
 
 	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
@@ -94,6 +101,8 @@ func Process() error {
 		}
 	case stateRecord:
 		menuRecordInst.Process()
+	case stateNetBattle:
+		menuNetBattleInst.Process()
 	}
 
 	return nil
@@ -111,6 +120,8 @@ func Draw() {
 		goBattleDraw()
 	case stateRecord:
 		menuRecordInst.Draw()
+	case stateNetBattle:
+		menuNetBattleInst.Draw()
 	}
 }
 
