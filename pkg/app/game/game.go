@@ -116,10 +116,25 @@ func Process() error {
 		}
 	case stateNetBattle:
 		if count == 0 {
-			netbattle.Init(playerInfo)
+			if err := netbattle.Init(playerInfo); err != nil {
+				return fmt.Errorf("game process in state net battle failed: %w", err)
+			}
 		}
 
-		netbattle.Process()
+		if err := netbattle.Process(); err != nil {
+			netbattle.End()
+			if errors.Is(err, battle.ErrWin) {
+				// TODO save
+				stateChange(stateMenu)
+				return nil
+			} else if errors.Is(err, battle.ErrLose) {
+				// TODO save
+				stateChange(stateMenu)
+				return nil
+			}
+
+			return fmt.Errorf("battle process failed: %w", err)
+		}
 	}
 	count++
 	return nil

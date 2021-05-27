@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
 )
@@ -15,6 +16,9 @@ var (
 	conn       *grpc.ClientConn
 	dataStream pb.Router_PublishDataClient
 	sessionID  string
+	exitErr    error
+	status     pb.Data_Status
+	fieldInfo  field.Info
 )
 
 func Connect() error {
@@ -49,6 +53,8 @@ func Connect() error {
 	}
 	sessionID = authRes.GetAuthRes().SessionID
 
+	go dataRecv()
+
 	return nil
 }
 
@@ -59,24 +65,32 @@ func Disconnect() {
 	}
 }
 
-func dataRecv(exitErr chan error) {
+func dataRecv() {
 	// Recv data from stream
 	for {
 		data, err := dataStream.Recv()
 		if err != nil {
-			exitErr <- fmt.Errorf("failed to recv data: %w", err)
+			exitErr = fmt.Errorf("failed to recv data: %w", err)
 			return
 		}
 
 		switch data.Type {
 		case pb.Data_UPDATESTATUS:
 			logger.Debug("got status update data: %+v", data)
-			// playerStatusUpdate(data.GetStatus())
+			status = data.GetStatus()
 		case pb.Data_DATA:
 			// playerFieldUpdate(data.GetRawData())
 		default:
-			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)
+			exitErr = fmt.Errorf("invalid data type was received: %d", data.Type)
 			return
 		}
 	}
+}
+
+func GetStatus() (pb.Data_Status, error) {
+	return status, exitErr
+}
+
+func GetFieldInfo() (*field.Info, error) {
+	return &fieldInfo, exitErr
 }
