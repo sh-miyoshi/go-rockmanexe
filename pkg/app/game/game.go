@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
@@ -14,6 +15,7 @@ import (
 const (
 	stateTitle int = iota
 	stateBattle
+	stateNetBattle
 	stateMenu
 
 	stateMax
@@ -76,6 +78,9 @@ func Process() error {
 			if errors.Is(err, menu.ErrGoBattle) {
 				stateChange(stateBattle)
 				return nil
+			} else if errors.Is(err, menu.ErrGoNetBattle) {
+				stateChange(stateNetBattle)
+				return nil
 			}
 			return fmt.Errorf("game process in state menu failed: %w", err)
 		}
@@ -109,6 +114,12 @@ func Process() error {
 
 			return fmt.Errorf("battle process failed: % w", err)
 		}
+	case stateNetBattle:
+		if count == 0 {
+			netbattle.Init(playerInfo)
+		}
+
+		netbattle.Process()
 	}
 	count++
 	return nil
@@ -128,6 +139,8 @@ func Draw() {
 		menu.Draw()
 	case stateBattle:
 		battle.Draw()
+	case stateNetBattle:
+		netbattle.Draw()
 	}
 }
 

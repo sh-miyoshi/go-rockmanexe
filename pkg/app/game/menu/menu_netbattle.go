@@ -32,7 +32,11 @@ func netBattleNew() (*menuNetBattle, error) {
 	return res, nil
 }
 
-func (m *menuNetBattle) Process() {
+func (m *menuNetBattle) End() {
+	dxlib.DeleteGraph(m.imgMsgFrame)
+}
+
+func (m *menuNetBattle) Process() bool {
 	if !m.isConnect {
 		m.isConnect = true
 		if err := netconn.Connect(); err != nil {
@@ -41,14 +45,20 @@ func (m *menuNetBattle) Process() {
 				"サーバーへの接続に失敗しました。",
 				"設定を見直してください。",
 			}
-			return
+			return false
 		}
-		// TODO state change to netbattle
+		return true
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
+		// Data init for next access
+		netconn.Disconnect()
+		m.isConnect = false
+		m.messages = []string{"通信待機中です・・・"}
+
 		stateChange(stateTop)
 	}
+	return false
 }
 
 func (m *menuNetBattle) Draw() {

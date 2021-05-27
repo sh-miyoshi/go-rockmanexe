@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
 )
@@ -58,38 +59,24 @@ func Disconnect() {
 	}
 }
 
-// TODO(add player object, recv data from stream)
+func dataRecv(exitErr chan error) {
+	// Recv data from stream
+	for {
+		data, err := dataStream.Recv()
+		if err != nil {
+			exitErr <- fmt.Errorf("failed to recv data: %w", err)
+			return
+		}
 
-// func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
-// 	// Add player object
-// 	objRes, err := playerActClient.SendAction(context.TODO(), makePlayerObj())
-// 	if err != nil {
-// 		exitErr <- fmt.Errorf("add player object failed by error: %w", err)
-// 		return
-// 	}
-// 	if !objRes.Success {
-// 		exitErr <- fmt.Errorf("add player object failed: %s", objRes.ErrMsg)
-// 		return
-// 	}
-
-// 	// Recv data from stream
-// 	for {
-// 		data, err := dataStream.Recv()
-// 		if err != nil {
-// 			exitErr <- fmt.Errorf("failed to recv data: %w", err)
-// 			return
-// 		}
-
-// 		switch data.Type {
-// 		case pb.Data_UPDATESTATUS:
-// 			log.Printf("got status update data: %+v", data)
-// 			playerStatusUpdate(data.GetStatus())
-// 		case pb.Data_DATA:
-// 			// log.Printf("got data: %+v", data)
-// 			playerFieldUpdate(data.GetRawData())
-// 		default:
-// 			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)
-// 			return
-// 		}
-// 	}
-// }
+		switch data.Type {
+		case pb.Data_UPDATESTATUS:
+			logger.Debug("got status update data: %+v", data)
+			// playerStatusUpdate(data.GetStatus())
+		case pb.Data_DATA:
+			// playerFieldUpdate(data.GetRawData())
+		default:
+			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)
+			return
+		}
+	}
+}

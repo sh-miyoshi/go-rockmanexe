@@ -30,7 +30,8 @@ var (
 	menuRecordInst    *menuRecord
 	menuNetBattleInst *menuNetBattle
 
-	ErrGoBattle = errors.New("go to battle")
+	ErrGoBattle    = errors.New("go to battle")
+	ErrGoNetBattle = errors.New("go to net battle")
 )
 
 func Init(plyr *player.Player) error {
@@ -83,6 +84,9 @@ func End() {
 	if menuRecordInst != nil {
 		menuRecordInst.End()
 	}
+	if menuNetBattleInst != nil {
+		menuNetBattleInst.End()
+	}
 }
 
 func Process() error {
@@ -102,7 +106,9 @@ func Process() error {
 	case stateRecord:
 		menuRecordInst.Process()
 	case stateNetBattle:
-		menuNetBattleInst.Process()
+		if menuNetBattleInst.Process() {
+			return ErrGoNetBattle
+		}
 	}
 
 	return nil
