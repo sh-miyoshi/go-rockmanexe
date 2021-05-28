@@ -120,6 +120,8 @@ func Run(sessionID string) {
 }
 
 func ActionProc(action *pb.Action) error {
+	logger.Debug("Got action: %+v", action)
+
 	for _, s := range sessionList {
 		if s.sessionID == action.SessionID {
 			switch action.Type {
