@@ -83,13 +83,18 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 	v.fieldInfo[route.Clients[1]] = &field.Info{}
 	v.fieldInfo[route.Clients[1]].Init()
 
-	v.clients[0] = clientInfo{
+	index := 0
+	if route.Clients[1] == clientID {
+		index = 1
+	}
+
+	v.clients[index] = clientInfo{
 		active:    true,
-		clientID:  route.Clients[0],
+		clientID:  route.Clients[index],
 		sendQueue: sendQueue,
 	}
-	v.clients[1] = clientInfo{
-		clientID: route.Clients[1],
+	v.clients[1-index] = clientInfo{
+		clientID: route.Clients[1-index],
 	}
 
 	sessionList = append(sessionList, &v)
