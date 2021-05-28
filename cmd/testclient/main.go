@@ -82,17 +82,6 @@ func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
 	}
 	sessionID = authRes.GetAuthRes().SessionID
 
-	// Add player object
-	objRes, err := playerActClient.SendAction(context.TODO(), makePlayerObj())
-	if err != nil {
-		exitErr <- fmt.Errorf("add player object failed by error: %w", err)
-		return
-	}
-	if !objRes.Success {
-		exitErr <- fmt.Errorf("add player object failed: %s", objRes.ErrMsg)
-		return
-	}
-
 	// Recv data from stream
 	for {
 		data, err := dataStream.Recv()

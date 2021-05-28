@@ -41,6 +41,11 @@ func playerInit() error {
 		X:    1,
 		Y:    1,
 	}
+
+	if _, err := playerActClient.SendAction(context.TODO(), makePlayerObj()); err != nil {
+		return fmt.Errorf("failed to get data stream: %w", err)
+	}
+
 	return nil
 }
 

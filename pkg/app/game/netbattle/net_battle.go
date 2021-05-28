@@ -50,12 +50,11 @@ func Init(plyr *player.Player) error {
 	loseInst = nil
 	basePlayerInst = plyr
 
-	f, err := netconn.GetFieldInfo()
-	if err != nil {
-		return fmt.Errorf("get field info failed: %w", err)
+	if err := field.Init(); err != nil {
+		return fmt.Errorf("net battle field init failed: %w", err)
 	}
-	field.Init(f)
 
+	var err error
 	playerInst, err = battleplayer.New(plyr)
 	if err != nil {
 		return fmt.Errorf("net battle player init failed: %w", err)
@@ -63,6 +62,10 @@ func Init(plyr *player.Player) error {
 
 	if err := netdraw.Init(); err != nil {
 		return fmt.Errorf("failed to init battle draw info: %w", err)
+	}
+
+	if err := netconn.SendObject(playerInst.Object); err != nil {
+		return fmt.Errorf("failed to add init player object: %w", err)
 	}
 
 	// TODO

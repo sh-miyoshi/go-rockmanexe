@@ -7,17 +7,15 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 var (
-	info     *field.Info
 	imgPanel = [2]int32{-1, -1}
 )
 
-func Init(fieldInfo *field.Info) error {
-	info = fieldInfo
-
+func Init() error {
 	// Initialize images
 	fname := common.ImagePath + "battle/panel_player.png"
 	imgPanel[appfield.PanelTypePlayer] = dxlib.LoadGraph(fname)
@@ -34,6 +32,13 @@ func Init(fieldInfo *field.Info) error {
 }
 
 func Draw() {
+	info, err := netconn.GetFieldInfo()
+	if err != nil {
+		logger.Error("Failed to get field info: %v", err)
+		// TODO error handling
+		return
+	}
+
 	for y := 0; y < 3; y++ {
 		for x := 0; x < 3; x++ {
 			// My Panel
