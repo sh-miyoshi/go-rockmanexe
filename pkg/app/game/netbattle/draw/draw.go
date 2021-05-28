@@ -85,11 +85,16 @@ func End() {
 	}
 }
 
-func Object(objType int, imgNo int, x, y int) {
+func Object(objType int, imgNo int, x, y int, reverse bool) {
 	if imgNo >= len(images[objType]) {
 		imgNo = len(images[objType]) - 1
 	}
 
 	vx, vy := battlecommon.ViewPos(x, y)
-	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE)
+	opts := dxlib.DrawRotaGraphOption{}
+	if reverse {
+		flag := int32(dxlib.TRUE)
+		opts.ReverseXFlag = &flag
+	}
+	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE, opts)
 }

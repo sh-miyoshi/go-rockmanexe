@@ -44,7 +44,7 @@ func Draw() {
 			// Show objects in my panel
 			if info.MyArea[x][y].ID != "" {
 				imgNo := 0 // TODO
-				draw.Object(info.MyArea[x][y].Type, imgNo, x, y)
+				draw.Object(info.MyArea[x][y].Type, imgNo, x, y, false)
 			}
 
 			// Enemy Panel
@@ -53,6 +53,10 @@ func Draw() {
 			dxlib.DrawGraph(vx, vy, imgPanel[1], dxlib.TRUE)
 
 			// Show objects in enemy panel
+			if info.EnemyArea[x][y].ID != "" {
+				imgNo := 0 // TODO
+				draw.Object(info.EnemyArea[x][y].Type, imgNo, x+3, y, true)
+			}
 		}
 	}
 }
