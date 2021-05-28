@@ -75,7 +75,6 @@ type BattlePlayer struct {
 }
 
 const (
-	gaugeMaxCount   = 1200
 	chargeTime      = 180 // TODO 変数化
 	invincibleTime  = 120
 	chargeViewDelay = 20
@@ -280,10 +279,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show Custom Gauge
 	if showGauge {
-		if p.GaugeCount < gaugeMaxCount {
+		if p.GaugeCount < common.BattleGaugeMaxCount {
 			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * p.GaugeCount / gaugeMaxCount)
+			size := int32(gaugeMaxSize * p.GaugeCount / common.BattleGaugeMaxCount)
 			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
@@ -323,8 +322,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
-	if p.GaugeCount >= gaugeMaxCount {
-		if p.GaugeCount == gaugeMaxCount {
+	if p.GaugeCount >= common.BattleGaugeMaxCount {
+		if p.GaugeCount == common.BattleGaugeMaxCount {
 			sound.On(sound.SEGaugeMax)
 		}
 

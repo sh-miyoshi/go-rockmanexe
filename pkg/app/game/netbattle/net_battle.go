@@ -3,8 +3,13 @@ package netbattle
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -15,6 +20,7 @@ const (
 	stateWaiting int = iota
 	stateOpening
 	stateChipSelect
+	stateWaitSelect
 	stateBeforeMain
 	stateMain
 	stateResultWin
@@ -31,6 +37,7 @@ var (
 	b4mainInst     *titlemsg.TitleMsg
 	loseInst       *titlemsg.TitleMsg
 	basePlayerInst *player.Player
+	playerInst     *battleplayer.BattlePlayer
 )
 
 func Init(plyr *player.Player) error {
@@ -49,6 +56,11 @@ func Init(plyr *player.Player) error {
 	}
 	field.Init(f)
 
+	playerInst, err = battleplayer.New(plyr)
+	if err != nil {
+		return fmt.Errorf("net battle player init failed: %w", err)
+	}
+
 	// TODO
 
 	return nil
@@ -56,6 +68,7 @@ func Init(plyr *player.Player) error {
 
 func End() {
 	netconn.Disconnect()
+	playerInst.End()
 }
 
 func Process() error {
@@ -66,9 +79,27 @@ func Process() error {
 			return fmt.Errorf("get connect status error: %w", err)
 		}
 		if status == pb.Data_CHIPSELECTWAIT {
-			battleState = stateOpening
+			stateChange(stateOpening)
+			return nil
 		}
 	case stateOpening:
+		// TODO animation処理
+		stateChange(stateChipSelect)
+		return nil
+	case stateChipSelect:
+		if battleCount == 0 {
+			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
+				return fmt.Errorf("failed to initialize chip select: %w", err)
+			}
+		}
+		if chipsel.Process() {
+			// set selected chips
+			playerInst.SetChipSelectResult(chipsel.GetSelected())
+			// TODO send to server
+			stateChange(stateWaitSelect)
+			return nil
+		}
+	case stateWaitSelect:
 		// TODO
 	}
 
@@ -78,6 +109,19 @@ func Process() error {
 
 func Draw() {
 	field.Draw()
+
+	switch battleState {
+	case stateWaiting:
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
+		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0, dxlib.TRUE)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
+	case stateOpening:
+		// TODO animation
+	case stateChipSelect:
+		playerInst.DrawFrame(true, false)
+		chipsel.Draw()
+	}
 }
 
 func stateChange(nextState int) {
