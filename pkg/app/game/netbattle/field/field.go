@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
@@ -40,10 +41,18 @@ func Draw() {
 			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			dxlib.DrawGraph(vx, vy, imgPanel[0], dxlib.TRUE)
 
+			// Show objects in my panel
+			if info.MyArea[x][y].ID != "" {
+				imgNo := 0 // TODO
+				draw.Object(info.MyArea[x][y].Type, imgNo, x, y)
+			}
+
 			// Enemy Panel
 			vx = int32(appfield.PanelSizeX * (x + 3))
 			vy = int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			dxlib.DrawGraph(vx, vy, imgPanel[1], dxlib.TRUE)
+
+			// Show objects in enemy panel
 		}
 	}
 }

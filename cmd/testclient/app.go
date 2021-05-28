@@ -36,7 +36,7 @@ func playerInit() error {
 
 	playerObject = field.Object{
 		ID:   uuid.New().String(),
-		Type: field.ObjectTypeRockman,
+		Type: field.ObjectTypeRockmanStand,
 		HP:   100,
 		X:    1,
 		Y:    1,

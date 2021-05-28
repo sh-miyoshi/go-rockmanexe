@@ -6,7 +6,17 @@ import (
 )
 
 const (
-	ObjectTypeRockman int = iota
+	ObjectTypeRockmanStand int = iota
+	ObjectTypeRockmanMove
+	ObjectTypeRockmanDamage
+	ObjectTypeRockmanShot
+	ObjectTypeRockmanCannon
+	ObjectTypeRockmanSword
+	ObjectTypeRockmanBomb
+	ObjectTypeRockmanBuster
+	ObjectTypeRockmanPick
+
+	ObjectTypeMax
 )
 
 type Object struct {

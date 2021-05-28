@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
+	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -30,9 +31,8 @@ const (
 )
 
 var (
-	battleCount int
-	battleState int
-	// playerInst     *battleplayer.BattlePlayer
+	battleCount    int
+	battleState    int
 	gameCount      int
 	b4mainInst     *titlemsg.TitleMsg
 	loseInst       *titlemsg.TitleMsg
@@ -61,6 +61,10 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("net battle player init failed: %w", err)
 	}
 
+	if err := netdraw.Init(); err != nil {
+		return fmt.Errorf("failed to init battle draw info: %w", err)
+	}
+
 	// TODO
 
 	return nil
@@ -69,6 +73,7 @@ func Init(plyr *player.Player) error {
 func End() {
 	netconn.Disconnect()
 	playerInst.End()
+	netdraw.End()
 }
 
 func Process() error {
@@ -95,12 +100,38 @@ func Process() error {
 		if chipsel.Process() {
 			// set selected chips
 			playerInst.SetChipSelectResult(chipsel.GetSelected())
-			// TODO send to server
+			// TODO error handling
+			netconn.SendObject(playerInst.Object)
+			netconn.SendSignal(pb.Action_CHIPSEND)
 			stateChange(stateWaitSelect)
 			return nil
 		}
 	case stateWaitSelect:
-		// TODO
+		status, err := netconn.GetStatus()
+		if err != nil {
+			return fmt.Errorf("get connect status error: %w", err)
+		}
+		if status == pb.Data_ACTING {
+			stateChange(stateBeforeMain)
+			return nil
+		}
+	case stateBeforeMain:
+		if battleCount == 0 {
+			fname := common.ImagePath + "battle/msg_start.png"
+			var err error
+			b4mainInst, err = titlemsg.New(fname)
+			if err != nil {
+				return fmt.Errorf("failed to initialize before main: %w", err)
+			}
+		}
+
+		if b4mainInst.Process() {
+			b4mainInst.End()
+			stateChange(stateMain)
+			return nil
+		}
+	case stateMain:
+		gameCount++
 	}
 
 	battleCount++
@@ -121,6 +152,18 @@ func Draw() {
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()
+	case stateWaitSelect:
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
+		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0, dxlib.TRUE)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		draw.String(140, 110, 0xffffff, "相手の選択を待っています")
+	case stateBeforeMain:
+		playerInst.DrawFrame(false, true)
+		if b4mainInst != nil {
+			b4mainInst.Draw()
+		}
+	case stateMain:
+		playerInst.DrawFrame(false, true)
 	}
 }
 

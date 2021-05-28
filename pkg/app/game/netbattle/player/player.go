@@ -15,13 +15,12 @@ import (
 )
 
 type BattlePlayer struct {
-	Object        field.Object
-	HPMax         uint
-	ChargeCount   uint
-	GaugeCount    uint
-	ShotPower     uint
-	ChipFolder    []player.ChipInfo
-	SelectedChips []player.ChipInfo
+	Object      field.Object
+	HPMax       uint
+	ChargeCount uint
+	GaugeCount  uint
+	ShotPower   uint
+	ChipFolder  []player.ChipInfo
 }
 
 var (
@@ -128,9 +127,9 @@ func (p *BattlePlayer) Process() (bool, error) {
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.SelectedChips = []player.ChipInfo{}
+	p.Object.Chips = []int{}
 	for _, s := range selected {
-		p.SelectedChips = append(p.SelectedChips, p.ChipFolder[s])
+		p.Object.Chips = append(p.Object.Chips, p.ChipFolder[s].ID)
 	}
 
 	// Remove selected chips from folder

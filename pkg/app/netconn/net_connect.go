@@ -14,6 +14,7 @@ import (
 
 var (
 	conn       *grpc.ClientConn
+	client     pb.RouterClient
 	dataStream pb.Router_PublishDataClient
 	sessionID  string
 	exitErr    error
@@ -29,7 +30,7 @@ func Connect() error {
 		return fmt.Errorf("failed to connect server: %w", err)
 	}
 
-	client := pb.NewRouterClient(conn)
+	client = pb.NewRouterClient(conn)
 	authReq := &pb.AuthRequest{
 		Id:      c.Net.ClientID,
 		Key:     c.Net.ClientKey,
@@ -65,6 +66,52 @@ func Disconnect() {
 	}
 }
 
+func SendObject(obj field.Object) error {
+	c := config.Get()
+
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  c.Net.ClientID,
+		Type:      pb.Action_UPDATEOBJECT,
+		Data: &pb.Action_ObjectInfo{
+			ObjectInfo: field.MarshalObject(obj),
+		},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("send action failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("send action got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
+func SendSignal(signal pb.Action_SignalType) error {
+	c := config.Get()
+
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  c.Net.ClientID,
+		Type:      pb.Action_SENDSIGNAL,
+		Data:      &pb.Action_Signal{Signal: signal},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("send signal failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("send signal got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
 func dataRecv() {
 	// Recv data from stream
 	for {
@@ -79,7 +126,8 @@ func dataRecv() {
 			logger.Debug("got status update data: %+v", data)
 			status = data.GetStatus()
 		case pb.Data_DATA:
-			// playerFieldUpdate(data.GetRawData())
+			b := data.GetRawData()
+			field.Unmarshal(&fieldInfo, b)
 		default:
 			exitErr = fmt.Errorf("invalid data type was received: %d", data.Type)
 			return
