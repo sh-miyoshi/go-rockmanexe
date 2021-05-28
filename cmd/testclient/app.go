@@ -89,6 +89,11 @@ func playerStatusUpdate(status pb.Data_Status) {
 			return
 		}
 	case pb.Data_ACTING:
+		if playerStatus == statusActing {
+			// nothing to do
+			return
+		}
+
 		if playerStatus == statusWaitActing {
 			statusChange(statusActing)
 			return
