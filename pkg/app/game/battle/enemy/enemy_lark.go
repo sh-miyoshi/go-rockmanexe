@@ -143,7 +143,7 @@ func (e *enemyLark) Process() (bool, error) {
 		e.moveCount++
 		tx := e.movePoint[np][0]
 		ty := e.movePoint[np][1]
-		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, tx, ty, field.PanelTypeEnemy, false) {
+		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, tx, ty, field.PanelTypeEnemy, false, field.GetPanelInfo) {
 			e.nextX = tx
 			e.nextY = ty
 		}
@@ -153,7 +153,7 @@ func (e *enemyLark) Process() (bool, error) {
 		// 実際に移動
 		e.prevX = e.pm.PosX
 		e.prevY = e.pm.PosY
-		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, e.nextX, e.nextY, field.PanelTypeEnemy, true) {
+		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, e.nextX, e.nextY, field.PanelTypeEnemy, true, field.GetPanelInfo) {
 			e.movePointer = np
 		}
 	}

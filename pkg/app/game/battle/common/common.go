@@ -6,7 +6,7 @@ import (
 )
 
 // MoveObject ...
-func MoveObject(x, y *int, direct int, objPanelType int, isMove bool) bool {
+func MoveObject(x, y *int, direct int, objPanelType int, isMove bool, GetPanelInfo func(x, y int) field.PanelInfo) bool {
 	nx := *x
 	ny := *y
 
@@ -34,7 +34,7 @@ func MoveObject(x, y *int, direct int, objPanelType int, isMove bool) bool {
 		nx++
 	}
 
-	pn := field.GetPanelInfo(nx, ny)
+	pn := GetPanelInfo(nx, ny)
 	if pn.ObjectID != "" {
 		return false
 	}
@@ -51,8 +51,8 @@ func MoveObject(x, y *int, direct int, objPanelType int, isMove bool) bool {
 	return true
 }
 
-func MoveObjectDirect(x, y *int, targetX, targetY int, objPanelType int, isMove bool) bool {
-	pn := field.GetPanelInfo(targetX, targetY)
+func MoveObjectDirect(x, y *int, targetX, targetY int, objPanelType int, isMove bool, GetPanelInfo func(x, y int) field.PanelInfo) bool {
+	pn := GetPanelInfo(targetX, targetY)
 	if pn.ObjectID != "" {
 		return false
 	}

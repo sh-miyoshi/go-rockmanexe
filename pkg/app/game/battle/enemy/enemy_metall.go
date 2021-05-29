@@ -129,9 +129,9 @@ func (e *enemyMetall) Process() (bool, error) {
 			// Move
 			moved := false
 			if py > e.pm.PosY {
-				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true)
+				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true, field.GetPanelInfo)
 			} else {
-				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true)
+				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true, field.GetPanelInfo)
 			}
 			if moved {
 				e.moveFailedCount = 0

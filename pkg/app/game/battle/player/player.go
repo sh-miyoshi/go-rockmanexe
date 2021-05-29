@@ -348,7 +348,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false) {
+		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
 			p.act.SetAnim(playerAnimMove, 0)
 			p.MoveNum++
@@ -496,7 +496,7 @@ func (a *act) Process() bool {
 		}
 	case playerAnimMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true)
+			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
 		}
 	case playerAnimCannon, playerAnimSword, playerAnimBomb, playerAnimDamage, playerAnimShot, playerAnimPick:
 		// No special action

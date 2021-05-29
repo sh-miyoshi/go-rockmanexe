@@ -111,7 +111,7 @@ func (e *enemyBilly) Process() (bool, error) {
 			// try 20 times to move
 			for i := 0; i < 20; i++ {
 				e.act.MoveDirect = 1 << rand.Intn(4)
-				if battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, e.act.MoveDirect, field.PanelTypeEnemy, false) {
+				if battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, e.act.MoveDirect, field.PanelTypeEnemy, false, field.GetPanelInfo) {
 					break
 				}
 			}
@@ -205,7 +205,7 @@ func (a *billyAct) Process() bool {
 		}
 	case billyActMove:
 		if a.count == 4*delayBillyMove {
-			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypeEnemy, true)
+			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypeEnemy, true, field.GetPanelInfo)
 		}
 	}
 
