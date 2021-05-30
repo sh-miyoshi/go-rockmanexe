@@ -23,21 +23,21 @@ const (
 )
 
 type clientInfo struct {
-	active    bool
-	chipSent  bool
-	clientID  string
-	sendQueue chan *pb.Data
+	active     bool
+	chipSent   bool
+	clientID   string
+	fieldInfo  *field.Info
+	dataStream pb.Router_PublishDataServer
 }
 
 type session struct {
 	sessionID string
 	routeID   string
 	clients   [2]clientInfo
-
 	started   bool
 	status    int
 	fieldLock sync.Mutex
-	fieldInfo map[string]*field.Info
+	exitErr   chan error
 }
 
 var (
@@ -45,7 +45,7 @@ var (
 	sessionList = []*session{}
 )
 
-func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
+func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan error) (string, error) {
 	route, err := db.GetInst().RouteGetByClient(clientID)
 	if err != nil {
 		return "", fmt.Errorf("route get failed: %v", err)
@@ -58,10 +58,10 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 		if se.routeID == route.ID {
 			if se.clients[0].clientID == clientID {
 				se.clients[0].active = true
-				se.clients[0].sendQueue = sendQueue
+				se.clients[0].dataStream = dataStream
 			} else if se.clients[1].clientID == clientID {
 				se.clients[1].active = true
-				se.clients[1].sendQueue = sendQueue
+				se.clients[1].dataStream = dataStream
 			}
 
 			return se.sessionID, nil
@@ -76,12 +76,8 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 		routeID:   route.ID,
 		status:    statusConnectWait,
 		started:   false,
-		fieldInfo: make(map[string]*field.Info),
+		exitErr:   exitErr,
 	}
-	v.fieldInfo[route.Clients[0]] = &field.Info{}
-	v.fieldInfo[route.Clients[0]].Init()
-	v.fieldInfo[route.Clients[1]] = &field.Info{}
-	v.fieldInfo[route.Clients[1]].Init()
 
 	index := 0
 	if route.Clients[1] == clientID {
@@ -89,12 +85,17 @@ func Add(clientID string, sendQueue chan *pb.Data) (string, error) {
 	}
 
 	v.clients[index] = clientInfo{
-		active:    true,
-		clientID:  route.Clients[index],
-		sendQueue: sendQueue,
+		active:     true,
+		clientID:   route.Clients[index],
+		dataStream: dataStream,
+		fieldInfo:  &field.Info{},
 	}
 	v.clients[1-index] = clientInfo{
-		clientID: route.Clients[1-index],
+		clientID:  route.Clients[1-index],
+		fieldInfo: &field.Info{},
+	}
+	for _, c := range v.clients {
+		c.fieldInfo.Init()
 	}
 
 	sessionList = append(sessionList, &v)
@@ -131,11 +132,19 @@ func ActionProc(action *pb.Action) error {
 
 				var obj field.Object
 				field.UnmarshalObject(&obj, action.GetObjectInfo())
-				for _, c := range s.clients {
+				if obj.UpdateBaseTime {
+					obj.BaseTime = time.Now()
+					obj.UpdateBaseTime = false
+				}
+
+				// ???
+				for i, c := range s.clients {
 					if c.clientID == action.ClientID {
-						s.fieldInfo[c.clientID].MyArea[obj.X][obj.Y] = obj
+						// If the target object is mine, set to my area
+						s.clients[i].fieldInfo.MyArea[obj.X][obj.Y] = obj
 					} else {
-						s.fieldInfo[c.clientID].EnemyArea[obj.X][obj.Y] = obj
+						// If the target object is not mine, set
+						s.clients[i].fieldInfo.EnemyArea[obj.X][obj.Y] = obj
 					}
 				}
 			case pb.Action_SENDSIGNAL:
@@ -168,18 +177,26 @@ func (s *session) Process() {
 
 		// Field data send
 		if s.status == statusChipSelectWait || s.status == statusActing {
+			now := time.Now()
+
+			s.clients[0].fieldInfo.CurrentTime = now
 			d := &pb.Data{
 				Type: pb.Data_DATA,
 				Data: &pb.Data_RawData{
-					RawData: field.Marshal(s.fieldInfo[s.clients[0].clientID]),
+					RawData: field.Marshal(s.clients[0].fieldInfo),
 				},
 			}
-			s.clients[0].sendQueue <- d
-
-			d.Data = &pb.Data_RawData{
-				RawData: field.Marshal(s.fieldInfo[s.clients[1].clientID]),
+			if err := s.clients[0].dataStream.Send(d); err != nil {
+				s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[0].clientID, err)
 			}
-			s.clients[1].sendQueue <- d
+
+			s.clients[1].fieldInfo.CurrentTime = now
+			d.Data = &pb.Data_RawData{
+				RawData: field.Marshal(s.clients[1].fieldInfo),
+			}
+			if err := s.clients[1].dataStream.Send(d); err != nil {
+				s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[1].clientID, err)
+			}
 		}
 
 		switch s.status {
@@ -193,8 +210,12 @@ func (s *session) Process() {
 					},
 				}
 
-				s.clients[0].sendQueue <- d
-				s.clients[1].sendQueue <- d
+				if err := s.clients[0].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
+				}
+				if err := s.clients[1].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+				}
 				s.status = statusChipSelectWait
 			}
 		case statusChipSelectWait:
@@ -206,8 +227,12 @@ func (s *session) Process() {
 					},
 				}
 
-				s.clients[0].sendQueue <- d
-				s.clients[1].sendQueue <- d
+				if err := s.clients[0].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
+				}
+				if err := s.clients[1].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+				}
 				s.clients[0].chipSent = false
 				s.clients[1].chipSent = false
 				s.status = statusActing

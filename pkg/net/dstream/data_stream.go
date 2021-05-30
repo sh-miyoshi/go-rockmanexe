@@ -11,13 +11,10 @@ import (
 )
 
 type RouterStream struct {
-	sendQueue chan *pb.Data
 }
 
 func New() *RouterStream {
-	return &RouterStream{
-		sendQueue: make(chan *pb.Data),
-	}
+	return &RouterStream{}
 }
 
 func (s *RouterStream) SendAction(ctx context.Context, action *pb.Action) (*pb.Result, error) {
@@ -54,13 +51,15 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 		return nil
 	}
 
+	var exitErr chan error
+
 	// Add to sessionList
-	sid, err := session.Add(c.ID, s.sendQueue)
+	sid, err := session.Add(c.ID, dataStream, exitErr)
 	if err != nil {
 		logger.Error("Failed to add session: %v", err)
 		return fmt.Errorf("add session failed: %w", err)
 	}
-	logger.Info("add to session %s", sid)
+	logger.Info("add to session %s for client %s", sid, c.ID)
 
 	authRes.Success = true
 	authRes.SessionID = sid
@@ -68,13 +67,8 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 
 	session.Run(sid)
 
-	// Publish data
-	for {
-		data := <-s.sendQueue
-		logger.Debug("Send to client %s: %+v", c.ID, data)
-
-		dataStream.Send(data)
-	}
+	err = <-exitErr
+	return err
 }
 
 func makeAuthRes(authRes *pb.AuthResponse) *pb.Data {

@@ -58,7 +58,7 @@ func playerProc(exitErr chan error) {
 			// Select using chip
 			n := rand.Intn(2) + 1
 			time.Sleep(time.Duration(n) * time.Second)
-			playerObject.Chips = []int{1, 3, -1} // debug
+			playerObject.Chips = []int{1, 3} // debug
 
 			// Finished chip select, so send action
 			if _, err := playerActClient.SendAction(context.TODO(), makePlayerObj()); err != nil {
