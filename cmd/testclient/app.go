@@ -25,6 +25,8 @@ var (
 	playerActClient pb.RouterClient
 	fieldInfo       field.Info
 	playerObject    field.Object
+
+	actCount = 0
 )
 
 func playerInit() error {
@@ -37,8 +39,8 @@ func playerInit() error {
 	playerObject = field.Object{
 		ID:   uuid.New().String(),
 		Type: field.ObjectTypeRockmanStand,
-		HP:   100,
-		X:    1,
+		HP:   150,
+		X:    0,
 		Y:    1,
 	}
 
@@ -76,11 +78,12 @@ func playerProc(exitErr chan error) {
 				return
 			}
 
+			actCount = 0
 			statusChange(statusWaitActing)
 		case statusWaitActing:
 			// 相手がselect完了になるのを待つ
 		case statusActing:
-			// TODO
+			playerAct()
 		}
 		time.Sleep(16 * time.Millisecond)
 	}
@@ -127,5 +130,30 @@ func makePlayerObj() *pb.Action {
 		Data: &pb.Action_ObjectInfo{
 			ObjectInfo: field.MarshalObject(playerObject),
 		},
+	}
+}
+
+func playerAct() {
+	const waitCount = 120
+	const moveInterval = 180
+
+	actCount++
+	if actCount < waitCount {
+		return
+	}
+
+	if actCount%moveInterval == 0 {
+		playerObject.UpdateBaseTime = true
+		playerObject.Type = field.ObjectTypeRockmanMove
+		playerActClient.SendAction(context.TODO(), makePlayerObj())
+		log.Printf("Set to move")
+	}
+
+	if actCount%moveInterval == field.ImageDelays[field.ObjectTypeRockmanMove]*4 {
+		playerObject.X = rand.Intn(3)
+		playerObject.Y = rand.Intn(3)
+		playerObject.Type = field.ObjectTypeRockmanStand
+		log.Printf("Move to (%d, %d)", playerObject.X, playerObject.Y)
+		playerActClient.SendAction(context.TODO(), makePlayerObj())
 	}
 }
