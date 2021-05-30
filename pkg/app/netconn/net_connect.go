@@ -127,7 +127,9 @@ func dataRecv() {
 			status = data.GetStatus()
 		case pb.Data_DATA:
 			b := data.GetRawData()
-			field.Unmarshal(&fieldInfo, b)
+			var f field.Info
+			field.Unmarshal(&f, b)
+			fieldInfo = f
 		default:
 			exitErr = fmt.Errorf("invalid data type was received: %d", data.Type)
 			return
