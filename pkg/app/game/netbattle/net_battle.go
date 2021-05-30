@@ -135,6 +135,8 @@ func Process() error {
 		}
 	case stateMain:
 		gameCount++
+		// TODO
+		playerInst.Process()
 	}
 
 	battleCount++

@@ -9,9 +9,18 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+)
+
+const (
+	animTypeMove int = iota
 )
 
 type BattlePlayer struct {
@@ -24,8 +33,6 @@ type BattlePlayer struct {
 }
 
 var (
-	// imgPlayers    [playerAnimMax][]int32
-	// imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1, 4}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -92,9 +99,6 @@ func (p *BattlePlayer) End() {
 	}
 }
 
-func (p *BattlePlayer) Draw() {
-}
-
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	x := int32(7)
 	y := int32(5)
@@ -123,6 +127,26 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
+	// TODO
+
+	// Move
+	moveDirect := -1
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		moveDirect = common.DirectUp
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		moveDirect = common.DirectDown
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		moveDirect = common.DirectRight
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		moveDirect = common.DirectLeft
+	}
+
+	if moveDirect >= 0 {
+		if battlecommon.MoveObject(&p.Object.X, &p.Object.Y, moveDirect, appfield.PanelTypePlayer, false, netfield.GetPanelInfo) {
+			p.setAnim(animTypeMove)
+		}
+	}
+
 	return false, nil
 }
 
@@ -137,4 +161,15 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	for _, s := range selected {
 		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
 	}
+}
+
+func (p *BattlePlayer) setAnim(animType int) {
+	p.Object.UpdateBaseTime = true
+
+	switch animType {
+	case animTypeMove:
+		p.Object.Type = field.ObjectTypeRockmanMove
+	}
+
+	netconn.SendObject(p.Object)
 }

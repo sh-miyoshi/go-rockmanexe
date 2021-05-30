@@ -3,6 +3,7 @@ package field
 import (
 	"bytes"
 	"encoding/gob"
+	"time"
 )
 
 const (
@@ -19,19 +20,26 @@ const (
 	ObjectTypeMax
 )
 
+var (
+	ImageDelays = [ObjectTypeMax]int{1, 1, 2, 2, 6, 3, 4, 1, 4}
+)
+
 type Object struct {
-	ID    string
-	Type  int
-	HP    int
-	X     int
-	Y     int
-	Chips []int
+	ID             string
+	Type           int
+	HP             int
+	X              int
+	Y              int
+	Chips          []int
+	BaseTime       time.Time
+	UpdateBaseTime bool
 	// TODO ...
 }
 
 type Info struct {
-	MyArea    [3][3]Object
-	EnemyArea [3][3]Object
+	CurrentTime time.Time
+	MyArea      [3][3]Object
+	EnemyArea   [3][3]Object
 }
 
 func Marshal(fieldInfo *Info) []byte {

@@ -2,6 +2,7 @@ package field
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -9,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
 var (
@@ -48,8 +50,11 @@ func Draw() {
 
 			// Show objects in my panel
 			if info.MyArea[x][y].ID != "" {
-				imgNo := 0 // TODO
-				draw.Object(info.MyArea[x][y].Type, imgNo, x, y, false)
+				obj := info.MyArea[x][y]
+				tm := info.CurrentTime.Sub(obj.BaseTime)
+				cnt := tm * 60 / time.Second
+				imgNo := int(cnt) / field.ImageDelays[obj.Type]
+				draw.Object(obj.Type, imgNo, x, y, false)
 			}
 
 			// Enemy Panel
@@ -59,9 +64,30 @@ func Draw() {
 
 			// Show objects in enemy panel
 			if info.EnemyArea[x][y].ID != "" {
-				imgNo := 0 // TODO
+				obj := info.EnemyArea[x][y]
+				tm := info.CurrentTime.Sub(obj.BaseTime)
+				cnt := tm * 60 / time.Second
+				imgNo := int(cnt) / field.ImageDelays[obj.Type]
 				draw.Object(info.EnemyArea[x][y].Type, imgNo, x+3, y, true)
 			}
+		}
+	}
+}
+
+func GetPanelInfo(x, y int) appfield.PanelInfo {
+	info, _ := netconn.GetFieldInfo()
+
+	if x < 3 {
+		// player panel
+		return appfield.PanelInfo{
+			Type:     appfield.PanelTypePlayer,
+			ObjectID: info.MyArea[x][y].ID,
+		}
+	} else {
+		// enemy panel
+		return appfield.PanelInfo{
+			Type:     appfield.PanelTypeEnemy,
+			ObjectID: info.EnemyArea[x-3][y].ID,
 		}
 	}
 }
