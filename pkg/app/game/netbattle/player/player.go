@@ -13,14 +13,9 @@ import (
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
-)
-
-const (
-	animTypeMove int = iota
 )
 
 type BattlePlayer struct {
@@ -30,6 +25,7 @@ type BattlePlayer struct {
 	GaugeCount  uint
 	ShotPower   uint
 	ChipFolder  []player.ChipInfo
+	Act         *Act
 }
 
 var (
@@ -53,6 +49,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		HPMax:     plyr.HP, // TODO HPは引き継がない
 		ShotPower: plyr.ShotPower,
 	}
+	res.Act = NewAct(&res.Object)
 
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
@@ -127,7 +124,7 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
-	// TODO
+	p.Act.Process()
 
 	// Move
 	moveDirect := -1
@@ -143,7 +140,9 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&p.Object.X, &p.Object.Y, moveDirect, appfield.PanelTypePlayer, false, netfield.GetPanelInfo) {
-			p.setAnim(animTypeMove)
+			p.Act.Set(actTypeMove, &ActOption{
+				MoveDirect: moveDirect,
+			})
 		}
 	}
 
@@ -161,15 +160,4 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	for _, s := range selected {
 		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
 	}
-}
-
-func (p *BattlePlayer) setAnim(animType int) {
-	p.Object.UpdateBaseTime = true
-
-	switch animType {
-	case animTypeMove:
-		p.Object.Type = field.ObjectTypeRockmanMove
-	}
-
-	netconn.SendObject(p.Object)
 }

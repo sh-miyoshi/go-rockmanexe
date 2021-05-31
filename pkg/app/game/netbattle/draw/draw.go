@@ -98,3 +98,7 @@ func Object(objType int, imgNo int, x, y int, reverse bool) {
 	}
 	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE, opts)
 }
+
+func GetImageInfo(objType int) (imageNum, delay int) {
+	return len(images[objType]), field.ImageDelays[objType]
+}
