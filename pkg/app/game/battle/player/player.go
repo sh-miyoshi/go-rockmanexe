@@ -74,12 +74,6 @@ type BattlePlayer struct {
 	invincibleCount int
 }
 
-const (
-	chargeTime      = 180 // TODO 変数化
-	invincibleTime  = 120
-	chargeViewDelay = 20
-)
-
 var (
 	imgPlayers    [playerAnimMax][]int32
 	imgDelays     = [playerAnimMax]int{1, 2, 2, 6, 3, 4, 1, 4}
@@ -238,9 +232,9 @@ func (p *BattlePlayer) Draw() {
 	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
 
 	// Show charge image
-	if p.ChargeCount > chargeViewDelay {
+	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0
-		if p.ChargeCount > chargeTime {
+		if p.ChargeCount > battlecommon.ChargeTime {
 			n = 1
 		}
 		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
@@ -279,10 +273,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show Custom Gauge
 	if showGauge {
-		if p.GaugeCount < common.BattleGaugeMaxCount {
+		if p.GaugeCount < battlecommon.GaugeMaxCount {
 			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * p.GaugeCount / common.BattleGaugeMaxCount)
+			size := int32(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
 			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
@@ -311,7 +305,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.invincibleCount > 0 {
 		p.invincibleCount++
-		if p.invincibleCount > invincibleTime {
+		if p.invincibleCount > battlecommon.PlayerDefaultInvincibleTime {
 			p.invincibleCount = 0
 		}
 	}
@@ -322,8 +316,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
-	if p.GaugeCount >= common.BattleGaugeMaxCount {
-		if p.GaugeCount == common.BattleGaugeMaxCount {
+	if p.GaugeCount >= battlecommon.GaugeMaxCount {
+		if p.GaugeCount == battlecommon.GaugeMaxCount {
 			sound.On(sound.SEGaugeMax)
 		}
 
@@ -382,15 +376,15 @@ func (p *BattlePlayer) Process() (bool, error) {
 	// Rock buster
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		p.ChargeCount++
-		if p.ChargeCount == chargeViewDelay {
+		if p.ChargeCount == battlecommon.ChargeViewDelay {
 			sound.On(sound.SEBusterCharging)
 		}
-		if p.ChargeCount == chargeTime {
+		if p.ChargeCount == battlecommon.ChargeTime {
 			sound.On(sound.SEBusterCharged)
 		}
 	} else if p.ChargeCount > 0 {
 		sound.On(sound.SEBusterShot)
-		p.act.Charged = p.ChargeCount > chargeTime
+		p.act.Charged = p.ChargeCount > battlecommon.ChargeTime
 		p.act.ShotPower = p.ShotPower
 		p.act.SetAnim(playerAnimBuster, 0)
 		p.ChargeCount = 0

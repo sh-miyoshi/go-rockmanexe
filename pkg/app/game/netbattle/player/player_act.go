@@ -14,11 +14,14 @@ import (
 
 const (
 	actTypeMove int = iota
+	actTypeBuster
 )
 
 type ActOption struct {
 	KeepCount  int
 	MoveDirect int
+	Charged    bool
+	ShotPower  int
 }
 
 type Act struct {
@@ -53,6 +56,8 @@ func (a *Act) Process() bool {
 			battlecommon.MoveObject(&a.Object.X, &a.Object.Y, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
+	case actTypeBuster:
+		// TODO add buster damage
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}
@@ -85,6 +90,8 @@ func getObjType(actType int) int {
 	switch actType {
 	case actTypeMove:
 		return field.ObjectTypeRockmanMove
+	case actTypeBuster:
+		return field.ObjectTypeRockmanBuster
 	}
 
 	panic(fmt.Sprintf("Undefined object type for act %d", actType))

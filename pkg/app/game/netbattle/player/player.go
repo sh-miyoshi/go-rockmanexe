@@ -14,6 +14,7 @@ import (
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
@@ -46,7 +47,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			X:  1,
 			Y:  1,
 		},
-		HPMax:     plyr.HP, // TODO HPは引き継がない
+		HPMax:     plyr.HP,
 		ShotPower: plyr.ShotPower,
 	}
 	res.Act = NewAct(&res.Object)
@@ -109,10 +110,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show Custom Gauge
 	if showGauge {
-		if p.GaugeCount < common.BattleGaugeMaxCount {
+		if p.GaugeCount < battlecommon.GaugeMaxCount {
 			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * p.GaugeCount / common.BattleGaugeMaxCount)
+			size := int32(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
 			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
@@ -124,7 +125,9 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
-	p.Act.Process()
+	if p.Act.Process() {
+		return false, nil
+	}
 
 	// Move
 	moveDirect := -1
@@ -144,6 +147,25 @@ func (p *BattlePlayer) Process() (bool, error) {
 				MoveDirect: moveDirect,
 			})
 		}
+		return false, nil
+	}
+
+	// Rock buster
+	if inputs.CheckKey(inputs.KeyCancel) > 0 {
+		p.ChargeCount++
+		if p.ChargeCount == battlecommon.ChargeViewDelay {
+			sound.On(sound.SEBusterCharging)
+		}
+		if p.ChargeCount == battlecommon.ChargeTime {
+			sound.On(sound.SEBusterCharged)
+		}
+	} else if p.ChargeCount > 0 {
+		sound.On(sound.SEBusterShot)
+		p.Act.Set(actTypeBuster, &ActOption{
+			Charged:   p.ChargeCount > battlecommon.ChargeTime,
+			ShotPower: int(p.ShotPower),
+		})
+		p.ChargeCount = 0
 	}
 
 	return false, nil
