@@ -31,13 +31,14 @@ type clientInfo struct {
 }
 
 type session struct {
-	sessionID string
-	routeID   string
-	clients   [2]clientInfo
-	started   bool
-	status    int
-	fieldLock sync.Mutex
-	exitErr   chan error
+	sessionID  string
+	routeID    string
+	clients    [2]clientInfo
+	started    bool
+	status     int
+	nextStatus int
+	fieldLock  sync.Mutex
+	exitErr    chan error
 }
 
 var (
@@ -72,11 +73,12 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 	// so create new session
 	sessionID := uuid.New().String()
 	v := session{
-		sessionID: sessionID,
-		routeID:   route.ID,
-		status:    statusConnectWait,
-		started:   false,
-		exitErr:   exitErr,
+		sessionID:  sessionID,
+		routeID:    route.ID,
+		status:     statusConnectWait,
+		nextStatus: -1,
+		started:    false,
+		exitErr:    exitErr,
 	}
 
 	index := 0
@@ -155,6 +157,8 @@ func ActionProc(action *pb.Action) error {
 							break
 						}
 					}
+				case pb.Action_GOCHIPSELECT:
+					s.nextStatus = statusChipSelectWait
 				}
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
@@ -238,6 +242,33 @@ func (s *session) Process() {
 			}
 
 		case statusActing:
+			if s.nextStatus != -1 {
+				sendSt := pb.Data_CONNECTWAIT
+				switch s.nextStatus {
+				case statusChipSelectWait:
+					sendSt = pb.Data_CHIPSELECTWAIT
+				default:
+					s.exitErr <- fmt.Errorf("invalid next status: %d", s.nextStatus)
+					return
+				}
+
+				d := &pb.Data{
+					Type: pb.Data_UPDATESTATUS,
+					Data: &pb.Data_Status_{
+						Status: sendSt,
+					},
+				}
+				if err := s.clients[0].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
+				}
+				if err := s.clients[1].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+				}
+
+				s.status = s.nextStatus
+				s.nextStatus = -1
+			}
+
 			// TODO
 			// if s.clients[0 or 1].SendAction(MoveToChipSel)
 			//   s.clients[0 and 1].sendQueue <- statusChipSelectWait

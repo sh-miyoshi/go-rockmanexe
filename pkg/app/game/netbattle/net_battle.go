@@ -80,12 +80,13 @@ func End() {
 }
 
 func Process() error {
+	status, err := netconn.GetStatus()
+	if err != nil {
+		return fmt.Errorf("get connect status error: %w", err)
+	}
+
 	switch battleState {
 	case stateWaiting:
-		status, err := netconn.GetStatus()
-		if err != nil {
-			return fmt.Errorf("get connect status error: %w", err)
-		}
 		if status == pb.Data_CHIPSELECTWAIT {
 			stateChange(stateOpening)
 			return nil
@@ -110,10 +111,6 @@ func Process() error {
 			return nil
 		}
 	case stateWaitSelect:
-		status, err := netconn.GetStatus()
-		if err != nil {
-			return fmt.Errorf("get connect status error: %w", err)
-		}
 		if status == pb.Data_ACTING {
 			stateChange(stateBeforeMain)
 			return nil
@@ -135,7 +132,13 @@ func Process() error {
 		}
 	case stateMain:
 		gameCount++
-		// TODO
+
+		if status == pb.Data_CHIPSELECTWAIT {
+			stateChange(stateChipSelect)
+			return nil
+		}
+
+		// TODO gameend, error handling
 		playerInst.Process()
 	}
 

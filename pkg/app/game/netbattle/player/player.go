@@ -13,10 +13,12 @@ import (
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
 type BattlePlayer struct {
@@ -125,8 +127,24 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
+	p.GaugeCount += 4 // TODO GaugeSpeed
+
 	if p.Act.Process() {
 		return false, nil
+	}
+
+	if p.GaugeCount >= battlecommon.GaugeMaxCount {
+		if p.GaugeCount == battlecommon.GaugeMaxCount {
+			sound.On(sound.SEGaugeMax)
+		}
+
+		// State change to chip select
+		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
+			p.GaugeCount = 0
+			netconn.SendSignal(pb.Action_GOCHIPSELECT)
+
+			return false, nil
+		}
 	}
 
 	// Move

@@ -92,7 +92,7 @@ func playerProc(exitErr chan error) {
 func playerStatusUpdate(status pb.Data_Status) {
 	switch status {
 	case pb.Data_CHIPSELECTWAIT:
-		if playerStatus == statusWaiting {
+		if playerStatus == statusWaiting || playerStatus == statusActing {
 			statusChange(statusChipSelect)
 			return
 		}
