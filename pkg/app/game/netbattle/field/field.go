@@ -33,7 +33,7 @@ func Init() error {
 	return nil
 }
 
-func Draw() {
+func Draw(playerID string) {
 	info, err := netconn.GetFieldInfo()
 	if err != nil {
 		logger.Error("Failed to get field info: %v", err)
@@ -51,10 +51,13 @@ func Draw() {
 			// Show objects in my panel
 			if info.MyArea[x][y].ID != "" {
 				obj := info.MyArea[x][y]
-				tm := info.CurrentTime.Sub(obj.BaseTime)
-				cnt := tm * 60 / time.Second
-				imgNo := int(cnt) / field.ImageDelays[obj.Type]
-				draw.Object(obj.Type, imgNo, x, y, false)
+				// Show player by own process
+				if obj.ID != playerID {
+					tm := info.CurrentTime.Sub(obj.BaseTime)
+					cnt := tm * 60 / time.Second
+					imgNo := int(cnt) / field.ImageDelays[obj.Type]
+					draw.Object(obj.Type, imgNo, x, y, false)
+				}
 			}
 
 			// Enemy Panel

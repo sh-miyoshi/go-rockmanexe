@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -98,6 +99,11 @@ func (p *BattlePlayer) End() {
 	for _, img := range imgGaugeMax {
 		dxlib.DeleteGraph(img)
 	}
+}
+
+func (p *BattlePlayer) Draw() {
+	imgNo := p.Act.Count / field.ImageDelays[p.Object.Type]
+	netdraw.Object(p.Object.Type, imgNo, p.Object.X, p.Object.Y, false)
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
