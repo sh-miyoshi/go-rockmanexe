@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -161,11 +162,36 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&p.Object.X, &p.Object.Y, moveDirect, appfield.PanelTypePlayer, false, netfield.GetPanelInfo) {
-			p.Act.Set(actTypeMove, &ActOption{
+			p.Act.Set(battlecommon.PlayerActMove, &ActOption{
 				MoveDirect: moveDirect,
 			})
 		}
 		return false, nil
+	}
+
+	// Chip use
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if len(p.Object.Chips) > 0 {
+			c := chip.Get(p.Object.Chips[0])
+			if c.PlayerAct != -1 {
+				p.Act.Set(c.PlayerAct, &ActOption{
+					KeepCount: c.KeepCount,
+				})
+			}
+			// target := damage.TargetEnemy
+			// if c.ForMe {
+			// 	target = damage.TargetPlayer
+			// }
+
+			// p.act.ID = anim.New(skill.GetByChip(c.ID, skill.Argument{
+			// 	OwnerID:    p.ID,
+			// 	Power:      c.Power,
+			// 	TargetType: target,
+			// }))
+
+			p.Object.Chips = p.Object.Chips[1:]
+			return false, nil
+		}
 	}
 
 	// Rock buster
@@ -179,7 +205,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		}
 	} else if p.ChargeCount > 0 {
 		sound.On(sound.SEBusterShot)
-		p.Act.Set(actTypeBuster, &ActOption{
+		p.Act.Set(battlecommon.PlayerActBuster, &ActOption{
 			Charged:   p.ChargeCount > battlecommon.ChargeTime,
 			ShotPower: int(p.ShotPower),
 		})

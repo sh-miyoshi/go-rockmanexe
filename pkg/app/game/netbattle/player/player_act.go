@@ -12,11 +12,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
-const (
-	actTypeMove int = iota
-	actTypeBuster
-)
-
 type ActOption struct {
 	KeepCount  int
 	MoveDirect int
@@ -51,12 +46,12 @@ func (a *Act) Process() bool {
 	switch a.Type {
 	case -1:
 		return false
-	case actTypeMove:
+	case battlecommon.PlayerActMove:
 		if a.Count == 2 {
 			battlecommon.MoveObject(&a.Object.X, &a.Object.Y, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
-	case actTypeBuster:
+	case battlecommon.PlayerActBuster:
 		// TODO add buster damage
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
@@ -88,9 +83,9 @@ func (a *Act) Set(actType int, opts *ActOption) {
 
 func getObjType(actType int) int {
 	switch actType {
-	case actTypeMove:
+	case battlecommon.PlayerActMove:
 		return field.ObjectTypeRockmanMove
-	case actTypeBuster:
+	case battlecommon.PlayerActBuster:
 		return field.ObjectTypeRockmanBuster
 	}
 
