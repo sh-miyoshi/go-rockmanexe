@@ -37,7 +37,7 @@ var (
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
-	// imgCharge     [2][]int32
+	imgCharge     [2][]int32
 )
 
 // New ...
@@ -85,7 +85,15 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
 	}
 
-	// TODO
+	fname = common.ImagePath + "battle/skill/charge.png"
+	tmp := make([]int32, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
+		return nil, fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 8; i++ {
+		imgCharge[0] = append(imgCharge[0], tmp[i])
+		imgCharge[1] = append(imgCharge[1], tmp[i+8])
+	}
 
 	logger.Info("Successfully initialized net battle player data")
 	return &res, nil
@@ -99,11 +107,29 @@ func (p *BattlePlayer) End() {
 	for _, img := range imgGaugeMax {
 		dxlib.DeleteGraph(img)
 	}
+	for i := 0; i < 2; i++ {
+		for _, img := range imgCharge[i] {
+			dxlib.DeleteGraph(img)
+		}
+		imgCharge[i] = []int32{}
+	}
 }
 
 func (p *BattlePlayer) Draw() {
 	imgNo := p.Act.Count / field.ImageDelays[p.Object.Type]
 	netdraw.Object(p.Object.Type, imgNo, p.Object.X, p.Object.Y, false)
+
+	if p.ChargeCount > battlecommon.ChargeViewDelay {
+		n := 0
+		if p.ChargeCount > battlecommon.ChargeTime {
+			n = 1
+		}
+		x, y := battlecommon.ViewPos(p.Object.X, p.Object.Y)
+		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(x, y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {

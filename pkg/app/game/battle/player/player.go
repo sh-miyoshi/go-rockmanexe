@@ -205,6 +205,12 @@ func (p *BattlePlayer) End() {
 	for _, img := range imgGaugeMax {
 		dxlib.DeleteGraph(img)
 	}
+	for i := 0; i < 2; i++ {
+		for _, img := range imgCharge[i] {
+			dxlib.DeleteGraph(img)
+		}
+		imgCharge[i] = []int32{}
+	}
 
 	logger.Info("Successfully cleanuped battle player data")
 }
