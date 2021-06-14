@@ -117,7 +117,7 @@ func (p *BattlePlayer) End() {
 
 func (p *BattlePlayer) Draw() {
 	imgNo := p.Act.Count / field.ImageDelays[p.Object.Type]
-	netdraw.Object(p.Object.Type, imgNo, p.Object.X, p.Object.Y, false)
+	netdraw.Object(p.Object.Type, imgNo, p.Object.X, p.Object.Y)
 
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0

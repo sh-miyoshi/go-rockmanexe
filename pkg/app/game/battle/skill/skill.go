@@ -33,15 +33,19 @@ const (
 )
 
 const (
-	typeNormalCannon int = iota
-	typeHighCannon
-	typeMegaCannon
+	TypeNormalCannon int = iota
+	TypeHighCannon
+	TypeMegaCannon
+
+	TypeCannonMax
 )
 
 const (
-	typeSword int = iota
-	typeWideSword
-	typeLongSword
+	TypeSword int = iota
+	TypeWideSword
+	TypeLongSword
+
+	TypeSwordMax
 )
 
 const (
@@ -73,9 +77,9 @@ type Argument struct {
 }
 
 var (
-	imgCannonAtk     [3][]int32
-	imgCannonBody    [3][]int32
-	imgSword         [3][]int32
+	imgCannonAtk     [TypeCannonMax][]int32
+	imgCannonBody    [TypeCannonMax][]int32
+	imgSword         [TypeSwordMax][]int32
 	imgMiniBomb      []int32
 	imgShockWave     []int32
 	imgRecover       []int32
@@ -402,20 +406,20 @@ func Get(skillID int, arg Argument) anim.Anim {
 
 	switch skillID {
 	case SkillCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillHighCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMegaCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: typeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMiniBomb:
 		px, py := anim.GetObjPos(arg.OwnerID)
 		return &miniBomb{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
 	case SkillSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillWideSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeWideSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeWideSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillLongSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: typeLongSword, Power: arg.Power, TargetType: arg.TargetType}
+		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
 		px, py := anim.GetObjPos(arg.OwnerID)
 		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
@@ -593,14 +597,14 @@ func (p *sword) Process() (bool, error) {
 		damage.New(dm)
 
 		switch p.Type {
-		case typeSword:
+		case TypeSword:
 			// No more damage area
-		case typeWideSword:
+		case TypeWideSword:
 			dm.PosY = py - 1
 			damage.New(dm)
 			dm.PosY = py + 1
 			damage.New(dm)
-		case typeLongSword:
+		case TypeLongSword:
 			dm.PosX = px + 2
 			damage.New(dm)
 		}

@@ -53,6 +53,8 @@ func (a *Act) Process() bool {
 		}
 	case battlecommon.PlayerActBuster:
 		// TODO add buster damage
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
+		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}
@@ -87,6 +89,18 @@ func getObjType(actType int) int {
 		return field.ObjectTypeRockmanMove
 	case battlecommon.PlayerActBuster:
 		return field.ObjectTypeRockmanBuster
+	case battlecommon.PlayerActShot:
+		return field.ObjectTypeRockmanShot
+	case battlecommon.PlayerActBomb:
+		return field.ObjectTypeRockmanBomb
+	case battlecommon.PlayerActCannon:
+		return field.ObjectTypeRockmanCannon
+	case battlecommon.PlayerActDamage:
+		return field.ObjectTypeRockmanDamage
+	case battlecommon.PlayerActPick:
+		return field.ObjectTypeRockmanPick
+	case battlecommon.PlayerActSword:
+		return field.ObjectTypeRockmanSword
 	}
 
 	panic(fmt.Sprintf("Undefined object type for act %d", actType))

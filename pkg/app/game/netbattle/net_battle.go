@@ -11,7 +11,6 @@ import (
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -69,10 +68,6 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to add init player object: %w", err)
 	}
 
-	if err := skill.Init(); err != nil {
-		return fmt.Errorf("skill init failed: %w", err)
-	}
-
 	// TODO
 
 	return nil
@@ -82,7 +77,6 @@ func End() {
 	netconn.Disconnect()
 	playerInst.End()
 	netdraw.End()
-	skill.End()
 }
 
 func Process() error {

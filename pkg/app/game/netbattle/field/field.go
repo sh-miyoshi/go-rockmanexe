@@ -56,7 +56,7 @@ func Draw(playerID string) {
 					tm := info.CurrentTime.Sub(obj.BaseTime)
 					cnt := tm * 60 / time.Second
 					imgNo := int(cnt) / field.ImageDelays[obj.Type]
-					draw.Object(obj.Type, imgNo, x, y, false)
+					draw.Object(obj.Type, imgNo, x, y)
 				}
 			}
 
@@ -71,7 +71,7 @@ func Draw(playerID string) {
 				tm := info.CurrentTime.Sub(obj.BaseTime)
 				cnt := tm * 60 / time.Second
 				imgNo := int(cnt) / field.ImageDelays[obj.Type]
-				draw.Object(info.EnemyArea[x][y].Type, imgNo, x+3, y, true)
+				draw.Object(info.EnemyArea[x][y].Type, imgNo, x+3, y, draw.Option{Reverse: true})
 			}
 		}
 	}
