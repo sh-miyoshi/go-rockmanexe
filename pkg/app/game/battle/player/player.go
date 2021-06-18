@@ -356,7 +356,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 				target = damage.TargetPlayer
 			}
 
-			p.act.ID = anim.New(skill.GetByChip(c.ID, skill.Argument{
+			sid := skill.GetSkillID(c.ID)
+			p.act.ID = anim.New(skill.Get(sid, skill.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power,
 				TargetType: target,

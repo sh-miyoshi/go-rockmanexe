@@ -455,41 +455,39 @@ func Get(skillID int, arg Argument) anim.Anim {
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
 }
 
-func GetByChip(chipID int, arg Argument) anim.Anim {
-	id := -1
+func GetSkillID(chipID int) int {
 	switch chipID {
 	case chip.IDCannon:
-		id = SkillCannon
+		return SkillCannon
 	case chip.IDHighCannon:
-		id = SkillHighCannon
+		return SkillHighCannon
 	case chip.IDMegaCannon:
-		id = SkillMegaCannon
+		return SkillMegaCannon
 	case chip.IDSword:
-		id = SkillSword
+		return SkillSword
 	case chip.IDWideSword:
-		id = SkillWideSword
+		return SkillWideSword
 	case chip.IDLongSword:
-		id = SkillLongSword
+		return SkillLongSword
 	case chip.IDMiniBomb:
-		id = SkillMiniBomb
+		return SkillMiniBomb
 	case chip.IDRecover10:
-		id = SkillRecover
+		return SkillRecover
 	case chip.IDRecover30:
-		id = SkillRecover
+		return SkillRecover
 	case chip.IDSpreadGun:
-		id = SkillSpreadGun
+		return SkillSpreadGun
 	case chip.IDVulcan1:
-		id = SkillVulcan1
+		return SkillVulcan1
 	case chip.IDShockWave:
-		id = SkillPlayerShockWave
+		return SkillPlayerShockWave
 	case chip.IDThunderBall:
-		id = SkillThunderBall
+		return SkillThunderBall
 	case chip.IDWideShot:
-		id = SkillWideShot
-	default:
-		panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
+		return SkillWideShot
 	}
-	return Get(id, arg)
+
+	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 }
 
 func (p *cannon) Draw() {
