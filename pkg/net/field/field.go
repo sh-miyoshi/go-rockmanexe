@@ -8,8 +8,7 @@ import (
 
 type Info struct {
 	CurrentTime time.Time
-	MyArea      [3][3]Object
-	EnemyArea   [3][3]Object
+	Objects     []Object
 }
 
 func Marshal(fieldInfo *Info) []byte {

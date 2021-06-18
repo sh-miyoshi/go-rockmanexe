@@ -134,19 +134,14 @@ func ActionProc(action *pb.Action) error {
 
 				var obj field.Object
 				field.UnmarshalObject(&obj, action.GetObjectInfo())
+				obj.ClientID = action.ClientID
 				if obj.UpdateBaseTime {
 					obj.BaseTime = time.Now()
 					obj.UpdateBaseTime = false
 				}
 
-				for i, c := range s.clients {
-					if c.clientID == action.ClientID {
-						// If the target object is mine, set to my area
-						updateObject(&s.clients[i].fieldInfo.MyArea, obj)
-					} else {
-						// If the target object is not mine, set to enemy area
-						updateObject(&s.clients[i].fieldInfo.EnemyArea, obj)
-					}
+				for i := 0; i < 2; i++ {
+					updateObject(&s.clients[i].fieldInfo.Objects, obj)
 				}
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
@@ -280,20 +275,13 @@ func (s *session) Process() {
 	}
 }
 
-func updateObject(area *[3][3]field.Object, obj field.Object) {
-	for x := 0; x < 3; x++ {
-		for y := 0; y < 3; y++ {
-			if area[x][y].ID == obj.ID {
-				if x == obj.X && y == obj.Y {
-					area[x][y] = obj
-				} else {
-					area[x][y] = field.Object{} // clear previous data
-					area[obj.X][obj.Y] = obj
-				}
-				return
-			}
+func updateObject(objs *[]field.Object, obj field.Object) {
+	for i, o := range *objs {
+		if o.ID == obj.ID {
+			(*objs)[i] = obj
+			return
 		}
 	}
 
-	area[obj.X][obj.Y] = obj
+	*objs = append(*objs, obj)
 }

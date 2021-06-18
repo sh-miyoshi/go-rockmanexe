@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -41,56 +42,69 @@ func Draw(playerID string) {
 		return
 	}
 
-	for y := 0; y < 3; y++ {
-		for x := 0; x < 3; x++ {
-			// My Panel
+	clientID := config.Get().Net.ClientID
+
+	for x := 0; x < 3; x++ {
+		for y := 0; y < 3; y++ {
 			vx := int32(appfield.PanelSizeX * x)
 			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			dxlib.DrawGraph(vx, vy, imgPanel[0], dxlib.TRUE)
-
-			// Show objects in my panel
-			if info.MyArea[x][y].ID != "" {
-				obj := info.MyArea[x][y]
-				// Show player by own process
-				if obj.ID != playerID {
-					tm := info.CurrentTime.Sub(obj.BaseTime)
-					cnt := tm * 60 / time.Second
-					imgNo := int(cnt) / field.ImageDelays[obj.Type]
-					draw.Object(obj.Type, imgNo, x, y)
-				}
-			}
-
-			// Enemy Panel
 			vx = int32(appfield.PanelSizeX * (x + 3))
-			vy = int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			dxlib.DrawGraph(vx, vy, imgPanel[1], dxlib.TRUE)
+		}
+	}
 
-			// Show objects in enemy panel
-			if info.EnemyArea[x][y].ID != "" {
-				obj := info.EnemyArea[x][y]
-				tm := info.CurrentTime.Sub(obj.BaseTime)
-				cnt := tm * 60 / time.Second
-				imgNo := int(cnt) / field.ImageDelays[obj.Type]
-				draw.Object(info.EnemyArea[x][y].Type, imgNo, x+3, y, draw.Option{Reverse: true})
-			}
+	for _, obj := range info.Objects {
+		x := obj.X
+		y := obj.Y
+		reverse := false
+
+		if obj.ClientID != clientID {
+			// enemy object
+			x += 3
+			reverse = true
+		}
+
+		if obj.ID != playerID {
+			tm := info.CurrentTime.Sub(obj.BaseTime)
+			cnt := tm * 60 / time.Second
+			imgNo := int(cnt) / field.ImageDelays[obj.Type]
+			draw.Object(obj.Type, imgNo, x, y, draw.Option{Reverse: reverse})
 		}
 	}
 }
 
 func GetPanelInfo(x, y int) appfield.PanelInfo {
 	info, _ := netconn.GetFieldInfo()
+	clientID := config.Get().Net.ClientID
 
 	if x < 3 {
 		// player panel
+		id := ""
+		for _, obj := range info.Objects {
+			if obj.ClientID == clientID && obj.X == x && obj.Y == y {
+				id = obj.ID
+				break
+			}
+		}
+
 		return appfield.PanelInfo{
 			Type:     appfield.PanelTypePlayer,
-			ObjectID: info.MyArea[x][y].ID,
+			ObjectID: id,
 		}
 	} else {
 		// enemy panel
+		id := ""
+		for _, obj := range info.Objects {
+			if obj.ClientID != clientID && obj.X == x-3 && obj.Y == y {
+				id = obj.ID
+				break
+			}
+		}
+
 		return appfield.PanelInfo{
 			Type:     appfield.PanelTypeEnemy,
-			ObjectID: info.EnemyArea[x-3][y].ID,
+			ObjectID: id,
 		}
 	}
 }

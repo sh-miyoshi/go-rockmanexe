@@ -41,6 +41,7 @@ var (
 )
 
 type Object struct {
+	ClientID       string
 	ID             string
 	Type           int
 	HP             int

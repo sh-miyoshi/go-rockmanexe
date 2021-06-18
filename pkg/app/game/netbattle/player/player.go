@@ -12,8 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -210,16 +212,10 @@ func (p *BattlePlayer) Process() (bool, error) {
 					KeepCount: c.KeepCount,
 				})
 			}
-			// target := damage.TargetEnemy
-			// if c.ForMe {
-			// 	target = damage.TargetPlayer
-			// }
 
-			// p.act.ID = anim.New(skill.GetByChip(c.ID, skill.Argument{
-			// 	OwnerID:    p.ID,
-			// 	Power:      c.Power,
-			// 	TargetType: target,
-			// }))
+			sid := skill.GetSkillID(c.ID)
+			// TODO
+			netskill.Add(sid)
 
 			p.Object.Chips = p.Object.Chips[1:]
 			return false, nil

@@ -11,6 +11,7 @@ import (
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -140,6 +141,10 @@ func Process() error {
 
 		// TODO gameend, error handling
 		playerInst.Process()
+
+		if err := skill.Process(); err != nil {
+			return fmt.Errorf("skill process failed: %w", err)
+		}
 	}
 
 	battleCount++
