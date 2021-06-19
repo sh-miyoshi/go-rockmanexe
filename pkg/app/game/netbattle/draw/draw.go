@@ -182,8 +182,8 @@ func End() {
 }
 
 func Object(objType int, imgNo int, x, y int, opts ...Option) {
-	if imgNo >= len(images[objType]) {
-		imgNo = len(images[objType]) - 1
+	if imgNo >= len(images[objType])/getTypeNum(objType) {
+		imgNo = len(images[objType])/getTypeNum(objType) - 1
 	}
 
 	if len(opts) > 0 {
@@ -201,7 +201,7 @@ func Object(objType int, imgNo int, x, y int, opts ...Option) {
 }
 
 func GetImageInfo(objType int) (imageNum, delay int) {
-	return len(images[objType]), field.ImageDelays[objType]
+	return len(images[objType]) / getTypeNum(objType), field.ImageDelays[objType]
 }
 
 func getTypeNum(objType int) int {
