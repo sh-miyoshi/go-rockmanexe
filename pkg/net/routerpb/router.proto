@@ -12,6 +12,7 @@ message Action {
     enum ActionType {
         UPDATEOBJECT = 0;
         SENDSIGNAL = 1;
+        REMOVEOBJECT = 2;
     }
 
     enum SignalType {
@@ -26,6 +27,7 @@ message Action {
     oneof data {
         SignalType signal = 4;
         bytes objectInfo = 5;
+        string objectID = 6;
     }
 }
 

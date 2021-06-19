@@ -112,6 +112,28 @@ func SendSignal(signal pb.Action_SignalType) error {
 	return nil
 }
 
+func RemoveObject(objID string) error {
+	c := config.Get()
+
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  c.Net.ClientID,
+		Type:      pb.Action_REMOVEOBJECT,
+		Data:      &pb.Action_ObjectID{ObjectID: objID},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("remove object failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("remove object got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
 func dataRecv() {
 	// Recv data from stream
 	for {

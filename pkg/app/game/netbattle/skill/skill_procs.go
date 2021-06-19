@@ -1,22 +1,25 @@
 package skill
 
 import (
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
 type cannon struct {
-	id       string
+	atkID    string
+	bodyID   string
 	x        int
 	y        int
 	count    int
 	timeInit bool
 }
 
-func newCannon(id string, x, y int) *cannon {
+func newCannon(x, y int) *cannon {
 	return &cannon{
-		id:       id,
+		atkID:    uuid.New().String(),
+		bodyID:   uuid.New().String(),
 		x:        x,
 		y:        x,
 		timeInit: true,
@@ -48,7 +51,7 @@ func (p *cannon) GetObjects() []field.Object {
 	res := []field.Object{
 		// Attack
 		{
-			ID:             p.id,
+			ID:             p.atkID,
 			Type:           field.ObjectTypeCannonAtk,
 			HP:             0,
 			X:              p.x,
@@ -57,7 +60,7 @@ func (p *cannon) GetObjects() []field.Object {
 		},
 		// Body
 		{
-			ID:             p.id,
+			ID:             p.bodyID,
 			Type:           field.ObjectTypeCannonBody,
 			HP:             0,
 			X:              p.x,

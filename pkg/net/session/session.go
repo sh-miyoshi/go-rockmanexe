@@ -123,7 +123,7 @@ func Run(sessionID string) {
 }
 
 func ActionProc(action *pb.Action) error {
-	logger.Debug("Got action: %+v", action)
+	logAction(action)
 
 	for _, s := range sessionList {
 		if s.sessionID == action.SessionID {
@@ -154,6 +154,11 @@ func ActionProc(action *pb.Action) error {
 					}
 				case pb.Action_GOCHIPSELECT:
 					s.nextStatus = statusChipSelectWait
+				}
+			case pb.Action_REMOVEOBJECT:
+				id := action.GetObjectID()
+				for i := 0; i < 2; i++ {
+					removeObject(&s.clients[i].fieldInfo.Objects, id)
 				}
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
@@ -284,4 +289,37 @@ func updateObject(objs *[]field.Object, obj field.Object) {
 	}
 
 	*objs = append(*objs, obj)
+}
+
+func removeObject(objs *[]field.Object, objID string) {
+	newObjs := []field.Object{}
+	for _, obj := range *objs {
+		if obj.ID != objID {
+			newObjs = append(newObjs, obj)
+		}
+	}
+	*objs = newObjs
+}
+
+func logAction(action *pb.Action) {
+	msg := fmt.Sprintf(
+		"{ SessionID: %s, ClientID: %s, Type: %s, Action: { ",
+		action.SessionID,
+		action.ClientID,
+		action.Type.String(),
+	)
+
+	switch action.Type {
+	case pb.Action_UPDATEOBJECT:
+		var obj field.Object
+		field.UnmarshalObject(&obj, action.GetObjectInfo())
+		msg += fmt.Sprintf("Objects: %+v", obj)
+	case pb.Action_SENDSIGNAL:
+		msg += fmt.Sprintf("Signal: %s", action.GetSignal().String())
+	case pb.Action_REMOVEOBJECT:
+		msg += "TargetObject: " + action.GetObjectID()
+	}
+
+	msg += " }}"
+	logger.Debug("Got action: %s", msg)
 }

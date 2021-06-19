@@ -26,6 +26,7 @@ func Process() error {
 		}
 
 		if end {
+			removeObjects(id)
 			delete(skills, id)
 		}
 	}
@@ -41,7 +42,7 @@ func Add(skillID int) string {
 
 	switch skillID {
 	case skill.SkillCannon:
-		skills[id] = newCannon(id, x, y)
+		skills[id] = newCannon(x, y)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
@@ -51,4 +52,10 @@ func Add(skillID int) string {
 	}
 
 	return id
+}
+
+func removeObjects(id string) {
+	for _, obj := range skills[id].GetObjects() {
+		netconn.RemoveObject(obj.ID)
+	}
 }
