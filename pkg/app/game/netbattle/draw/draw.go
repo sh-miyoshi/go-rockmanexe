@@ -14,6 +14,8 @@ type Option struct {
 	Reverse   bool
 	SkillType int
 	Speed     int
+	ViewOfsX  int32
+	ViewOfsY  int32
 }
 
 var (
@@ -186,17 +188,23 @@ func Object(objType int, imgNo int, x, y int, opts ...Option) {
 		imgNo = len(images[objType])/getTypeNum(objType) - 1
 	}
 
+	vx, vy := battlecommon.ViewPos(x, y)
+	dxopts := dxlib.DrawRotaGraphOption{}
+
 	if len(opts) > 0 {
 		n := getTypeNum(objType)
 		imgNo += opts[0].SkillType * n
+
+		if opts[0].Reverse {
+			flag := int32(dxlib.TRUE)
+			dxopts.ReverseXFlag = &flag
+		}
+
+		// TODO reverse
+		vx += opts[0].ViewOfsX
+		vy += opts[0].ViewOfsY
 	}
 
-	vx, vy := battlecommon.ViewPos(x, y)
-	dxopts := dxlib.DrawRotaGraphOption{}
-	if len(opts) > 0 && opts[0].Reverse {
-		flag := int32(dxlib.TRUE)
-		dxopts.ReverseXFlag = &flag
-	}
 	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE, dxopts)
 }
 

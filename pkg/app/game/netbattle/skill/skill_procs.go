@@ -3,26 +3,29 @@ package skill
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
 type cannon struct {
-	atkID    string
-	bodyID   string
-	x        int
-	y        int
-	count    int
-	timeInit bool
+	atkID        string
+	bodyID       string
+	x            int
+	y            int
+	count        int
+	timeInit     bool
+	viewBodyOfsX int32
 }
 
 func newCannon(x, y int) *cannon {
 	return &cannon{
-		atkID:    uuid.New().String(),
-		bodyID:   uuid.New().String(),
-		x:        x,
-		y:        x,
-		timeInit: true,
+		atkID:        uuid.New().String(),
+		bodyID:       uuid.New().String(),
+		x:            x,
+		y:            x,
+		timeInit:     true,
+		viewBodyOfsX: 48,
 	}
 }
 
@@ -41,6 +44,20 @@ func (p *cannon) Process() (bool, error) {
 		max = n
 	}
 
+	if p.count == 2*bodyDelay {
+		p.viewBodyOfsX = 33
+		netconn.SendObject(field.Object{
+			ID:             p.bodyID,
+			Type:           field.ObjectTypeCannonBody,
+			HP:             0,
+			X:              p.x,
+			Y:              p.y,
+			UpdateBaseTime: p.timeInit,
+			ViewOfsX:       p.viewBodyOfsX,
+			ViewOfsY:       -12,
+		})
+	}
+
 	if p.count > max {
 		return true, nil
 	}
@@ -57,6 +74,8 @@ func (p *cannon) GetObjects() []field.Object {
 			X:              p.x,
 			Y:              p.y,
 			UpdateBaseTime: p.timeInit,
+			ViewOfsX:       90,
+			ViewOfsY:       -10,
 		},
 		// Body
 		{
@@ -66,6 +85,8 @@ func (p *cannon) GetObjects() []field.Object {
 			X:              p.x,
 			Y:              p.y,
 			UpdateBaseTime: p.timeInit,
+			ViewOfsX:       p.viewBodyOfsX,
+			ViewOfsY:       -12,
 		},
 	}
 
