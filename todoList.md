@@ -3,19 +3,17 @@
 ## ネット対戦未実装部分
 
 - 途中切断された場合の対処
-- 初回更新時まで敵キャラが表示されない
 - 自アクション時はローカルのカウントを使用する
   - これをやめて、
   - Count変数をObjectにもたせる
   - Count == 0 の場合時間から計算
   - それ以外はインクリメントしてそれを使用
-- チャージ中の画像が表示されない
-  - ローカルで表示する必要あり
 - ハイキャノンなどの別色
 - SendObject, RemoveObjectのエラーハンドリング
 - ViewOffset
   - reverse時に反転する
 - Hittable
+- Cannon Attackのinitial delay
 
 - 残作業
   - chip use
