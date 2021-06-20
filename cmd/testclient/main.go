@@ -1,23 +1,20 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 
-	routerapi "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/router"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
-	"google.golang.org/grpc"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/app"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 )
 
-var (
+const (
 	streamAddr = "localhost:80"
-	sessionID  = ""
-	clientID   = ""
 )
 
 func main() {
+	var clientID string
 	flag.StringVar(&clientID, "client", "", "client id")
 	flag.StringVar(&clientID, "c", "", "client id")
 	flag.Parse()
@@ -27,7 +24,7 @@ func main() {
 		return
 	}
 
-	if err := playerInit(); err != nil {
+	if err := app.PlayerInit(); err != nil {
 		log.Fatalf("Failed to init player info: %v", err)
 		return
 	}
@@ -35,71 +32,15 @@ func main() {
 	// run with debug client
 	clientKey := "testtest"
 
+	if err := netconn.Connect(streamAddr, clientID, clientKey); err != nil {
+		log.Fatalf("Failed to connect router: %v", err)
+		return
+	}
+	log.Println("Success to connect router")
+
 	exitErr := make(chan error)
-	go clientProc(exitErr, routerapi.ClientInfo{
-		ID:  clientID,
-		Key: clientKey,
-	})
-	go playerProc(exitErr)
+	go app.PlayerProc(exitErr)
 
 	err := <-exitErr
 	log.Fatalf("Run failed: %v", err)
-}
-
-func clientProc(exitErr chan error, clientInfo routerapi.ClientInfo) {
-	conn, err := grpc.Dial(streamAddr, grpc.WithInsecure())
-	if err != nil {
-		exitErr <- fmt.Errorf("failed to connect server: %w", err)
-		return
-	}
-	defer conn.Close()
-
-	client := pb.NewRouterClient(conn)
-	req := &pb.AuthRequest{
-		Id:      clientInfo.ID,
-		Key:     clientInfo.Key,
-		Version: "test",
-	}
-	dataStream, err := client.PublishData(context.TODO(), req)
-	if err != nil {
-		exitErr <- fmt.Errorf("failed to get data stream: %w", err)
-		return
-	}
-
-	// At first, receive authenticate response
-	authRes, err := dataStream.Recv()
-	if err != nil {
-		exitErr <- fmt.Errorf("failed to recv authenticate res: %w", err)
-		return
-	}
-	if authRes.GetType() != pb.Data_AUTHRESPONSE {
-		exitErr <- fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
-		return
-	}
-	if res := authRes.GetAuthRes(); !res.Success {
-		exitErr <- fmt.Errorf("failed to auth request: %s", res.ErrMsg)
-		return
-	}
-	sessionID = authRes.GetAuthRes().SessionID
-
-	// Recv data from stream
-	for {
-		data, err := dataStream.Recv()
-		if err != nil {
-			exitErr <- fmt.Errorf("failed to recv data: %w", err)
-			return
-		}
-
-		switch data.Type {
-		case pb.Data_UPDATESTATUS:
-			log.Printf("got status update data: %+v", data)
-			playerStatusUpdate(data.GetStatus())
-		case pb.Data_DATA:
-			// log.Printf("got data: %+v", data)
-			playerFieldUpdate(data.GetRawData())
-		default:
-			exitErr <- fmt.Errorf("invalid data type was received: %d", data.Type)
-			return
-		}
-	}
 }

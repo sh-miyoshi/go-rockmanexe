@@ -1,16 +1,15 @@
-package main
+package app
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"math/rand"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -21,21 +20,13 @@ const (
 )
 
 var (
-	playerStatus    = statusWaiting
-	playerActClient pb.RouterClient
-	fieldInfo       field.Info
-	playerObject    field.Object
+	playerStatus = statusWaiting
+	playerObject field.Object
 
 	actCount = 0
 )
 
-func playerInit() error {
-	conn, err := grpc.Dial(streamAddr, grpc.WithInsecure())
-	if err != nil {
-		return fmt.Errorf("grpc dial failed: %w", err)
-	}
-	playerActClient = pb.NewRouterClient(conn)
-
+func PlayerInit() error {
 	playerObject = field.Object{
 		ID:   uuid.New().String(),
 		Type: field.ObjectTypeRockmanStand,
@@ -44,15 +35,21 @@ func playerInit() error {
 		Y:    1,
 	}
 
-	if _, err := playerActClient.SendAction(context.TODO(), makePlayerObj()); err != nil {
-		return fmt.Errorf("failed to get data stream: %w", err)
-	}
-
 	return nil
 }
 
-func playerProc(exitErr chan error) {
+func PlayerProc(exitErr chan error) {
+	// set init data to router
+	netconn.SendObject(playerObject)
+
 	for {
+		status, err := netconn.GetStatus()
+		if err != nil {
+			exitErr <- fmt.Errorf("got status failed: %v", err)
+			return
+		}
+		playerStatusUpdate(status)
+
 		switch playerStatus {
 		case statusWaiting:
 			// nothing to do
@@ -63,17 +60,12 @@ func playerProc(exitErr chan error) {
 			playerObject.Chips = []int{1, 3} // debug
 
 			// Finished chip select, so send action
-			if _, err := playerActClient.SendAction(context.TODO(), makePlayerObj()); err != nil {
+			if err := netconn.SendObject(playerObject); err != nil {
 				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
 			}
 
-			if _, err := playerActClient.SendAction(context.TODO(), &pb.Action{
-				SessionID: sessionID,
-				ClientID:  clientID,
-				Type:      pb.Action_SENDSIGNAL,
-				Data:      &pb.Action_Signal{Signal: pb.Action_CHIPSEND},
-			}); err != nil {
+			if err := netconn.SendSignal(pb.Action_CHIPSEND); err != nil {
 				exitErr <- fmt.Errorf("failed to get data stream: %w", err)
 				return
 			}
@@ -91,46 +83,25 @@ func playerProc(exitErr chan error) {
 
 func playerStatusUpdate(status pb.Data_Status) {
 	switch status {
+	case pb.Data_CONNECTWAIT:
+		// nothing to do
 	case pb.Data_CHIPSELECTWAIT:
 		if playerStatus == statusWaiting || playerStatus == statusActing {
 			statusChange(statusChipSelect)
-			return
 		}
 	case pb.Data_ACTING:
-		if playerStatus == statusActing {
-			// nothing to do
-			return
-		}
-
 		if playerStatus == statusWaitActing {
 			statusChange(statusActing)
-			return
 		}
+	default:
+		msg := fmt.Sprintf("unexpected status: player status %d, got status %d", playerStatus, status)
+		panic(msg)
 	}
-
-	msg := fmt.Sprintf("unexpected status: player status %d, got status %d", playerStatus, status)
-	panic(msg)
-}
-
-func playerFieldUpdate(data []byte) {
-	field.Unmarshal(&fieldInfo, data)
-	// log.Printf("Update field data to %+v", fieldInfo)
 }
 
 func statusChange(next int) {
 	log.Printf("player status change from %d to %d", playerStatus, next)
 	playerStatus = next
-}
-
-func makePlayerObj() *pb.Action {
-	return &pb.Action{
-		SessionID: sessionID,
-		ClientID:  clientID,
-		Type:      pb.Action_UPDATEOBJECT,
-		Data: &pb.Action_ObjectInfo{
-			ObjectInfo: field.MarshalObject(playerObject),
-		},
-	}
 }
 
 func playerAct() {
@@ -145,7 +116,7 @@ func playerAct() {
 	if actCount%moveInterval == 0 {
 		playerObject.UpdateBaseTime = true
 		playerObject.Type = field.ObjectTypeRockmanMove
-		playerActClient.SendAction(context.TODO(), makePlayerObj())
+		netconn.SendObject(playerObject)
 		log.Printf("Set to move")
 	}
 
@@ -154,6 +125,6 @@ func playerAct() {
 		playerObject.Y = rand.Intn(3)
 		playerObject.Type = field.ObjectTypeRockmanStand
 		log.Printf("Move to (%d, %d)", playerObject.X, playerObject.Y)
-		playerActClient.SendAction(context.TODO(), makePlayerObj())
+		netconn.SendObject(playerObject)
 	}
 }
