@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	publishInterval = 100 * time.Millisecond // debug
+	publishInterval = 50 * time.Millisecond // debug
 )
 
 const (
@@ -26,7 +26,6 @@ type clientInfo struct {
 	active     bool
 	chipSent   bool
 	clientID   string
-	fieldInfo  *field.Info
 	dataStream pb.Router_PublishDataServer
 }
 
@@ -38,6 +37,7 @@ type session struct {
 	status     int
 	nextStatus int
 	fieldLock  sync.Mutex
+	fieldInfo  *field.Info
 	exitErr    chan error
 }
 
@@ -79,7 +79,9 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		nextStatus: -1,
 		started:    false,
 		exitErr:    exitErr,
+		fieldInfo:  &field.Info{},
 	}
+	v.fieldInfo.Init()
 
 	index := 0
 	if route.Clients[1] == clientID {
@@ -90,14 +92,9 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		active:     true,
 		clientID:   route.Clients[index],
 		dataStream: dataStream,
-		fieldInfo:  &field.Info{},
 	}
 	v.clients[1-index] = clientInfo{
-		clientID:  route.Clients[1-index],
-		fieldInfo: &field.Info{},
-	}
-	for _, c := range v.clients {
-		c.fieldInfo.Init()
+		clientID: route.Clients[1-index],
 	}
 
 	sessionList = append(sessionList, &v)
@@ -140,9 +137,7 @@ func ActionProc(action *pb.Action) error {
 					obj.UpdateBaseTime = false
 				}
 
-				for i := 0; i < 2; i++ {
-					updateObject(&s.clients[i].fieldInfo.Objects, obj, !obj.UpdateBaseTime)
-				}
+				updateObject(&s.fieldInfo.Objects, obj, !obj.UpdateBaseTime)
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
 				case pb.Action_CHIPSEND:
@@ -157,9 +152,7 @@ func ActionProc(action *pb.Action) error {
 				}
 			case pb.Action_REMOVEOBJECT:
 				id := action.GetObjectID()
-				for i := 0; i < 2; i++ {
-					removeObject(&s.clients[i].fieldInfo.Objects, id)
-				}
+				removeObject(&s.fieldInfo.Objects, id)
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
@@ -180,26 +173,7 @@ func (s *session) Process() {
 
 		// Field data send
 		if s.status == statusChipSelectWait || s.status == statusActing {
-			now := time.Now()
-
-			s.clients[0].fieldInfo.CurrentTime = now
-			d := &pb.Data{
-				Type: pb.Data_DATA,
-				Data: &pb.Data_RawData{
-					RawData: field.Marshal(s.clients[0].fieldInfo),
-				},
-			}
-			if err := s.clients[0].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[0].clientID, err)
-			}
-
-			s.clients[1].fieldInfo.CurrentTime = now
-			d.Data = &pb.Data_RawData{
-				RawData: field.Marshal(s.clients[1].fieldInfo),
-			}
-			if err := s.clients[1].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[1].clientID, err)
-			}
+			s.publishField()
 		}
 
 		switch s.status {
@@ -220,6 +194,9 @@ func (s *session) Process() {
 					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
 				}
 				s.status = statusChipSelectWait
+
+				// send initial data immediately
+				s.publishField()
 			}
 		case statusChipSelectWait:
 			if s.clients[0].chipSent && s.clients[1].chipSent {
@@ -277,6 +254,26 @@ func (s *session) Process() {
 			//   s.clients[0 and? 1].sendQueue <- statusGameEnd
 			//   remove(session)?
 		}
+	}
+}
+
+func (s *session) publishField() {
+	now := time.Now()
+
+	s.fieldInfo.CurrentTime = now
+	d := &pb.Data{
+		Type: pb.Data_DATA,
+		Data: &pb.Data_RawData{
+			RawData: field.Marshal(s.fieldInfo),
+		},
+	}
+
+	if err := s.clients[0].dataStream.Send(d); err != nil {
+		s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[0].clientID, err)
+	}
+
+	if err := s.clients[1].dataStream.Send(d); err != nil {
+		s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[1].clientID, err)
 	}
 }
 
