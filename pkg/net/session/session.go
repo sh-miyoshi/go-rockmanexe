@@ -141,7 +141,7 @@ func ActionProc(action *pb.Action) error {
 				}
 
 				for i := 0; i < 2; i++ {
-					updateObject(&s.clients[i].fieldInfo.Objects, obj)
+					updateObject(&s.clients[i].fieldInfo.Objects, obj, !obj.UpdateBaseTime)
 				}
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
@@ -280,9 +280,12 @@ func (s *session) Process() {
 	}
 }
 
-func updateObject(objs *[]field.Object, obj field.Object) {
+func updateObject(objs *[]field.Object, obj field.Object, isSetPrevBaseTime bool) {
 	for i, o := range *objs {
 		if o.ID == obj.ID {
+			if isSetPrevBaseTime {
+				obj.BaseTime = o.BaseTime
+			}
 			(*objs)[i] = obj
 			return
 		}
