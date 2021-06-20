@@ -13,7 +13,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
@@ -117,10 +116,7 @@ func (p *BattlePlayer) End() {
 	}
 }
 
-func (p *BattlePlayer) Draw() {
-	imgNo := p.Act.Count / field.ImageDelays[p.Object.Type]
-	netdraw.Object(p.Object.Type, imgNo, p.Object.X, p.Object.Y)
-
+func (p *BattlePlayer) DrawChargeShot() {
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0
 		if p.ChargeCount > battlecommon.ChargeTime {

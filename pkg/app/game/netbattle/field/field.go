@@ -65,16 +65,14 @@ func Draw(playerID string) {
 			reverse = true
 		}
 
-		if obj.ID != playerID {
-			tm := info.CurrentTime.Sub(obj.BaseTime)
-			cnt := tm * 60 / time.Second
-			imgNo := int(cnt) / field.ImageDelays[obj.Type]
-			draw.Object(obj.Type, imgNo, x, y, draw.Option{
-				Reverse:  reverse,
-				ViewOfsX: obj.ViewOfsX,
-				ViewOfsY: obj.ViewOfsY,
-			})
-		}
+		tm := info.CurrentTime.Sub(obj.BaseTime)
+		cnt := tm * 60 / time.Second
+		imgNo := int(cnt) / field.ImageDelays[obj.Type]
+		draw.Object(obj.Type, imgNo, x, y, draw.Option{
+			Reverse:  reverse,
+			ViewOfsX: obj.ViewOfsX,
+			ViewOfsY: obj.ViewOfsY,
+		})
 	}
 }
 
