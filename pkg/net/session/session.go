@@ -132,6 +132,7 @@ func ActionProc(action *pb.Action) error {
 				var obj field.Object
 				field.UnmarshalObject(&obj, action.GetObjectInfo())
 				s.updateObject(obj, action.ClientID)
+				logger.Debug("Updated objects: %+v", s.fieldInfo.Objects)
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
 				case pb.Action_CHIPSEND:
@@ -189,7 +190,7 @@ func (s *session) Process() {
 				if err := s.clients[1].dataStream.Send(d); err != nil {
 					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
 				}
-				s.status = statusChipSelectWait
+				s.changeStatus(statusChipSelectWait)
 
 				// send initial data immediately
 				s.publishField()
@@ -211,7 +212,7 @@ func (s *session) Process() {
 				}
 				s.clients[0].chipSent = false
 				s.clients[1].chipSent = false
-				s.status = statusActing
+				s.changeStatus(statusActing)
 			}
 
 		case statusActing:
@@ -238,7 +239,7 @@ func (s *session) Process() {
 					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
 				}
 
-				s.status = s.nextStatus
+				s.changeStatus(s.nextStatus)
 				s.nextStatus = -1
 			}
 
@@ -251,6 +252,11 @@ func (s *session) Process() {
 			//   remove(session)?
 		}
 	}
+}
+
+func (s *session) changeStatus(next int) {
+	logger.Info("Change state from %d to %d", s.status, next)
+	s.status = next
 }
 
 func (s *session) publishField() {
