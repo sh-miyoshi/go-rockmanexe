@@ -131,13 +131,7 @@ func ActionProc(action *pb.Action) error {
 
 				var obj field.Object
 				field.UnmarshalObject(&obj, action.GetObjectInfo())
-				obj.ClientID = action.ClientID
-				if obj.UpdateBaseTime {
-					obj.BaseTime = time.Now()
-					obj.UpdateBaseTime = false
-				}
-
-				updateObject(&s.fieldInfo.Objects, obj, !obj.UpdateBaseTime)
+				s.updateObject(obj, action.ClientID)
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
 				case pb.Action_CHIPSEND:
@@ -152,7 +146,9 @@ func ActionProc(action *pb.Action) error {
 				}
 			case pb.Action_REMOVEOBJECT:
 				id := action.GetObjectID()
-				removeObject(&s.fieldInfo.Objects, id)
+				s.fieldLock.Lock()
+				s.removeObject(id)
+				s.fieldLock.Unlock()
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
@@ -277,28 +273,34 @@ func (s *session) publishField() {
 	}
 }
 
-func updateObject(objs *[]field.Object, obj field.Object, isSetPrevBaseTime bool) {
-	for i, o := range *objs {
+func (s *session) updateObject(obj field.Object, clientID string) {
+	obj.ClientID = clientID
+	if obj.UpdateBaseTime {
+		obj.BaseTime = time.Now()
+	}
+
+	for i, o := range s.fieldInfo.Objects {
 		if o.ID == obj.ID {
-			if isSetPrevBaseTime {
+			if !obj.UpdateBaseTime {
 				obj.BaseTime = o.BaseTime
 			}
-			(*objs)[i] = obj
+			obj.UpdateBaseTime = false
+			s.fieldInfo.Objects[i] = obj
 			return
 		}
 	}
 
-	*objs = append(*objs, obj)
+	s.fieldInfo.Objects = append(s.fieldInfo.Objects, obj)
 }
 
-func removeObject(objs *[]field.Object, objID string) {
+func (s *session) removeObject(objID string) {
 	newObjs := []field.Object{}
-	for _, obj := range *objs {
+	for _, obj := range s.fieldInfo.Objects {
 		if obj.ID != objID {
 			newObjs = append(newObjs, obj)
 		}
 	}
-	*objs = newObjs
+	s.fieldInfo.Objects = newObjs
 }
 
 func logAction(action *pb.Action) {
