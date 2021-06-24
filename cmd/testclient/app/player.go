@@ -8,7 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -77,7 +79,8 @@ func (p *player) Action() {
 		case 1: // Move
 			p.Act.Set(battlecommon.PlayerActMove, nil)
 		case 2: // Cannon
-			// TODO
+			p.Act.Set(battlecommon.PlayerActCannon, nil)
+			skill.Add(appskill.SkillCannon)
 		}
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
@@ -55,6 +56,7 @@ func Process(exitErr chan error) {
 			// 相手がselect完了になるのを待つ
 		case statusActing:
 			playerInst.Action()
+			skill.Process()
 		}
 		time.Sleep(16 * time.Millisecond)
 	}
