@@ -24,7 +24,7 @@ func main() {
 		return
 	}
 
-	if err := app.PlayerInit(); err != nil {
+	if err := app.Init(); err != nil {
 		log.Fatalf("Failed to init player info: %v", err)
 		return
 	}
@@ -39,7 +39,7 @@ func main() {
 	log.Println("Success to connect router")
 
 	exitErr := make(chan error)
-	go app.PlayerProc(exitErr)
+	go app.Process(exitErr)
 
 	err := <-exitErr
 	log.Fatalf("Run failed: %v", err)
