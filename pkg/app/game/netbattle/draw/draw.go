@@ -198,9 +198,9 @@ func Object(objType int, imgNo int, x, y int, opts ...Option) {
 		if opts[0].Reverse {
 			flag := int32(dxlib.TRUE)
 			dxopts.ReverseXFlag = &flag
+			opts[0].ViewOfsX *= -1
 		}
 
-		// TODO reverse
 		vx += opts[0].ViewOfsX
 		vy += opts[0].ViewOfsY
 	}
