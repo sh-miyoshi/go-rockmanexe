@@ -52,10 +52,8 @@ func (a *Act) Process() bool {
 			a.Object.X = rand.Intn(3)
 			a.Object.Y = rand.Intn(3)
 		}
-	case battlecommon.PlayerActBuster:
-		// TODO add buster damage
-	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
-		// No special action
+	case battlecommon.PlayerActCannon:
+		num = 6
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}
