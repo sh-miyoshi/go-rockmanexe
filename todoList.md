@@ -10,10 +10,9 @@
   - それ以外はインクリメントしてそれを使用
 - ハイキャノンなどの別色
 - SendObject, RemoveObjectのエラーハンドリング
-- ViewOffset
-  - reverse時に反転する
 - Hittable
 - Cannon Attackのinitial delay
+- HPの表示
 
 - 残作業
   - chip use
