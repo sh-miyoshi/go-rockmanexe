@@ -9,6 +9,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
+type Argument struct {
+	X int
+	Y int
+}
+
 type Skill interface {
 	Process() (bool, error)
 	GetObjects() []field.Object
@@ -33,16 +38,12 @@ func Process() error {
 	return nil
 }
 
-func Add(skillID int) string {
+func Add(skillID int, arg Argument) string {
 	id := uuid.New().String()
-
-	// debug
-	x := 1
-	y := 1
 
 	switch skillID {
 	case skill.SkillCannon:
-		skills[id] = newCannon(x, y)
+		skills[id] = newCannon(arg.X, arg.Y)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}

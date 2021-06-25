@@ -210,8 +210,10 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			// TODO
-			netskill.Add(sid)
+			netskill.Add(sid, netskill.Argument{
+				X: p.Object.X,
+				Y: p.Object.Y,
+			})
 
 			p.Object.Chips = p.Object.Chips[1:]
 			return false, nil

@@ -21,7 +21,7 @@ func newCannon(x, y int) *cannon {
 		atkID:        uuid.New().String(),
 		bodyID:       uuid.New().String(),
 		x:            x,
-		y:            x,
+		y:            y,
 		timeInit:     true,
 		viewBodyOfsX: 48,
 	}

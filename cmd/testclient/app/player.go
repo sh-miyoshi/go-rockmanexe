@@ -80,7 +80,10 @@ func (p *player) Action() {
 			p.Act.Set(battlecommon.PlayerActMove, nil)
 		case 2: // Cannon
 			p.Act.Set(battlecommon.PlayerActCannon, nil)
-			skill.Add(appskill.SkillCannon)
+			skill.Add(appskill.SkillCannon, skill.Argument{
+				X: p.Object.X,
+				Y: p.Object.Y,
+			})
 		}
 	}
 }
