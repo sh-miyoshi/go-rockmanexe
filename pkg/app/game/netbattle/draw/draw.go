@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
@@ -16,6 +17,7 @@ type Option struct {
 	Speed     int
 	ViewOfsX  int32
 	ViewOfsY  int32
+	ViewHP    int
 }
 
 var (
@@ -206,6 +208,14 @@ func Object(objType int, imgNo int, x, y int, opts ...Option) {
 	}
 
 	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE, dxopts)
+
+	// Show HP
+	if len(opts) > 0 && opts[0].ViewHP > 0 {
+		appdraw.Number(vx, vy+40, int32(opts[0].ViewHP), appdraw.NumberOption{
+			Color:    appdraw.NumberColorWhiteSmall,
+			Centered: true,
+		})
+	}
 }
 
 func GetImageInfo(objType int) (imageNum, delay int) {

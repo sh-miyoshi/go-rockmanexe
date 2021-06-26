@@ -12,7 +12,6 @@
 - SendObject, RemoveObjectのエラーハンドリング
 - Hittable
 - Cannon Attackのinitial delay
-- HPの表示
 
 - 残作業
   - chip use
