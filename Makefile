@@ -12,5 +12,10 @@ res:
 	git add .\data\images.dxa .\data\sounds.dxa
 	git commit -m "update resources"
 router:
-	go build .\cmd\router
+	go build ./cmd/router
 	router.exe --config cmd/router/config.yaml
+protoc:
+	cd pkg/net/routerpb && \
+	protoc --go_out=plugins=grpc:. *.proto && \
+	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\routerpb\router.pb.go . && \
+	rd /s /q github.com
