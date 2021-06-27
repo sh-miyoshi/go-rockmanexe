@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -29,6 +30,8 @@ func init() {
 }
 
 func main() {
+	fpsMgr := fps.Fps{TargetFPS: 60}
+
 	var confFile string
 	flag.StringVar(&confFile, "config", common.DefaultConfigFile, "file path of config")
 	flag.Parse()
@@ -95,6 +98,10 @@ MAIN:
 		}
 		count++
 
+		fpsMgr.Wait()
+		if config.Get().Debug.Enabled {
+			dxlib.DrawFormatString(common.ScreenX-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+		}
 	}
 
 	if exitErr != nil {
