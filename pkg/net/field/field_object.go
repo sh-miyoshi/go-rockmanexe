@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/gob"
 	"time"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 )
 
 const (
@@ -52,6 +54,8 @@ type Object struct {
 	UpdateBaseTime bool
 	ViewOfsX       int32
 	ViewOfsY       int32
+	DamageChecked  bool
+	HitDamage      damage.Damage
 	// TODO ...
 }
 
