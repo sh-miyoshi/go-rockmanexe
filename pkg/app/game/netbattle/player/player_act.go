@@ -9,6 +9,7 @@ import (
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
@@ -52,7 +53,27 @@ func (a *Act) Process() bool {
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
 	case battlecommon.PlayerActBuster:
-		// TODO add buster damage
+		// Add buster damage
+		if a.Count == 1 {
+			dm := []damage.Damage{}
+			y := a.Object.Y
+			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
+				dm = append(dm, damage.Damage{
+					PosX:       x,
+					PosY:       y,
+					Power:      1, // debug
+					TTL:        1,
+					TargetType: damage.TargetEnemy,
+				})
+
+				// break if object exists
+				pn := netfield.GetPanelInfo(x, y)
+				if pn.ObjectID != "" {
+					break
+				}
+			}
+			netconn.SendDamages(dm)
+		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
 		// No special action
 	default:

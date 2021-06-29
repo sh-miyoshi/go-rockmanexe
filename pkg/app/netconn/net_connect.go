@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
@@ -129,6 +130,30 @@ func RemoveObject(objID string) error {
 
 	if !res.Success {
 		return fmt.Errorf("remove object got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
+func SendDamages(dm []damage.Damage) error {
+	c := config.Get()
+
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  c.Net.ClientID,
+		Type:      pb.Action_NEWDAMAGE,
+		Data: &pb.Action_DamageInfo{
+			DamageInfo: damage.Marshal(dm),
+		},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("add damages failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("add damages got unexpected response: %s", res.ErrMsg)
 	}
 
 	return nil

@@ -5,6 +5,11 @@ import (
 	"encoding/gob"
 )
 
+const (
+	TargetPlayer int = 1 << iota
+	TargetEnemy
+)
+
 type Damage struct {
 	PosX       int
 	PosY       int
