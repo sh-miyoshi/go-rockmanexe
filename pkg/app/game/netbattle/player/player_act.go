@@ -63,7 +63,7 @@ func (a *Act) Process() bool {
 					PosY:       y,
 					Power:      1, // debug
 					TTL:        1,
-					TargetType: damage.TargetEnemy,
+					TargetType: damage.TargetOtherClient,
 				})
 
 				// break if object exists
