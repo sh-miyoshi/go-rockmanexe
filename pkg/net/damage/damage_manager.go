@@ -1,11 +1,6 @@
 package damage
 
-import (
-	"sync"
-)
-
 type Manager struct {
-	dmLock  sync.Mutex
 	damages []Damage
 }
 
@@ -19,8 +14,6 @@ func (m *Manager) Hit(objX, objY int) *Damage {
 }
 
 func (m *Manager) Add(dm []Damage) {
-	m.dmLock.Lock()
-	defer m.dmLock.Unlock()
 	m.damages = append(m.damages, dm...)
 }
 

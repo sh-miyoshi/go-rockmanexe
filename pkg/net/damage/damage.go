@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	TargetPlayer int = 1 << iota
-	TargetEnemy
+	TargetOwn int = iota
+	TargetOtherClient
 )
 
 type Damage struct {
