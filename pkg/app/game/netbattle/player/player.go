@@ -47,10 +47,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 
 	res := BattlePlayer{
 		Object: field.Object{
-			ID: uuid.New().String(),
-			HP: int(plyr.HP),
-			X:  1,
-			Y:  1,
+			ID:            uuid.New().String(),
+			HP:            int(plyr.HP),
+			X:             1,
+			Y:             1,
+			DamageChecked: true,
 		},
 		HPMax:     plyr.HP,
 		ShotPower: plyr.ShotPower,

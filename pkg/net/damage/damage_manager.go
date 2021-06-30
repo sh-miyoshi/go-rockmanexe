@@ -24,9 +24,13 @@ func (m *Manager) Add(dm []Damage) {
 	m.damages = append(m.damages, dm...)
 }
 
-/*
-	TODO
-	MgrProcは16msごとに処理をしたい
-	Sessionごとに必要
-	field.ObjectsはSessionに持っている
-*/
+func (m *Manager) Update() {
+	newDamages := []Damage{}
+	for _, dm := range m.damages {
+		dm.TTL--
+		if dm.TTL > 0 {
+			newDamages = append(newDamages, dm)
+		}
+	}
+	m.damages = newDamages
+}

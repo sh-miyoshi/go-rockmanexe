@@ -184,6 +184,7 @@ func (s *session) Process() {
 					s.fieldLock.Unlock()
 				}
 			}
+			s.dmMgr.Update()
 
 			fpsMgr.Wait()
 		}
@@ -358,6 +359,10 @@ func logAction(action *pb.Action) {
 		msg += fmt.Sprintf("Signal: %s", action.GetSignal().String())
 	case pb.Action_REMOVEOBJECT:
 		msg += "TargetObject: " + action.GetObjectID()
+	case pb.Action_NEWDAMAGE:
+		var dm []damage.Damage
+		damage.Unmarshal(&dm, action.GetDamageInfo())
+		msg += fmt.Sprintf("Damages: %+v", dm)
 	}
 
 	msg += " }}"
