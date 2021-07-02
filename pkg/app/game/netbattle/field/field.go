@@ -44,14 +44,16 @@ func Draw(playerID string) {
 
 	clientID := config.Get().Net.ClientID
 
-	// TODO update
-	for x := 0; x < 3; x++ {
-		for y := 0; y < 3; y++ {
+	for x := 0; x < field.SizeX; x++ {
+		for y := 0; y < field.SizeY; y++ {
 			vx := int32(appfield.PanelSizeX * x)
 			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
-			dxlib.DrawGraph(vx, vy, imgPanel[0], dxlib.TRUE)
-			vx = int32(appfield.PanelSizeX * (x + 3))
-			dxlib.DrawGraph(vx, vy, imgPanel[1], dxlib.TRUE)
+			pn := imgPanel[0]
+			if info.Panels[x][y].OwnerClientID != clientID {
+				pn = imgPanel[1]
+			}
+
+			dxlib.DrawGraph(vx, vy, pn, dxlib.TRUE)
 		}
 	}
 
@@ -84,34 +86,21 @@ func GetPanelInfo(x, y int) appfield.PanelInfo {
 	info, _ := netconn.GetFieldInfo()
 	clientID := config.Get().Net.ClientID
 
-	// TODO update
-	if x < 3 {
-		// player panel
-		id := ""
-		for _, obj := range info.Objects {
-			if obj.ClientID == clientID && obj.X == x && obj.Y == y {
-				id = obj.ID
-				break
-			}
+	id := ""
+	for _, obj := range info.Objects {
+		if obj.ClientID == clientID && obj.X == x && obj.Y == y {
+			id = obj.ID
+			break
 		}
+	}
 
-		return appfield.PanelInfo{
-			Type:     appfield.PanelTypePlayer,
-			ObjectID: id,
-		}
-	} else {
-		// enemy panel
-		id := ""
-		for _, obj := range info.Objects {
-			if obj.ClientID != clientID && obj.X == x-3 && obj.Y == y {
-				id = obj.ID
-				break
-			}
-		}
+	pnType := appfield.PanelTypePlayer
+	if info.Panels[x][y].OwnerClientID != clientID {
+		pnType = appfield.PanelTypeEnemy
+	}
 
-		return appfield.PanelInfo{
-			Type:     appfield.PanelTypeEnemy,
-			ObjectID: id,
-		}
+	return appfield.PanelInfo{
+		Type:     pnType,
+		ObjectID: id,
 	}
 }

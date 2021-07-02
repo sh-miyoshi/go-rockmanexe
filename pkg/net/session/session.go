@@ -95,12 +95,10 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		dataStream: dataStream,
 		fieldInfo:  &field.Info{},
 	}
-	v.clients[index].fieldInfo.Init()
 	v.clients[1-index] = clientInfo{
 		clientID:  route.Clients[1-index],
 		fieldInfo: &field.Info{},
 	}
-	v.clients[1-index].fieldInfo.Init()
 
 	sessionList = append(sessionList, &v)
 
@@ -174,6 +172,10 @@ func ActionProc(action *pb.Action) error {
 func (s *session) Process() {
 	logger.Info("start new session for route %s", s.routeID)
 	logger.Debug("client info: %+v", s.clients)
+
+	// init info
+	s.clients[0].fieldInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
+	s.clients[1].fieldInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
 
 	// run process per frame
 	go func() {

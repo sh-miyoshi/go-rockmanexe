@@ -14,8 +14,7 @@ const (
 type Info struct {
 	CurrentTime time.Time
 	Objects     []Object
-
-	// TODO PanelInfo
+	Panels      [SizeX][SizeY]PanelInfo
 }
 
 func Marshal(fieldInfo *Info) []byte {
@@ -29,5 +28,14 @@ func Unmarshal(fieldInfo *Info, data []byte) {
 	_ = gob.NewDecoder(buf).Decode(fieldInfo)
 }
 
-func (i *Info) Init() {
+func (i *Info) InitPanel(myClientID, enemyClientID string) {
+	for x := 0; x < SizeX; x++ {
+		id := myClientID
+		if x > 2 {
+			id = enemyClientID
+		}
+		for y := 0; y < SizeY; y++ {
+			i.Panels[x][y].OwnerClientID = id
+		}
+	}
 }
