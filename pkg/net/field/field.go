@@ -6,9 +6,16 @@ import (
 	"time"
 )
 
+const (
+	SizeX = 6
+	SizeY = 3
+)
+
 type Info struct {
 	CurrentTime time.Time
 	Objects     []Object
+
+	// TODO PanelInfo
 }
 
 func Marshal(fieldInfo *Info) []byte {

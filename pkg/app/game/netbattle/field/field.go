@@ -44,6 +44,7 @@ func Draw(playerID string) {
 
 	clientID := config.Get().Net.ClientID
 
+	// TODO update
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
 			vx := int32(appfield.PanelSizeX * x)
@@ -55,13 +56,10 @@ func Draw(playerID string) {
 	}
 
 	for _, obj := range info.Objects {
-		x := obj.X
-		y := obj.Y
 		reverse := false
 
 		if obj.ClientID != clientID {
 			// enemy object
-			x += 3
 			reverse = true
 		}
 
@@ -73,7 +71,7 @@ func Draw(playerID string) {
 		tm := info.CurrentTime.Sub(obj.BaseTime)
 		cnt := tm * 60 / time.Second
 		imgNo := int(cnt) / field.ImageDelays[obj.Type]
-		draw.Object(obj.Type, imgNo, x, y, draw.Option{
+		draw.Object(obj.Type, imgNo, obj.X, obj.Y, draw.Option{
 			Reverse:  reverse,
 			ViewOfsX: obj.ViewOfsX,
 			ViewOfsY: obj.ViewOfsY,
@@ -86,6 +84,7 @@ func GetPanelInfo(x, y int) appfield.PanelInfo {
 	info, _ := netconn.GetFieldInfo()
 	clientID := config.Get().Net.ClientID
 
+	// TODO update
 	if x < 3 {
 		// player panel
 		id := ""

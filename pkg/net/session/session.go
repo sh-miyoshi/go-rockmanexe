@@ -28,6 +28,7 @@ type clientInfo struct {
 	active     bool
 	chipSent   bool
 	clientID   string
+	fieldInfo  *field.Info
 	dataStream pb.Router_PublishDataServer
 }
 
@@ -39,7 +40,6 @@ type session struct {
 	status     int
 	nextStatus int
 	fieldLock  sync.Mutex
-	fieldInfo  *field.Info
 	dmMgr      damage.Manager
 	exitErr    chan error
 }
@@ -82,9 +82,7 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		nextStatus: -1,
 		started:    false,
 		exitErr:    exitErr,
-		fieldInfo:  &field.Info{},
 	}
-	v.fieldInfo.Init()
 
 	index := 0
 	if route.Clients[1] == clientID {
@@ -95,10 +93,14 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		active:     true,
 		clientID:   route.Clients[index],
 		dataStream: dataStream,
+		fieldInfo:  &field.Info{},
 	}
+	v.clients[index].fieldInfo.Init()
 	v.clients[1-index] = clientInfo{
-		clientID: route.Clients[1-index],
+		clientID:  route.Clients[1-index],
+		fieldInfo: &field.Info{},
 	}
+	v.clients[1-index].fieldInfo.Init()
 
 	sessionList = append(sessionList, &v)
 
@@ -134,7 +136,9 @@ func ActionProc(action *pb.Action) error {
 				s.fieldLock.Lock()
 				s.updateObject(obj, action.ClientID)
 				s.fieldLock.Unlock()
-				logger.Debug("Updated objects: %+v", s.fieldInfo.Objects)
+				for _, c := range s.clients {
+					logger.Debug("Updated objects for Client %s: %+v", c.clientID, c.fieldInfo.Objects)
+				}
 			case pb.Action_SENDSIGNAL:
 				switch action.GetSignal() {
 				case pb.Action_CHIPSEND:
@@ -176,14 +180,15 @@ func (s *session) Process() {
 		fpsMgr := fps.Fps{TargetFPS: 60}
 		for {
 			// damage process
-			for i, obj := range s.fieldInfo.Objects {
-				if dm := s.dmMgr.Hit(obj.X, obj.Y); dm != nil {
-					s.fieldLock.Lock()
-					s.fieldInfo.Objects[i].DamageChecked = false
-					s.fieldInfo.Objects[i].HitDamage = *dm
-					s.fieldLock.Unlock()
-				}
-			}
+			// TODO
+			// for i, obj := range s.fieldInfo.Objects {
+			// 	if dm := s.dmMgr.Hit(obj.X, obj.Y); dm != nil {
+			// 		s.fieldLock.Lock()
+			// 		s.fieldInfo.Objects[i].DamageChecked = false
+			// 		s.fieldInfo.Objects[i].HitDamage = *dm
+			// 		s.fieldLock.Unlock()
+			// 	}
+			// }
 			s.dmMgr.Update()
 
 			fpsMgr.Wait()
@@ -292,20 +297,18 @@ func (s *session) changeStatus(next int) {
 func (s *session) publishField() {
 	now := time.Now()
 
-	s.fieldInfo.CurrentTime = now
-	d := &pb.Data{
-		Type: pb.Data_DATA,
-		Data: &pb.Data_RawData{
-			RawData: field.Marshal(s.fieldInfo),
-		},
-	}
+	for i := 0; i < len(s.clients); i++ {
+		s.clients[i].fieldInfo.CurrentTime = now
+		d := &pb.Data{
+			Type: pb.Data_DATA,
+			Data: &pb.Data_RawData{
+				RawData: field.Marshal(s.clients[i].fieldInfo),
+			},
+		}
 
-	if err := s.clients[0].dataStream.Send(d); err != nil {
-		s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[0].clientID, err)
-	}
-
-	if err := s.clients[1].dataStream.Send(d); err != nil {
-		s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[1].clientID, err)
+		if err := s.clients[i].dataStream.Send(d); err != nil {
+			s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[i].clientID, err)
+		}
 	}
 }
 
@@ -315,7 +318,19 @@ func (s *session) updateObject(obj field.Object, clientID string) {
 		obj.BaseTime = time.Now()
 	}
 
-	for i, o := range s.fieldInfo.Objects {
+	cindex := -1
+	for i, c := range s.clients {
+		if c.clientID == clientID {
+			cindex = i
+			break
+		}
+	}
+	if cindex == -1 {
+		panic(fmt.Sprintf("no such client %s", clientID))
+	}
+
+	updated := false
+	for i, o := range s.clients[cindex].fieldInfo.Objects {
 		if o.ID == obj.ID {
 			if !obj.DamageChecked {
 				obj.HitDamage = o.HitDamage
@@ -324,22 +339,48 @@ func (s *session) updateObject(obj field.Object, clientID string) {
 				obj.BaseTime = o.BaseTime
 			}
 			obj.UpdateBaseTime = false
-			s.fieldInfo.Objects[i] = obj
-			return
+			s.clients[cindex].fieldInfo.Objects[i] = obj
+			updated = true
+			break
 		}
 	}
 
-	s.fieldInfo.Objects = append(s.fieldInfo.Objects, obj)
+	if !updated {
+		s.clients[cindex].fieldInfo.Objects = append(s.clients[cindex].fieldInfo.Objects, obj)
+	}
+
+	updated = false
+	obj.X = field.SizeX - obj.X - 1
+	for i, o := range s.clients[1-cindex].fieldInfo.Objects {
+		if o.ID == obj.ID {
+			if !obj.DamageChecked {
+				obj.HitDamage = o.HitDamage
+			}
+			if !obj.UpdateBaseTime {
+				obj.BaseTime = o.BaseTime
+			}
+			obj.UpdateBaseTime = false
+			s.clients[1-cindex].fieldInfo.Objects[i] = obj
+			updated = true
+			break
+		}
+	}
+
+	if !updated {
+		s.clients[1-cindex].fieldInfo.Objects = append(s.clients[1-cindex].fieldInfo.Objects, obj)
+	}
 }
 
 func (s *session) removeObject(objID string) {
-	newObjs := []field.Object{}
-	for _, obj := range s.fieldInfo.Objects {
-		if obj.ID != objID {
-			newObjs = append(newObjs, obj)
+	for i, c := range s.clients {
+		newObjs := []field.Object{}
+		for _, obj := range c.fieldInfo.Objects {
+			if obj.ID != objID {
+				newObjs = append(newObjs, obj)
+			}
 		}
+		s.clients[i].fieldInfo.Objects = newObjs
 	}
-	s.fieldInfo.Objects = newObjs
 }
 
 func logAction(action *pb.Action) {
