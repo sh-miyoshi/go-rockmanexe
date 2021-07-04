@@ -4,17 +4,14 @@ import (
 	"bytes"
 	"encoding/gob"
 	"time"
-)
 
-const (
-	SizeX = 6
-	SizeY = 3
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
 
 type Info struct {
 	CurrentTime time.Time
 	Objects     []Object
-	Panels      [SizeX][SizeY]PanelInfo
+	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 }
 
 func Marshal(fieldInfo *Info) []byte {
@@ -29,12 +26,12 @@ func Unmarshal(fieldInfo *Info, data []byte) {
 }
 
 func (i *Info) InitPanel(myClientID, enemyClientID string) {
-	for x := 0; x < SizeX; x++ {
+	for x := 0; x < config.FieldNumX; x++ {
 		id := myClientID
 		if x > 2 {
 			id = enemyClientID
 		}
-		for y := 0; y < SizeY; y++ {
+		for y := 0; y < config.FieldNumY; y++ {
 			i.Panels[x][y].OwnerClientID = id
 		}
 	}

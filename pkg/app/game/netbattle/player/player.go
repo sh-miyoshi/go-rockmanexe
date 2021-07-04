@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -44,6 +45,7 @@ var (
 // New ...
 func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize net battle player data")
+	cfg := config.Get()
 
 	res := BattlePlayer{
 		Object: field.Object{
@@ -52,6 +54,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			X:             1,
 			Y:             1,
 			DamageChecked: true,
+			ClientID:      cfg.Net.ClientID,
 		},
 		HPMax:     plyr.HP,
 		ShotPower: plyr.ShotPower,

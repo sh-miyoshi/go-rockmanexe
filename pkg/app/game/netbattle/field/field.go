@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
@@ -44,8 +45,8 @@ func Draw(playerID string) {
 
 	clientID := config.Get().Net.ClientID
 
-	for x := 0; x < field.SizeX; x++ {
-		for y := 0; y < field.SizeY; y++ {
+	for x := 0; x < netconfig.FieldNumX; x++ {
+		for y := 0; y < netconfig.FieldNumY; y++ {
 			vx := int32(appfield.PanelSizeX * x)
 			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			pn := imgPanel[0]

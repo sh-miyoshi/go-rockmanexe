@@ -59,9 +59,10 @@ func (a *Act) Process() bool {
 			y := a.Object.Y
 			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
 				dm = append(dm, damage.Damage{
+					ClientID:   a.Object.ClientID,
 					PosX:       x,
 					PosY:       y,
-					Power:      1, // debug
+					Power:      1, // TODO change power
 					TTL:        1,
 					TargetType: damage.TargetOtherClient,
 				})

@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
@@ -182,15 +183,17 @@ func (s *session) Process() {
 		fpsMgr := fps.Fps{TargetFPS: 60}
 		for {
 			// damage process
-			// TODO
-			// for i, obj := range s.fieldInfo.Objects {
-			// 	if dm := s.dmMgr.Hit(obj.X, obj.Y); dm != nil {
-			// 		s.fieldLock.Lock()
-			// 		s.fieldInfo.Objects[i].DamageChecked = false
-			// 		s.fieldInfo.Objects[i].HitDamage = *dm
-			// 		s.fieldLock.Unlock()
-			// 	}
-			// }
+			for i, c := range s.clients {
+				for j, obj := range c.fieldInfo.Objects {
+					if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
+						s.fieldLock.Lock()
+						s.clients[i].fieldInfo.Objects[j].DamageChecked = false
+						s.clients[i].fieldInfo.Objects[j].HitDamage = *dm
+						s.fieldLock.Unlock()
+						logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+					}
+				}
+			}
 			s.dmMgr.Update()
 
 			fpsMgr.Wait()
@@ -352,7 +355,7 @@ func (s *session) updateObject(obj field.Object, clientID string) {
 	}
 
 	updated = false
-	obj.X = field.SizeX - obj.X - 1
+	obj.X = config.FieldNumX - obj.X - 1
 	for i, o := range s.clients[1-cindex].fieldInfo.Objects {
 		if o.ID == obj.ID {
 			if !obj.DamageChecked {

@@ -11,6 +11,7 @@ const (
 )
 
 type Damage struct {
+	ClientID   string
 	PosX       int
 	PosY       int
 	Power      int
