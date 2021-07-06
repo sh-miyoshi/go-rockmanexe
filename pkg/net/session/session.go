@@ -158,7 +158,9 @@ func ActionProc(action *pb.Action) error {
 			case pb.Action_NEWDAMAGE:
 				var damages []damage.Damage
 				damage.Unmarshal(&damages, action.GetDamageInfo())
-				s.dmMgr.Add(damages)
+				if err := s.dmMgr.Add(damages); err != nil {
+					return fmt.Errorf("failed to add damages: %w", err)
+				}
 				logger.Debug("Added damges: %+v", damages)
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)

@@ -3,6 +3,7 @@ package player
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -59,6 +60,7 @@ func (a *Act) Process() bool {
 			y := a.Object.Y
 			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
 				dm = append(dm, damage.Damage{
+					ID:         uuid.New().String(),
 					ClientID:   a.Object.ClientID,
 					PosX:       x,
 					PosY:       y,

@@ -1,6 +1,10 @@
 package damage
 
-import "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+import (
+	"fmt"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+)
 
 type Manager struct {
 	damages []Damage
@@ -27,8 +31,14 @@ func (m *Manager) Hit(ownerClientID string, objClientID string, objX, objY int) 
 	return nil
 }
 
-func (m *Manager) Add(dm []Damage) {
-	m.damages = append(m.damages, dm...)
+func (m *Manager) Add(dm []Damage) error {
+	for _, d := range dm {
+		if err := d.Validate(); err != nil {
+			return fmt.Errorf("damage validation failed: %w", err)
+		}
+		m.damages = append(m.damages, d)
+	}
+	return nil
 }
 
 func (m *Manager) Update() {

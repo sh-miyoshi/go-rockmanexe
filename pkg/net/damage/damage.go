@@ -3,6 +3,7 @@ package damage
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 )
 
 const (
@@ -11,6 +12,7 @@ const (
 )
 
 type Damage struct {
+	ID         string
 	ClientID   string
 	PosX       int
 	PosY       int
@@ -28,4 +30,20 @@ func Marshal(dm []Damage) []byte {
 func Unmarshal(dm *[]Damage, data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(dm)
+}
+
+func (d *Damage) Validate() error {
+	if d.ID == "" {
+		return errors.New("id is empty")
+	}
+
+	if d.ClientID == "" {
+		return errors.New("client id is empty")
+	}
+
+	if d.TTL <= 0 {
+		return errors.New("TTL must be positive number")
+	}
+
+	return nil
 }
