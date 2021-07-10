@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/app"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
@@ -15,13 +16,24 @@ const (
 
 func main() {
 	var clientID string
+	var logfile string
 	flag.StringVar(&clientID, "client", "", "client id")
 	flag.StringVar(&clientID, "c", "", "client id")
+	flag.StringVar(&logfile, "log", "", "log file")
 	flag.Parse()
 
 	if clientID == "" {
 		fmt.Println("Please set client ID")
 		return
+	}
+
+	if logfile != "" {
+		file, err := os.Create(logfile)
+		if err != nil {
+			fmt.Printf("Failed to init logger: %v", err)
+			return
+		}
+		log.SetOutput(file)
 	}
 
 	if err := app.Init(); err != nil {
