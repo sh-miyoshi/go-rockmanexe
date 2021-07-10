@@ -12,6 +12,9 @@
 - SendObject, RemoveObjectのエラーハンドリング
 - Hittable
 - Cannon Attackのinitial delay
+- 敵攻撃時に音が鳴らない
+- ダメージ時にのけぞりかの判定
+- ダメージ時のHit Effectの登録
 
 - 残作業
   - chip use
