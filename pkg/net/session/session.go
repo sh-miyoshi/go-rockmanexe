@@ -184,19 +184,21 @@ func (s *session) Process() {
 	go func() {
 		fpsMgr := fps.Fps{TargetFPS: 60}
 		for {
-			// damage process
-			for i, c := range s.clients {
-				for j, obj := range c.fieldInfo.Objects {
-					if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
-						s.fieldLock.Lock()
-						s.clients[i].fieldInfo.Objects[j].DamageChecked = false
-						s.clients[i].fieldInfo.Objects[j].HitDamage = *dm
-						s.fieldLock.Unlock()
-						logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+			if s.status == statusActing {
+				// damage process
+				for i, c := range s.clients {
+					for j, obj := range c.fieldInfo.Objects {
+						if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
+							s.fieldLock.Lock()
+							s.clients[i].fieldInfo.Objects[j].DamageChecked = false
+							s.clients[i].fieldInfo.Objects[j].HitDamage = *dm
+							s.fieldLock.Unlock()
+							logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+						}
 					}
 				}
+				s.dmMgr.Update()
 			}
-			s.dmMgr.Update()
 
 			fpsMgr.Wait()
 		}

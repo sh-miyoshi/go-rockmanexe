@@ -16,23 +16,26 @@ import (
 )
 
 type player struct {
-	Object field.Object
-	Count  int
-	ActNo  int
-	Act    *Act
+	Object     field.Object
+	Count      int
+	ActNo      int
+	Act        *Act
+	HitDamages map[string]bool // TODO
 }
 
 func newPlayer() *player {
 	res := &player{
 		Object: field.Object{
-			ID:   uuid.New().String(),
-			Type: field.ObjectTypeRockmanStand,
-			HP:   150,
-			X:    0,
-			Y:    1,
+			ID:            uuid.New().String(),
+			Type:          field.ObjectTypeRockmanStand,
+			HP:            150,
+			X:             1,
+			Y:             1,
+			DamageChecked: true,
 		},
-		Count: 0,
-		ActNo: 0,
+		Count:      0,
+		ActNo:      0,
+		HitDamages: make(map[string]bool),
 	}
 	res.Act = NewAct(&res.Object)
 
@@ -53,15 +56,41 @@ func (p *player) ChipSelect() error {
 		return fmt.Errorf("failed to get data stream: %w", err)
 	}
 
+	// TODO cleanup hit damages?
+
 	return nil
 }
 
 func (p *player) Action() {
+	// Damage process
+	finfo, _ := netconn.GetFieldInfo()
+	for _, obj := range finfo.Objects {
+		if obj.ID == p.Object.ID {
+			if !obj.DamageChecked {
+				if _, exists := p.HitDamages[obj.HitDamage.ID]; exists {
+					break
+				} else {
+					p.HitDamages[obj.HitDamage.ID] = true
+				}
+
+				p.Object.DamageChecked = true
+				p.Object.HP -= obj.HitDamage.Power
+				if p.Object.HP < 0 {
+					p.Object.HP = 0
+				}
+				// TODO Add damage animation
+				netconn.SendObject(p.Object)
+				return
+			}
+			break
+		}
+	}
+
 	if p.Act.Process() {
 		return
 	}
 
-	actTable := []int{0, 1, 1, 2}
+	actTable := []int{0}
 	// Wait, Move, Cannon
 	actInterval := []int{60, 30, 120}
 
