@@ -73,6 +73,8 @@ func (p *player) Action() {
 					p.HitDamages[obj.HitDamage.ID] = true
 				}
 
+				log.Printf("got damage: %+v", obj.HitDamage)
+
 				p.Object.DamageChecked = true
 				p.Object.HP -= obj.HitDamage.Power
 				if p.Object.HP < 0 {
@@ -80,6 +82,19 @@ func (p *player) Action() {
 				}
 				// TODO Add damage animation
 				netconn.SendObject(p.Object)
+
+				if obj.HitDamage.HitEffectType > 0 {
+					log.Printf("add hit damage info: %d", obj.HitDamage.HitEffectType)
+					eff := field.Object{
+						ID:   uuid.New().String(),
+						Type: obj.HitDamage.HitEffectType,
+						HP:   0,
+						X:    p.Object.X,
+						Y:    p.Object.Y,
+					}
+					netconn.SendObject(eff)
+				}
+
 				return
 			}
 			break

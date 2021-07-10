@@ -32,6 +32,14 @@ const (
 	ObjectTypeWideShot
 	ObjectTypeShockWave
 
+	ObjectTypeHitSmallEffect
+	ObjectTypeHitBigEffect
+	ObjectTypeExplodeEffect
+	ObjectTypeCannonHitEffect
+	ObjectTypeSpreadHitEffect
+	ObjectTypeVulcanHit1Effect
+	ObjectTypeVulcanHit2Effect
+
 	ObjectTypeMax
 )
 
@@ -39,6 +47,7 @@ var (
 	ImageDelays = [ObjectTypeMax]int{
 		1, 1, 2, 2, 6, 3, 4, 1, 4, // Rockman
 		2, 6, 3, 4, 1, 2, 2, 3, 6, 4, 5, // Skills
+		4, 6, 16, 7, 6, 4, 4, // Effects
 	}
 )
 

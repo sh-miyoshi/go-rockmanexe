@@ -12,13 +12,16 @@ const (
 )
 
 type Damage struct {
-	ID         string
-	ClientID   string
-	PosX       int
-	PosY       int
-	Power      int
-	TTL        int
-	TargetType int
+	ID            string
+	ClientID      string
+	PosX          int
+	PosY          int
+	Power         int
+	TTL           int
+	TargetType    int
+	HitEffectType int
+	BigDamage     bool
+	ShowHitArea   bool
 }
 
 func Marshal(dm []Damage) []byte {
