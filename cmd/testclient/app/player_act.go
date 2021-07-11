@@ -2,10 +2,13 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
@@ -54,6 +57,29 @@ func (a *Act) Process() bool {
 		}
 	case battlecommon.PlayerActCannon:
 		num = 6
+	case battlecommon.PlayerActBuster:
+		num = 6
+
+		if a.Count == 1 {
+			dm := []damage.Damage{}
+			y := a.Object.Y
+			for x := a.Object.X + 1; x < 6; x++ {
+				dm = append(dm, damage.Damage{
+					ID:            uuid.New().String(),
+					ClientID:      a.Object.ClientID,
+					PosX:          x,
+					PosY:          y,
+					Power:         1,
+					TTL:           1,
+					TargetType:    damage.TargetOtherClient,
+					HitEffectType: field.ObjectTypeHitSmallEffect,
+				})
+			}
+			if err := netconn.SendDamages(dm); err != nil {
+				panic(fmt.Sprintf("Failed to add damage: %v", err))
+			}
+			log.Printf("Add buster damage: %+v", dm)
+		}
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}

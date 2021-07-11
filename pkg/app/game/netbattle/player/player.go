@@ -14,6 +14,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
@@ -33,6 +34,7 @@ type BattlePlayer struct {
 	ShotPower   uint
 	ChipFolder  []player.ChipInfo
 	Act         *Act
+	HitDamages  map[string]bool
 }
 
 var (
@@ -56,8 +58,9 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			DamageChecked: true,
 			ClientID:      cfg.Net.ClientID,
 		},
-		HPMax:     plyr.HP,
-		ShotPower: plyr.ShotPower,
+		HPMax:      plyr.HP,
+		ShotPower:  plyr.ShotPower,
+		HitDamages: make(map[string]bool),
 	}
 	res.Act = NewAct(&res.Object)
 
@@ -164,6 +167,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
+	if p.damageProc() {
+		return false, nil
+	}
+
 	if p.Act.Process() {
 		return false, nil
 	}
@@ -256,4 +263,46 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	for _, s := range selected {
 		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
 	}
+}
+
+func (p *BattlePlayer) damageProc() bool {
+	finfo, _ := netconn.GetFieldInfo()
+	for _, obj := range finfo.Objects {
+		if obj.ID == p.Object.ID {
+			if !obj.DamageChecked {
+				if _, exists := p.HitDamages[obj.HitDamage.ID]; exists {
+					break
+				} else {
+					p.HitDamages[obj.HitDamage.ID] = true
+				}
+
+				logger.Debug("Got damage: %+v", obj.HitDamage)
+
+				p.Object.DamageChecked = true
+				p.Object.HP -= obj.HitDamage.Power
+				if p.Object.HP < 0 {
+					p.Object.HP = 0
+				}
+				// TODO Add damage animation
+				netconn.SendObject(p.Object)
+
+				if obj.HitDamage.HitEffectType > 0 {
+					num, delay := netdraw.GetImageInfo(obj.HitDamage.HitEffectType)
+					eff := field.Object{
+						ID:   uuid.New().String(),
+						Type: obj.HitDamage.HitEffectType,
+						HP:   0,
+						X:    p.Object.X,
+						Y:    p.Object.Y,
+						TTL:  num * delay,
+					}
+					netconn.SendObject(eff)
+				}
+
+				return true
+			}
+			break
+		}
+	}
+	return false
 }

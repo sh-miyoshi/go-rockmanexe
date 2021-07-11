@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	publishInterval = 150 * time.Millisecond // debug
+	publishInterval = 100 * time.Millisecond // debug
 )
 
 const (

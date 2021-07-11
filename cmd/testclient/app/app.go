@@ -22,8 +22,8 @@ var (
 	playerInst *player
 )
 
-func Init() error {
-	playerInst = newPlayer()
+func Init(clientID string) error {
+	playerInst = newPlayer(clientID)
 
 	return nil
 }

@@ -20,13 +20,14 @@ type player struct {
 	Count      int
 	ActNo      int
 	Act        *Act
-	HitDamages map[string]bool // TODO
+	HitDamages map[string]bool
 }
 
-func newPlayer() *player {
+func newPlayer(clientID string) *player {
 	res := &player{
 		Object: field.Object{
 			ID:            uuid.New().String(),
+			ClientID:      clientID,
 			Type:          field.ObjectTypeRockmanStand,
 			HP:            150,
 			X:             1,
@@ -62,7 +63,44 @@ func (p *player) ChipSelect() error {
 }
 
 func (p *player) Action() {
-	// Damage process
+	if p.damageProc() {
+		return
+	}
+
+	if p.Act.Process() {
+		return
+	}
+
+	actTable := []int{0, 3, 1}
+	// Wait, Move, Cannon
+	actInterval := []int{60, 30, 120, 60}
+
+	current := actTable[p.ActNo]
+
+	p.Count++
+	if p.Count == actInterval[current] {
+		p.Count = 0
+		p.ActNo = (p.ActNo + 1) % len(actTable)
+
+		// Add action
+		log.Printf("Set action %d", current)
+		p.Object.UpdateBaseTime = true
+		switch current {
+		case 1: // Move
+			p.Act.Set(battlecommon.PlayerActMove, nil)
+		case 2: // Cannon
+			p.Act.Set(battlecommon.PlayerActCannon, nil)
+			skill.Add(appskill.SkillCannon, skill.Argument{
+				X: p.Object.X,
+				Y: p.Object.Y,
+			})
+		case 3:
+			p.Act.Set(battlecommon.PlayerActBuster, nil)
+		}
+	}
+}
+
+func (p *player) damageProc() bool {
 	finfo, _ := netconn.GetFieldInfo()
 	for _, obj := range finfo.Objects {
 		if obj.ID == p.Object.ID {
@@ -104,39 +142,11 @@ func (p *player) Action() {
 					netconn.SendObject(eff)
 				}
 
-				return
+				return true
 			}
 			break
 		}
 	}
 
-	if p.Act.Process() {
-		return
-	}
-
-	actTable := []int{0}
-	// Wait, Move, Cannon
-	actInterval := []int{60, 30, 120}
-
-	current := actTable[p.ActNo]
-
-	p.Count++
-	if p.Count == actInterval[current] {
-		p.Count = 0
-		p.ActNo = (p.ActNo + 1) % len(actTable)
-
-		// Add action
-		log.Printf("Set action %d", current)
-		p.Object.UpdateBaseTime = true
-		switch current {
-		case 1: // Move
-			p.Act.Set(battlecommon.PlayerActMove, nil)
-		case 2: // Cannon
-			p.Act.Set(battlecommon.PlayerActCannon, nil)
-			skill.Add(appskill.SkillCannon, skill.Argument{
-				X: p.Object.X,
-				Y: p.Object.Y,
-			})
-		}
-	}
+	return false
 }

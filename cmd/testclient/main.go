@@ -36,7 +36,7 @@ func main() {
 		log.SetOutput(file)
 	}
 
-	if err := app.Init(); err != nil {
+	if err := app.Init(clientID); err != nil {
 		log.Fatalf("Failed to init player info: %v", err)
 		return
 	}

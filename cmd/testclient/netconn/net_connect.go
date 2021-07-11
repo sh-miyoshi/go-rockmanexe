@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
@@ -102,6 +103,28 @@ func SendSignal(signal pb.Action_SignalType) error {
 
 	if !res.Success {
 		return fmt.Errorf("send signal got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
+func SendDamages(dm []damage.Damage) error {
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  clientID,
+		Type:      pb.Action_NEWDAMAGE,
+		Data: &pb.Action_DamageInfo{
+			DamageInfo: damage.Marshal(dm),
+		},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("add damages failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("add damages got unexpected response: %s", res.ErrMsg)
 	}
 
 	return nil
