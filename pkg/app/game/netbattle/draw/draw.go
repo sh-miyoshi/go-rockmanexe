@@ -174,6 +174,48 @@ func Init() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
+	fname = common.ImagePath + "battle/effect/hit_small.png"
+	images[field.ObjectTypeHitSmallEffect] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[field.ObjectTypeHitSmallEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/hit_big.png"
+	images[field.ObjectTypeHitBigEffect] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[field.ObjectTypeHitBigEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/explode.png"
+	images[field.ObjectTypeExplodeEffect] = make([]int32, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[field.ObjectTypeExplodeEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/cannon_hit.png"
+	images[field.ObjectTypeCannonHitEffect] = make([]int32, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[field.ObjectTypeCannonHitEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/spread_hit.png"
+	images[field.ObjectTypeSpreadHitEffect] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[field.ObjectTypeSpreadHitEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	tmp := make([]int32, 8)
+	fname = common.ImagePath + "battle/effect/vulcan_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	images[field.ObjectTypeVulcanHit1Effect] = []int32{}
+	images[field.ObjectTypeVulcanHit2Effect] = []int32{}
+	for i := 0; i < 4; i++ {
+		images[field.ObjectTypeVulcanHit1Effect] = append(images[field.ObjectTypeVulcanHit1Effect], tmp[i])
+		images[field.ObjectTypeVulcanHit2Effect] = append(images[field.ObjectTypeVulcanHit2Effect], tmp[i+4])
+	}
+
 	return nil
 }
 
