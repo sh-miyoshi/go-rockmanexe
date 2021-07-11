@@ -47,7 +47,7 @@ var (
 	ImageDelays = [ObjectTypeMax]int{
 		1, 1, 2, 2, 6, 3, 4, 1, 4, // Rockman
 		2, 6, 3, 4, 1, 2, 2, 3, 6, 4, 5, // Skills
-		4, 6, 16, 7, 6, 4, 4, // Effects
+		1, 1, 2, 1, 1, 1, 1, 1, // Effects
 	}
 )
 
