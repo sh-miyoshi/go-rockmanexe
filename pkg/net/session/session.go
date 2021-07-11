@@ -210,6 +210,13 @@ func (s *session) frameProc(exitErr chan error) {
 				}
 			}
 			s.dmMgr.Update()
+
+			// object process
+			s.fieldLock.Lock()
+			for i := 0; i < len(s.clients); i++ {
+				s.clients[i].fieldInfo.UpdateObjects()
+			}
+			s.fieldLock.Unlock()
 		}
 
 		fpsMgr.Wait()
@@ -330,6 +337,10 @@ func (s *session) publishField() {
 		if err := s.clients[i].dataStream.Send(d); err != nil {
 			s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[i].clientID, err)
 		}
+
+		s.fieldLock.Lock()
+		s.clients[i].fieldInfo.MarkAsSend()
+		s.fieldLock.Unlock()
 	}
 }
 

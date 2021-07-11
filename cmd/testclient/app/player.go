@@ -85,12 +85,21 @@ func (p *player) Action() {
 
 				if obj.HitDamage.HitEffectType > 0 {
 					log.Printf("add hit damage info: %d", obj.HitDamage.HitEffectType)
+					ttl := 0 // TTL = len(images) * delay
+					switch obj.HitDamage.HitEffectType {
+					case field.ObjectTypeHitSmallEffect:
+						ttl = 4
+					default:
+						panic("not implemented yet")
+					}
+
 					eff := field.Object{
 						ID:   uuid.New().String(),
 						Type: obj.HitDamage.HitEffectType,
 						HP:   0,
 						X:    p.Object.X,
 						Y:    p.Object.Y,
+						TTL:  ttl,
 					}
 					netconn.SendObject(eff)
 				}

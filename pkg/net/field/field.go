@@ -36,3 +36,26 @@ func (i *Info) InitPanel(myClientID, enemyClientID string) {
 		}
 	}
 }
+
+func (i *Info) UpdateObjects() {
+	newObjs := []Object{}
+	for _, obj := range i.Objects {
+		if obj.TTL > 0 && obj.sendMark {
+			// calculate TTL
+			obj.TTL--
+			if obj.TTL == 0 {
+				// remove object
+				continue
+			}
+		}
+		newObjs = append(newObjs, obj)
+	}
+
+	i.Objects = newObjs
+}
+
+func (i *Info) MarkAsSend() {
+	for j := 0; j < len(i.Objects); j++ {
+		i.Objects[j].sendMark = true
+	}
+}

@@ -65,7 +65,9 @@ type Object struct {
 	ViewOfsY       int32
 	DamageChecked  bool
 	HitDamage      damage.Damage
-	// TODO ...
+	TTL            int
+
+	sendMark bool
 }
 
 func MarshalObject(obj Object) []byte {
