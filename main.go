@@ -51,6 +51,8 @@ func main() {
 		common.EncryptKey = encKey
 	}
 
+	dxlib.SetDoubleStartValidFlag(dxlib.TRUE)
+
 	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
 		common.SoundPath = "data/private/sounds/"
