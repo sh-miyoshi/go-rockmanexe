@@ -95,4 +95,27 @@ func setAPI(r *mux.Router) {
 	r.HandleFunc(basePath+"/route", routerapi.RouteGetV1).Methods("GET")
 	r.HandleFunc(basePath+"/route", routerapi.RouteAddV1).Methods("POST")
 	r.HandleFunc(basePath+"/route/{routeID}", routerapi.RouteDeleteV1).Methods("DELETE")
+
+	r.Use(authMiddleware)
+}
+
+func authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Authenticate request
+		authUser := os.Getenv("ROCKMAN_API_AUTH_USER")
+		authPassword := os.Getenv("ROCKMAN_API_AUTH_PASSWORD")
+		if len(authUser) > 0 && len(authPassword) > 0 {
+			reqUser, reqPw, ok := r.BasicAuth()
+			if !ok {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+			if authUser != reqUser || authPassword != reqPw {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
