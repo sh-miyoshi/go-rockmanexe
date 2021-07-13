@@ -84,6 +84,11 @@ func main() {
 	}
 
 	logger.Info("Successfully init application.")
+
+	if config.Get().Debug.InitSleepSec > 0 {
+		tm := time.Duration(config.Get().Debug.InitSleepSec) * time.Second
+		time.Sleep(tm)
+	}
 MAIN:
 	for exitErr == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()

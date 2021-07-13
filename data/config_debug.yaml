@@ -6,6 +6,7 @@ debug:
   skip_menu: false
   skip_battle_opening: true
   start_continue: false
+  init_sleep_sec: 0
 bgm:
   disabled: true
 net:
