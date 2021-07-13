@@ -14,15 +14,12 @@
 - Cannon Attackのinitial delay
 - 敵攻撃時に音が鳴らない
 - ダメージ時にのけぞりかの判定
-- ダメージ時のHit Effectの登録
+- Hit DamageのView Offset処理
 
 - 残作業
   - chip use
     - add skill object
     - player action
-  - damage
-    - ダメージの登録
-    - ダメージ判定
   - 勝利・敗北処理
   - マッチプロセス作成
   - サーバー構築
