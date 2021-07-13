@@ -11,4 +11,4 @@ bgm:
 net:
   client_id: "tester1"
   client_key: "testtest"
-  addr: "localhost:80"
+  addr: "localhost:16283"

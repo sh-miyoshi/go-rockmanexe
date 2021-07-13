@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	streamAddr = "localhost:80"
+	streamAddr = "localhost:16283"
 )
 
 func main() {
