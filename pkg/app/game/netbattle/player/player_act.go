@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/google/uuid"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -68,6 +69,8 @@ func (a *Act) Process() bool {
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: field.ObjectTypeHitSmallEffect,
+					ViewOfsX:      int32(rand.Intn(2*5) - 5),
+					ViewOfsY:      int32(rand.Intn(2*5) - 5),
 				})
 
 				// break if object exists

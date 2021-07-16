@@ -9,7 +9,7 @@
 - Cannon Attackのinitial delay
 - 敵攻撃時に音が鳴らない
 - ダメージ時にのけぞりかの判定
-- Hit DamageのView Offset処理
+  - ダメージアニメーション
 
 - 残作業
   - chip use

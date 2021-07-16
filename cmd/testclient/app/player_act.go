@@ -73,6 +73,8 @@ func (a *Act) Process() bool {
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: field.ObjectTypeHitSmallEffect,
+					ViewOfsX:      int32(rand.Intn(2*5) - 5),
+					ViewOfsY:      int32(rand.Intn(2*5) - 5),
 				})
 			}
 			if err := netconn.SendDamages(dm); err != nil {

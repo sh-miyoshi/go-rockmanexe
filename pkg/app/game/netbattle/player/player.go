@@ -289,12 +289,14 @@ func (p *BattlePlayer) damageProc() bool {
 				if obj.HitDamage.HitEffectType > 0 {
 					num, delay := netdraw.GetImageInfo(obj.HitDamage.HitEffectType)
 					eff := field.Object{
-						ID:   uuid.New().String(),
-						Type: obj.HitDamage.HitEffectType,
-						HP:   0,
-						X:    p.Object.X,
-						Y:    p.Object.Y,
-						TTL:  num * delay,
+						ID:       uuid.New().String(),
+						Type:     obj.HitDamage.HitEffectType,
+						HP:       0,
+						X:        p.Object.X,
+						Y:        p.Object.Y,
+						TTL:      num * delay,
+						ViewOfsX: obj.HitDamage.ViewOfsX,
+						ViewOfsY: obj.HitDamage.ViewOfsY,
 					}
 					netconn.SendObject(eff)
 				}
