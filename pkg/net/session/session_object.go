@@ -8,6 +8,7 @@ import (
 )
 
 func updateObject(objects *[]field.Object, obj field.Object, clientID string, myObject bool) {
+	obj.Count = 0
 	obj.ClientID = clientID
 	if obj.UpdateBaseTime {
 		obj.BaseTime = time.Now()

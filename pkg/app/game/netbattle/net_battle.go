@@ -85,6 +85,7 @@ func Process() error {
 	if err != nil {
 		return fmt.Errorf("get connect status error: %w", err)
 	}
+	netconn.UpdateObjectsCount()
 
 	switch battleState {
 	case stateWaiting:

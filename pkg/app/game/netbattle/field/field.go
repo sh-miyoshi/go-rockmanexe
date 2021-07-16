@@ -2,7 +2,6 @@ package field
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -71,9 +70,7 @@ func Draw(playerID string) {
 			viewHP = obj.HP
 		}
 
-		tm := info.CurrentTime.Sub(obj.BaseTime)
-		cnt := tm * 60 / time.Second
-		imgNo := int(cnt) / field.ImageDelays[obj.Type]
+		imgNo := obj.Count / field.ImageDelays[obj.Type]
 		draw.Object(obj.Type, imgNo, obj.X, obj.Y, draw.Option{
 			Reverse:  reverse,
 			ViewOfsX: obj.ViewOfsX,

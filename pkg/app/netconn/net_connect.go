@@ -3,6 +3,7 @@ package netconn
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -190,4 +191,15 @@ func GetStatus() (pb.Data_Status, error) {
 
 func GetFieldInfo() (*field.Info, error) {
 	return &fieldInfo, exitErr
+}
+
+func UpdateObjectsCount() {
+	for i, obj := range fieldInfo.Objects {
+		if obj.Count == 0 {
+			tm := fieldInfo.CurrentTime.Sub(obj.BaseTime)
+			fieldInfo.Objects[i].Count = int(tm * 60 / time.Second)
+		} else {
+			fieldInfo.Objects[i].Count++
+		}
+	}
 }
