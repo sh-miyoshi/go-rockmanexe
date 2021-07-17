@@ -6,7 +6,6 @@
 - ハイキャノンなどの別色
 - SendObject, RemoveObjectのエラーハンドリング
 - Hittable
-- Cannon Attackのinitial delay
 - 敵攻撃時に音が鳴らない
 - ダメージ時にのけぞりかの判定
   - ダメージアニメーション
