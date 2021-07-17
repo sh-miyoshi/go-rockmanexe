@@ -71,7 +71,7 @@ func (p *player) Action() {
 		return
 	}
 
-	actTable := []int{0, 1, 1, 1, 3, 3, 3}
+	actTable := []int{0}
 	// Wait, Move, Cannon, Buster
 	actInterval := []int{60, 60, 120, 60}
 
@@ -127,19 +127,22 @@ func (p *player) damageProc() bool {
 					switch obj.HitDamage.HitEffectType {
 					case field.ObjectTypeHitSmallEffect:
 						ttl = 4
+					case field.ObjectTypeCannonHitEffect:
+						ttl = 7
 					default:
 						panic("not implemented yet")
 					}
 
 					eff := field.Object{
-						ID:       uuid.New().String(),
-						Type:     obj.HitDamage.HitEffectType,
-						HP:       0,
-						X:        p.Object.X,
-						Y:        p.Object.Y,
-						TTL:      ttl,
-						ViewOfsX: obj.HitDamage.ViewOfsX,
-						ViewOfsY: obj.HitDamage.ViewOfsY,
+						ID:             uuid.New().String(),
+						Type:           obj.HitDamage.HitEffectType,
+						HP:             0,
+						X:              p.Object.X,
+						Y:              p.Object.Y,
+						TTL:            ttl,
+						ViewOfsX:       obj.HitDamage.ViewOfsX,
+						ViewOfsY:       obj.HitDamage.ViewOfsY,
+						UpdateBaseTime: true,
 					}
 					netconn.SendObject(eff)
 				}
