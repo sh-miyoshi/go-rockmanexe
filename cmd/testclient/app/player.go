@@ -11,12 +11,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
 type player struct {
-	Object     field.Object
+	Object     object.Object
 	Count      int
 	ActNo      int
 	Act        *Act
@@ -25,10 +25,10 @@ type player struct {
 
 func newPlayer(clientID string) *player {
 	res := &player{
-		Object: field.Object{
+		Object: object.Object{
 			ID:            uuid.New().String(),
 			ClientID:      clientID,
-			Type:          field.ObjectTypeRockmanStand,
+			Type:          object.TypeRockmanStand,
 			HP:            150,
 			X:             1,
 			Y:             1,
@@ -71,7 +71,7 @@ func (p *player) Action() {
 		return
 	}
 
-	actTable := []int{0}
+	actTable := []int{0, 2, 2, 2, 2}
 	// Wait, Move, Cannon, Buster
 	actInterval := []int{60, 60, 120, 60}
 
@@ -125,15 +125,15 @@ func (p *player) damageProc() bool {
 					log.Printf("add hit damage info: %d", obj.HitDamage.HitEffectType)
 					ttl := 0 // TTL = len(images) * delay
 					switch obj.HitDamage.HitEffectType {
-					case field.ObjectTypeHitSmallEffect:
+					case object.TypeHitSmallEffect:
 						ttl = 4
-					case field.ObjectTypeCannonHitEffect:
+					case object.TypeCannonHitEffect:
 						ttl = 7
 					default:
 						panic("not implemented yet")
 					}
 
-					eff := field.Object{
+					eff := object.Object{
 						ID:             uuid.New().String(),
 						Type:           obj.HitDamage.HitEffectType,
 						HP:             0,

@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type Argument struct {
@@ -16,7 +16,7 @@ type Argument struct {
 
 type Skill interface {
 	Process() (bool, error)
-	GetObjects() []field.Object
+	GetObjects() []object.Object
 }
 
 var (

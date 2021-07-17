@@ -22,12 +22,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
 type BattlePlayer struct {
-	Object      field.Object
+	Object      object.Object
 	HPMax       uint
 	ChargeCount uint
 	GaugeCount  uint
@@ -50,7 +50,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	cfg := config.Get()
 
 	res := BattlePlayer{
-		Object: field.Object{
+		Object: object.Object{
 			ID:            uuid.New().String(),
 			HP:            int(plyr.HP),
 			X:             1,
@@ -288,7 +288,7 @@ func (p *BattlePlayer) damageProc() bool {
 
 				if obj.HitDamage.HitEffectType > 0 {
 					num, delay := netdraw.GetImageInfo(obj.HitDamage.HitEffectType)
-					eff := field.Object{
+					eff := object.Object{
 						ID:       uuid.New().String(),
 						Type:     obj.HitDamage.HitEffectType,
 						HP:       0,

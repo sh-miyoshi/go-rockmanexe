@@ -12,7 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type ActOption struct {
@@ -27,10 +27,10 @@ type Act struct {
 	Count int
 	Opts  ActOption
 
-	Object *field.Object
+	Object *object.Object
 }
 
-func NewAct(obj *field.Object) *Act {
+func NewAct(obj *object.Object) *Act {
 	res := &Act{
 		Object: obj,
 	}
@@ -68,7 +68,7 @@ func (a *Act) Process() bool {
 					Power:         1, // TODO change power
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
-					HitEffectType: field.ObjectTypeHitSmallEffect,
+					HitEffectType: object.TypeHitSmallEffect,
 					ViewOfsX:      int32(rand.Intn(2*5) - 5),
 					ViewOfsY:      int32(rand.Intn(2*5) - 5),
 				})
@@ -93,7 +93,7 @@ func (a *Act) Process() bool {
 	if a.Count > num*delay {
 		// Reset params
 		a.Init()
-		a.Object.Type = field.ObjectTypeRockmanStand
+		a.Object.Type = object.TypeRockmanStand
 		netconn.SendObject(*a.Object)
 		return false // finished
 	}
@@ -114,21 +114,21 @@ func (a *Act) Set(actType int, opts *ActOption) {
 func getObjType(actType int) int {
 	switch actType {
 	case battlecommon.PlayerActMove:
-		return field.ObjectTypeRockmanMove
+		return object.TypeRockmanMove
 	case battlecommon.PlayerActBuster:
-		return field.ObjectTypeRockmanBuster
+		return object.TypeRockmanBuster
 	case battlecommon.PlayerActShot:
-		return field.ObjectTypeRockmanShot
+		return object.TypeRockmanShot
 	case battlecommon.PlayerActBomb:
-		return field.ObjectTypeRockmanBomb
+		return object.TypeRockmanBomb
 	case battlecommon.PlayerActCannon:
-		return field.ObjectTypeRockmanCannon
+		return object.TypeRockmanCannon
 	case battlecommon.PlayerActDamage:
-		return field.ObjectTypeRockmanDamage
+		return object.TypeRockmanDamage
 	case battlecommon.PlayerActPick:
-		return field.ObjectTypeRockmanPick
+		return object.TypeRockmanPick
 	case battlecommon.PlayerActSword:
-		return field.ObjectTypeRockmanSword
+		return object.TypeRockmanSword
 	}
 
 	panic(fmt.Sprintf("Undefined object type for act %d", actType))

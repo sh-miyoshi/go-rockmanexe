@@ -3,7 +3,7 @@ package skill
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type cannon struct {
@@ -34,8 +34,8 @@ func (p *cannon) Process() (bool, error) {
 	// 	// TODO add damage
 	// }
 
-	bodyDelay := field.ImageDelays[field.ObjectTypeCannonBody]
-	atkDelay := field.ImageDelays[field.ObjectTypeCannonAtk]
+	bodyDelay := object.ImageDelays[object.TypeCannonBody]
+	atkDelay := object.ImageDelays[object.TypeCannonAtk]
 	bodyNum := 4
 	atkNum := 8
 	max := bodyNum * bodyDelay
@@ -45,9 +45,9 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 2*bodyDelay {
 		p.viewBodyOfsX = 33
-		netconn.SendObject(field.Object{
+		netconn.SendObject(object.Object{
 			ID:             p.bodyID,
-			Type:           field.ObjectTypeCannonBody,
+			Type:           object.TypeCannonBody,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,
@@ -63,12 +63,12 @@ func (p *cannon) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *cannon) GetObjects() []field.Object {
-	res := []field.Object{
+func (p *cannon) GetObjects() []object.Object {
+	res := []object.Object{
 		// Attack
 		{
 			ID:             p.atkID,
-			Type:           field.ObjectTypeCannonAtk,
+			Type:           object.TypeCannonAtk,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,
@@ -79,7 +79,7 @@ func (p *cannon) GetObjects() []field.Object {
 		// Body
 		{
 			ID:             p.bodyID,
-			Type:           field.ObjectTypeCannonBody,
+			Type:           object.TypeCannonBody,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,

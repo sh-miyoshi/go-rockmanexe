@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
 )
@@ -66,13 +67,13 @@ func Disconnect() {
 	}
 }
 
-func SendObject(obj field.Object) error {
+func SendObject(obj object.Object) error {
 	req := &pb.Action{
 		SessionID: sessionID,
 		ClientID:  clientID,
 		Type:      pb.Action_UPDATEOBJECT,
 		Data: &pb.Action_ObjectInfo{
-			ObjectInfo: field.MarshalObject(obj),
+			ObjectInfo: object.Marshal(obj),
 		},
 	}
 

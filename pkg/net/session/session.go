@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
@@ -132,8 +133,8 @@ func ActionProc(action *pb.Action) error {
 		if s.sessionID == action.SessionID {
 			switch action.Type {
 			case pb.Action_UPDATEOBJECT:
-				var obj field.Object
-				field.UnmarshalObject(&obj, action.GetObjectInfo())
+				var obj object.Object
+				object.Unmarshal(&obj, action.GetObjectInfo())
 				s.fieldLock.Lock()
 				for i := 0; i < len(s.clients); i++ {
 					myObj := s.clients[i].clientID == action.ClientID
@@ -169,6 +170,8 @@ func ActionProc(action *pb.Action) error {
 					return fmt.Errorf("failed to add damages: %w", err)
 				}
 				logger.Debug("Added damges: %+v", damages)
+			case pb.Action_NEWEFFECT:
+
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
@@ -354,8 +357,8 @@ func logAction(action *pb.Action) {
 
 	switch action.Type {
 	case pb.Action_UPDATEOBJECT:
-		var obj field.Object
-		field.UnmarshalObject(&obj, action.GetObjectInfo())
+		var obj object.Object
+		object.Unmarshal(&obj, action.GetObjectInfo())
 		msg += fmt.Sprintf("Objects: %+v", obj)
 	case pb.Action_SENDSIGNAL:
 		msg += fmt.Sprintf("Signal: %s", action.GetSignal().String())

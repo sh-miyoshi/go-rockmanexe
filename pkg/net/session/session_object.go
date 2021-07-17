@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
-func updateObject(objects *[]field.Object, obj field.Object, clientID string, myObject bool) {
+func updateObject(objects *[]object.Object, obj object.Object, clientID string, myObject bool) {
 	obj.Count = 0
 	obj.ClientID = clientID
 	if obj.UpdateBaseTime {
@@ -39,8 +39,8 @@ func updateObject(objects *[]field.Object, obj field.Object, clientID string, my
 	}
 }
 
-func removeObject(objects *[]field.Object, objID string) {
-	newObjs := []field.Object{}
+func removeObject(objects *[]object.Object, objID string) {
+	newObjs := []object.Object{}
 	for _, obj := range *objects {
 		if obj.ID != objID {
 			newObjs = append(newObjs, obj)

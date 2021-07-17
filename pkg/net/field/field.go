@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type Info struct {
 	CurrentTime time.Time
-	Objects     []Object
+	Objects     []object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 }
 
@@ -38,9 +39,9 @@ func (i *Info) InitPanel(myClientID, enemyClientID string) {
 }
 
 func (i *Info) UpdateObjects() {
-	newObjs := []Object{}
+	newObjs := []object.Object{}
 	for _, obj := range i.Objects {
-		if obj.TTL > 0 && obj.sendMark {
+		if obj.TTL > 0 && obj.IsSend() {
 			// calculate TTL
 			obj.TTL--
 			if obj.TTL == 0 {
@@ -56,6 +57,6 @@ func (i *Info) UpdateObjects() {
 
 func (i *Info) MarkAsSend() {
 	for j := 0; j < len(i.Objects); j++ {
-		i.Objects[j].sendMark = true
+		i.Objects[j].MarkAsSend()
 	}
 }
