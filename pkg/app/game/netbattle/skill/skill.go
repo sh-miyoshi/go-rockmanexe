@@ -5,8 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 )
 
 type Argument struct {
@@ -16,7 +14,7 @@ type Argument struct {
 
 type Skill interface {
 	Process() (bool, error)
-	GetObjects() []field.Object
+	RemoveObject()
 }
 
 var (
@@ -31,7 +29,7 @@ func Process() error {
 		}
 
 		if end {
-			removeObjects(id)
+			skills[id].RemoveObject()
 			delete(skills, id)
 		}
 	}
@@ -48,15 +46,5 @@ func Add(skillID int, arg Argument) string {
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
 
-	for _, obj := range skills[id].GetObjects() {
-		netconn.SendObject(obj)
-	}
-
 	return id
-}
-
-func removeObjects(id string) {
-	for _, obj := range skills[id].GetObjects() {
-		netconn.RemoveObject(obj.ID)
-	}
 }

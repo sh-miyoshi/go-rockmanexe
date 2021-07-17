@@ -14,7 +14,6 @@ type cannon struct {
 	x            int
 	y            int
 	count        int
-	timeInit     bool
 	viewBodyOfsX int32
 }
 
@@ -24,13 +23,37 @@ func newCannon(x, y int) *cannon {
 		bodyID:       uuid.New().String(),
 		x:            x,
 		y:            y,
-		timeInit:     true,
 		viewBodyOfsX: 48,
 	}
 }
 
 func (p *cannon) Process() (bool, error) {
 	p.count++
+
+	if p.count == 1 {
+		// Attack
+		netconn.SendObject(field.Object{
+			ID:             p.atkID,
+			Type:           field.ObjectTypeCannonAtk,
+			HP:             0,
+			X:              p.x,
+			Y:              p.y,
+			UpdateBaseTime: true,
+			ViewOfsX:       90,
+			ViewOfsY:       -10,
+		})
+		// Body
+		netconn.SendObject(field.Object{
+			ID:             p.bodyID,
+			Type:           field.ObjectTypeCannonBody,
+			HP:             0,
+			X:              p.x,
+			Y:              p.y,
+			UpdateBaseTime: true,
+			ViewOfsX:       p.viewBodyOfsX,
+			ViewOfsY:       -12,
+		})
+	}
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
@@ -47,14 +70,13 @@ func (p *cannon) Process() (bool, error) {
 	if p.count == 2*bodyDelay {
 		p.viewBodyOfsX = 33
 		netconn.SendObject(field.Object{
-			ID:             p.bodyID,
-			Type:           field.ObjectTypeCannonBody,
-			HP:             0,
-			X:              p.x,
-			Y:              p.y,
-			UpdateBaseTime: p.timeInit,
-			ViewOfsX:       p.viewBodyOfsX,
-			ViewOfsY:       -12,
+			ID:       p.bodyID,
+			Type:     field.ObjectTypeCannonBody,
+			HP:       0,
+			X:        p.x,
+			Y:        p.y,
+			ViewOfsX: p.viewBodyOfsX,
+			ViewOfsY: -12,
 		})
 	}
 
@@ -64,33 +86,7 @@ func (p *cannon) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *cannon) GetObjects() []field.Object {
-	res := []field.Object{
-		// Attack
-		{
-			ID:             p.atkID,
-			Type:           field.ObjectTypeCannonAtk,
-			HP:             0,
-			X:              p.x,
-			Y:              p.y,
-			UpdateBaseTime: p.timeInit,
-			ViewOfsX:       90,
-			ViewOfsY:       -10,
-		},
-		// Body
-		{
-			ID:             p.bodyID,
-			Type:           field.ObjectTypeCannonBody,
-			HP:             0,
-			X:              p.x,
-			Y:              p.y,
-			UpdateBaseTime: p.timeInit,
-			ViewOfsX:       p.viewBodyOfsX,
-			ViewOfsY:       -12,
-		},
-	}
-
-	p.timeInit = false
-
-	return res
+func (p *cannon) RemoveObject() {
+	netconn.RemoveObject(p.atkID)
+	netconn.RemoveObject(p.bodyID)
 }
