@@ -9,8 +9,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
@@ -171,7 +173,17 @@ func ActionProc(action *pb.Action) error {
 				}
 				logger.Debug("Added damges: %+v", damages)
 			case pb.Action_NEWEFFECT:
-
+				var eff effect.Effect
+				effect.Unmarshal(&eff, action.GetEffect())
+				s.fieldLock.Lock()
+				for i := 0; i < len(s.clients); i++ {
+					if s.clients[i].clientID != eff.ClientID {
+						eff.X = config.FieldNumX - eff.X - 1
+					}
+					s.clients[i].fieldInfo.Effects = append(s.clients[i].fieldInfo.Effects, eff)
+				}
+				s.fieldLock.Unlock()
+				logger.Debug("Added effect: %+v", eff)
 			default:
 				return fmt.Errorf("action %d is not implemented yet", action.Type)
 			}
@@ -343,6 +355,7 @@ func (s *session) publishField() {
 
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.MarkAsSend()
+		s.clients[i].fieldInfo.Effects = []effect.Effect{}
 		s.fieldLock.Unlock()
 	}
 }

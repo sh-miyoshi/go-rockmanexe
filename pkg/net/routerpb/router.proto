@@ -14,6 +14,7 @@ message Action {
         SENDSIGNAL = 1;
         REMOVEOBJECT = 2;
         NEWDAMAGE = 3;
+        NEWEFFECT = 4;
     }
 
     enum SignalType {
@@ -30,6 +31,7 @@ message Action {
         bytes objectInfo = 5;
         string objectID = 6;
         bytes damageInfo = 7;
+        bytes effect = 8;
     }
 }
 

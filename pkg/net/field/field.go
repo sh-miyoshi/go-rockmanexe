@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -13,6 +14,7 @@ type Info struct {
 	CurrentTime time.Time
 	Objects     []object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
+	Effects     []effect.Effect
 }
 
 func Marshal(fieldInfo *Info) []byte {

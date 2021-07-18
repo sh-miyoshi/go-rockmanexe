@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
@@ -86,6 +87,7 @@ func Process() error {
 		return fmt.Errorf("get connect status error: %w", err)
 	}
 	netconn.UpdateObjectsCount()
+	effect.Process()
 
 	switch battleState {
 	case stateWaiting:

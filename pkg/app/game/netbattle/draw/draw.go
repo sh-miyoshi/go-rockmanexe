@@ -8,6 +8,7 @@ import (
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -21,128 +22,213 @@ type Option struct {
 }
 
 var (
-	images [object.TypeMax][]int32
+	imgObjs [object.TypeMax][]int32
+	imgEffs [effect.TypeMax][]int32
 )
 
 func Init() error {
+	if err := loadObjs(); err != nil {
+		return fmt.Errorf("load objects failed: %w", err)
+	}
+
+	if err := loadEffects(); err != nil {
+		return fmt.Errorf("load effects failed: %w", err)
+	}
+
+	return nil
+}
+
+func End() {
+	for _, image := range imgObjs {
+		for _, img := range image {
+			dxlib.DeleteGraph(img)
+		}
+	}
+}
+
+func Object(objType int, imgNo int, x, y int, opts ...Option) {
+	if imgNo >= len(imgObjs[objType])/getTypeNum(objType) {
+		imgNo = len(imgObjs[objType])/getTypeNum(objType) - 1
+	}
+
+	vx, vy := battlecommon.ViewPos(x, y)
+	dxopts := dxlib.DrawRotaGraphOption{}
+
+	if len(opts) > 0 {
+		n := getTypeNum(objType)
+		imgNo += opts[0].SkillType * n
+
+		if opts[0].Reverse {
+			flag := int32(dxlib.TRUE)
+			dxopts.ReverseXFlag = &flag
+			opts[0].ViewOfsX *= -1
+		}
+
+		vx += opts[0].ViewOfsX
+		vy += opts[0].ViewOfsY
+	}
+
+	dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[objType][imgNo], dxlib.TRUE, dxopts)
+
+	// Show HP
+	if len(opts) > 0 && opts[0].ViewHP > 0 {
+		appdraw.Number(vx, vy+40, int32(opts[0].ViewHP), appdraw.NumberOption{
+			Color:    appdraw.NumberColorWhiteSmall,
+			Centered: true,
+		})
+	}
+}
+
+func Effect(effType int, imgNo int, x, y int, ofsX, ofsY int32) {
+	if imgNo >= len(imgEffs[effType]) {
+		imgNo = len(imgEffs[effType]) - 1
+	}
+
+	vx, vy := battlecommon.ViewPos(x, y)
+	vx += ofsX
+	vy += ofsY
+
+	dxlib.DrawRotaGraph(vx, vy, 1, 0, imgEffs[effType][imgNo], dxlib.TRUE)
+}
+
+func GetImageInfo(objType int) (imageNum, delay int) {
+	return len(imgObjs[objType]) / getTypeNum(objType), object.ImageDelays[objType]
+}
+
+func GetEffectImageInfo(effType int) (imageNum, delay int) {
+	return len(imgEffs[effType]), effect.Delays[effType]
+}
+
+func getTypeNum(objType int) int {
+	switch objType {
+	case object.TypeCannonAtk, object.TypeCannonBody:
+		return skill.TypeCannonMax
+	case object.TypeSword:
+		return skill.TypeSwordMax
+	}
+
+	return 1
+}
+
+func loadObjs() error {
 	fname := common.ImagePath + "battle/character/player_move.png"
-	images[object.TypeRockmanMove] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, images[object.TypeRockmanMove]); res == -1 {
+	imgObjs[object.TypeRockmanMove] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgObjs[object.TypeRockmanMove]); res == -1 {
 		return fmt.Errorf("failed to load player move image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
-	images[object.TypeRockmanDamage] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, images[object.TypeRockmanDamage]); res == -1 {
+	imgObjs[object.TypeRockmanDamage] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgObjs[object.TypeRockmanDamage]); res == -1 {
 		return fmt.Errorf("failed to load player damage image: %s", fname)
 	}
 	// 1 -> 2,3  2-4 3-5
-	images[object.TypeRockmanDamage][4] = images[object.TypeRockmanDamage][2]
-	images[object.TypeRockmanDamage][5] = images[object.TypeRockmanDamage][3]
-	images[object.TypeRockmanDamage][2] = images[object.TypeRockmanDamage][1]
-	images[object.TypeRockmanDamage][3] = images[object.TypeRockmanDamage][1]
+	imgObjs[object.TypeRockmanDamage][4] = imgObjs[object.TypeRockmanDamage][2]
+	imgObjs[object.TypeRockmanDamage][5] = imgObjs[object.TypeRockmanDamage][3]
+	imgObjs[object.TypeRockmanDamage][2] = imgObjs[object.TypeRockmanDamage][1]
+	imgObjs[object.TypeRockmanDamage][3] = imgObjs[object.TypeRockmanDamage][1]
 
 	fname = common.ImagePath + "battle/character/player_shot.png"
-	images[object.TypeRockmanShot] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, images[object.TypeRockmanShot]); res == -1 {
+	imgObjs[object.TypeRockmanShot] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgObjs[object.TypeRockmanShot]); res == -1 {
 		return fmt.Errorf("failed to load player shot image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
-	images[object.TypeRockmanCannon] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, images[object.TypeRockmanCannon]); res == -1 {
+	imgObjs[object.TypeRockmanCannon] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgObjs[object.TypeRockmanCannon]); res == -1 {
 		return fmt.Errorf("failed to load player cannon image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_sword.png"
-	images[object.TypeRockmanSword] = make([]int32, 7)
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, images[object.TypeRockmanSword]); res == -1 {
+	imgObjs[object.TypeRockmanSword] = make([]int32, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgObjs[object.TypeRockmanSword]); res == -1 {
 		return fmt.Errorf("failed to load player sword image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
-	images[object.TypeRockmanBomb] = make([]int32, 7)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, images[object.TypeRockmanBomb]); res == -1 {
+	imgObjs[object.TypeRockmanBomb] = make([]int32, 7)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgObjs[object.TypeRockmanBomb]); res == -1 {
 		return fmt.Errorf("failed to load player bomb image: %s", fname)
 	}
-	images[object.TypeRockmanBomb][5] = images[object.TypeRockmanBomb][4]
-	images[object.TypeRockmanBomb][6] = images[object.TypeRockmanBomb][4]
+	imgObjs[object.TypeRockmanBomb][5] = imgObjs[object.TypeRockmanBomb][4]
+	imgObjs[object.TypeRockmanBomb][6] = imgObjs[object.TypeRockmanBomb][4]
 
 	fname = common.ImagePath + "battle/character/player_buster.png"
-	images[object.TypeRockmanBuster] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, images[object.TypeRockmanBuster]); res == -1 {
+	imgObjs[object.TypeRockmanBuster] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgObjs[object.TypeRockmanBuster]); res == -1 {
 		return fmt.Errorf("failed to load player buster image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_pick.png"
-	images[object.TypeRockmanPick] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, images[object.TypeRockmanPick]); res == -1 {
+	imgObjs[object.TypeRockmanPick] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgObjs[object.TypeRockmanPick]); res == -1 {
 		return fmt.Errorf("failed to load player pick image: %s", fname)
 	}
-	images[object.TypeRockmanPick][4] = images[object.TypeRockmanPick][3]
-	images[object.TypeRockmanPick][5] = images[object.TypeRockmanPick][3]
+	imgObjs[object.TypeRockmanPick][4] = imgObjs[object.TypeRockmanPick][3]
+	imgObjs[object.TypeRockmanPick][5] = imgObjs[object.TypeRockmanPick][3]
 
-	images[object.TypeRockmanStand] = make([]int32, 1)
-	images[object.TypeRockmanStand][0] = images[object.TypeRockmanMove][0]
+	imgObjs[object.TypeRockmanStand] = make([]int32, 1)
+	imgObjs[object.TypeRockmanStand][0] = imgObjs[object.TypeRockmanMove][0]
 
 	skillPath := common.ImagePath + "battle/skill/"
 	fname = skillPath + "キャノン_atk.png"
-	images[object.TypeCannonAtk] = make([]int32, 24)
-	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, images[object.TypeCannonAtk]); res == -1 {
+	imgObjs[object.TypeCannonAtk] = make([]int32, 24)
+	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, imgObjs[object.TypeCannonAtk]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "キャノン_body.png"
-	images[object.TypeCannonBody] = make([]int32, 15)
-	if res := dxlib.LoadDivGraph(fname, 15, 5, 3, 46, 40, images[object.TypeCannonBody]); res == -1 {
+	imgObjs[object.TypeCannonBody] = make([]int32, 15)
+	if res := dxlib.LoadDivGraph(fname, 15, 5, 3, 46, 40, imgObjs[object.TypeCannonBody]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "ミニボム.png"
-	images[object.TypeMiniBomb] = make([]int32, 5)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, images[object.TypeMiniBomb]); res == -1 {
+	imgObjs[object.TypeMiniBomb] = make([]int32, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, imgObjs[object.TypeMiniBomb]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "ソード.png"
-	images[object.TypeSword] = make([]int32, 12)
-	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, images[object.TypeSword]); res == -1 {
+	imgObjs[object.TypeSword] = make([]int32, 12)
+	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, imgObjs[object.TypeSword]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "リカバリー.png"
-	images[object.TypeRecover] = make([]int32, 8)
-	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, images[object.TypeRecover]); res == -1 {
+	imgObjs[object.TypeRecover] = make([]int32, 8)
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, imgObjs[object.TypeRecover]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "スプレッドガン_atk.png"
-	images[object.TypeSpreadGunAtk] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, images[object.TypeSpreadGunAtk]); res == -1 {
+	imgObjs[object.TypeSpreadGunAtk] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, imgObjs[object.TypeSpreadGunAtk]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "スプレッドガン_body.png"
-	images[object.TypeSpreadGunBody] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, images[object.TypeSpreadGunBody]); res == -1 {
+	imgObjs[object.TypeSpreadGunBody] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, imgObjs[object.TypeSpreadGunBody]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "バルカン.png"
-	images[object.TypeVulcan] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, images[object.TypeVulcan]); res == -1 {
+	imgObjs[object.TypeVulcan] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, imgObjs[object.TypeVulcan]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "ウェーブ_body.png"
-	images[object.TypePick] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, images[object.TypePick]); res == -1 {
+	imgObjs[object.TypePick] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, imgObjs[object.TypePick]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = skillPath + "サンダーボール.png"
-	images[object.TypeThunderBall] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 80, images[object.TypeThunderBall]); res == -1 {
+	imgObjs[object.TypeThunderBall] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 80, imgObjs[object.TypeThunderBall]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
@@ -169,38 +255,42 @@ func Init() error {
 	// }
 
 	fname = skillPath + "ショックウェーブ.png"
-	images[object.TypeShockWave] = make([]int32, 7)
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, images[object.TypeShockWave]); res == -1 {
+	imgObjs[object.TypeShockWave] = make([]int32, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, imgObjs[object.TypeShockWave]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/effect/hit_small.png"
-	images[object.TypeHitSmallEffect] = make([]int32, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[object.TypeHitSmallEffect]); res == -1 {
+	return nil
+}
+
+func loadEffects() error {
+	fname := common.ImagePath + "battle/effect/hit_small.png"
+	imgEffs[effect.TypeHitSmallEffect] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, imgEffs[effect.TypeHitSmallEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/effect/hit_big.png"
-	images[object.TypeHitBigEffect] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[object.TypeHitBigEffect]); res == -1 {
+	imgEffs[effect.TypeHitBigEffect] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, imgEffs[effect.TypeHitBigEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/effect/explode.png"
-	images[object.TypeExplodeEffect] = make([]int32, 16)
-	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[object.TypeExplodeEffect]); res == -1 {
+	imgEffs[effect.TypeExplodeEffect] = make([]int32, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, imgEffs[effect.TypeExplodeEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/effect/cannon_hit.png"
-	images[object.TypeCannonHitEffect] = make([]int32, 7)
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[object.TypeCannonHitEffect]); res == -1 {
+	imgEffs[effect.TypeCannonHitEffect] = make([]int32, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, imgEffs[effect.TypeCannonHitEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/effect/spread_hit.png"
-	images[object.TypeSpreadHitEffect] = make([]int32, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[object.TypeSpreadHitEffect]); res == -1 {
+	imgEffs[effect.TypeSpreadHitEffect] = make([]int32, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgEffs[effect.TypeSpreadHitEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
@@ -209,68 +299,12 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	images[object.TypeVulcanHit1Effect] = []int32{}
-	images[object.TypeVulcanHit2Effect] = []int32{}
+	imgEffs[effect.TypeVulcanHit1Effect] = []int32{}
+	imgEffs[effect.TypeVulcanHit2Effect] = []int32{}
 	for i := 0; i < 4; i++ {
-		images[object.TypeVulcanHit1Effect] = append(images[object.TypeVulcanHit1Effect], tmp[i])
-		images[object.TypeVulcanHit2Effect] = append(images[object.TypeVulcanHit2Effect], tmp[i+4])
+		imgEffs[effect.TypeVulcanHit1Effect] = append(imgEffs[effect.TypeVulcanHit1Effect], tmp[i])
+		imgEffs[effect.TypeVulcanHit2Effect] = append(imgEffs[effect.TypeVulcanHit2Effect], tmp[i+4])
 	}
 
 	return nil
-}
-
-func End() {
-	for _, image := range images {
-		for _, img := range image {
-			dxlib.DeleteGraph(img)
-		}
-	}
-}
-
-func Object(objType int, imgNo int, x, y int, opts ...Option) {
-	if imgNo >= len(images[objType])/getTypeNum(objType) {
-		imgNo = len(images[objType])/getTypeNum(objType) - 1
-	}
-
-	vx, vy := battlecommon.ViewPos(x, y)
-	dxopts := dxlib.DrawRotaGraphOption{}
-
-	if len(opts) > 0 {
-		n := getTypeNum(objType)
-		imgNo += opts[0].SkillType * n
-
-		if opts[0].Reverse {
-			flag := int32(dxlib.TRUE)
-			dxopts.ReverseXFlag = &flag
-			opts[0].ViewOfsX *= -1
-		}
-
-		vx += opts[0].ViewOfsX
-		vy += opts[0].ViewOfsY
-	}
-
-	dxlib.DrawRotaGraph(vx, vy, 1, 0, images[objType][imgNo], dxlib.TRUE, dxopts)
-
-	// Show HP
-	if len(opts) > 0 && opts[0].ViewHP > 0 {
-		appdraw.Number(vx, vy+40, int32(opts[0].ViewHP), appdraw.NumberOption{
-			Color:    appdraw.NumberColorWhiteSmall,
-			Centered: true,
-		})
-	}
-}
-
-func GetImageInfo(objType int) (imageNum, delay int) {
-	return len(images[objType]) / getTypeNum(objType), object.ImageDelays[objType]
-}
-
-func getTypeNum(objType int) int {
-	switch objType {
-	case object.TypeCannonAtk, object.TypeCannonBody:
-		return skill.TypeCannonMax
-	case object.TypeSword:
-		return skill.TypeSwordMax
-	}
-
-	return 1
 }

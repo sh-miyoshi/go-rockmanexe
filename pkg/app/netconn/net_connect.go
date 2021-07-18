@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
@@ -161,6 +162,30 @@ func SendDamages(dm []damage.Damage) error {
 	return nil
 }
 
+func SendEffect(eff effect.Effect) error {
+	c := config.Get()
+
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  c.Net.ClientID,
+		Type:      pb.Action_NEWEFFECT,
+		Data: &pb.Action_Effect{
+			Effect: effect.Marshal(eff),
+		},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("add effect failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("add effect got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
 func dataRecv() {
 	// Recv data from stream
 	for {
@@ -203,4 +228,8 @@ func UpdateObjectsCount() {
 			fieldInfo.Objects[i].Count++
 		}
 	}
+}
+
+func RemoveEffects() {
+	fieldInfo.Effects = []effect.Effect{}
 }

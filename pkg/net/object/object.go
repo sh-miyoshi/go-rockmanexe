@@ -32,22 +32,13 @@ const (
 	TypeWideShot
 	TypeShockWave
 
-	TypeHitSmallEffect
-	TypeHitBigEffect
-	TypeExplodeEffect
-	TypeCannonHitEffect
-	TypeSpreadHitEffect
-	TypeVulcanHit1Effect
-	TypeVulcanHit2Effect
-
 	TypeMax
 )
 
 var (
 	ImageDelays = [TypeMax]int{
 		1, 1, 2, 2, 6, 3, 4, 1, 4, // Rockman
-		2, 6, 3, 4, 1, 2, 2, 3, 6, 4, 5, // Skills
-		1, 1, 2, 1, 1, 1, 1, 1, // Effects
+		2, 6, 3, 4, 1, 2, 2, 2, 3, 6, 4, 5, // Skills
 	}
 )
 

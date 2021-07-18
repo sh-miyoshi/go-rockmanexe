@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
@@ -126,6 +127,28 @@ func SendDamages(dm []damage.Damage) error {
 
 	if !res.Success {
 		return fmt.Errorf("add damages got unexpected response: %s", res.ErrMsg)
+	}
+
+	return nil
+}
+
+func SendEffect(eff effect.Effect) error {
+	req := &pb.Action{
+		SessionID: sessionID,
+		ClientID:  clientID,
+		Type:      pb.Action_NEWEFFECT,
+		Data: &pb.Action_Effect{
+			Effect: effect.Marshal(eff),
+		},
+	}
+
+	res, err := client.SendAction(context.TODO(), req)
+	if err != nil {
+		return fmt.Errorf("add effect failed: %w", err)
+	}
+
+	if !res.Success {
+		return fmt.Errorf("add effect got unexpected response: %s", res.ErrMsg)
 	}
 
 	return nil

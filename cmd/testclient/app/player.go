@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -71,7 +72,7 @@ func (p *player) Action() {
 		return
 	}
 
-	actTable := []int{0, 2, 2, 2, 2}
+	actTable := []int{0, 3, 3, 3, 3}
 	// Wait, Move, Cannon, Buster
 	actInterval := []int{60, 60, 120, 60}
 
@@ -122,29 +123,16 @@ func (p *player) damageProc() bool {
 				netconn.SendObject(p.Object)
 
 				if obj.HitDamage.HitEffectType > 0 {
-					log.Printf("add hit damage info: %d", obj.HitDamage.HitEffectType)
-					ttl := 0 // TTL = len(images) * delay
-					switch obj.HitDamage.HitEffectType {
-					case object.TypeHitSmallEffect:
-						ttl = 4
-					case object.TypeCannonHitEffect:
-						ttl = 7
-					default:
-						panic("not implemented yet")
-					}
-
-					eff := object.Object{
-						ID:             uuid.New().String(),
-						Type:           obj.HitDamage.HitEffectType,
-						HP:             0,
-						X:              p.Object.X,
-						Y:              p.Object.Y,
-						TTL:            ttl,
-						ViewOfsX:       obj.HitDamage.ViewOfsX,
-						ViewOfsY:       obj.HitDamage.ViewOfsY,
-						UpdateBaseTime: true,
-					}
-					netconn.SendObject(eff)
+					log.Printf("add hit damage effect: %d", obj.HitDamage.HitEffectType)
+					netconn.SendEffect(effect.Effect{
+						ID:       uuid.New().String(),
+						ClientID: p.Object.ClientID,
+						Type:     obj.HitDamage.HitEffectType,
+						X:        p.Object.X,
+						Y:        p.Object.Y,
+						ViewOfsX: obj.HitDamage.ViewOfsX,
+						ViewOfsY: obj.HitDamage.ViewOfsY,
+					})
 				}
 
 				return true

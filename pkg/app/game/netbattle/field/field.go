@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
@@ -78,6 +79,8 @@ func Draw(playerID string) {
 			ViewHP:   viewHP,
 		})
 	}
+
+	effect.Draw()
 }
 
 func GetPanelInfo(x, y int) appfield.PanelInfo {

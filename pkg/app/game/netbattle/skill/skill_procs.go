@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -112,7 +113,7 @@ func (p *cannon) addDamage() {
 			Power:         p.power,
 			TTL:           1,
 			TargetType:    damage.TargetOtherClient,
-			HitEffectType: object.TypeCannonHitEffect,
+			HitEffectType: effect.TypeCannonHitEffect,
 			ViewOfsX:      int32(rand.Intn(2*5) - 5),
 			ViewOfsY:      int32(rand.Intn(2*5) - 5),
 		})

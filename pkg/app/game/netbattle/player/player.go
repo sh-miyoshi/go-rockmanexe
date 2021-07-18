@@ -14,7 +14,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
@@ -22,6 +21,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -287,18 +287,15 @@ func (p *BattlePlayer) damageProc() bool {
 				netconn.SendObject(p.Object)
 
 				if obj.HitDamage.HitEffectType > 0 {
-					num, delay := netdraw.GetImageInfo(obj.HitDamage.HitEffectType)
-					eff := object.Object{
+					netconn.SendEffect(effect.Effect{
 						ID:       uuid.New().String(),
+						ClientID: p.Object.ClientID,
 						Type:     obj.HitDamage.HitEffectType,
-						HP:       0,
 						X:        p.Object.X,
 						Y:        p.Object.Y,
-						TTL:      num * delay,
 						ViewOfsX: obj.HitDamage.ViewOfsX,
 						ViewOfsY: obj.HitDamage.ViewOfsY,
-					}
-					netconn.SendObject(eff)
+					})
 				}
 
 				return true
