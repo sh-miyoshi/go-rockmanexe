@@ -53,6 +53,8 @@ func Add(skillID int, arg Argument) string {
 		skills[id] = newSword(arg.X, arg.Y, arg.Power, skill.TypeWideSword)
 	case skill.SkillLongSword:
 		skills[id] = newSword(arg.X, arg.Y, arg.Power, skill.TypeLongSword)
+	case skill.SkillVulcan1:
+		skills[id] = newVulcan(arg.X, arg.Y, 3)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}

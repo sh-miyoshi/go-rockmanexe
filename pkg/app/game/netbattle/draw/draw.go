@@ -45,10 +45,6 @@ func End() {
 }
 
 func Object(objType int, imgNo int, x, y int, opts ...Option) {
-	if imgNo >= len(imgObjs[objType]) {
-		imgNo = len(imgObjs[objType]) - 1
-	}
-
 	vx, vy := battlecommon.ViewPos(x, y)
 	dxopts := dxlib.DrawRotaGraphOption{}
 
@@ -63,7 +59,15 @@ func Object(objType int, imgNo int, x, y int, opts ...Option) {
 		vy += opts[0].ViewOfsY
 	}
 
-	dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[objType][imgNo], dxlib.TRUE, dxopts)
+	// Special object draw
+	if objType == object.TypeVulcan {
+		objectVulcan(vx, vy, imgNo, dxopts)
+	} else {
+		if imgNo >= len(imgObjs[objType]) {
+			imgNo = len(imgObjs[objType]) - 1
+		}
+		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[objType][imgNo], dxlib.TRUE, dxopts)
+	}
 
 	// Show HP
 	if len(opts) > 0 && opts[0].ViewHP > 0 {
@@ -317,4 +321,26 @@ func loadEffects() error {
 	}
 
 	return nil
+}
+
+func objectVulcan(vx, vy int32, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
+	if imgNo > 2 {
+		imgNo /= 5 // slow down animation
+	}
+
+	// Show body
+	no := imgNo
+	if no > 2 {
+		no = no % 2
+	}
+
+	dxlib.DrawRotaGraph(vx+50, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE)
+	// Show attack
+	if imgNo != 0 {
+		if imgNo%2 == 0 {
+			dxlib.DrawRotaGraph(vx+100, vy-10, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+		} else {
+			dxlib.DrawRotaGraph(vx+100, vy-15, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+		}
+	}
 }
