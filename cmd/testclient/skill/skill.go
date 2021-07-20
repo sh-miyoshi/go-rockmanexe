@@ -38,12 +38,12 @@ func Process() error {
 	return nil
 }
 
-func Add(skillID int, arg Argument) string {
+func Add(skillID int, arg Argument, clientID string) string {
 	id := uuid.New().String()
 
 	switch skillID {
 	case skill.SkillCannon:
-		skills[id] = newCannon(arg.X, arg.Y)
+		skills[id] = newCannon(arg.X, arg.Y, clientID)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}

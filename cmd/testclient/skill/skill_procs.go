@@ -1,8 +1,12 @@
 package skill
 
 import (
+	"math/rand"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -14,9 +18,10 @@ type cannon struct {
 	count        int
 	timeInit     bool
 	viewBodyOfsX int32
+	clientID     string
 }
 
-func newCannon(x, y int) *cannon {
+func newCannon(x, y int, clientID string) *cannon {
 	return &cannon{
 		atkID:        uuid.New().String(),
 		bodyID:       uuid.New().String(),
@@ -24,15 +29,31 @@ func newCannon(x, y int) *cannon {
 		y:            y,
 		timeInit:     true,
 		viewBodyOfsX: 48,
+		clientID:     clientID,
 	}
 }
 
 func (p *cannon) Process() (bool, error) {
 	p.count++
 
-	// if p.count == 20 {
-	// 	// TODO add damage
-	// }
+	if p.count == 20 {
+		dm := []damage.Damage{}
+		for x := p.x + 1; x < 6; x++ {
+			dm = append(dm, damage.Damage{
+				ID:            uuid.New().String(),
+				ClientID:      p.clientID,
+				PosX:          x,
+				PosY:          p.y,
+				Power:         40,
+				TTL:           1,
+				TargetType:    damage.TargetOtherClient,
+				HitEffectType: effect.TypeCannonHitEffect,
+				ViewOfsX:      int32(rand.Intn(2*5) - 5),
+				ViewOfsY:      int32(rand.Intn(2*5) - 5),
+			})
+		}
+		netconn.SendDamages(dm)
+	}
 
 	bodyDelay := object.ImageDelays[object.TypeNormalCannonBody]
 	atkDelay := object.ImageDelays[object.TypeNormalCannonAtk]

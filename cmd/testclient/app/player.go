@@ -72,7 +72,7 @@ func (p *player) Action() {
 		return
 	}
 
-	actTable := []int{0, 3, 3, 3, 3}
+	actTable := []int{0}
 	// Wait, Move, Cannon, Buster
 	actInterval := []int{60, 60, 120, 60}
 
@@ -94,7 +94,7 @@ func (p *player) Action() {
 			skill.Add(appskill.SkillCannon, skill.Argument{
 				X: p.Object.X,
 				Y: p.Object.Y,
-			})
+			}, p.Object.ClientID)
 		case 3:
 			p.Act.Set(battlecommon.PlayerActBuster, nil)
 		}
