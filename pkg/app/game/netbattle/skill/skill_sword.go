@@ -2,10 +2,12 @@ package skill
 
 import (
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -57,8 +59,7 @@ func (p *sword) Process() (bool, error) {
 
 	if p.count == 1*delay {
 		sound.On(sound.SESword)
-
-		// TODO add damage
+		p.addDamage()
 	}
 
 	if p.count > num*delay {
@@ -69,4 +70,36 @@ func (p *sword) Process() (bool, error) {
 
 func (p *sword) RemoveObject() {
 	netconn.RemoveObject(p.id)
+}
+
+func (p *sword) addDamage() {
+	clientID := config.Get().Net.ClientID
+	damages := []damage.Damage{}
+
+	dm := damage.Damage{
+		ID:         uuid.New().String(),
+		ClientID:   clientID,
+		Power:      p.power,
+		TTL:        1,
+		TargetType: damage.TargetOtherClient,
+	}
+
+	dm.PosX = p.x + 1
+	dm.PosY = p.y
+	damages = append(damages, dm)
+
+	switch p.typ {
+	case skill.TypeSword:
+		// No more damage area
+	case skill.TypeWideSword:
+		dm.PosY = p.y - 1
+		damages = append(damages, dm)
+		dm.PosY = p.y + 1
+		damages = append(damages, dm)
+	case skill.TypeLongSword:
+		dm.PosX = p.x + 2
+		damages = append(damages, dm)
+	}
+
+	netconn.SendDamages(damages)
 }
