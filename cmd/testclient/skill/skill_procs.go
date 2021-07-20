@@ -34,8 +34,8 @@ func (p *cannon) Process() (bool, error) {
 	// 	// TODO add damage
 	// }
 
-	bodyDelay := object.ImageDelays[object.TypeCannonBody]
-	atkDelay := object.ImageDelays[object.TypeCannonAtk]
+	bodyDelay := object.ImageDelays[object.TypeNormalCannonBody]
+	atkDelay := object.ImageDelays[object.TypeNormalCannonAtk]
 	bodyNum := 4
 	atkNum := 8
 	max := bodyNum * bodyDelay
@@ -47,7 +47,7 @@ func (p *cannon) Process() (bool, error) {
 		p.viewBodyOfsX = 33
 		netconn.SendObject(object.Object{
 			ID:             p.bodyID,
-			Type:           object.TypeCannonBody,
+			Type:           object.TypeNormalCannonBody,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,
@@ -68,7 +68,7 @@ func (p *cannon) GetObjects() []object.Object {
 		// Attack
 		{
 			ID:             p.atkID,
-			Type:           object.TypeCannonAtk,
+			Type:           object.TypeNormalCannonAtk,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,
@@ -79,7 +79,7 @@ func (p *cannon) GetObjects() []object.Object {
 		// Body
 		{
 			ID:             p.bodyID,
-			Type:           object.TypeCannonBody,
+			Type:           object.TypeNormalCannonBody,
 			HP:             0,
 			X:              p.x,
 			Y:              p.y,

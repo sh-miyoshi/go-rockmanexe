@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -21,15 +22,17 @@ type cannon struct {
 	x      int
 	y      int
 	count  int
+	typ    int
 	power  int
 }
 
-func newCannon(x, y int, power int) *cannon {
+func newCannon(x, y int, power int, typ int) *cannon {
 	return &cannon{
 		atkID:  uuid.New().String(),
 		bodyID: uuid.New().String(),
 		x:      x,
 		y:      y,
+		typ:    typ,
 		power:  power,
 	}
 }
@@ -38,31 +41,11 @@ func (p *cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		// Body
-		netconn.SendObject(object.Object{
-			ID:             p.bodyID,
-			Type:           object.TypeCannonBody,
-			HP:             0,
-			X:              p.x,
-			Y:              p.y,
-			UpdateBaseTime: true,
-			ViewOfsX:       48,
-			ViewOfsY:       -12,
-		})
+		netconn.SendObject(p.getObjectInfo(true, false, true)) // Body
 	}
 
 	if p.count == 15 {
-		// Attack
-		netconn.SendObject(object.Object{
-			ID:             p.atkID,
-			Type:           object.TypeCannonAtk,
-			HP:             0,
-			X:              p.x,
-			Y:              p.y,
-			UpdateBaseTime: true,
-			ViewOfsX:       90,
-			ViewOfsY:       -10,
-		})
+		netconn.SendObject(p.getObjectInfo(false, false, true)) // Attack
 	}
 
 	if p.count == 20 {
@@ -70,23 +53,16 @@ func (p *cannon) Process() (bool, error) {
 		p.addDamage()
 	}
 
-	bodyNum, bodyDelay := draw.GetImageInfo(object.TypeCannonBody)
-	atkNum, atkDelay := draw.GetImageInfo(object.TypeCannonAtk)
+	// num and delay are the same for normal, high, and mega
+	bodyNum, bodyDelay := draw.GetImageInfo(object.TypeNormalCannonBody)
+	atkNum, atkDelay := draw.GetImageInfo(object.TypeNormalCannonAtk)
 	max := bodyNum * bodyDelay
 	if n := atkNum*atkDelay + 15; max < n {
 		max = n
 	}
 
 	if p.count == 2*bodyDelay {
-		netconn.SendObject(object.Object{
-			ID:       p.bodyID,
-			Type:     object.TypeCannonBody,
-			HP:       0,
-			X:        p.x,
-			Y:        p.y,
-			ViewOfsX: 33,
-			ViewOfsY: -12,
-		})
+		netconn.SendObject(p.getObjectInfo(true, true, false)) // Shifted Body
 	}
 
 	if p.count > max {
@@ -125,4 +101,52 @@ func (p *cannon) addDamage() {
 		}
 	}
 	netconn.SendDamages(dm)
+}
+
+func (p *cannon) getObjectInfo(isBody bool, isShift bool, updateTime bool) object.Object {
+	id := p.atkID
+	vx := int32(90)
+	vy := int32(-10)
+	if isBody {
+		id = p.bodyID
+		if isShift {
+			vx = 33
+		} else {
+			vx = 48
+		}
+		vy = -12
+	}
+
+	typ := -1
+	switch p.typ {
+	case skill.TypeNormalCannon:
+		if isBody {
+			typ = object.TypeNormalCannonBody
+		} else {
+			typ = object.TypeNormalCannonAtk
+		}
+	case skill.TypeHighCannon:
+		if isBody {
+			typ = object.TypeHighCannonBody
+		} else {
+			typ = object.TypeHighCannonAtk
+		}
+	case skill.TypeMegaCannon:
+		if isBody {
+			typ = object.TypeMegaCannonBody
+		} else {
+			typ = object.TypeMegaCannonAtk
+		}
+	}
+
+	return object.Object{
+		ID:             id,
+		Type:           typ,
+		HP:             0,
+		X:              p.x,
+		Y:              p.y,
+		ViewOfsX:       vx,
+		ViewOfsY:       vy,
+		UpdateBaseTime: updateTime,
+	}
 }

@@ -8,8 +8,9 @@ import (
 )
 
 type Argument struct {
-	X int
-	Y int
+	X     int
+	Y     int
+	Power int
 }
 
 type Skill interface {
@@ -41,7 +42,11 @@ func Add(skillID int, arg Argument) string {
 
 	switch skillID {
 	case skill.SkillCannon:
-		skills[id] = newCannon(arg.X, arg.Y, 40)
+		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeNormalCannon)
+	case skill.SkillHighCannon:
+		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeHighCannon)
+	case skill.SkillMegaCannon:
+		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeMegaCannon)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
