@@ -37,6 +37,10 @@ func (p *sword) Process() (bool, error) {
 		switch p.typ {
 		case skill.TypeSword:
 			objType = object.TypeSword
+		case skill.TypeWideSword:
+			objType = object.TypeWideSword
+		case skill.TypeLongSword:
+			objType = object.TypeLongSword
 		}
 		netconn.SendObject(object.Object{
 			ID:             p.id,
