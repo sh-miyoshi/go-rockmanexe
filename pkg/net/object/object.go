@@ -64,6 +64,7 @@ type Object struct {
 	HitDamage      damage.Damage
 	TTL            int
 	Count          int
+	Hittable       bool
 
 	sendMark bool
 }

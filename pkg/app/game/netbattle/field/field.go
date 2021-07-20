@@ -89,7 +89,7 @@ func GetPanelInfo(x, y int) appfield.PanelInfo {
 
 	id := ""
 	for _, obj := range info.Objects {
-		if obj.ClientID == clientID && obj.X == x && obj.Y == y {
+		if obj.Hittable && obj.X == x && obj.Y == y {
 			id = obj.ID
 			break
 		}

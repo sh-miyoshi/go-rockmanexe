@@ -34,6 +34,7 @@ func newPlayer(clientID string) *player {
 			X:             1,
 			Y:             1,
 			DamageChecked: true,
+			Hittable:      true,
 		},
 		Count:      0,
 		ActNo:      0,

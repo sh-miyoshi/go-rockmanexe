@@ -57,6 +57,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			Y:             1,
 			DamageChecked: true,
 			ClientID:      cfg.Net.ClientID,
+			Hittable:      true,
 		},
 		HPMax:      plyr.HP,
 		ShotPower:  plyr.ShotPower,
