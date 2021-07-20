@@ -192,9 +192,18 @@ func loadObjs() error {
 	}
 
 	fname = skillPath + "ソード.png"
-	imgObjs[object.TypeSword] = make([]int32, 12)
-	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, imgObjs[object.TypeSword]); res == -1 {
+	tmp = make([]int32, 12)
+	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	imgObjs[object.TypeSword] = make([]int32, 4)
+	imgObjs[object.TypeWideSword] = make([]int32, 4)
+	imgObjs[object.TypeLongSword] = make([]int32, 4)
+	for i := 0; i < 4; i++ {
+		imgObjs[object.TypeSword][i] = tmp[i]
+		imgObjs[object.TypeWideSword][i] = tmp[i+8]
+		imgObjs[object.TypeLongSword][i] = tmp[i+4]
 	}
 
 	fname = skillPath + "リカバリー.png"
