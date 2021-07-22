@@ -2,16 +2,19 @@ package skill
 
 import (
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type wideShot struct {
 	bodyID        string
 	beginID       string
+	moveID        string
 	x             int
 	y             int
 	count         int
@@ -23,6 +26,7 @@ func newWideShot(x, y int, power int, nextStepCount int) *wideShot {
 	return &wideShot{
 		bodyID:        uuid.New().String(),
 		beginID:       uuid.New().String(),
+		moveID:        uuid.New().String(),
 		x:             x,
 		y:             y,
 		power:         power,
@@ -75,7 +79,7 @@ func (p *wideShot) Process() (bool, error) {
 
 			// Add object
 			netconn.SendObject(object.Object{
-				ID:             p.beginID,
+				ID:             p.moveID,
 				Type:           object.TypeWideShotMove,
 				X:              p.x,
 				Y:              p.y,
@@ -84,7 +88,7 @@ func (p *wideShot) Process() (bool, error) {
 				Speed:          p.nextStepCount,
 			})
 
-			// TODO Add damage
+			p.addDamages()
 		}
 	}
 
@@ -94,4 +98,29 @@ func (p *wideShot) Process() (bool, error) {
 func (p *wideShot) RemoveObject() {
 	netconn.RemoveObject(p.bodyID)
 	netconn.RemoveObject(p.beginID)
+	netconn.RemoveObject(p.moveID)
+}
+
+func (p *wideShot) addDamages() {
+	clientID := config.Get().Net.ClientID
+
+	damages := []damage.Damage{}
+	dm := damage.Damage{
+		ID:         uuid.New().String(),
+		ClientID:   clientID,
+		PosX:       p.x,
+		PosY:       p.y,
+		Power:      p.power,
+		TTL:        p.nextStepCount,
+		TargetType: damage.TargetOtherClient,
+	}
+
+	// Add damages to 3 wide
+	damages = append(damages, dm)
+	dm.PosY--
+	damages = append(damages, dm)
+	dm.PosY += 2
+	damages = append(damages, dm)
+
+	netconn.SendDamages(damages)
 }
