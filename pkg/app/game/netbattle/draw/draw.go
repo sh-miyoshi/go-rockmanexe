@@ -7,16 +7,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type Option struct {
-	Reverse  bool
-	Speed    int
-	ViewOfsX int32
-	ViewOfsY int32
-	ViewHP   int
+	Reverse bool
+	ViewHP  int
 }
 
 var (
@@ -44,34 +42,35 @@ func End() {
 	}
 }
 
-func Object(objType int, imgNo int, x, y int, opts ...Option) {
-	vx, vy := battlecommon.ViewPos(x, y)
+func Object(obj object.Object, opt Option) {
+	vx, vy := battlecommon.ViewPos(obj.X, obj.Y)
+	imgNo := obj.Count / object.ImageDelays[obj.Type]
 	dxopts := dxlib.DrawRotaGraphOption{}
 
-	if len(opts) > 0 {
-		if opts[0].Reverse {
-			flag := int32(dxlib.TRUE)
-			dxopts.ReverseXFlag = &flag
-			opts[0].ViewOfsX *= -1
-		}
-
-		vx += opts[0].ViewOfsX
-		vy += opts[0].ViewOfsY
+	if opt.Reverse {
+		flag := int32(dxlib.TRUE)
+		dxopts.ReverseXFlag = &flag
+		obj.ViewOfsX *= -1
 	}
 
+	vx += obj.ViewOfsX
+	vy += obj.ViewOfsY
+
 	// Special object draw
-	if objType == object.TypeVulcan {
+	if obj.Type == object.TypeVulcan {
 		objectVulcan(vx, vy, imgNo, dxopts)
+	} else if obj.Type == object.TypeWideShotMove {
+		objectWideShotMove(vx, vy, obj, dxopts)
 	} else {
-		if imgNo >= len(imgObjs[objType]) {
-			imgNo = len(imgObjs[objType]) - 1
+		if imgNo >= len(imgObjs[obj.Type]) {
+			imgNo = len(imgObjs[obj.Type]) - 1
 		}
-		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[objType][imgNo], dxlib.TRUE, dxopts)
+		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 	}
 
 	// Show HP
-	if len(opts) > 0 && opts[0].ViewHP > 0 {
-		appdraw.Number(vx, vy+40, int32(opts[0].ViewHP), appdraw.NumberOption{
+	if opt.ViewHP > 0 {
+		appdraw.Number(vx, vy+40, int32(opt.ViewHP), appdraw.NumberOption{
 			Color:    appdraw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -246,27 +245,23 @@ func loadObjs() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	// fname = skillPath + "ワイドショット_body.png"
-	// if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, tmp); res == -1 {
-	// 	return fmt.Errorf("failed to load image %s", fname)
-	// }
-	// for i := 0; i < 3; i++ {
-	// 	imgWideShotBody = append(imgWideShotBody, tmp[i])
-	// }
-	// fname = skillPath + "ワイドショット_begin.png"
-	// if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, tmp); res == -1 {
-	// 	return fmt.Errorf("failed to load image %s", fname)
-	// }
-	// for i := 0; i < 4; i++ {
-	// 	imgWideShotBegin = append(imgWideShotBegin, tmp[i])
-	// }
-	// fname = skillPath + "ワイドショット_move.png"
-	// if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, tmp); res == -1 {
-	// 	return fmt.Errorf("failed to load image %s", fname)
-	// }
-	// for i := 0; i < 3; i++ {
-	// 	imgWideShotMove = append(imgWideShotMove, tmp[i])
-	// }
+	fname = skillPath + "ワイドショット_body.png"
+	imgObjs[object.TypeWideShotBody] = make([]int32, 3)
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, imgObjs[object.TypeWideShotBody]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = skillPath + "ワイドショット_begin.png"
+	imgObjs[object.TypeWideShotBegin] = make([]int32, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, imgObjs[object.TypeWideShotBegin]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = skillPath + "ワイドショット_move.png"
+	imgObjs[object.TypeWideShotMove] = make([]int32, 3)
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, imgObjs[object.TypeWideShotMove]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	fname = skillPath + "ショックウェーブ.png"
 	imgObjs[object.TypeShockWave] = make([]int32, 7)
@@ -328,19 +323,40 @@ func objectVulcan(vx, vy int32, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
 		imgNo /= 5 // slow down animation
 	}
 
+	ofsBody := int32(50)
+	ofsAtk := int32(100)
+	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
+		ofsBody *= -1
+		ofsAtk *= -1
+	}
+
 	// Show body
 	no := imgNo
 	if no > 2 {
 		no = no % 2
 	}
 
-	dxlib.DrawRotaGraph(vx+50, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE)
+	dxlib.DrawRotaGraph(vx+ofsBody, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE)
 	// Show attack
 	if imgNo != 0 {
 		if imgNo%2 == 0 {
-			dxlib.DrawRotaGraph(vx+100, vy-10, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+			dxlib.DrawRotaGraph(vx+ofsAtk, vy-10, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
 		} else {
-			dxlib.DrawRotaGraph(vx+100, vy-15, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+			dxlib.DrawRotaGraph(vx+ofsAtk, vy-15, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
 		}
 	}
+}
+
+func objectWideShotMove(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+	if obj.Speed == 0 {
+		panic("ワイドショット描画のためのSpeedが0です")
+	}
+
+	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
+	ofsx := int32(field.PanelSizeX * obj.Count / obj.Speed)
+	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
+		ofsx *= -1
+	}
+
+	dxlib.DrawRotaGraph(vx+ofsx, vy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 }

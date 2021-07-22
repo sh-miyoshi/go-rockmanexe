@@ -12,7 +12,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 var (
@@ -71,12 +70,9 @@ func Draw(playerID string) {
 			viewHP = obj.HP
 		}
 
-		imgNo := obj.Count / object.ImageDelays[obj.Type]
-		draw.Object(obj.Type, imgNo, obj.X, obj.Y, draw.Option{
-			Reverse:  reverse,
-			ViewOfsX: obj.ViewOfsX,
-			ViewOfsY: obj.ViewOfsY,
-			ViewHP:   viewHP,
+		draw.Object(obj, draw.Option{
+			Reverse: reverse,
+			ViewHP:  viewHP,
 		})
 	}
 
