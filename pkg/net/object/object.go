@@ -64,12 +64,9 @@ type Object struct {
 	ViewOfsY       int32
 	DamageChecked  bool
 	HitDamage      damage.Damage
-	TTL            int
 	Count          int
 	Hittable       bool
 	Speed          int
-
-	sendMark bool
 }
 
 func Marshal(obj Object) []byte {
@@ -81,12 +78,4 @@ func Marshal(obj Object) []byte {
 func Unmarshal(obj *Object, data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(obj)
-}
-
-func (o *Object) IsSend() bool {
-	return o.sendMark
-}
-
-func (o *Object) MarkAsSend() {
-	o.sendMark = true
 }

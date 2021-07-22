@@ -225,13 +225,6 @@ func (s *session) frameProc(exitErr chan error) {
 				}
 			}
 			s.dmMgr.Update()
-
-			// object process
-			s.fieldLock.Lock()
-			for i := 0; i < len(s.clients); i++ {
-				s.clients[i].fieldInfo.UpdateObjects()
-			}
-			s.fieldLock.Unlock()
 		}
 
 		fpsMgr.Wait()
@@ -354,7 +347,6 @@ func (s *session) publishField() {
 		}
 
 		s.fieldLock.Lock()
-		s.clients[i].fieldInfo.MarkAsSend()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
 		s.fieldLock.Unlock()
 	}
