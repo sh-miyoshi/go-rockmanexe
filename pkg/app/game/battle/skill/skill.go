@@ -687,11 +687,13 @@ func (p *shockWave) Draw() {
 	if p.showWave && n >= 0 {
 		vx, vy := battlecommon.ViewPos(p.x, p.y)
 		if p.Direct == common.DirectLeft {
-			dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
+			flag := int32(dxlib.TRUE)
+			dxopts := dxlib.DrawRotaGraphOption{
+				ReverseXFlag: &flag,
+			}
+			dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE, dxopts)
 		} else if p.Direct == common.DirectRight {
-			ofsx := int32(100 / 2)
-			ofsy := int32(140 / 2)
-			dxlib.DrawTurnGraph(vx-ofsx, vy-ofsy, imgShockWave[n], dxlib.TRUE)
+			dxlib.DrawRotaGraph(vx, vy, 1, 0, imgShockWave[n], dxlib.TRUE)
 		}
 	}
 
