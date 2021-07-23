@@ -47,6 +47,17 @@ func Object(obj object.Object, opt Option) {
 	imgNo := obj.Count / object.ImageDelays[obj.Type]
 	dxopts := dxlib.DrawRotaGraphOption{}
 
+	if obj.ShowHitArea {
+		pvx := int32(field.PanelSizeX * obj.X)
+		pvy := int32(field.DrawPanelTopY + field.PanelSizeY*obj.Y)
+		x1 := pvx
+		y1 := pvy
+		x2 := pvx + field.PanelSizeX
+		y2 := pvy + field.PanelSizeY
+		const s = 5
+		dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
+	}
+
 	if opt.Reverse {
 		flag := int32(dxlib.TRUE)
 		dxopts.ReverseXFlag = &flag

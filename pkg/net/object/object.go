@@ -46,7 +46,7 @@ const (
 var (
 	ImageDelays = [TypeMax]int{
 		1, 1, 2, 2, 6, 3, 4, 1, 4, // Rockman
-		2, 6, 2, 6, 2, 6, 3, 3, 3, 4, 1, 2, 2, 2, 3, 6, 4, 4, 4, 5, // Skills
+		2, 6, 2, 6, 2, 6, 3, 3, 3, 4, 1, 2, 2, 2, 3, 6, 4, 4, 4, 3, // Skills
 	}
 )
 
@@ -67,6 +67,7 @@ type Object struct {
 	Count          int
 	Hittable       bool
 	Speed          int
+	ShowHitArea    bool
 }
 
 func Marshal(obj Object) []byte {

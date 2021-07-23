@@ -59,6 +59,8 @@ func Add(skillID int, arg Argument) string {
 		skills[id] = newWideShot(arg.X, arg.Y, arg.Power, 8)
 	case skill.SkillSpreadGun:
 		skills[id] = newSpreadGun(arg.X, arg.Y, arg.Power)
+	case skill.SkillPlayerShockWave, skill.SkillShockWave:
+		skills[id] = newShockWave(arg.X, arg.Y, arg.Power)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
