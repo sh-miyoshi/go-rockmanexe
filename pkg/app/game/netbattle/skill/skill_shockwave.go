@@ -2,10 +2,12 @@ package skill
 
 import (
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -69,6 +71,17 @@ func (p *shockWave) Process() (bool, error) {
 			})
 
 			// Add damage
+			netconn.SendDamages([]damage.Damage{
+				{
+					ID:         uuid.New().String(),
+					ClientID:   config.Get().Net.ClientID,
+					PosX:       p.x,
+					PosY:       p.y,
+					Power:      p.power,
+					TTL:        n - 2,
+					TargetType: damage.TargetOtherClient,
+				},
+			})
 		}
 	}
 
