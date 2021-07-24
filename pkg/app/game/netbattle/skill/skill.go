@@ -4,7 +4,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/stretchr/stew/slice"
 )
 
 type Argument struct {
@@ -61,9 +65,36 @@ func Add(skillID int, arg Argument) string {
 		skills[id] = newSpreadGun(arg.X, arg.Y, arg.Power)
 	case skill.SkillPlayerShockWave, skill.SkillShockWave:
 		skills[id] = newShockWave(arg.X, arg.Y, arg.Power)
+	case skill.SkillThunderBall:
+		skills[id] = newThunderBall(arg.X, arg.Y, arg.Power)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
 
 	return id
+}
+
+func getEnemies() []object.Object {
+	res := []object.Object{}
+	rockmanObj := []int{
+		object.TypeRockmanStand,
+		object.TypeRockmanMove,
+		object.TypeRockmanDamage,
+		object.TypeRockmanShot,
+		object.TypeRockmanCannon,
+		object.TypeRockmanSword,
+		object.TypeRockmanBomb,
+		object.TypeRockmanBuster,
+		object.TypeRockmanPick,
+	}
+
+	myClientID := config.Get().Net.ClientID
+	finfo, _ := netconn.GetFieldInfo()
+	for _, obj := range finfo.Objects {
+		if obj.ClientID != myClientID && slice.Contains(rockmanObj, obj.Type) {
+			res = append(res, obj)
+		}
+	}
+
+	return res
 }
