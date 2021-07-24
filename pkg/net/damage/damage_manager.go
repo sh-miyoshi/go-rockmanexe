@@ -53,3 +53,19 @@ func (m *Manager) Update() {
 	}
 	m.damages = newDamages
 }
+
+func (m *Manager) GetHitAreas(clientID string) [][2]int {
+	res := [][2]int{}
+
+	for _, dm := range m.damages {
+		if dm.ShowHitArea {
+			if dm.ClientID == clientID {
+				res = append(res, [2]int{dm.PosX, dm.PosY})
+			} else {
+				res = append(res, [2]int{config.FieldNumX - dm.PosX, dm.PosY})
+			}
+		}
+	}
+
+	return res
+}

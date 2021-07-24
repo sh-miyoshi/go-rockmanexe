@@ -67,19 +67,19 @@ func (p *shockWave) Process() (bool, error) {
 				X:              p.x,
 				Y:              p.y,
 				UpdateBaseTime: true,
-				ShowHitArea:    true,
 			})
 
 			// Add damage
 			netconn.SendDamages([]damage.Damage{
 				{
-					ID:         uuid.New().String(),
-					ClientID:   config.Get().Net.ClientID,
-					PosX:       p.x,
-					PosY:       p.y,
-					Power:      p.power,
-					TTL:        n - 2,
-					TargetType: damage.TargetOtherClient,
+					ID:          uuid.New().String(),
+					ClientID:    config.Get().Net.ClientID,
+					PosX:        p.x,
+					PosY:        p.y,
+					Power:       p.power,
+					TTL:         n - 2,
+					TargetType:  damage.TargetOtherClient,
+					ShowHitArea: true,
 				},
 			})
 		}

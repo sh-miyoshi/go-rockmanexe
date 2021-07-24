@@ -335,6 +335,16 @@ func (s *session) publishField() {
 
 	for i := 0; i < len(s.clients); i++ {
 		s.clients[i].fieldInfo.CurrentTime = now
+
+		for x := 0; x < config.FieldNumX; x++ {
+			for y := 0; y < config.FieldNumY; y++ {
+				s.clients[i].fieldInfo.Panels[x][y].ShowHitArea = false
+			}
+		}
+		for _, pos := range s.dmMgr.GetHitAreas(s.clients[i].clientID) {
+			s.clients[i].fieldInfo.Panels[pos[0]][pos[1]].ShowHitArea = true
+		}
+
 		d := &pb.Data{
 			Type: pb.Data_DATA,
 			Data: &pb.Data_RawData{

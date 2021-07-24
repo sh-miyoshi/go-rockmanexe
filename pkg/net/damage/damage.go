@@ -23,6 +23,7 @@ type Damage struct {
 	BigDamage     bool
 	ViewOfsX      int32
 	ViewOfsY      int32
+	ShowHitArea   bool
 }
 
 func Marshal(dm []Damage) []byte {

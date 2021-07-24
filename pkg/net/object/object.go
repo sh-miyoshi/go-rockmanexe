@@ -67,7 +67,8 @@ type Object struct {
 	Count          int
 	Hittable       bool
 	Speed          int
-	ShowHitArea    bool
+	TargetX        int
+	TargetY        int
 }
 
 func Marshal(obj Object) []byte {

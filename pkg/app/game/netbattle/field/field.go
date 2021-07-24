@@ -54,6 +54,15 @@ func Draw(playerID string) {
 			}
 
 			dxlib.DrawGraph(vx, vy, pn, dxlib.TRUE)
+
+			if info.Panels[x][y].ShowHitArea {
+				x1 := vx
+				y1 := vy
+				x2 := vx + appfield.PanelSizeX
+				y2 := vy + appfield.PanelSizeY
+				const s = 5
+				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
+			}
 		}
 	}
 

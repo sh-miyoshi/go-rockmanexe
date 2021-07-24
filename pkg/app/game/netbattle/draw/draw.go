@@ -47,17 +47,6 @@ func Object(obj object.Object, opt Option) {
 	imgNo := obj.Count / object.ImageDelays[obj.Type]
 	dxopts := dxlib.DrawRotaGraphOption{}
 
-	if obj.ShowHitArea {
-		pvx := int32(field.PanelSizeX * obj.X)
-		pvy := int32(field.DrawPanelTopY + field.PanelSizeY*obj.Y)
-		x1 := pvx
-		y1 := pvy
-		x2 := pvx + field.PanelSizeX
-		y2 := pvy + field.PanelSizeY
-		const s = 5
-		dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
-	}
-
 	if opt.Reverse {
 		flag := int32(dxlib.TRUE)
 		dxopts.ReverseXFlag = &flag
@@ -68,11 +57,14 @@ func Object(obj object.Object, opt Option) {
 	vy += obj.ViewOfsY
 
 	// Special object draw
-	if obj.Type == object.TypeVulcan {
+	switch obj.Type {
+	case object.TypeVulcan:
 		objectVulcan(vx, vy, imgNo, dxopts)
-	} else if obj.Type == object.TypeWideShotMove {
+	case object.TypeWideShotMove:
 		objectWideShotMove(vx, vy, obj, dxopts)
-	} else {
+	case object.TypeThunderBall:
+		objectThunderBall(vx, vy, obj, dxopts)
+	default:
 		if imgNo >= len(imgObjs[obj.Type]) {
 			imgNo = len(imgObjs[obj.Type]) - 1
 		}
@@ -370,4 +362,13 @@ func objectWideShotMove(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGr
 	}
 
 	dxlib.DrawRotaGraph(vx+ofsx, vy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
+}
+
+func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
+	if obj.Count < obj.Speed {
+		ofsx := field.PanelSizeX * (obj.TargetX - obj.X) * obj.Count / obj.Speed
+		ofsy := field.PanelSizeY * (obj.TargetY - obj.Y) * obj.Count / obj.Speed
+		dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
+	}
 }
