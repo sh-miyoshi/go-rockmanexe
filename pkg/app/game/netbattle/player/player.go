@@ -285,6 +285,10 @@ func (p *BattlePlayer) damageProc() bool {
 				if p.Object.HP < 0 {
 					p.Object.HP = 0
 				}
+				if p.Object.HP > int(p.HPMax) {
+					p.Object.HP = int(p.HPMax)
+				}
+
 				// TODO Add damage animation
 				netconn.SendObject(p.Object)
 
