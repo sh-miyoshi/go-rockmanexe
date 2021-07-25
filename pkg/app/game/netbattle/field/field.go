@@ -2,6 +2,7 @@ package field
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -12,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 var (
@@ -66,7 +68,13 @@ func Draw(playerID string) {
 		}
 	}
 
-	for _, obj := range info.Objects {
+	objects := append([]object.Object{}, info.Objects...)
+	sort.Slice(objects, func(i, j int) bool {
+		ii := objects[i].Y*appfield.FieldNumX + objects[i].X
+		ij := objects[j].Y*appfield.FieldNumX + objects[j].X
+		return ii < ij
+	})
+	for _, obj := range objects {
 		reverse := false
 
 		if obj.ClientID != clientID {
