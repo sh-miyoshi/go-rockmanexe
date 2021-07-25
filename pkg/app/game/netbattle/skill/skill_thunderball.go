@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	nextStepCount = 160
+	nextStepCount = 80
 	maxMoveCount  = 6
 )
 
@@ -98,6 +98,10 @@ func (p *thunderBall) Process() (bool, error) {
 				ShowHitArea: true,
 			},
 		})
+
+		if isObjectHit(x, y) {
+			return true, nil
+		}
 	}
 
 	p.count++

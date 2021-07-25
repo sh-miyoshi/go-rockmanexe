@@ -70,6 +70,8 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to add init player object: %w", err)
 	}
 
+	skill.Init(playerInst.Object.ID)
+
 	// TODO
 
 	return nil

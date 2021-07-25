@@ -23,8 +23,14 @@ type Skill interface {
 }
 
 var (
-	skills = make(map[string]Skill)
+	skills   = make(map[string]Skill)
+	playerID string
 )
+
+func Init(plyrID string) {
+	skills = make(map[string]Skill)
+	playerID = plyrID
+}
 
 func Process() error {
 	for id, s := range skills {
@@ -101,4 +107,14 @@ func getEnemies() []object.Object {
 	}
 
 	return res
+}
+
+func isObjectHit(x, y int) bool {
+	finfo, _ := netconn.GetFieldInfo()
+	for _, obj := range finfo.Objects {
+		if obj.Hittable && obj.X == x && obj.Y == y && obj.ID != playerID {
+			return true
+		}
+	}
+	return false
 }
