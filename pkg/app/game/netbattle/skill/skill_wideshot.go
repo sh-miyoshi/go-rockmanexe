@@ -88,6 +88,10 @@ func (p *wideShot) Process() (bool, error) {
 			})
 
 			p.addDamages()
+
+			if isObjectHit(p.x, p.y) {
+				return true, nil
+			}
 		}
 	}
 
