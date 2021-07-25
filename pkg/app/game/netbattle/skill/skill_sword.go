@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -73,12 +72,10 @@ func (p *sword) RemoveObject() {
 }
 
 func (p *sword) addDamage() {
-	clientID := config.Get().Net.ClientID
 	damages := []damage.Damage{}
 
 	dm := damage.Damage{
 		ID:         uuid.New().String(),
-		ClientID:   clientID,
 		Power:      p.power,
 		TTL:        1,
 		TargetType: damage.TargetOtherClient,

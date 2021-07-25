@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
@@ -71,8 +70,6 @@ func (p *vulcan) RemoveObject() {
 }
 
 func (p *vulcan) addDamage() {
-	clientID := config.Get().Net.ClientID
-
 	dm := []damage.Damage{}
 	hit := false
 	eff := effect.Effect{}
@@ -81,7 +78,6 @@ func (p *vulcan) addDamage() {
 		if pn.ObjectID != "" {
 			dm = append(dm, damage.Damage{
 				ID:            uuid.New().String(),
-				ClientID:      clientID,
 				PosX:          x,
 				PosY:          p.y,
 				Power:         p.power,
@@ -91,7 +87,6 @@ func (p *vulcan) addDamage() {
 			})
 			eff = effect.Effect{
 				ID:       uuid.New().String(),
-				ClientID: clientID,
 				Type:     effect.TypeVulcanHit1Effect,
 				X:        x,
 				Y:        p.y,
@@ -101,7 +96,6 @@ func (p *vulcan) addDamage() {
 			if p.hit && x < appfield.FieldNumX-1 {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
-					ClientID:      clientID,
 					PosX:          x + 1,
 					PosY:          p.y,
 					Power:         p.power,

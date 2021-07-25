@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -46,7 +45,6 @@ func (p *recover) Process() (bool, error) {
 		netconn.SendDamages([]damage.Damage{
 			{
 				ID:         uuid.New().String(),
-				ClientID:   config.Get().Net.ClientID,
 				PosX:       p.x,
 				PosY:       p.y,
 				Power:      -p.power,

@@ -63,7 +63,6 @@ func (a *Act) Process() bool {
 			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
-					ClientID:      a.Object.ClientID,
 					PosX:          x,
 					PosY:          y,
 					Power:         1, // TODO change power

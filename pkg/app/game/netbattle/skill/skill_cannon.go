@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -77,13 +76,10 @@ func (p *cannon) RemoveObject() {
 }
 
 func (p *cannon) addDamage() {
-	clientID := config.Get().Net.ClientID
-
 	dm := []damage.Damage{}
 	for x := p.x + 1; x < appfield.FieldNumX; x++ {
 		dm = append(dm, damage.Damage{
 			ID:            uuid.New().String(),
-			ClientID:      clientID,
 			PosX:          x,
 			PosY:          p.y,
 			Power:         p.power,

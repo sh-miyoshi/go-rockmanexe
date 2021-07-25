@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -102,12 +101,9 @@ func (p *wideShot) RemoveObject() {
 }
 
 func (p *wideShot) addDamages() {
-	clientID := config.Get().Net.ClientID
-
 	damages := []damage.Damage{}
 	dm := damage.Damage{
 		ID:         uuid.New().String(),
-		ClientID:   clientID,
 		PosX:       p.x,
 		PosY:       p.y,
 		Power:      p.power,

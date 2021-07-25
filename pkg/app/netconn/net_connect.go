@@ -72,6 +72,7 @@ func Disconnect() {
 
 func SendObject(obj object.Object) error {
 	c := config.Get()
+	obj.ClientID = c.Net.ClientID
 
 	req := &pb.Action{
 		SessionID: sessionID,
@@ -141,6 +142,10 @@ func RemoveObject(objID string) error {
 func SendDamages(dm []damage.Damage) error {
 	c := config.Get()
 
+	for i := 0; i < len(dm); i++ {
+		dm[i].ClientID = c.Net.ClientID
+	}
+
 	req := &pb.Action{
 		SessionID: sessionID,
 		ClientID:  c.Net.ClientID,
@@ -164,6 +169,7 @@ func SendDamages(dm []damage.Damage) error {
 
 func SendEffect(eff effect.Effect) error {
 	c := config.Get()
+	eff.ClientID = c.Net.ClientID
 
 	req := &pb.Action{
 		SessionID: sessionID,

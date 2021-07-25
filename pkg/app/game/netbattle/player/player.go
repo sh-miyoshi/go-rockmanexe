@@ -295,7 +295,6 @@ func (p *BattlePlayer) damageProc() bool {
 				if obj.HitDamage.HitEffectType > 0 {
 					netconn.SendEffect(effect.Effect{
 						ID:       uuid.New().String(),
-						ClientID: p.Object.ClientID,
 						Type:     obj.HitDamage.HitEffectType,
 						X:        p.Object.X,
 						Y:        p.Object.Y,

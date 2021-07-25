@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
@@ -67,11 +66,9 @@ func (p *spreadGun) Process() (bool, error) {
 				// Hit
 				sound.On(sound.SESpreadHit)
 
-				clientID := config.Get().Net.ClientID
 				damages := []damage.Damage{}
 				dm := damage.Damage{
 					ID:            uuid.New().String(),
-					ClientID:      clientID,
 					PosX:          x,
 					PosY:          p.y,
 					Power:         p.power,
@@ -94,11 +91,10 @@ func (p *spreadGun) Process() (bool, error) {
 						if x+sx >= 0 && x+sx < appfield.FieldNumX {
 							// Send effect
 							netconn.SendEffect(effect.Effect{
-								ID:       uuid.New().String(),
-								ClientID: clientID,
-								Type:     effect.TypeSpreadHitEffect,
-								X:        x + sx,
-								Y:        p.y + sy,
+								ID:   uuid.New().String(),
+								Type: effect.TypeSpreadHitEffect,
+								X:    x + sx,
+								Y:    p.y + sy,
 							})
 
 							// Add damage

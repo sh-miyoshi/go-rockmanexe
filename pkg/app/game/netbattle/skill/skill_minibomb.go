@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
@@ -52,17 +51,15 @@ func (p *miniBomb) Process() (bool, error) {
 		sound.On(sound.SEExplode)
 
 		netconn.SendEffect(effect.Effect{
-			ID:       uuid.New().String(),
-			ClientID: config.Get().Net.ClientID,
-			Type:     effect.TypeExplodeEffect,
-			X:        p.x + 3,
-			Y:        p.y,
+			ID:   uuid.New().String(),
+			Type: effect.TypeExplodeEffect,
+			X:    p.x + 3,
+			Y:    p.y,
 		})
 
 		netconn.SendDamages([]damage.Damage{
 			{
 				ID:         uuid.New().String(),
-				ClientID:   config.Get().Net.ClientID,
 				PosX:       p.x + 3,
 				PosY:       p.y,
 				Power:      p.power,
