@@ -69,6 +69,8 @@ func Add(skillID int, arg Argument) string {
 		skills[id] = newThunderBall(arg.X, arg.Y, arg.Power)
 	case skill.SkillRecover:
 		skills[id] = newRecover(arg.X, arg.Y, arg.Power)
+	case skill.SkillMiniBomb:
+		skills[id] = newMiniBomb(arg.X, arg.Y, arg.Power)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}

@@ -64,6 +64,8 @@ func Object(obj object.Object, opt Option) {
 		objectWideShotMove(vx, vy, obj, dxopts)
 	case object.TypeThunderBall:
 		objectThunderBall(vx, vy, obj, dxopts)
+	case object.TypeMiniBomb:
+		objectMiniBomb(vx, vy, obj, dxopts)
 	default:
 		if imgNo >= len(imgObjs[obj.Type]) {
 			imgNo = len(imgObjs[obj.Type]) - 1
@@ -371,4 +373,17 @@ func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGra
 		ofsy := field.PanelSizeY * (obj.TargetY - obj.Y) * obj.Count / obj.Speed
 		dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
 	}
+}
+
+func objectMiniBomb(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
+
+	// y = ax^2 + bx +c
+	// (0,0), (d/2, ymax), (d, 0)
+	size := field.PanelSizeX * 3
+	ofsx := size * obj.Count / obj.Speed
+	ymax := 100
+	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
+
+	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 }
