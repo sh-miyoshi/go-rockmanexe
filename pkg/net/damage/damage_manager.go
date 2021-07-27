@@ -12,20 +12,25 @@ type Manager struct {
 
 func (m *Manager) Hit(ownerClientID string, objClientID string, objX, objY int) *Damage {
 	for _, dm := range m.damages {
+		if dm.TargetType == TargetOwn && dm.ClientID != ownerClientID {
+			continue
+		}
+		if dm.TargetType == TargetOtherClient && dm.ClientID == ownerClientID {
+			continue
+		}
+
 		x := objX
 		if ownerClientID != dm.ClientID {
 			x = config.FieldNumX - objX - 1
 		}
 
 		if dm.PosX == x && dm.PosY == objY {
-			if dm.TargetType == TargetOwn && dm.ClientID != objClientID {
-				continue
+			if dm.TargetType == TargetOwn && dm.ClientID == objClientID {
+				return &dm
 			}
-			if dm.TargetType == TargetOtherClient && dm.ClientID == objClientID {
-				continue
+			if dm.TargetType == TargetOtherClient && dm.ClientID != objClientID {
+				return &dm
 			}
-
-			return &dm
 		}
 	}
 	return nil

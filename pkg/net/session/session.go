@@ -214,13 +214,16 @@ func (s *session) frameProc(exitErr chan error) {
 		if s.status == statusActing {
 			// damage process
 			for i, c := range s.clients {
-				for j, obj := range c.fieldInfo.Objects {
+				for _, obj := range c.fieldInfo.Objects {
+					if !obj.Hittable {
+						continue
+					}
+
 					if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
 						s.fieldLock.Lock()
-						s.clients[i].fieldInfo.Objects[j].DamageChecked = false
-						s.clients[i].fieldInfo.Objects[j].HitDamage = *dm
+						s.clients[i].fieldInfo.HitDamage = *dm
 						s.fieldLock.Unlock()
-						logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+						logger.Debug("Hit damage for %+v: %+v", obj, dm)
 					}
 				}
 			}
@@ -358,6 +361,7 @@ func (s *session) publishField() {
 
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
+		s.clients[i].fieldInfo.HitDamage.ID = ""
 		s.fieldLock.Unlock()
 	}
 }

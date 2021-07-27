@@ -33,13 +33,11 @@ const (
 )
 
 var (
-	battleCount    int
-	battleState    int
-	gameCount      int
-	b4mainInst     *titlemsg.TitleMsg
-	loseInst       *titlemsg.TitleMsg
-	basePlayerInst *player.Player
-	playerInst     *battleplayer.BattlePlayer
+	battleCount int
+	battleState int
+	gameCount   int
+	b4mainInst  *titlemsg.TitleMsg
+	playerInst  *battleplayer.BattlePlayer
 )
 
 func Init(plyr *player.Player) error {
@@ -49,8 +47,6 @@ func Init(plyr *player.Player) error {
 	battleCount = 0
 	battleState = stateWaiting
 	b4mainInst = nil
-	loseInst = nil
-	basePlayerInst = plyr
 
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("net battle field init failed: %w", err)
@@ -66,7 +62,8 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init battle draw info: %w", err)
 	}
 
-	if err := netconn.SendObject(playerInst.Object); err != nil {
+	netconn.SendObject(playerInst.Object)
+	if err := netconn.BulkSendFieldInfo(); err != nil {
 		return fmt.Errorf("failed to add init player object: %w", err)
 	}
 
@@ -90,6 +87,10 @@ func Process() error {
 	}
 	netconn.UpdateObjectsCount()
 	effect.Process()
+
+	if err := netconn.BulkSendFieldInfo(); err != nil {
+		return fmt.Errorf("send field info failed: %w", err)
+	}
 
 	switch battleState {
 	case stateWaiting:

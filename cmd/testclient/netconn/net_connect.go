@@ -205,3 +205,7 @@ func GetStatus() (pb.Data_Status, error) {
 func GetFieldInfo() (*field.Info, error) {
 	return &fieldInfo, exitErr
 }
+
+func RemoveDamage() {
+	fieldInfo.HitDamage.ID = ""
+}

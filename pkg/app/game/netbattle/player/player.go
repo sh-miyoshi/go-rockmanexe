@@ -27,14 +27,15 @@ import (
 )
 
 type BattlePlayer struct {
-	Object      object.Object
-	HPMax       uint
-	ChargeCount uint
-	GaugeCount  uint
-	ShotPower   uint
-	ChipFolder  []player.ChipInfo
-	Act         *Act
-	HitDamages  map[string]bool
+	Object        object.Object
+	HPMax         uint
+	ChargeCount   uint
+	GaugeCount    uint
+	ShotPower     uint
+	ChipFolder    []player.ChipInfo
+	Act           *Act
+	HitDamages    map[string]bool
+	ManagedSkills []string
 }
 
 var (
@@ -51,13 +52,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 
 	res := BattlePlayer{
 		Object: object.Object{
-			ID:            uuid.New().String(),
-			HP:            int(plyr.HP),
-			X:             1,
-			Y:             1,
-			DamageChecked: true,
-			ClientID:      cfg.Net.ClientID,
-			Hittable:      true,
+			ID:       uuid.New().String(),
+			HP:       int(plyr.HP),
+			X:        1,
+			Y:        1,
+			ClientID: cfg.Net.ClientID,
+			Hittable: true,
 		},
 		HPMax:      plyr.HP,
 		ShotPower:  plyr.ShotPower,
@@ -222,11 +222,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			netskill.Add(sid, netskill.Argument{
+			id := netskill.Add(sid, netskill.Argument{
 				X:     p.Object.X,
 				Y:     p.Object.Y,
 				Power: int(c.Power),
 			})
+			p.ManagedSkills = append(p.ManagedSkills, id)
 
 			p.Object.Chips = p.Object.Chips[1:]
 			return false, nil
@@ -269,44 +270,50 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 
 func (p *BattlePlayer) damageProc() bool {
 	finfo, _ := netconn.GetFieldInfo()
-	for _, obj := range finfo.Objects {
-		if obj.ID == p.Object.ID {
-			if !obj.DamageChecked {
-				if _, exists := p.HitDamages[obj.HitDamage.ID]; exists {
-					break
-				} else {
-					p.HitDamages[obj.HitDamage.ID] = true
-				}
-
-				logger.Debug("Got damage: %+v", obj.HitDamage)
-
-				p.Object.DamageChecked = true
-				p.Object.HP -= obj.HitDamage.Power
-				if p.Object.HP < 0 {
-					p.Object.HP = 0
-				}
-				if p.Object.HP > int(p.HPMax) {
-					p.Object.HP = int(p.HPMax)
-				}
-
-				// TODO Add damage animation
-				netconn.SendObject(p.Object)
-
-				if obj.HitDamage.HitEffectType > 0 {
-					netconn.SendEffect(effect.Effect{
-						ID:       uuid.New().String(),
-						Type:     obj.HitDamage.HitEffectType,
-						X:        p.Object.X,
-						Y:        p.Object.Y,
-						ViewOfsX: obj.HitDamage.ViewOfsX,
-						ViewOfsY: obj.HitDamage.ViewOfsY,
-					})
-				}
-
-				return true
-			}
-			break
-		}
+	if finfo.HitDamage.ID == "" {
+		return false
 	}
-	return false
+
+	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
+		return false
+	} else {
+		p.HitDamages[finfo.HitDamage.ID] = true
+	}
+
+	logger.Debug("Got damage: %+v", finfo.HitDamage)
+
+	p.Object.HP -= finfo.HitDamage.Power
+	if p.Object.HP < 0 {
+		p.Object.HP = 0
+	}
+	if p.Object.HP > int(p.HPMax) {
+		p.Object.HP = int(p.HPMax)
+	}
+
+	if finfo.HitDamage.BigDamage {
+		// TODO インビジ状態
+		// TODO stop skills
+		p.ManagedSkills = []string{}
+		p.Act.Set(battlecommon.PlayerActDamage, nil)
+	} else {
+		netconn.SendObject(p.Object)
+	}
+
+	if finfo.HitDamage.Power > 0 {
+		sound.On(sound.SEDamaged)
+	}
+
+	if finfo.HitDamage.HitEffectType > 0 {
+		netconn.SendEffect(effect.Effect{
+			ID:       uuid.New().String(),
+			Type:     finfo.HitDamage.HitEffectType,
+			X:        p.Object.X,
+			Y:        p.Object.Y,
+			ViewOfsX: finfo.HitDamage.ViewOfsX,
+			ViewOfsY: finfo.HitDamage.ViewOfsY,
+		})
+	}
+
+	netconn.RemoveDamage()
+	return true
 }

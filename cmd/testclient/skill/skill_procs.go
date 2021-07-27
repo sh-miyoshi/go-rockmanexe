@@ -50,6 +50,7 @@ func (p *cannon) Process() (bool, error) {
 				HitEffectType: effect.TypeCannonHitEffect,
 				ViewOfsX:      int32(rand.Intn(2*5) - 5),
 				ViewOfsY:      int32(rand.Intn(2*5) - 5),
+				BigDamage:     true,
 			})
 		}
 		netconn.SendDamages(dm)

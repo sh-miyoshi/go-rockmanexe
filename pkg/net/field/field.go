@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -15,6 +16,7 @@ type Info struct {
 	Objects     []object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 	Effects     []effect.Effect
+	HitDamage   damage.Damage
 }
 
 func Marshal(fieldInfo *Info) []byte {

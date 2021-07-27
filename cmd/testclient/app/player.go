@@ -27,14 +27,13 @@ type player struct {
 func newPlayer(clientID string) *player {
 	res := &player{
 		Object: object.Object{
-			ID:            uuid.New().String(),
-			ClientID:      clientID,
-			Type:          object.TypeRockmanStand,
-			HP:            150,
-			X:             1,
-			Y:             1,
-			DamageChecked: true,
-			Hittable:      true,
+			ID:       uuid.New().String(),
+			ClientID: clientID,
+			Type:     object.TypeRockmanStand,
+			HP:       150,
+			X:        1,
+			Y:        1,
+			Hittable: true,
 		},
 		Count:      0,
 		ActNo:      0,
@@ -73,7 +72,7 @@ func (p *player) Action() {
 		return
 	}
 
-	actTable := []int{0}
+	actTable := []int{2, 2}
 	// Wait, Move, Cannon, Buster
 	actInterval := []int{60, 60, 120, 60}
 
@@ -104,43 +103,37 @@ func (p *player) Action() {
 
 func (p *player) damageProc() bool {
 	finfo, _ := netconn.GetFieldInfo()
-	for _, obj := range finfo.Objects {
-		if obj.ID == p.Object.ID {
-			if !obj.DamageChecked {
-				if _, exists := p.HitDamages[obj.HitDamage.ID]; exists {
-					break
-				} else {
-					p.HitDamages[obj.HitDamage.ID] = true
-				}
-
-				log.Printf("got damage: %+v", obj.HitDamage)
-
-				p.Object.DamageChecked = true
-				p.Object.HP -= obj.HitDamage.Power
-				if p.Object.HP < 0 {
-					p.Object.HP = 0
-				}
-				// TODO Add damage animation
-				netconn.SendObject(p.Object)
-
-				if obj.HitDamage.HitEffectType > 0 {
-					log.Printf("add hit damage effect: %d", obj.HitDamage.HitEffectType)
-					netconn.SendEffect(effect.Effect{
-						ID:       uuid.New().String(),
-						ClientID: p.Object.ClientID,
-						Type:     obj.HitDamage.HitEffectType,
-						X:        p.Object.X,
-						Y:        p.Object.Y,
-						ViewOfsX: obj.HitDamage.ViewOfsX,
-						ViewOfsY: obj.HitDamage.ViewOfsY,
-					})
-				}
-
-				return true
-			}
-			break
-		}
+	if finfo.HitDamage.ID == "" {
+		return false
 	}
 
-	return false
+	log.Printf("got damage: %+v", finfo.HitDamage)
+
+	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
+		return false
+	} else {
+		p.HitDamages[finfo.HitDamage.ID] = true
+	}
+
+	p.Object.HP -= finfo.HitDamage.Power
+	if p.Object.HP < 0 {
+		p.Object.HP = 0
+	}
+
+	// TODO Add damage animation
+	netconn.SendObject(p.Object)
+
+	log.Printf("add hit damage effect: %d", finfo.HitDamage.HitEffectType)
+	netconn.SendEffect(effect.Effect{
+		ID:       uuid.New().String(),
+		ClientID: p.Object.ClientID,
+		Type:     finfo.HitDamage.HitEffectType,
+		X:        p.Object.X,
+		Y:        p.Object.Y,
+		ViewOfsX: finfo.HitDamage.ViewOfsX,
+		ViewOfsY: finfo.HitDamage.ViewOfsY,
+	})
+
+	netconn.RemoveDamage()
+	return true
 }

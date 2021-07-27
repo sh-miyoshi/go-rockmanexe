@@ -21,9 +21,6 @@ func updateObject(objects *[]object.Object, obj object.Object, clientID string, 
 	updated := false
 	for i, o := range *objects {
 		if o.ID == obj.ID {
-			if !obj.DamageChecked {
-				obj.HitDamage = o.HitDamage
-			}
 			if !obj.UpdateBaseTime {
 				obj.BaseTime = o.BaseTime
 			}
