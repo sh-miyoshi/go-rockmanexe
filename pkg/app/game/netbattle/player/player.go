@@ -124,7 +124,8 @@ func (p *BattlePlayer) End() {
 	}
 }
 
-func (p *BattlePlayer) DrawChargeShot() {
+func (p *BattlePlayer) DrawOptions() {
+	// Show Charge Shot
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0
 		if p.ChargeCount > battlecommon.ChargeTime {
@@ -135,6 +136,22 @@ func (p *BattlePlayer) DrawChargeShot() {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
 		dxlib.DrawRotaGraph(x, y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
+
+	// Show selected chip icons
+	n := len(p.Object.Chips)
+	if n > 0 {
+		// TODO Show chip info
+
+		const px = 3
+		max := n * px
+		for i := 0; i < n; i++ {
+			x := appfield.PanelSizeX*p.Object.X + appfield.PanelSizeX/2 - 2 + (i * px) - max
+			y := appfield.DrawPanelTopY + appfield.PanelSizeY*p.Object.Y - 10 - 81 + (i * px) - max
+			dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
+			// draw from the end
+			dxlib.DrawGraph(int32(x), int32(y), chip.GetIcon(p.Object.Chips[n-1-i], true), dxlib.TRUE)
+		}
 	}
 }
 

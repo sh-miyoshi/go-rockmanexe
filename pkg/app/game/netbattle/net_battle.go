@@ -159,7 +159,7 @@ func Process() error {
 
 func Draw() {
 	field.Draw(playerInst.Object.ID)
-	playerInst.DrawChargeShot()
+	playerInst.DrawOptions()
 
 	switch battleState {
 	case stateWaiting:
