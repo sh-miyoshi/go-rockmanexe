@@ -18,8 +18,9 @@ type Option struct {
 }
 
 var (
-	imgObjs [object.TypeMax][]int32
-	imgEffs [effect.TypeMax][]int32
+	imgObjs        [object.TypeMax][]int32
+	imgEffs        [effect.TypeMax][]int32
+	imgUnknownIcon int32
 )
 
 func Init() error {
@@ -31,6 +32,11 @@ func Init() error {
 		return fmt.Errorf("load effects failed: %w", err)
 	}
 
+	fname := common.ImagePath + "chipInfo/unknown_icon.png"
+	if imgUnknownIcon = dxlib.LoadGraph(fname); imgUnknownIcon == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
 	return nil
 }
 
@@ -40,6 +46,7 @@ func End() {
 			dxlib.DeleteGraph(img)
 		}
 	}
+	dxlib.DeleteGraph(imgUnknownIcon)
 }
 
 func Object(obj object.Object, opt Option) {
@@ -79,6 +86,13 @@ func Object(obj object.Object, opt Option) {
 			Color:    appdraw.NumberColorWhiteSmall,
 			Centered: true,
 		})
+	}
+
+	if len(obj.Chips) > 0 {
+		x := field.PanelSizeX*obj.X + field.PanelSizeX/2 - 18
+		y := field.DrawPanelTopY + field.PanelSizeY*obj.Y - 83
+		dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
+		dxlib.DrawGraph(int32(x), int32(y), imgUnknownIcon, dxlib.TRUE)
 	}
 }
 
