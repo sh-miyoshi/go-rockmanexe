@@ -27,13 +27,14 @@ type player struct {
 func newPlayer(clientID string) *player {
 	res := &player{
 		Object: object.Object{
-			ID:       uuid.New().String(),
-			ClientID: clientID,
-			Type:     object.TypeRockmanStand,
-			HP:       150,
-			X:        1,
-			Y:        1,
-			Hittable: true,
+			ID:             uuid.New().String(),
+			ClientID:       clientID,
+			Type:           object.TypeRockmanStand,
+			HP:             150,
+			X:              1,
+			Y:              1,
+			Hittable:       true,
+			UpdateBaseTime: true,
 		},
 		Count:      0,
 		ActNo:      0,

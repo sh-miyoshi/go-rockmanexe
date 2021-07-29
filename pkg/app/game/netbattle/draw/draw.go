@@ -74,6 +74,12 @@ func Object(obj object.Object, opt Option) {
 	case object.TypeMiniBomb:
 		objectMiniBomb(vx, vy, obj, dxopts)
 	default:
+		if obj.Invincible {
+			if cnt := obj.Count / 5 % 2; cnt == 0 {
+				return
+			}
+		}
+
 		if imgNo >= len(imgObjs[obj.Type]) {
 			imgNo = len(imgObjs[obj.Type]) - 1
 		}

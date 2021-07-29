@@ -65,6 +65,7 @@ type Object struct {
 	Speed          int
 	TargetX        int
 	TargetY        int
+	Invincible     bool
 }
 
 func Marshal(obj Object) []byte {
