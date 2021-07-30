@@ -52,6 +52,9 @@ func main() {
 	}
 
 	dxlib.SetDoubleStartValidFlag(dxlib.TRUE)
+	if config.Get().Debug.RunAlways {
+		dxlib.SetAlwaysRunFlag(dxlib.TRUE)
+	}
 
 	if config.Get().Debug.Enabled {
 		common.ImagePath = "data/private/images/"
