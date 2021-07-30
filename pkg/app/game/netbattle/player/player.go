@@ -291,6 +291,10 @@ func (p *BattlePlayer) damageProc() bool {
 		return false
 	}
 
+	if p.Object.Invincible {
+		return false
+	}
+
 	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
 		return false
 	} else {

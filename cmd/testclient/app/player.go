@@ -108,6 +108,10 @@ func (p *player) damageProc() bool {
 		return false
 	}
 
+	if p.Object.Invincible {
+		return false
+	}
+
 	log.Printf("got damage: %+v", finfo.HitDamage)
 
 	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
