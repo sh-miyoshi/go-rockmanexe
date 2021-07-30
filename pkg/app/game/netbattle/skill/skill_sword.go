@@ -100,3 +100,7 @@ func (p *sword) addDamage() {
 
 	netconn.SendDamages(damages)
 }
+
+func (p *sword) StopByPlayer() {
+	p.RemoveObject()
+}

@@ -20,6 +20,7 @@ type Argument struct {
 type Skill interface {
 	Process() (bool, error)
 	RemoveObject()
+	StopByPlayer()
 }
 
 var (
@@ -82,6 +83,12 @@ func Add(skillID int, arg Argument) string {
 	}
 
 	return id
+}
+
+func StopByPlayer(id string) {
+	if s, ok := skills[id]; ok {
+		s.StopByPlayer()
+	}
 }
 
 func getEnemies() []object.Object {

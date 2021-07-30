@@ -110,6 +110,9 @@ func (p *thunderBall) RemoveObject() {
 	netconn.RemoveObject(p.id)
 }
 
+func (p *thunderBall) StopByPlayer() {
+}
+
 func (p *thunderBall) getObject() object.Object {
 	return object.Object{
 		ID:             p.id,

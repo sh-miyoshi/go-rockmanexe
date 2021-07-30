@@ -65,3 +65,6 @@ func (p *recover) Process() (bool, error) {
 func (p *recover) RemoveObject() {
 	netconn.RemoveObject(p.id)
 }
+
+func (p *recover) StopByPlayer() {
+}

@@ -27,15 +27,16 @@ import (
 )
 
 type BattlePlayer struct {
-	Object        object.Object
-	HPMax         uint
-	ChargeCount   uint
-	GaugeCount    uint
-	ShotPower     uint
-	ChipFolder    []player.ChipInfo
-	Act           *Act
-	HitDamages    map[string]bool
-	ManagedSkills []string
+	Object          object.Object
+	HPMax           uint
+	ChargeCount     uint
+	GaugeCount      uint
+	ShotPower       uint
+	ChipFolder      []player.ChipInfo
+	Act             *Act
+	HitDamages      map[string]bool
+	ManagedSkills   []string
+	InvincibleCount uint
 }
 
 var (
@@ -185,6 +186,15 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
+	if p.Object.Invincible {
+		p.InvincibleCount++
+		if p.InvincibleCount > battlecommon.PlayerDefaultInvincibleTime {
+			p.InvincibleCount = 0
+			p.Object.Invincible = false
+			netconn.SendObject(p.Object)
+		}
+	}
+
 	if p.damageProc() {
 		return false, nil
 	}
@@ -312,8 +322,10 @@ func (p *BattlePlayer) damageProc() bool {
 	}
 
 	if finfo.HitDamage.BigDamage {
-		// TODO インビジ状態
-		// TODO stop skills
+		p.Object.Invincible = true
+		for _, sid := range p.ManagedSkills {
+			netskill.StopByPlayer(sid)
+		}
 		p.ManagedSkills = []string{}
 		p.Act.Set(battlecommon.PlayerActDamage, nil)
 	} else {

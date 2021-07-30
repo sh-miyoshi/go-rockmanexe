@@ -69,6 +69,10 @@ func (p *vulcan) RemoveObject() {
 	netconn.RemoveObject(p.id)
 }
 
+func (p *vulcan) StopByPlayer() {
+	p.RemoveObject()
+}
+
 func (p *vulcan) addDamage() {
 	dm := []damage.Damage{}
 	hit := false

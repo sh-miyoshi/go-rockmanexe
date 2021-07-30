@@ -75,6 +75,10 @@ func (p *cannon) RemoveObject() {
 	netconn.RemoveObject(p.bodyID)
 }
 
+func (p *cannon) StopByPlayer() {
+	p.RemoveObject()
+}
+
 func (p *cannon) addDamage() {
 	dm := []damage.Damage{}
 	for x := p.x + 1; x < appfield.FieldNumX; x++ {

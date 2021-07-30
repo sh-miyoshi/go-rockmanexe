@@ -77,3 +77,9 @@ func (p *miniBomb) Process() (bool, error) {
 func (p *miniBomb) RemoveObject() {
 	netconn.RemoveObject(p.id)
 }
+
+func (p *miniBomb) StopByPlayer() {
+	if p.count < 5 {
+		p.RemoveObject()
+	}
+}

@@ -128,3 +128,7 @@ func (p *spreadGun) RemoveObject() {
 	netconn.RemoveObject(p.atkID)
 	netconn.RemoveObject(p.bodyID)
 }
+
+func (p *spreadGun) StopByPlayer() {
+	p.RemoveObject()
+}

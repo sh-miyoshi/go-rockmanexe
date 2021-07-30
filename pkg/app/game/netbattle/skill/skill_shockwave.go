@@ -90,3 +90,9 @@ func (p *shockWave) RemoveObject() {
 	netconn.RemoveObject(p.pickID)
 	netconn.RemoveObject(p.waveID)
 }
+
+func (p *shockWave) StopByPlayer() {
+	if p.count < 10 {
+		p.RemoveObject()
+	}
+}

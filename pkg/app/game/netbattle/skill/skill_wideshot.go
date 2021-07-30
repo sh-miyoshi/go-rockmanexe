@@ -104,6 +104,14 @@ func (p *wideShot) RemoveObject() {
 	netconn.RemoveObject(p.moveID)
 }
 
+func (p *wideShot) StopByPlayer() {
+	num, delay := draw.GetImageInfo(object.TypeWideShotBody)
+
+	if p.count < num*delay {
+		p.RemoveObject()
+	}
+}
+
 func (p *wideShot) addDamages() {
 	damages := []damage.Damage{}
 	dm := damage.Damage{
