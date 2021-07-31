@@ -143,6 +143,13 @@ func Process() error {
 		if status == pb.Data_CHIPSELECTWAIT {
 			stateChange(stateChipSelect)
 			return nil
+		} else if status == pb.Data_GAMEEND {
+			if playerInst.Object.HP > 0 {
+				stateChange(stateResultWin)
+			} else {
+				stateChange(stateResultLose)
+			}
+			return nil
 		}
 
 		// TODO gameend, error handling
@@ -151,6 +158,12 @@ func Process() error {
 		if err := skill.Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
+	case stateResultWin:
+		dxlib.DrawString(100, 100, "WIN", 0xff0000)
+		// TODO
+	case stateResultLose:
+		dxlib.DrawString(100, 100, "LOSE", 0xff0000)
+		// TODO
 	}
 
 	battleCount++

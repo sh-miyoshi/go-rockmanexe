@@ -64,13 +64,18 @@ func (p *player) ChipSelect() error {
 	return nil
 }
 
-func (p *player) Action() {
+func (p *player) Action() bool {
+	if p.Object.HP <= 0 {
+		// Player deleted
+		return true
+	}
+
 	if p.damageProc() {
-		return
+		return false
 	}
 
 	if p.Act.Process() {
-		return
+		return false
 	}
 
 	actTable := []int{2, 2}
@@ -100,6 +105,8 @@ func (p *player) Action() {
 			p.Act.Set(battlecommon.PlayerActBuster, nil)
 		}
 	}
+
+	return false
 }
 
 func (p *player) damageProc() bool {

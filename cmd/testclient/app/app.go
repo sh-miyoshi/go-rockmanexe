@@ -15,6 +15,7 @@ const (
 	statusChipSelect
 	statusWaitActing
 	statusActing
+	statusGameEnd
 )
 
 var (
@@ -55,8 +56,13 @@ func Process(exitErr chan error) {
 		case statusWaitActing:
 			// 相手がselect完了になるのを待つ
 		case statusActing:
-			playerInst.Action()
+			if playerInst.Action() {
+				netconn.SendSignal(pb.Action_PLAYERDEAD)
+				statusChange(statusGameEnd)
+			}
 			skill.Process()
+		case statusGameEnd:
+			// TODO
 		}
 		time.Sleep(16 * time.Millisecond)
 	}
@@ -73,6 +79,10 @@ func statusUpdate(status pb.Data_Status) {
 	case pb.Data_ACTING:
 		if appStatus == statusWaitActing {
 			statusChange(statusActing)
+		}
+	case pb.Data_GAMEEND:
+		if appStatus == statusChipSelect || appStatus == statusActing {
+			statusChange(statusGameEnd)
 		}
 	default:
 		msg := fmt.Sprintf("unexpected status: app status %d, got status %d", appStatus, status)

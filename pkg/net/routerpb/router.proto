@@ -20,6 +20,7 @@ message Action {
     enum SignalType {
         CHIPSEND = 0;
         GOCHIPSELECT = 1;
+        PLAYERDEAD = 2;
     }
 
     string sessionID = 1;

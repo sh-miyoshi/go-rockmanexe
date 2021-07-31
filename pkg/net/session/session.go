@@ -157,6 +157,18 @@ func ActionProc(action *pb.Action) error {
 					}
 				case pb.Action_GOCHIPSELECT:
 					s.nextStatus = statusChipSelectWait
+				case pb.Action_PLAYERDEAD:
+					d := &pb.Data{
+						Type: pb.Data_UPDATESTATUS,
+						Data: &pb.Data_Status_{
+							Status: pb.Data_GAMEEND,
+						},
+					}
+					for i := 0; i < len(s.clients); i++ {
+						if err := s.clients[i].dataStream.Send(d); err != nil {
+							s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[i].clientID, err)
+						}
+					}
 				}
 			case pb.Action_REMOVEOBJECT:
 				id := action.GetObjectID()
