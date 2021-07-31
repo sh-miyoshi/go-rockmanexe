@@ -19,6 +19,7 @@ type Config struct {
 		StartContinue     bool `yaml:"start_continue"`
 		InitSleepSec      int  `yaml:"init_sleep_sec"`
 		RunAlways         bool `yaml:"run_always"`
+		EnableDevFeature  bool `yaml:"enable_dev_feature"`
 	} `yaml:"debug"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`

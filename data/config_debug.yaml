@@ -8,6 +8,7 @@ debug:
   start_continue: false
   init_sleep_sec: 0
   run_always: true
+  enable_dev_feature: true
 bgm:
   disabled: true
 net:
