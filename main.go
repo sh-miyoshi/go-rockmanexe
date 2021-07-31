@@ -9,14 +9,15 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/game"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/sound"
 )
 
 var (
@@ -29,6 +30,8 @@ func init() {
 }
 
 func main() {
+	fpsMgr := fps.Fps{TargetFPS: 60}
+
 	var confFile string
 	flag.StringVar(&confFile, "config", common.DefaultConfigFile, "file path of config")
 	flag.Parse()
@@ -46,6 +49,11 @@ func main() {
 	}
 	if encKey != "" {
 		common.EncryptKey = encKey
+	}
+
+	dxlib.SetDoubleStartValidFlag(dxlib.TRUE)
+	if config.Get().Debug.RunAlways {
+		dxlib.SetAlwaysRunFlag(dxlib.TRUE)
 	}
 
 	if config.Get().Debug.Enabled {
@@ -79,6 +87,11 @@ func main() {
 	}
 
 	logger.Info("Successfully init application.")
+
+	if config.Get().Debug.InitSleepSec > 0 {
+		tm := time.Duration(config.Get().Debug.InitSleepSec) * time.Second
+		time.Sleep(tm)
+	}
 MAIN:
 	for exitErr == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
@@ -95,6 +108,10 @@ MAIN:
 		}
 		count++
 
+		fpsMgr.Wait()
+		if config.Get().Debug.Enabled {
+			dxlib.DrawFormatString(common.ScreenX-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+		}
 	}
 
 	if exitErr != nil {

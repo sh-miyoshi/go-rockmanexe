@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package router;
+option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb";
+
+service Router {
+    rpc SendAction(Action) returns (Result) {}
+    rpc PublishData(AuthRequest) returns (stream Data) {}
+}
+
+message Action {
+    enum ActionType {
+        UPDATEOBJECT = 0;
+        SENDSIGNAL = 1;
+        REMOVEOBJECT = 2;
+        NEWDAMAGE = 3;
+        NEWEFFECT = 4;
+    }
+
+    enum SignalType {
+        CHIPSEND = 0;
+        GOCHIPSELECT = 1;
+        PLAYERDEAD = 2;
+    }
+
+    string sessionID = 1;
+    string clientID = 2;
+    ActionType type = 3;
+
+    oneof data {
+        SignalType signal = 4;
+        bytes objectInfo = 5;
+        string objectID = 6;
+        bytes damageInfo = 7;
+        bytes effect = 8;
+    }
+}
+
+message Result {
+    bool success = 1;
+    string errMsg = 2;
+}
+
+message AuthRequest {
+    string id = 1;
+    string key = 2;
+    string version = 3;
+}
+
+message Data {
+    enum MsgType {
+        AUTHRESPONSE = 0;
+        UPDATESTATUS = 1;
+        DATA = 2;
+    }
+
+    enum Status {
+        CONNECTWAIT = 0;
+        CHIPSELECTWAIT = 1;
+        ACTING = 2;
+        GAMEEND = 3;
+    }
+
+    MsgType type = 1;
+    oneof data {
+        AuthResponse authRes = 2;
+        Status status = 3;
+        bytes rawData = 4;
+    }
+}
+
+message AuthResponse {
+    bool success = 1;
+    string errMsg = 2;
+    string sessionID = 3;
+}

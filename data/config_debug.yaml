@@ -1,10 +1,17 @@
 log:
-  file: ""
+  file: "application.log"
 debug:
   enabled: true
   skip_title: true
-  skip_menu: true
+  skip_menu: false
   skip_battle_opening: true
   start_continue: false
+  init_sleep_sec: 0
+  run_always: true
+  enable_dev_feature: true
 bgm:
   disabled: true
+net:
+  client_id: "tester1"
+  client_key: "testtest"
+  addr: "localhost:16283"
