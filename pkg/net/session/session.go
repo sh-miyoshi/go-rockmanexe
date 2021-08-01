@@ -2,7 +2,6 @@ package session
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"time"
 
@@ -193,58 +192,75 @@ func (s *session) mainProcess() {
 	s.clients[0].fieldInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
 	s.clients[1].fieldInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
 
-	var exitErr chan error
-	go s.frameProc(exitErr)
-	go s.dataSend(exitErr)
+	exitErr := make(chan error)
+	cancel := make(chan struct{})
+	go s.frameProc(exitErr, cancel)
+	go s.dataSend(exitErr, cancel)
 
 	err := <-exitErr
-	logger.Error("Run failed: %v", err)
-	os.Exit(1)
+	close(cancel)
+	sessionLock.Lock()
+	delete(sessionList, s.sessionID)
+	sessionLock.Unlock()
+
+	if err != nil {
+		logger.Error("Run failed: %v", err)
+	}
 }
 
-func (s *session) frameProc(exitErr chan error) {
+func (s *session) frameProc(exitErr chan error, cancel chan struct{}) {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 	for {
-		if s.status == statusActing {
-			// damage process
-			for i, c := range s.clients {
-				for _, obj := range c.fieldInfo.Objects {
-					if !obj.Hittable {
-						continue
-					}
+		select {
+		case <-cancel:
+			return
+		default:
+			if s.status == statusActing {
+				// damage process
+				for i, c := range s.clients {
+					for _, obj := range c.fieldInfo.Objects {
+						if !obj.Hittable {
+							continue
+						}
 
-					if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
-						s.fieldLock.Lock()
-						s.clients[i].fieldInfo.HitDamage = *dm
-						s.fieldLock.Unlock()
-						logger.Debug("Hit damage for %+v: %+v", obj, dm)
+						if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
+							s.fieldLock.Lock()
+							s.clients[i].fieldInfo.HitDamage = *dm
+							s.fieldLock.Unlock()
+							logger.Debug("Hit damage for %+v: %+v", obj, dm)
+						}
 					}
 				}
+				s.dmMgr.Update()
 			}
-			s.dmMgr.Update()
-		}
 
-		fpsMgr.Wait()
+			fpsMgr.Wait()
+		}
 	}
 }
 
-func (s *session) dataSend(exitErr chan error) {
+func (s *session) dataSend(exitErr chan error, cancel chan struct{}) {
 	for {
-		before := time.Now().UnixNano() / (1000 * 1000)
+		select {
+		case <-cancel:
+			return
+		default:
+			before := time.Now().UnixNano() / (1000 * 1000)
 
-		// Field data send
-		if s.status == statusChipSelectWait || s.status == statusActing {
-			s.publishField()
+			// Field data send
+			if s.status == statusChipSelectWait || s.status == statusActing {
+				s.publishField()
+			}
+
+			s.statusUpdate(exitErr)
+
+			after := time.Now().UnixNano() / (1000 * 1000)
+			time.Sleep(publishInterval - time.Duration(after-before))
 		}
-
-		s.statusUpdate()
-
-		after := time.Now().UnixNano() / (1000 * 1000)
-		time.Sleep(publishInterval - time.Duration(after-before))
 	}
 }
 
-func (s *session) statusUpdate() {
+func (s *session) statusUpdate(exitErr chan error) {
 	switch s.status {
 	case statusConnectWait:
 		// check ready
@@ -316,10 +332,8 @@ func (s *session) statusUpdate() {
 			s.nextStatus = -1
 		}
 	case statusGameEnd:
-		// TODO
-		// if s.clients[0 or 1].SendAction(Win or Lose?)
-		//   s.clients[0 and? 1].sendQueue <- statusGameEnd
-		//   remove(session)?
+		exitErr <- nil
+		logger.Info("Finished session %s by game end", s.sessionID)
 	}
 }
 
