@@ -26,6 +26,7 @@ const (
 	statusConnectWait int = iota
 	statusChipSelectWait
 	statusActing
+	statusGameEnd
 )
 
 type clientInfo struct {
@@ -50,7 +51,7 @@ type session struct {
 
 var (
 	sessionLock sync.Mutex
-	sessionList = []*session{}
+	sessionList = make(map[string]*session)
 )
 
 func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan error) (string, error) {
@@ -104,106 +105,87 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		fieldInfo: &field.Info{},
 	}
 
-	sessionList = append(sessionList, &v)
+	sessionList[sessionID] = &v
 
 	return sessionID, nil
 }
 
 func Run(sessionID string) {
+	s := sessionList[sessionID]
+	logger.Info("start new session for route %s", s.routeID)
+	logger.Debug("client info: %+v", s.clients)
 	sessionLock.Lock()
-	defer sessionLock.Unlock()
-
-	// Run method will be called after session.Add()
-	// so the target session is almost in the last.
-	for i := len(sessionList) - 1; i >= 0; i-- {
-		if sessionList[i].sessionID == sessionID {
-			if !sessionList[i].started {
-				sessionList[i].started = true
-				logger.Info("start new session for route %s", sessionList[i].routeID)
-				logger.Debug("client info: %+v", sessionList[i].clients)
-				go sessionList[i].mainProcess()
-			}
-			return
-		}
-	}
+	s.started = true
+	go s.mainProcess()
+	sessionLock.Unlock()
 }
 
 func ActionProc(action *pb.Action) error {
 	logAction(action)
 
-	for _, s := range sessionList {
-		if s.sessionID == action.SessionID {
-			switch action.Type {
-			case pb.Action_UPDATEOBJECT:
-				var obj object.Object
-				object.Unmarshal(&obj, action.GetObjectInfo())
-				s.fieldLock.Lock()
-				for i := 0; i < len(s.clients); i++ {
-					myObj := s.clients[i].clientID == action.ClientID
-					updateObject(&s.clients[i].fieldInfo.Objects, obj, action.ClientID, myObj)
-				}
-				s.fieldLock.Unlock()
-				for _, c := range s.clients {
-					logger.Debug("Updated objects for Client %s: %+v", c.clientID, c.fieldInfo.Objects)
-				}
-			case pb.Action_SENDSIGNAL:
-				switch action.GetSignal() {
-				case pb.Action_CHIPSEND:
-					for i, c := range s.clients {
-						if c.clientID == action.ClientID {
-							s.clients[i].chipSent = true
-							break
-						}
-					}
-				case pb.Action_GOCHIPSELECT:
-					s.nextStatus = statusChipSelectWait
-				case pb.Action_PLAYERDEAD:
-					d := &pb.Data{
-						Type: pb.Data_UPDATESTATUS,
-						Data: &pb.Data_Status_{
-							Status: pb.Data_GAMEEND,
-						},
-					}
-					for i := 0; i < len(s.clients); i++ {
-						if err := s.clients[i].dataStream.Send(d); err != nil {
-							s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[i].clientID, err)
-						}
-					}
-				}
-			case pb.Action_REMOVEOBJECT:
-				id := action.GetObjectID()
-				s.fieldLock.Lock()
-				for i := 0; i < len(s.clients); i++ {
-					removeObject(&s.clients[i].fieldInfo.Objects, id)
-				}
-				s.fieldLock.Unlock()
-			case pb.Action_NEWDAMAGE:
-				var damages []damage.Damage
-				damage.Unmarshal(&damages, action.GetDamageInfo())
-				if err := s.dmMgr.Add(damages); err != nil {
-					return fmt.Errorf("failed to add damages: %w", err)
-				}
-				logger.Debug("Added damges: %+v", damages)
-			case pb.Action_NEWEFFECT:
-				var eff effect.Effect
-				effect.Unmarshal(&eff, action.GetEffect())
-				s.fieldLock.Lock()
-				for i := 0; i < len(s.clients); i++ {
-					if s.clients[i].clientID != eff.ClientID {
-						eff.X = config.FieldNumX - eff.X - 1
-					}
-					s.clients[i].fieldInfo.Effects = append(s.clients[i].fieldInfo.Effects, eff)
-				}
-				s.fieldLock.Unlock()
-				logger.Debug("Added effect: %+v", eff)
-			default:
-				return fmt.Errorf("action %d is not implemented yet", action.Type)
-			}
-			return nil
-		}
+	s, ok := sessionList[action.SessionID]
+	if !ok {
+		return fmt.Errorf("no such session")
 	}
 
-	return fmt.Errorf("no such session")
+	switch action.Type {
+	case pb.Action_UPDATEOBJECT:
+		var obj object.Object
+		object.Unmarshal(&obj, action.GetObjectInfo())
+		s.fieldLock.Lock()
+		for i := 0; i < len(s.clients); i++ {
+			myObj := s.clients[i].clientID == action.ClientID
+			updateObject(&s.clients[i].fieldInfo.Objects, obj, action.ClientID, myObj)
+		}
+		s.fieldLock.Unlock()
+		for _, c := range s.clients {
+			logger.Debug("Updated objects for Client %s: %+v", c.clientID, c.fieldInfo.Objects)
+		}
+	case pb.Action_SENDSIGNAL:
+		switch action.GetSignal() {
+		case pb.Action_CHIPSEND:
+			for i, c := range s.clients {
+				if c.clientID == action.ClientID {
+					s.clients[i].chipSent = true
+					break
+				}
+			}
+		case pb.Action_GOCHIPSELECT:
+			s.nextStatus = statusChipSelectWait
+		case pb.Action_PLAYERDEAD:
+			s.nextStatus = statusGameEnd
+		}
+	case pb.Action_REMOVEOBJECT:
+		id := action.GetObjectID()
+		s.fieldLock.Lock()
+		for i := 0; i < len(s.clients); i++ {
+			removeObject(&s.clients[i].fieldInfo.Objects, id)
+		}
+		s.fieldLock.Unlock()
+	case pb.Action_NEWDAMAGE:
+		var damages []damage.Damage
+		damage.Unmarshal(&damages, action.GetDamageInfo())
+		if err := s.dmMgr.Add(damages); err != nil {
+			return fmt.Errorf("failed to add damages: %w", err)
+		}
+		logger.Debug("Added damges: %+v", damages)
+	case pb.Action_NEWEFFECT:
+		var eff effect.Effect
+		effect.Unmarshal(&eff, action.GetEffect())
+		s.fieldLock.Lock()
+		for i := 0; i < len(s.clients); i++ {
+			if s.clients[i].clientID != eff.ClientID {
+				eff.X = config.FieldNumX - eff.X - 1
+			}
+			s.clients[i].fieldInfo.Effects = append(s.clients[i].fieldInfo.Effects, eff)
+		}
+		s.fieldLock.Unlock()
+		logger.Debug("Added effect: %+v", eff)
+	default:
+		return fmt.Errorf("action %d is not implemented yet", action.Type)
+	}
+
+	return nil
 }
 
 func (s *session) mainProcess() {
@@ -311,6 +293,8 @@ func (s *session) statusUpdate() {
 			switch s.nextStatus {
 			case statusChipSelectWait:
 				sendSt = pb.Data_CHIPSELECTWAIT
+			case statusGameEnd:
+				sendSt = pb.Data_GAMEEND
 			default:
 				s.exitErr <- fmt.Errorf("invalid next status: %d", s.nextStatus)
 				return
@@ -322,17 +306,16 @@ func (s *session) statusUpdate() {
 					Status: sendSt,
 				},
 			}
-			if err := s.clients[0].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
-			}
-			if err := s.clients[1].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+			for i := 0; i < len(s.clients); i++ {
+				if err := s.clients[i].dataStream.Send(d); err != nil {
+					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[i].clientID, err)
+				}
 			}
 
 			s.changeStatus(s.nextStatus)
 			s.nextStatus = -1
 		}
-
+	case statusGameEnd:
 		// TODO
 		// if s.clients[0 or 1].SendAction(Win or Lose?)
 		//   s.clients[0 and? 1].sendQueue <- statusGameEnd
