@@ -227,7 +227,7 @@ func (s *session) frameProc(exitErr chan error, cancel chan struct{}) {
 							s.fieldLock.Lock()
 							s.clients[i].fieldInfo.HitDamages = append(s.clients[i].fieldInfo.HitDamages, *dm)
 							s.fieldLock.Unlock()
-							logger.Debug("Hit damage for %+v: %+v", obj, dm)
+							logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
 						}
 					}
 				}
