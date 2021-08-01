@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/app"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -27,17 +26,10 @@ func main() {
 		return
 	}
 
-	if logfile != "" {
-		file, err := os.Create(logfile)
-		if err != nil {
-			fmt.Printf("Failed to init logger: %v", err)
-			return
-		}
-		log.SetOutput(file)
-	}
+	logger.InitLogger(true, logfile)
 
 	if err := app.Init(clientID); err != nil {
-		log.Fatalf("Failed to init player info: %v", err)
+		logger.Error("Failed to init player info: %v", err)
 		return
 	}
 
@@ -50,14 +42,14 @@ func main() {
 		ClientKey:      clientKey,
 		ProgramVersion: "testclient",
 	}); err != nil {
-		log.Fatalf("Failed to connect router: %v", err)
+		logger.Error("Failed to connect router: %v", err)
 		return
 	}
-	log.Println("Success to connect router")
+	logger.Info("Success to connect router")
 
 	exitErr := make(chan error)
 	go app.Process(exitErr)
 
 	err := <-exitErr
-	log.Fatalf("Run failed: %v", err)
+	logger.Error("Run failed: %v", err)
 }

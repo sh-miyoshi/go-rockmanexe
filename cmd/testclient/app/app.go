@@ -2,11 +2,11 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
@@ -93,6 +93,6 @@ func statusUpdate(status pb.Data_Status) {
 }
 
 func statusChange(next int) {
-	log.Printf("app status change from %d to %d", appStatus, next)
+	logger.Info("app status change from %d to %d", appStatus, next)
 	appStatus = next
 }

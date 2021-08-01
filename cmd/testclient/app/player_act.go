@@ -2,12 +2,12 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 
 	"github.com/google/uuid"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -79,7 +79,7 @@ func (a *Act) Process() bool {
 				})
 			}
 			netconn.SendDamages(dm)
-			log.Printf("Add buster damage: %+v", dm)
+			logger.Info("Add buster damage: %+v", dm)
 		}
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))

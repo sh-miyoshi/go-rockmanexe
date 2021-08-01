@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
@@ -88,7 +88,7 @@ func (p *player) Action() bool {
 		p.ActNo = (p.ActNo + 1) % len(actTable)
 
 		// Add action
-		log.Printf("Set action %d", current)
+		logger.Info("Set action %d", current)
 		p.Object.UpdateBaseTime = true
 		switch current {
 		case 1: // Move
@@ -119,7 +119,7 @@ func (p *player) damageProc() bool {
 	dm := finfo.HitDamages[0]
 	defer netconn.RemoveDamage(dm.ID)
 
-	log.Printf("got damage: %+v", dm)
+	logger.Info("got damage: %+v", dm)
 
 	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
@@ -135,7 +135,7 @@ func (p *player) damageProc() bool {
 	// TODO Add damage animation
 	netconn.SendObject(p.Object)
 
-	log.Printf("add hit damage effect: %d", dm.HitEffectType)
+	logger.Info("add hit damage effect: %d", dm.HitEffectType)
 	netconn.SendEffect(effect.Effect{
 		ID:       uuid.New().String(),
 		ClientID: p.Object.ClientID,
