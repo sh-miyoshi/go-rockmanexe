@@ -181,10 +181,15 @@ func RemoveEffects() {
 	fieldLock.Unlock()
 }
 
-func RemoveDamage() {
+func RemoveDamage(id string) {
 	fieldLock.Lock()
-	fieldInfo.HitDamage.ID = ""
-	fieldLock.Unlock()
+	defer fieldLock.Unlock()
+	for i, dm := range fieldInfo.HitDamages {
+		if dm.ID == id {
+			fieldInfo.HitDamages = append(fieldInfo.HitDamages[:i], fieldInfo.HitDamages[i+1:]...)
+			return
+		}
+	}
 }
 
 func BulkSendFieldInfo() error {

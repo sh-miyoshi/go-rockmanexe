@@ -76,9 +76,9 @@ func (p *player) Action() bool {
 		return false
 	}
 
-	actTable := []int{2, 2}
+	actTable := []int{3}
 	// Wait, Move, Cannon, Buster
-	actInterval := []int{60, 60, 120, 60}
+	actInterval := []int{60, 60, 120, 5}
 
 	current := actTable[p.ActNo]
 
@@ -109,23 +109,25 @@ func (p *player) Action() bool {
 
 func (p *player) damageProc() bool {
 	finfo, _ := netconn.GetFieldInfo()
-	if finfo.HitDamage.ID == "" {
+	if len(finfo.HitDamages) == 0 {
 		return false
 	}
 
 	if p.Object.Invincible {
 		return false
 	}
+	dm := finfo.HitDamages[0]
+	defer netconn.RemoveDamage(dm.ID)
 
-	log.Printf("got damage: %+v", finfo.HitDamage)
+	log.Printf("got damage: %+v", dm)
 
-	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
+	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
 	} else {
-		p.HitDamages[finfo.HitDamage.ID] = true
+		p.HitDamages[dm.ID] = true
 	}
 
-	p.Object.HP -= finfo.HitDamage.Power
+	p.Object.HP -= dm.Power
 	if p.Object.HP < 0 {
 		p.Object.HP = 0
 	}
@@ -133,17 +135,16 @@ func (p *player) damageProc() bool {
 	// TODO Add damage animation
 	netconn.SendObject(p.Object)
 
-	log.Printf("add hit damage effect: %d", finfo.HitDamage.HitEffectType)
+	log.Printf("add hit damage effect: %d", dm.HitEffectType)
 	netconn.SendEffect(effect.Effect{
 		ID:       uuid.New().String(),
 		ClientID: p.Object.ClientID,
-		Type:     finfo.HitDamage.HitEffectType,
+		Type:     dm.HitEffectType,
 		X:        p.Object.X,
 		Y:        p.Object.Y,
-		ViewOfsX: finfo.HitDamage.ViewOfsX,
-		ViewOfsY: finfo.HitDamage.ViewOfsY,
+		ViewOfsX: dm.ViewOfsX,
+		ViewOfsY: dm.ViewOfsY,
 	})
 
-	netconn.RemoveDamage()
 	return true
 }

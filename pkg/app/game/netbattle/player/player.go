@@ -302,23 +302,25 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 
 func (p *BattlePlayer) damageProc() bool {
 	finfo, _ := netconn.GetFieldInfo()
-	if finfo.HitDamage.ID == "" {
+	if len(finfo.HitDamages) == 0 {
 		return false
 	}
 
 	if p.Object.Invincible {
 		return false
 	}
+	dm := finfo.HitDamages[0]
+	defer netconn.RemoveDamage(dm.ID)
 
-	if _, exists := p.HitDamages[finfo.HitDamage.ID]; exists {
+	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
 	} else {
-		p.HitDamages[finfo.HitDamage.ID] = true
+		p.HitDamages[dm.ID] = true
 	}
 
-	logger.Debug("Got damage: %+v", finfo.HitDamage)
+	logger.Debug("Got damage: %+v", dm)
 
-	p.Object.HP -= finfo.HitDamage.Power
+	p.Object.HP -= dm.Power
 	if p.Object.HP < 0 {
 		p.Object.HP = 0
 	}
@@ -326,7 +328,7 @@ func (p *BattlePlayer) damageProc() bool {
 		p.Object.HP = int(p.HPMax)
 	}
 
-	if finfo.HitDamage.BigDamage {
+	if dm.BigDamage {
 		p.Object.Invincible = true
 		for _, sid := range p.ManagedSkills {
 			netskill.StopByPlayer(sid)
@@ -337,21 +339,20 @@ func (p *BattlePlayer) damageProc() bool {
 		netconn.SendObject(p.Object)
 	}
 
-	if finfo.HitDamage.Power > 0 {
+	if dm.Power > 0 {
 		sound.On(sound.SEDamaged)
 	}
 
-	if finfo.HitDamage.HitEffectType > 0 {
+	if dm.HitEffectType > 0 {
 		netconn.SendEffect(effect.Effect{
 			ID:       uuid.New().String(),
-			Type:     finfo.HitDamage.HitEffectType,
+			Type:     dm.HitEffectType,
 			X:        p.Object.X,
 			Y:        p.Object.Y,
-			ViewOfsX: finfo.HitDamage.ViewOfsX,
-			ViewOfsY: finfo.HitDamage.ViewOfsY,
+			ViewOfsX: dm.ViewOfsX,
+			ViewOfsY: dm.ViewOfsY,
 		})
 	}
 
-	netconn.RemoveDamage()
 	return true
 }

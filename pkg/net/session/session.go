@@ -167,7 +167,7 @@ func ActionProc(action *pb.Action) error {
 		if err := s.dmMgr.Add(damages); err != nil {
 			return fmt.Errorf("failed to add damages: %w", err)
 		}
-		logger.Debug("Added damges: %+v", damages)
+		logger.Debug("Added damages: %+v", damages)
 	case pb.Action_NEWEFFECT:
 		var eff effect.Effect
 		effect.Unmarshal(&eff, action.GetEffect())
@@ -225,7 +225,7 @@ func (s *session) frameProc(exitErr chan error, cancel chan struct{}) {
 
 						if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
 							s.fieldLock.Lock()
-							s.clients[i].fieldInfo.HitDamage = *dm
+							s.clients[i].fieldInfo.HitDamages = append(s.clients[i].fieldInfo.HitDamages, *dm)
 							s.fieldLock.Unlock()
 							logger.Debug("Hit damage for %+v: %+v", obj, dm)
 						}
@@ -346,6 +346,7 @@ func (s *session) publishField() {
 	now := time.Now()
 
 	for i := 0; i < len(s.clients); i++ {
+		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.CurrentTime = now
 
 		for x := 0; x < config.FieldNumX; x++ {
@@ -363,6 +364,7 @@ func (s *session) publishField() {
 				RawData: field.Marshal(s.clients[i].fieldInfo),
 			},
 		}
+		s.fieldLock.Unlock()
 
 		if err := s.clients[i].dataStream.Send(d); err != nil {
 			s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[i].clientID, err)
@@ -370,7 +372,7 @@ func (s *session) publishField() {
 
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
-		s.clients[i].fieldInfo.HitDamage.ID = ""
+		s.clients[i].fieldInfo.HitDamages = []damage.Damage{}
 		s.fieldLock.Unlock()
 	}
 }

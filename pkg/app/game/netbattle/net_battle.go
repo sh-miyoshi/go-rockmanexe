@@ -169,6 +169,10 @@ func Process() error {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
 	case stateResultWin:
+		if battleCount == 0 {
+			netconn.Disconnect()
+		}
+
 		dxlib.DrawString(100, 100, "WIN", 0xff0000)
 		// TODO
 	case stateResultLose:

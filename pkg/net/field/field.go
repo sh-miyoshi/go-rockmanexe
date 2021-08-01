@@ -16,7 +16,7 @@ type Info struct {
 	Objects     []object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 	Effects     []effect.Effect
-	HitDamage   damage.Damage
+	HitDamages  []damage.Damage
 }
 
 func Marshal(fieldInfo *Info) []byte {
