@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/app"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 )
 
 const (
@@ -44,7 +44,12 @@ func main() {
 	// run with debug client
 	clientKey := "testtest"
 
-	if err := netconn.Connect(streamAddr, clientID, clientKey); err != nil {
+	if err := netconn.Connect(netconn.Config{
+		StreamAddr:     streamAddr,
+		ClientID:       clientID,
+		ClientKey:      clientKey,
+		ProgramVersion: "testclient",
+	}); err != nil {
 		log.Fatalf("Failed to connect router: %v", err)
 		return
 	}

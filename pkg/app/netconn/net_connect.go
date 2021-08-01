@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -17,11 +15,19 @@ import (
 	"google.golang.org/grpc"
 )
 
+type Config struct {
+	StreamAddr     string
+	ClientID       string
+	ClientKey      string
+	ProgramVersion string
+}
+
 var (
-	conn       *grpc.ClientConn
-	client     pb.RouterClient
-	dataStream pb.Router_PublishDataClient
-	sessionID  string
+	conn         *grpc.ClientConn
+	routerClient pb.RouterClient
+	dataStream   pb.Router_PublishDataClient
+	sessionID    string
+	clientID     string
 
 	status        pb.Data_Status
 	fieldInfo     field.Info
@@ -34,21 +40,20 @@ var (
 	fieldLock sync.Mutex
 )
 
-func Connect() error {
-	c := config.Get()
+func Connect(conf Config) error {
 	var err error
-	conn, err = grpc.Dial(c.Net.StreamAddr, grpc.WithInsecure())
+	conn, err = grpc.Dial(conf.StreamAddr, grpc.WithInsecure())
 	if err != nil {
 		return fmt.Errorf("failed to connect server: %w", err)
 	}
 
-	client = pb.NewRouterClient(conn)
+	routerClient = pb.NewRouterClient(conn)
 	authReq := &pb.AuthRequest{
-		Id:      c.Net.ClientID,
-		Key:     c.Net.ClientKey,
-		Version: common.ProgramVersion,
+		Id:      conf.ClientID,
+		Key:     conf.ClientKey,
+		Version: conf.ProgramVersion,
 	}
-	dataStream, err = client.PublishData(context.TODO(), authReq)
+	dataStream, err = routerClient.PublishData(context.TODO(), authReq)
 	if err != nil {
 		return fmt.Errorf("failed to get data stream: %w", err)
 	}
@@ -65,6 +70,7 @@ func Connect() error {
 		return fmt.Errorf("failed to auth request: %s", res.ErrMsg)
 	}
 	sessionID = authRes.GetAuthRes().SessionID
+	clientID = conf.ClientID
 
 	go dataRecv()
 
@@ -79,16 +85,14 @@ func Disconnect() {
 }
 
 func SendSignal(signal pb.Action_SignalType) error {
-	c := config.Get()
-
 	req := &pb.Action{
 		SessionID: sessionID,
-		ClientID:  c.Net.ClientID,
+		ClientID:  clientID,
 		Type:      pb.Action_SENDSIGNAL,
 		Data:      &pb.Action_Signal{Signal: signal},
 	}
 
-	res, err := client.SendAction(context.TODO(), req)
+	res, err := routerClient.SendAction(context.TODO(), req)
 	if err != nil {
 		return fmt.Errorf("send signal failed: %w", err)
 	}
@@ -101,7 +105,7 @@ func SendSignal(signal pb.Action_SignalType) error {
 }
 
 func SendObject(obj object.Object) {
-	obj.ClientID = config.Get().Net.ClientID
+	obj.ClientID = clientID
 	sendObjects[obj.ID] = obj
 }
 
@@ -111,13 +115,13 @@ func RemoveObject(objID string) {
 
 func SendDamages(damages []damage.Damage) {
 	for _, dm := range damages {
-		dm.ClientID = config.Get().Net.ClientID
+		dm.ClientID = clientID
 		sendDamages = append(sendDamages, dm)
 	}
 }
 
 func SendEffect(eff effect.Effect) {
-	eff.ClientID = config.Get().Net.ClientID
+	eff.ClientID = clientID
 	sendEffects = append(sendEffects, eff)
 }
 
@@ -184,20 +188,18 @@ func RemoveDamage() {
 }
 
 func BulkSendFieldInfo() error {
-	c := config.Get()
-
 	// Send objects
 	for _, obj := range sendObjects {
 		req := &pb.Action{
 			SessionID: sessionID,
-			ClientID:  c.Net.ClientID,
+			ClientID:  clientID,
 			Type:      pb.Action_UPDATEOBJECT,
 			Data: &pb.Action_ObjectInfo{
 				ObjectInfo: object.Marshal(obj),
 			},
 		}
 
-		res, err := client.SendAction(context.TODO(), req)
+		res, err := routerClient.SendAction(context.TODO(), req)
 		if err != nil {
 			return fmt.Errorf("send action failed: %w", err)
 		}
@@ -212,12 +214,12 @@ func BulkSendFieldInfo() error {
 	for _, objID := range removeObjects {
 		req := &pb.Action{
 			SessionID: sessionID,
-			ClientID:  c.Net.ClientID,
+			ClientID:  clientID,
 			Type:      pb.Action_REMOVEOBJECT,
 			Data:      &pb.Action_ObjectID{ObjectID: objID},
 		}
 
-		res, err := client.SendAction(context.TODO(), req)
+		res, err := routerClient.SendAction(context.TODO(), req)
 		if err != nil {
 			return fmt.Errorf("remove object failed: %w", err)
 		}
@@ -231,14 +233,14 @@ func BulkSendFieldInfo() error {
 	if len(sendDamages) > 0 {
 		req := &pb.Action{
 			SessionID: sessionID,
-			ClientID:  c.Net.ClientID,
+			ClientID:  clientID,
 			Type:      pb.Action_NEWDAMAGE,
 			Data: &pb.Action_DamageInfo{
 				DamageInfo: damage.Marshal(sendDamages),
 			},
 		}
 
-		res, err := client.SendAction(context.TODO(), req)
+		res, err := routerClient.SendAction(context.TODO(), req)
 		if err != nil {
 			return fmt.Errorf("add damages failed: %w", err)
 		}
@@ -252,14 +254,14 @@ func BulkSendFieldInfo() error {
 	for _, eff := range sendEffects {
 		req := &pb.Action{
 			SessionID: sessionID,
-			ClientID:  c.Net.ClientID,
+			ClientID:  clientID,
 			Type:      pb.Action_NEWEFFECT,
 			Data: &pb.Action_Effect{
 				Effect: effect.Marshal(eff),
 			},
 		}
 
-		res, err := client.SendAction(context.TODO(), req)
+		res, err := routerClient.SendAction(context.TODO(), req)
 		if err != nil {
 			return fmt.Errorf("add effect failed: %w", err)
 		}

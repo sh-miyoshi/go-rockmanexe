@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
@@ -64,6 +64,8 @@ func Process(exitErr chan error) {
 		case statusGameEnd:
 			// TODO
 		}
+
+		netconn.BulkSendFieldInfo()
 		time.Sleep(16 * time.Millisecond)
 	}
 }

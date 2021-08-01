@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
@@ -51,9 +51,7 @@ func (p *player) ChipSelect() error {
 	p.Object.Chips = []int{1, 3} // debug
 
 	// Finished chip select, so send action
-	if err := netconn.SendObject(p.Object); err != nil {
-		return fmt.Errorf("failed to get data stream: %w", err)
-	}
+	netconn.SendObject(p.Object)
 
 	if err := netconn.SendSignal(pb.Action_CHIPSEND); err != nil {
 		return fmt.Errorf("failed to get data stream: %w", err)

@@ -6,8 +6,8 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -78,9 +78,7 @@ func (a *Act) Process() bool {
 					ViewOfsY:      int32(rand.Intn(2*5) - 5),
 				})
 			}
-			if err := netconn.SendDamages(dm); err != nil {
-				panic(fmt.Sprintf("Failed to add damage: %v", err))
-			}
+			netconn.SendDamages(dm)
 			log.Printf("Add buster damage: %+v", dm)
 		}
 	default:

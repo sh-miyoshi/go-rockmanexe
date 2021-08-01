@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"

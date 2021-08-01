@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
