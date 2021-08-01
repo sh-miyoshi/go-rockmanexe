@@ -152,8 +152,18 @@ func Process() error {
 			return nil
 		}
 
-		// TODO gameend, error handling
-		playerInst.Process()
+		done, err := playerInst.Process()
+		if err != nil {
+			return fmt.Errorf("player process failed: %w", err)
+		}
+		if done {
+			if playerInst.Object.HP > 0 {
+				stateChange(stateResultWin)
+			} else {
+				stateChange(stateResultLose)
+			}
+			return nil
+		}
 
 		if err := skill.Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)

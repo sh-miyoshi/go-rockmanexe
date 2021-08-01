@@ -186,6 +186,11 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
+	if p.Object.HP <= 0 {
+		netconn.SendSignal(pb.Action_PLAYERDEAD)
+		return true, nil
+	}
+
 	if p.Object.Invincible {
 		p.InvincibleCount++
 		if p.InvincibleCount > battlecommon.PlayerDefaultInvincibleTime {
