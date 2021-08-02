@@ -301,7 +301,7 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 }
 
 func (p *BattlePlayer) damageProc() bool {
-	finfo, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	if len(finfo.HitDamages) == 0 {
 		return false
 	}

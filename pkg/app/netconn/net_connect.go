@@ -22,20 +22,27 @@ type Config struct {
 	ProgramVersion string
 }
 
+type sendInfo struct {
+	objects       map[string]object.Object
+	removeObjects []string
+	damages       []damage.Damage
+	effects       []effect.Effect
+}
+
 var (
+	// variables for router connection
 	conn         *grpc.ClientConn
 	routerClient pb.RouterClient
 	dataStream   pb.Router_PublishDataClient
 	sessionID    string
 	clientID     string
 
-	status        pb.Data_Status
-	fieldInfo     field.Info
-	sendObjects   = make(map[string]object.Object)
-	removeObjects = []string{}
-	sendDamages   = []damage.Damage{}
-	sendEffects   = []effect.Effect{}
+	// variables for application data
+	status    pb.Data_Status
+	fieldInfo field.Info
+	sendData  sendInfo
 
+	// variables for system control
 	exitErr   error
 	fieldLock sync.Mutex
 )
@@ -71,6 +78,7 @@ func Connect(conf Config) error {
 	}
 	sessionID = authRes.GetAuthRes().SessionID
 	clientID = conf.ClientID
+	sendData.Init()
 
 	go dataRecv()
 
@@ -106,23 +114,23 @@ func SendSignal(signal pb.Action_SignalType) error {
 
 func SendObject(obj object.Object) {
 	obj.ClientID = clientID
-	sendObjects[obj.ID] = obj
+	sendData.objects[obj.ID] = obj
 }
 
 func RemoveObject(objID string) {
-	removeObjects = append(removeObjects, objID)
+	sendData.removeObjects = append(sendData.removeObjects, objID)
 }
 
 func SendDamages(damages []damage.Damage) {
 	for _, dm := range damages {
 		dm.ClientID = clientID
-		sendDamages = append(sendDamages, dm)
+		sendData.damages = append(sendData.damages, dm)
 	}
 }
 
 func SendEffect(eff effect.Effect) {
 	eff.ClientID = clientID
-	sendEffects = append(sendEffects, eff)
+	sendData.effects = append(sendData.effects, eff)
 }
 
 func dataRecv() {
@@ -152,14 +160,12 @@ func dataRecv() {
 	}
 }
 
-// TODO error
-func GetStatus() (pb.Data_Status, error) {
-	return status, exitErr
+func GetStatus() pb.Data_Status {
+	return status
 }
 
-// TODO error
-func GetFieldInfo() (*field.Info, error) {
-	return &fieldInfo, exitErr
+func GetFieldInfo() field.Info {
+	return fieldInfo
 }
 
 func UpdateObjectsCount() {
@@ -193,8 +199,13 @@ func RemoveDamage(id string) {
 }
 
 func BulkSendFieldInfo() error {
+	if exitErr != nil {
+		return fmt.Errorf("already exit in recv: %w", exitErr)
+	}
+
+	// TODO refactoring
 	// Send objects
-	for _, obj := range sendObjects {
+	for _, obj := range sendData.objects {
 		req := &pb.Action{
 			SessionID: sessionID,
 			ClientID:  clientID,
@@ -213,10 +224,8 @@ func BulkSendFieldInfo() error {
 			return fmt.Errorf("send action got unexpected response: %s", res.ErrMsg)
 		}
 	}
-	// clear sent data
-	sendObjects = make(map[string]object.Object)
 
-	for _, objID := range removeObjects {
+	for _, objID := range sendData.removeObjects {
 		req := &pb.Action{
 			SessionID: sessionID,
 			ClientID:  clientID,
@@ -233,15 +242,14 @@ func BulkSendFieldInfo() error {
 			return fmt.Errorf("remove object got unexpected response: %s", res.ErrMsg)
 		}
 	}
-	removeObjects = []string{}
 
-	if len(sendDamages) > 0 {
+	if len(sendData.damages) > 0 {
 		req := &pb.Action{
 			SessionID: sessionID,
 			ClientID:  clientID,
 			Type:      pb.Action_NEWDAMAGE,
 			Data: &pb.Action_DamageInfo{
-				DamageInfo: damage.Marshal(sendDamages),
+				DamageInfo: damage.Marshal(sendData.damages),
 			},
 		}
 
@@ -253,10 +261,9 @@ func BulkSendFieldInfo() error {
 		if !res.Success {
 			return fmt.Errorf("add damages got unexpected response: %s", res.ErrMsg)
 		}
-		sendDamages = []damage.Damage{}
 	}
 
-	for _, eff := range sendEffects {
+	for _, eff := range sendData.effects {
 		req := &pb.Action{
 			SessionID: sessionID,
 			ClientID:  clientID,
@@ -275,8 +282,14 @@ func BulkSendFieldInfo() error {
 			return fmt.Errorf("add effect got unexpected response: %s", res.ErrMsg)
 		}
 	}
-	sendEffects = []effect.Effect{}
 
+	sendData.Init()
 	return nil
+}
 
+func (i *sendInfo) Init() {
+	i.objects = make(map[string]object.Object)
+	i.removeObjects = []string{}
+	i.damages = []damage.Damage{}
+	i.effects = []effect.Effect{}
 }

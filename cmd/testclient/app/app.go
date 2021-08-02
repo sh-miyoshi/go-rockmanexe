@@ -35,11 +35,7 @@ func Process(exitErr chan error) {
 
 	// Main loop
 	for {
-		status, err := netconn.GetStatus()
-		if err != nil {
-			exitErr <- fmt.Errorf("got status failed: %v", err)
-			return
-		}
+		status := netconn.GetStatus()
 		statusUpdate(status)
 
 		switch appStatus {
@@ -65,7 +61,11 @@ func Process(exitErr chan error) {
 			// TODO
 		}
 
-		netconn.BulkSendFieldInfo()
+		if err := netconn.BulkSendFieldInfo(); err != nil {
+			exitErr <- fmt.Errorf("net send failed: %v", err)
+			return
+		}
+
 		time.Sleep(16 * time.Millisecond)
 	}
 }

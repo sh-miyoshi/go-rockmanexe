@@ -11,7 +11,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -37,13 +36,7 @@ func Init() error {
 }
 
 func Draw(playerID string) {
-	info, err := netconn.GetFieldInfo()
-	if err != nil {
-		logger.Error("Failed to get field info: %v", err)
-		// TODO error handling
-		return
-	}
-
+	finfo := netconn.GetFieldInfo()
 	clientID := config.Get().Net.ClientID
 
 	for x := 0; x < netconfig.FieldNumX; x++ {
@@ -51,13 +44,13 @@ func Draw(playerID string) {
 			vx := int32(appfield.PanelSizeX * x)
 			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
 			pn := imgPanel[0]
-			if info.Panels[x][y].OwnerClientID != clientID {
+			if finfo.Panels[x][y].OwnerClientID != clientID {
 				pn = imgPanel[1]
 			}
 
 			dxlib.DrawGraph(vx, vy, pn, dxlib.TRUE)
 
-			if info.Panels[x][y].ShowHitArea {
+			if finfo.Panels[x][y].ShowHitArea {
 				x1 := vx
 				y1 := vy
 				x2 := vx + appfield.PanelSizeX
@@ -68,7 +61,7 @@ func Draw(playerID string) {
 		}
 	}
 
-	objects := append([]object.Object{}, info.Objects...)
+	objects := append([]object.Object{}, finfo.Objects...)
 	sort.Slice(objects, func(i, j int) bool {
 		ii := objects[i].Y*appfield.FieldNumX + objects[i].X
 		ij := objects[j].Y*appfield.FieldNumX + objects[j].X
@@ -97,11 +90,11 @@ func Draw(playerID string) {
 }
 
 func GetPanelInfo(x, y int) appfield.PanelInfo {
-	info, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	clientID := config.Get().Net.ClientID
 
 	id := ""
-	for _, obj := range info.Objects {
+	for _, obj := range finfo.Objects {
 		if obj.Hittable && obj.X == x && obj.Y == y {
 			id = obj.ID
 			break
@@ -109,7 +102,7 @@ func GetPanelInfo(x, y int) appfield.PanelInfo {
 	}
 
 	pnType := appfield.PanelTypePlayer
-	if info.Panels[x][y].OwnerClientID != clientID {
+	if finfo.Panels[x][y].OwnerClientID != clientID {
 		pnType = appfield.PanelTypeEnemy
 	}
 

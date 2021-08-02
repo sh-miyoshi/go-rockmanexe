@@ -106,7 +106,7 @@ func getEnemies() []object.Object {
 	}
 
 	myClientID := config.Get().Net.ClientID
-	finfo, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	for _, obj := range finfo.Objects {
 		if obj.ClientID != myClientID && slice.Contains(rockmanObj, obj.Type) {
 			res = append(res, obj)
@@ -117,7 +117,7 @@ func getEnemies() []object.Object {
 }
 
 func isObjectHit(x, y int) bool {
-	finfo, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	for _, obj := range finfo.Objects {
 		if obj.Hittable && obj.X == x && obj.Y == y && obj.ID != playerID {
 			return true

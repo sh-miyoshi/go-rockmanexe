@@ -108,7 +108,7 @@ func (p *player) Action() bool {
 }
 
 func (p *player) damageProc() bool {
-	finfo, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	if len(finfo.HitDamages) == 0 {
 		return false
 	}

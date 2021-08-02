@@ -17,7 +17,7 @@ func Draw() {
 }
 
 func Process() {
-	finfo, _ := netconn.GetFieldInfo()
+	finfo := netconn.GetFieldInfo()
 	effects = append(effects, finfo.Effects...)
 	netconn.RemoveEffects()
 
