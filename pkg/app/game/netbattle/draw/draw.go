@@ -13,8 +13,9 @@ import (
 )
 
 type Option struct {
-	Reverse bool
-	ViewHP  int
+	Reverse  bool
+	ViewHP   int
+	ViewChip bool
 }
 
 var (
@@ -94,7 +95,7 @@ func Object(obj object.Object, opt Option) {
 		})
 	}
 
-	if len(obj.Chips) > 0 {
+	if len(obj.Chips) > 0 && opt.ViewChip {
 		x := field.PanelSizeX*obj.X + field.PanelSizeX/2 - 18
 		y := field.DrawPanelTopY + field.PanelSizeY*obj.Y - 83
 		dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)

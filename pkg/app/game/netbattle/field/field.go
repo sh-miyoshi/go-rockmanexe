@@ -81,8 +81,9 @@ func Draw(playerID string) {
 		}
 
 		draw.Object(obj, draw.Option{
-			Reverse: reverse,
-			ViewHP:  viewHP,
+			Reverse:  reverse,
+			ViewHP:   viewHP,
+			ViewChip: obj.ID != playerID,
 		})
 	}
 

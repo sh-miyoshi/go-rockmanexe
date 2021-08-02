@@ -76,9 +76,9 @@ func (p *player) Action() bool {
 		return false
 	}
 
-	actTable := []int{3}
+	actTable := []int{0, 1, 1, 2}
 	// Wait, Move, Cannon, Buster
-	actInterval := []int{60, 60, 120, 5}
+	actInterval := []int{60, 60, 120, 30}
 
 	current := actTable[p.ActNo]
 
