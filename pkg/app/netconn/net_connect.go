@@ -151,7 +151,11 @@ func dataRecv() {
 			var f field.Info
 			field.Unmarshal(&f, b)
 			fieldLock.Lock()
-			fieldInfo = f
+			fieldInfo.CurrentTime = f.CurrentTime
+			fieldInfo.Objects = f.Objects
+			fieldInfo.Panels = f.Panels
+			fieldInfo.Effects = append(fieldInfo.Effects, f.Effects...)
+			fieldInfo.HitDamages = append(fieldInfo.HitDamages, f.HitDamages...)
 			fieldLock.Unlock()
 		default:
 			exitErr = fmt.Errorf("invalid data type was received: %d", data.Type)
