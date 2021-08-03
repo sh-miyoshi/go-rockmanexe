@@ -60,12 +60,17 @@ func (a *Act) Process() bool {
 		if a.Count == 1 {
 			dm := []damage.Damage{}
 			y := a.Object.Y
+			power := a.Opts.ShotPower
+			if a.Opts.Charged {
+				power *= 10
+			}
+
 			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,
 					PosY:          y,
-					Power:         1, // TODO change power
+					Power:         power,
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: effect.TypeHitSmallEffect,
