@@ -81,13 +81,8 @@ func End() {
 }
 
 func Process() error {
-	status := netconn.GetStatus()
-	netconn.UpdateObjectsCount()
 	effect.Process()
-
-	if err := netconn.BulkSendFieldInfo(); err != nil {
-		return fmt.Errorf("send field info failed: %w", err)
-	}
+	status := netconn.GetStatus()
 
 	switch battleState {
 	case stateWaiting:
@@ -129,6 +124,11 @@ func Process() error {
 			}
 		}
 
+		netconn.UpdateObjectsCount()
+		if err := netconn.BulkSendFieldInfo(); err != nil {
+			return fmt.Errorf("send field info failed: %w", err)
+		}
+
 		if b4mainInst.Process() {
 			b4mainInst.End()
 			stateChange(stateMain)
@@ -136,6 +136,10 @@ func Process() error {
 		}
 	case stateMain:
 		gameCount++
+		netconn.UpdateObjectsCount()
+		if err := netconn.BulkSendFieldInfo(); err != nil {
+			return fmt.Errorf("send field info failed: %w", err)
+		}
 
 		if status == pb.Data_CHIPSELECTWAIT {
 			stateChange(stateChipSelect)
@@ -173,6 +177,10 @@ func Process() error {
 		dxlib.DrawString(100, 100, "WIN", 0xff0000)
 		// TODO
 	case stateResultLose:
+		if battleCount == 0 {
+			netconn.Disconnect()
+		}
+
 		dxlib.DrawString(100, 100, "LOSE", 0xff0000)
 		// TODO
 	}
