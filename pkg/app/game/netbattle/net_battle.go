@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -26,8 +27,7 @@ const (
 	stateWaitSelect
 	stateBeforeMain
 	stateMain
-	stateResultWin
-	stateResultLose
+	stateResult
 
 	stateMax
 )
@@ -37,6 +37,7 @@ var (
 	battleState int
 	gameCount   int
 	b4mainInst  *titlemsg.TitleMsg
+	resultInst  *titlemsg.TitleMsg
 	playerInst  *battleplayer.BattlePlayer
 )
 
@@ -47,6 +48,7 @@ func Init(plyr *player.Player) error {
 	battleCount = 0
 	battleState = stateWaiting
 	b4mainInst = nil
+	resultInst = nil
 
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("net battle field init failed: %w", err)
@@ -145,11 +147,7 @@ func Process() error {
 			stateChange(stateChipSelect)
 			return nil
 		} else if status == pb.Data_GAMEEND {
-			if playerInst.Object.HP > 0 {
-				stateChange(stateResultWin)
-			} else {
-				stateChange(stateResultLose)
-			}
+			stateChange(stateResult)
 			return nil
 		}
 
@@ -158,31 +156,36 @@ func Process() error {
 			return fmt.Errorf("player process failed: %w", err)
 		}
 		if done {
-			if playerInst.Object.HP > 0 {
-				stateChange(stateResultWin)
-			} else {
-				stateChange(stateResultLose)
-			}
+			stateChange(stateResult)
 			return nil
 		}
 
 		if err := skill.Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
-	case stateResultWin:
+	case stateResult:
 		if battleCount == 0 {
 			netconn.Disconnect()
+
+			fname := common.ImagePath + "battle/msg_win.png"
+			if playerInst.Object.HP <= 0 {
+				fname = common.ImagePath + "battle/msg_lose.png"
+			}
+
+			var err error
+			resultInst, err = titlemsg.New(fname)
+			if err != nil {
+				return fmt.Errorf("failed to initialize result: %w", err)
+			}
 		}
 
-		dxlib.DrawString(100, 100, "WIN", 0xff0000)
-		// TODO
-	case stateResultLose:
-		if battleCount == 0 {
-			netconn.Disconnect()
+		if resultInst.Process() {
+			resultInst.End()
+			if playerInst.Object.HP <= 0 {
+				return battle.ErrLose
+			}
+			return battle.ErrWin
 		}
-
-		dxlib.DrawString(100, 100, "LOSE", 0xff0000)
-		// TODO
 	}
 
 	battleCount++
@@ -216,6 +219,10 @@ func Draw() {
 		}
 	case stateMain:
 		playerInst.DrawFrame(false, true)
+	case stateResult:
+		if resultInst != nil {
+			resultInst.Draw()
+		}
 	}
 }
 
