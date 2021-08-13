@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -28,6 +29,11 @@ const (
 	statusGameEnd
 )
 
+type sessionError struct {
+	generatorClientID string
+	reason            error
+}
+
 type clientInfo struct {
 	active     bool
 	chipSent   bool
@@ -45,15 +51,17 @@ type session struct {
 	nextStatus int
 	fieldLock  sync.Mutex
 	dmMgr      damage.Manager
-	exitErr    chan error
+	exitErr    chan sessionError
 }
 
 var (
+	errSendFailed = errors.New("send failed")
+
 	sessionLock sync.Mutex
 	sessionList = make(map[string]*session)
 )
 
-func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan error) (string, error) {
+func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error) {
 	route, err := db.GetInst().RouteGetByClient(clientID)
 	if err != nil {
 		return "", fmt.Errorf("route get failed: %v", err)
@@ -85,7 +93,7 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer, exitErr chan e
 		status:     statusConnectWait,
 		nextStatus: -1,
 		started:    false,
-		exitErr:    exitErr,
+		exitErr:    make(chan sessionError),
 	}
 
 	index := 0
@@ -115,8 +123,8 @@ func Run(sessionID string) {
 	logger.Debug("client info: %+v", s.clients)
 	sessionLock.Lock()
 	s.started = true
-	go s.mainProcess()
 	sessionLock.Unlock()
+	s.mainProcess()
 }
 
 func ActionProc(action *pb.Action) error {
@@ -192,23 +200,25 @@ func (s *session) mainProcess() {
 	s.clients[0].fieldInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
 	s.clients[1].fieldInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
 
-	exitErr := make(chan error)
 	cancel := make(chan struct{})
-	go s.frameProc(exitErr, cancel)
-	go s.dataSend(exitErr, cancel)
+	go s.frameProc(cancel)
+	go s.dataSend(cancel)
 
-	err := <-exitErr
+	err := <-s.exitErr
+	if errors.Is(err.reason, errSendFailed) {
+		s.publishGameEnd(err.generatorClientID)
+	}
 	close(cancel)
 	sessionLock.Lock()
 	delete(sessionList, s.sessionID)
 	sessionLock.Unlock()
 
-	if err != nil {
+	if err.reason != nil {
 		logger.Error("Run failed: %v", err)
 	}
 }
 
-func (s *session) frameProc(exitErr chan error, cancel chan struct{}) {
+func (s *session) frameProc(cancel chan struct{}) {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 	for {
 		select {
@@ -239,7 +249,7 @@ func (s *session) frameProc(exitErr chan error, cancel chan struct{}) {
 	}
 }
 
-func (s *session) dataSend(exitErr chan error, cancel chan struct{}) {
+func (s *session) dataSend(cancel chan struct{}) {
 	for {
 		select {
 		case <-cancel:
@@ -252,7 +262,7 @@ func (s *session) dataSend(exitErr chan error, cancel chan struct{}) {
 				s.publishField()
 			}
 
-			s.statusUpdate(exitErr)
+			s.statusUpdate()
 
 			after := time.Now().UnixNano() / (1000 * 1000)
 			time.Sleep(publishInterval - time.Duration(after-before))
@@ -260,7 +270,7 @@ func (s *session) dataSend(exitErr chan error, cancel chan struct{}) {
 	}
 }
 
-func (s *session) statusUpdate(exitErr chan error) {
+func (s *session) statusUpdate() {
 	switch s.status {
 	case statusConnectWait:
 		// check ready
@@ -273,10 +283,20 @@ func (s *session) statusUpdate(exitErr chan error) {
 			}
 
 			if err := s.clients[0].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
+				logger.Error("Update status send failed for client %s: %v", s.clients[0].clientID, err)
+				s.exitErr <- sessionError{
+					generatorClientID: s.clients[0].clientID,
+					reason:            errSendFailed,
+				}
+				return
 			}
 			if err := s.clients[1].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+				logger.Error("Update status send failed for client %s: %v", s.clients[1].clientID, err)
+				s.exitErr <- sessionError{
+					generatorClientID: s.clients[1].clientID,
+					reason:            errSendFailed,
+				}
+				return
 			}
 			s.changeStatus(statusChipSelectWait)
 
@@ -293,10 +313,20 @@ func (s *session) statusUpdate(exitErr chan error) {
 			}
 
 			if err := s.clients[0].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[0].clientID, err)
+				logger.Error("Update status send failed for client %s: %v", s.clients[0].clientID, err)
+				s.exitErr <- sessionError{
+					generatorClientID: s.clients[0].clientID,
+					reason:            errSendFailed,
+				}
+				return
 			}
 			if err := s.clients[1].dataStream.Send(d); err != nil {
-				s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[1].clientID, err)
+				logger.Error("Update status send failed for client %s: %v", s.clients[1].clientID, err)
+				s.exitErr <- sessionError{
+					generatorClientID: s.clients[1].clientID,
+					reason:            errSendFailed,
+				}
+				return
 			}
 			s.clients[0].chipSent = false
 			s.clients[1].chipSent = false
@@ -312,7 +342,9 @@ func (s *session) statusUpdate(exitErr chan error) {
 			case statusGameEnd:
 				sendSt = pb.Data_GAMEEND
 			default:
-				s.exitErr <- fmt.Errorf("invalid next status: %d", s.nextStatus)
+				s.exitErr <- sessionError{
+					reason: fmt.Errorf("invalid next status: %d", s.nextStatus),
+				}
 				return
 			}
 
@@ -324,7 +356,12 @@ func (s *session) statusUpdate(exitErr chan error) {
 			}
 			for i := 0; i < len(s.clients); i++ {
 				if err := s.clients[i].dataStream.Send(d); err != nil {
-					s.exitErr <- fmt.Errorf("update status send failed for client %s: %w", s.clients[i].clientID, err)
+					logger.Error("Update status send failed for client %s: %v", s.clients[i].clientID, err)
+					s.exitErr <- sessionError{
+						generatorClientID: s.clients[i].clientID,
+						reason:            errSendFailed,
+					}
+					return
 				}
 			}
 
@@ -332,7 +369,9 @@ func (s *session) statusUpdate(exitErr chan error) {
 			s.nextStatus = -1
 		}
 	case statusGameEnd:
-		exitErr <- nil
+		s.exitErr <- sessionError{
+			reason: nil,
+		}
 		logger.Info("Finished session %s by game end", s.sessionID)
 	}
 }
@@ -367,13 +406,34 @@ func (s *session) publishField() {
 		s.fieldLock.Unlock()
 
 		if err := s.clients[i].dataStream.Send(d); err != nil {
-			s.exitErr <- fmt.Errorf("field info send failed for client %s: %w", s.clients[i].clientID, err)
+			logger.Error("Field info send failed for client %s: %v", s.clients[i].clientID, err)
+			s.exitErr <- sessionError{
+				generatorClientID: s.clients[i].clientID,
+				reason:            errSendFailed,
+			}
 		}
 
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
 		s.clients[i].fieldInfo.HitDamages = []damage.Damage{}
 		s.fieldLock.Unlock()
+	}
+}
+
+func (s *session) publishGameEnd(sendClientID string) {
+	d := &pb.Data{
+		Type: pb.Data_UPDATESTATUS,
+		Data: &pb.Data_Status_{
+			Status: pb.Data_GAMEEND,
+		},
+	}
+
+	for i := 0; i < len(s.clients); i++ {
+		if s.clients[i].clientID == sendClientID {
+			continue
+		}
+		// do not require error handling, because this is final send in session
+		s.clients[i].dataStream.Send(d)
 	}
 }
 

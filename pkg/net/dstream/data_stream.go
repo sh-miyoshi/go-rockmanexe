@@ -51,10 +51,8 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 		return nil
 	}
 
-	var exitErr chan error
-
 	// Add to sessionList
-	sid, err := session.Add(c.ID, dataStream, exitErr)
+	sid, err := session.Add(c.ID, dataStream)
 	if err != nil {
 		logger.Error("Failed to add session: %v", err)
 		return fmt.Errorf("add session failed: %w", err)
@@ -67,8 +65,7 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 
 	session.Run(sid)
 
-	err = <-exitErr
-	return err
+	return nil
 }
 
 func makeAuthRes(authRes *pb.AuthResponse) *pb.Data {
