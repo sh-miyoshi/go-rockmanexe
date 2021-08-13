@@ -213,7 +213,7 @@ func (s *session) mainProcess() {
 	delete(sessionList, s.sessionID)
 	sessionLock.Unlock()
 
-	if err.reason != nil {
+	if err.reason != nil && !errors.Is(err.reason, errSendFailed) {
 		logger.Error("Run failed: %v", err)
 	}
 }
@@ -283,7 +283,7 @@ func (s *session) statusUpdate() {
 			}
 
 			if err := s.clients[0].dataStream.Send(d); err != nil {
-				logger.Error("Update status send failed for client %s: %v", s.clients[0].clientID, err)
+				logger.Info("Update status send failed for client %s: %v", s.clients[0].clientID, err)
 				s.exitErr <- sessionError{
 					generatorClientID: s.clients[0].clientID,
 					reason:            errSendFailed,
@@ -291,7 +291,7 @@ func (s *session) statusUpdate() {
 				return
 			}
 			if err := s.clients[1].dataStream.Send(d); err != nil {
-				logger.Error("Update status send failed for client %s: %v", s.clients[1].clientID, err)
+				logger.Info("Update status send failed for client %s: %v", s.clients[1].clientID, err)
 				s.exitErr <- sessionError{
 					generatorClientID: s.clients[1].clientID,
 					reason:            errSendFailed,
@@ -313,7 +313,7 @@ func (s *session) statusUpdate() {
 			}
 
 			if err := s.clients[0].dataStream.Send(d); err != nil {
-				logger.Error("Update status send failed for client %s: %v", s.clients[0].clientID, err)
+				logger.Info("Update status send failed for client %s: %v", s.clients[0].clientID, err)
 				s.exitErr <- sessionError{
 					generatorClientID: s.clients[0].clientID,
 					reason:            errSendFailed,
@@ -321,7 +321,7 @@ func (s *session) statusUpdate() {
 				return
 			}
 			if err := s.clients[1].dataStream.Send(d); err != nil {
-				logger.Error("Update status send failed for client %s: %v", s.clients[1].clientID, err)
+				logger.Info("Update status send failed for client %s: %v", s.clients[1].clientID, err)
 				s.exitErr <- sessionError{
 					generatorClientID: s.clients[1].clientID,
 					reason:            errSendFailed,
@@ -356,7 +356,7 @@ func (s *session) statusUpdate() {
 			}
 			for i := 0; i < len(s.clients); i++ {
 				if err := s.clients[i].dataStream.Send(d); err != nil {
-					logger.Error("Update status send failed for client %s: %v", s.clients[i].clientID, err)
+					logger.Info("Update status send failed for client %s: %v", s.clients[i].clientID, err)
 					s.exitErr <- sessionError{
 						generatorClientID: s.clients[i].clientID,
 						reason:            errSendFailed,
@@ -406,7 +406,7 @@ func (s *session) publishField() {
 		s.fieldLock.Unlock()
 
 		if err := s.clients[i].dataStream.Send(d); err != nil {
-			logger.Error("Field info send failed for client %s: %v", s.clients[i].clientID, err)
+			logger.Info("Field info send failed for client %s: %v", s.clients[i].clientID, err)
 			s.exitErr <- sessionError{
 				generatorClientID: s.clients[i].clientID,
 				reason:            errSendFailed,
