@@ -120,7 +120,7 @@ func Process() error {
 		if battleCount == 0 {
 			fname := common.ImagePath + "battle/msg_start.png"
 			var err error
-			b4mainInst, err = titlemsg.New(fname)
+			b4mainInst, err = titlemsg.New(fname, 0)
 			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
@@ -173,7 +173,7 @@ func Process() error {
 			}
 
 			var err error
-			resultInst, err = titlemsg.New(fname)
+			resultInst, err = titlemsg.New(fname, 60)
 			if err != nil {
 				return fmt.Errorf("failed to initialize result: %w", err)
 			}

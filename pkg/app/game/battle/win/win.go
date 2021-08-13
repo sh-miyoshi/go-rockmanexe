@@ -64,7 +64,7 @@ func Init(args WinArg, plyr *player.Player) error {
 
 	fname = common.ImagePath + "battle/msg_win.png"
 	var err error
-	winMsgInst, err = titlemsg.New(fname)
+	winMsgInst, err = titlemsg.New(fname, 0)
 
 	if err := sound.BGMPlay(sound.BGMWin); err != nil {
 		return fmt.Errorf("failed to play bgm: %v", err)

@@ -11,14 +11,16 @@ const (
 )
 
 type TitleMsg struct {
-	imgMsg []int32
-	count  int
+	imgMsg    []int32
+	count     int
+	waitCount int
 }
 
-func New(fname string) (*TitleMsg, error) {
+func New(fname string, waitCount int) (*TitleMsg, error) {
 	res := TitleMsg{
-		count:  0,
-		imgMsg: make([]int32, 3),
+		count:     0,
+		imgMsg:    make([]int32, 3),
+		waitCount: waitCount,
 	}
 
 	if loadRes := dxlib.LoadDivGraph(fname, 3, 1, 3, 274, 32, res.imgMsg); loadRes == -1 {
@@ -44,5 +46,5 @@ func (m *TitleMsg) Draw() {
 
 func (m *TitleMsg) Process() bool {
 	m.count++
-	return m.count >= len(m.imgMsg)*delay+20
+	return m.count >= len(m.imgMsg)*delay+20+m.waitCount
 }
