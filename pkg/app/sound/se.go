@@ -10,7 +10,8 @@ import (
 type SEType int32
 
 const (
-	SETitleEnter SEType = iota
+	SENone SEType = iota // required no SE as 0
+	SETitleEnter
 	SECursorMove
 	SEMenuEnter
 	SEDenied
@@ -52,6 +53,7 @@ var (
 func Init() error {
 	basePath := common.SoundPath + "se/"
 
+	soundEffects[SENone] = 0
 	soundEffects[SETitleEnter] = dxlib.LoadSoundMem(basePath + "title_enter.mp3")
 	soundEffects[SECursorMove] = dxlib.LoadSoundMem(basePath + "cursor_move.mp3")
 	soundEffects[SEMenuEnter] = dxlib.LoadSoundMem(basePath + "menu_enter.mp3")
@@ -102,6 +104,10 @@ func Init() error {
 }
 
 func On(typ SEType) {
+	if typ != SEDamaged {
+		return
+	}
+
 	if dxlib.CheckSoundMem(soundEffects[typ]) == 1 {
 		if typ != SECannonHit {
 			dxlib.StopSoundMem(soundEffects[typ])
