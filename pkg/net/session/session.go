@@ -188,6 +188,12 @@ func ActionProc(action *pb.Action) error {
 		}
 		s.fieldLock.Unlock()
 		logger.Debug("Added effect: %+v", eff)
+	case pb.Action_ADDSOUND:
+		s.fieldLock.Lock()
+		for i := 0; i < len(s.clients); i++ {
+			s.clients[i].fieldInfo.Sounds = append(s.clients[i].fieldInfo.Sounds, action.GetSeType())
+		}
+		s.fieldLock.Unlock()
 	default:
 		return fmt.Errorf("action %d is not implemented yet", action.Type)
 	}
@@ -416,6 +422,7 @@ func (s *session) publishField() {
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
 		s.clients[i].fieldInfo.HitDamages = []damage.Damage{}
+		s.clients[i].fieldInfo.Sounds = []int32{}
 		s.fieldLock.Unlock()
 	}
 }

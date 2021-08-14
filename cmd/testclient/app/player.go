@@ -10,6 +10,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -145,6 +146,10 @@ func (p *player) damageProc() bool {
 		ViewOfsX: dm.ViewOfsX,
 		ViewOfsY: dm.ViewOfsY,
 	})
+
+	if dm.BigDamage {
+		netconn.AddSound(sound.SEDamaged)
+	}
 
 	return true
 }

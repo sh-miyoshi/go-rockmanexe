@@ -121,6 +121,7 @@ func (p *wideShot) addDamages() {
 		Power:      p.power,
 		TTL:        p.nextStepCount,
 		TargetType: damage.TargetOtherClient,
+		BigDamage:  true,
 	}
 
 	// Add damages to 3 wide

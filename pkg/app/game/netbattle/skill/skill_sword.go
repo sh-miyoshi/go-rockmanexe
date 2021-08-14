@@ -79,6 +79,7 @@ func (p *sword) addDamage() {
 		Power:      p.power,
 		TTL:        1,
 		TargetType: damage.TargetOtherClient,
+		BigDamage:  true,
 	}
 
 	dm.PosX = p.x + 1

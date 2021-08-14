@@ -65,6 +65,7 @@ func (p *miniBomb) Process() (bool, error) {
 				Power:      p.power,
 				TTL:        1,
 				TargetType: damage.TargetOtherClient,
+				BigDamage:  true,
 			},
 		})
 

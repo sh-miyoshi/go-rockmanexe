@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -27,6 +28,7 @@ type sendInfo struct {
 	removeObjects []string
 	damages       []damage.Damage
 	effects       []effect.Effect
+	sounds        []sound.SEType
 }
 
 var (
@@ -133,6 +135,10 @@ func SendEffect(eff effect.Effect) {
 	sendData.effects = append(sendData.effects, eff)
 }
 
+func AddSound(se sound.SEType) {
+	sendData.sounds = append(sendData.sounds, se)
+}
+
 func dataRecv() {
 	// Recv data from stream
 	for {
@@ -156,6 +162,7 @@ func dataRecv() {
 			fieldInfo.Panels = f.Panels
 			fieldInfo.Effects = append(fieldInfo.Effects, f.Effects...)
 			fieldInfo.HitDamages = append(fieldInfo.HitDamages, f.HitDamages...)
+			fieldInfo.Sounds = append(fieldInfo.Sounds, f.Sounds...)
 			fieldLock.Unlock()
 		default:
 			exitErr = fmt.Errorf("invalid data type was received: %d", data.Type)
@@ -200,6 +207,12 @@ func RemoveDamage(id string) {
 			return
 		}
 	}
+}
+
+func RemoveSounds() {
+	fieldLock.Lock()
+	fieldInfo.Sounds = []int32{}
+	fieldLock.Unlock()
 }
 
 func BulkSendFieldInfo() error {
@@ -287,6 +300,26 @@ func BulkSendFieldInfo() error {
 		}
 	}
 
+	for _, se := range sendData.sounds {
+		req := &pb.Action{
+			SessionID: sessionID,
+			ClientID:  clientID,
+			Type:      pb.Action_ADDSOUND,
+			Data: &pb.Action_SeType{
+				SeType: int32(se),
+			},
+		}
+
+		res, err := routerClient.SendAction(context.TODO(), req)
+		if err != nil {
+			return fmt.Errorf("add sound failed: %w", err)
+		}
+
+		if !res.Success {
+			return fmt.Errorf("add sound got unexpected response: %s", res.ErrMsg)
+		}
+	}
+
 	sendData.Init()
 	return nil
 }
@@ -296,4 +329,5 @@ func (i *sendInfo) Init() {
 	i.removeObjects = []string{}
 	i.damages = []damage.Damage{}
 	i.effects = []effect.Effect{}
+	i.sounds = []sound.SEType{}
 }

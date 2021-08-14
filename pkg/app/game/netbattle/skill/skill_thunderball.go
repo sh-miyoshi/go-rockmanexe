@@ -94,6 +94,7 @@ func (p *thunderBall) Process() (bool, error) {
 				TTL:         halfNext,
 				TargetType:  damage.TargetOtherClient,
 				ShowHitArea: true,
+				BigDamage:   true, // TODO make paralysis
 			},
 		})
 

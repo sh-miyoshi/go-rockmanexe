@@ -92,6 +92,7 @@ func (p *cannon) addDamage() {
 			HitEffectType: effect.TypeCannonHitEffect,
 			ViewOfsX:      int32(rand.Intn(2*5) - 5),
 			ViewOfsY:      int32(rand.Intn(2*5) - 5),
+			BigDamage:     true,
 		})
 
 		// break if object exists

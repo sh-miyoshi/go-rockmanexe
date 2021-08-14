@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -84,6 +85,7 @@ func End() {
 
 func Process() error {
 	effect.Process()
+	soundProc()
 	status := netconn.GetStatus()
 
 	switch battleState {
@@ -233,4 +235,12 @@ func stateChange(nextState int) {
 	}
 	battleState = nextState
 	battleCount = 0
+}
+
+func soundProc() {
+	finfo := netconn.GetFieldInfo()
+	for _, se := range finfo.Sounds {
+		sound.On(sound.SEType(se))
+	}
+	netconn.RemoveSounds()
 }

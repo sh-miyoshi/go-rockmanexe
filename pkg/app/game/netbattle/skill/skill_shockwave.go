@@ -78,6 +78,7 @@ func (p *shockWave) Process() (bool, error) {
 					TTL:         n - 2,
 					TargetType:  damage.TargetOtherClient,
 					ShowHitArea: true,
+					BigDamage:   true,
 				},
 			})
 		}

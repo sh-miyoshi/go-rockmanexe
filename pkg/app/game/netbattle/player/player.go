@@ -335,12 +335,9 @@ func (p *BattlePlayer) damageProc() bool {
 		}
 		p.ManagedSkills = []string{}
 		p.Act.Set(battlecommon.PlayerActDamage, nil)
+		netconn.AddSound(sound.SEDamaged)
 	} else {
 		netconn.SendObject(p.Object)
-	}
-
-	if dm.Power > 0 {
-		sound.On(sound.SEDamaged)
 	}
 
 	if dm.HitEffectType > 0 {
