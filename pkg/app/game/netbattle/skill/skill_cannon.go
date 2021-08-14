@@ -97,6 +97,7 @@ func (p *cannon) addDamage() {
 		// break if object exists
 		pn := netfield.GetPanelInfo(x, p.y)
 		if pn.ObjectID != "" {
+			sound.On(sound.SECannonHit)
 			break
 		}
 	}

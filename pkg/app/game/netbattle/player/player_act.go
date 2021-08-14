@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -81,6 +82,7 @@ func (a *Act) Process() bool {
 				// break if object exists
 				pn := netfield.GetPanelInfo(x, y)
 				if pn.ObjectID != "" {
+					sound.On(sound.SEBusterHit)
 					break
 				}
 			}
