@@ -12,13 +12,19 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
+const (
+	spreadWaitCount = 10
+)
+
 type spreadGun struct {
-	atkID  string
-	bodyID string
-	x      int
-	y      int
-	count  int
-	power  int
+	atkID          string
+	bodyID         string
+	x              int
+	y              int
+	count          int
+	power          int
+	waitCount      int
+	spreadBaseInfo damage.Damage
 }
 
 func newSpreadGun(x, y int, power int) *spreadGun {
@@ -33,6 +39,45 @@ func newSpreadGun(x, y int, power int) *spreadGun {
 
 func (p *spreadGun) Process() (bool, error) {
 	p.count++
+
+	if p.waitCount > 0 {
+		p.waitCount++
+		if p.waitCount >= spreadWaitCount {
+			// Spreading
+			damages := []damage.Damage{}
+			dm := p.spreadBaseInfo
+			dm.ID = uuid.New().String()
+			dm.HitEffectType = 0
+			x := dm.PosX
+			y := dm.PosY
+			for sy := -1; sy <= 1; sy++ {
+				if y+sy < 0 || y+sy >= appfield.FieldNumY {
+					continue
+				}
+				for sx := -1; sx <= 1; sx++ {
+					if sy == 0 && sx == 0 {
+						continue
+					}
+					if x+sx >= 0 && x+sx < appfield.FieldNumX {
+						// Send effect
+						netconn.SendEffect(effect.Effect{
+							ID:   uuid.New().String(),
+							Type: effect.TypeSpreadHitEffect,
+							X:    x + sx,
+							Y:    y + sy,
+						})
+
+						// Add damage
+						dm.PosX = x + sx
+						dm.PosY = y + sy
+						damages = append(damages, dm)
+					}
+				}
+			}
+			netconn.SendDamages(damages)
+			p.waitCount = 0
+		}
+	}
 
 	if p.count == 1 {
 		// Add objects
@@ -66,7 +111,6 @@ func (p *spreadGun) Process() (bool, error) {
 				// Hit
 				sound.On(sound.SESpreadHit)
 
-				damages := []damage.Damage{}
 				dm := damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,
@@ -76,36 +120,12 @@ func (p *spreadGun) Process() (bool, error) {
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: effect.TypeHitBigEffect,
 				}
-				damages = append(damages, dm)
 
-				// Spreading
-				dm.HitEffectType = 0
-				for sy := -1; sy <= 1; sy++ {
-					if p.y+sy < 0 || p.y+sy >= appfield.FieldNumY {
-						continue
-					}
-					for sx := -1; sx <= 1; sx++ {
-						if sy == 0 && sx == 0 {
-							continue
-						}
-						if x+sx >= 0 && x+sx < appfield.FieldNumX {
-							// Send effect
-							netconn.SendEffect(effect.Effect{
-								ID:   uuid.New().String(),
-								Type: effect.TypeSpreadHitEffect,
-								X:    x + sx,
-								Y:    p.y + sy,
-							})
+				// Set spreading
+				p.spreadBaseInfo = dm
+				p.waitCount = 1
 
-							// Add damage
-							dm.PosX = x + sx
-							dm.PosY = p.y + sy
-							damages = append(damages, dm)
-						}
-					}
-				}
-
-				netconn.SendDamages(damages)
+				netconn.SendDamages([]damage.Damage{dm})
 				break
 			}
 		}
@@ -118,7 +138,7 @@ func (p *spreadGun) Process() (bool, error) {
 		max = n
 	}
 
-	if p.count > max {
+	if p.count > max && p.waitCount == 0 {
 		return true, nil
 	}
 	return false, nil
