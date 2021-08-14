@@ -104,7 +104,7 @@ func Init() error {
 }
 
 func On(typ SEType) {
-	if typ != SEDamaged {
+	if typ == SENone {
 		return
 	}
 
