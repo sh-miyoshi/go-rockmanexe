@@ -15,9 +15,6 @@
     - ID
     - name
     - 対戦履歴
-      - 誰と
-      - いつ
-      - 結果
     - Session情報
   - Session
     - Owner
@@ -25,6 +22,17 @@
     - Client ID
     - Client Key
     - 有効期限
+  - History
+    - Users
+      - 対戦したユーザーすべて
+    - FinishedAt
+    - Winner
+  - LoginSession
+    - refresh_token
+    - expires_at
+    - refresh_expires_at
+    - user_id
+    - access_token
 - 流れ
   - ユーザーログイン
   - 対戦相手を見つける
