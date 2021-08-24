@@ -1,2 +1,10 @@
-<h1>User#show</h1>
-<p>Find me in app/views/user/show.html.erb</p>
+<h1>Userトップページ</h1>
+
+<h3>My Info</h3>
+<%= @user.name %>
+
+<h3>対戦相手を見つける</h3>
+<ul>
+    <li><%= button_to "自分でセッションを作成" %></li>
+    <li><%= button_to "人のセッションに参加" %></li>
+</ul>
