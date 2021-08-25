@@ -1,0 +1,7 @@
+require:
+  - rubocop-rails
+  - rubocop-performance
+
+AllCops:
+  Exclude:
+    - node_modules/**/*
