@@ -5,6 +5,6 @@
 
 <h3>対戦相手を見つける</h3>
 <ul>
-    <li><%= button_to "自分でセッションを作成" %></li>
+    <li><%= button_to "自分でセッションを作成", {action: "create", controller: "session"}, {method: :post} %></li>
     <li><%= button_to "人のセッションに参加" %></li>
 </ul>
