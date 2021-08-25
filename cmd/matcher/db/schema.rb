@@ -10,12 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_22_041014) do
-
+ActiveRecord::Schema.define(version: 20_210_824_233_712) do
   create_table "histories", force: :cascade do |t|
     t.text "users"
     t.date "finished_at"
     t.string "winner"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.string "owner"
+    t.string "router_addr"
+    t.string "client_id"
+    t.string "client_key"
+    t.date "expires_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -26,5 +35,4 @@ ActiveRecord::Schema.define(version: 2021_08_22_041014) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
-
 end
