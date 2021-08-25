@@ -1,3 +1,3 @@
 class History < ApplicationRecord
-    serialize :users, Array
+  serialize :users, Array
 end

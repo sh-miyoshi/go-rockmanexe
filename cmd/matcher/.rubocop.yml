@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 require:
   - rubocop-rails
   - rubocop-performance
@@ -5,3 +7,33 @@ require:
 AllCops:
   Exclude:
     - node_modules/**/*
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never
+
+Rails/FilePath:
+  EnforcedStyle: arguments
+
+Layout/LineLength:
+  Max: 256
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Metrics/AbcSize:
+  Max: 18
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/MethodLength:
+  Max: 11
+
+Metrics/PerceivedComplexity:
+  Max: 10
