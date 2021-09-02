@@ -1,10 +1,49 @@
-<h1>Userトップページ</h1>
+<header class="c-header header">
+  <div class="c-header-nav">
+    Rockman EXE
+  </div>
+</header>
 
-<h3>My Info</h3>
-<%= @user.name %>
-
-<h3>対戦相手を見つける</h3>
-<ul>
-    <li><%= button_to "自分でセッションを作成", {action: "create", controller: "session"}, {method: :post} %></li>
-    <li><%= button_to "人のセッションに参加" %></li>
-</ul>
+<div class="c-body">
+  <main class="c-main">
+    <div class="container-fluid">
+      <div class="row justify-content-between">
+        <!-- お知らせ -->
+        <div class="col-lg-7">
+          <div class="card ml-4">
+            <div class="card-header">お知らせ</div>
+            <div class="card-body">
+              <ul class="list-group">
+                <li class="list-group-item d-flex list-group-item-action justify-content-between align-items-center">
+                  ネット対戦機能をリリースしました！
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ユーザー情報 -->
+        <div class="col-lg-4">
+          <div class="card" style="width: 280px;">
+            <div class="card-body ml-2">
+              <div class="char-icon mb-2">R</div>
+              <div class="row mb-2">名前：<%= @user.name %></div>
+              <div class="row mb-2">
+                <button class="btn btn-outline-primary" type="button">プロフィールの閲覧</button>
+              </div>
+              <div class="row mb-2">
+                <button class="btn btn-outline-primary" type="button">プロフィールの編集</button>
+              </div>
+              <div class="row mb-2">
+                <button class="btn btn-outline-primary" type="button">最新版のアプリを入手</button>
+              </div>
+              <div class="row mb-2">
+                <button class="btn btn-outline-danger" type="button">ログアウト</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
