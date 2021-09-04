@@ -7,6 +7,10 @@ class UserController < ApplicationController
 
   def show; end
 
+  def new
+    
+  end
+
   def create; end
 
   def destroy; end
@@ -14,7 +18,6 @@ class UserController < ApplicationController
   private
 
   def set_login_user
-    login_id = login_user_id
-    @user = User.find_by(login_id: login_id)
+    @user = login_user()
   end
 end
