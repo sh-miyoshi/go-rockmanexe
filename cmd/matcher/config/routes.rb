@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  get 'auth/callback'
-  get 'auth/failure'
-  get 'auth/logout'
+  get "auth/callback"
+  get "auth/failure"
+  get "auth/logout"
 
   post "session/create"
   delete "session/destroy"
