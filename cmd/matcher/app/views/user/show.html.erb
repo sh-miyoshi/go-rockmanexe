@@ -29,7 +29,7 @@
               <div class="char-icon mb-2"><%= @user.name[0].upcase %></div>
               <div class="row mb-2">名前：<%= @user.name %></div>
               <div class="row mb-2">
-                <button class="btn btn-outline-primary" type="button">プロフィールの閲覧</button>
+                <%= button_to "プロフィールの閲覧", user_detail_show_path, {method: :get, class: "btn btn-outline-primary"} %>
               </div>
               <div class="row mb-2">
                 <button class="btn btn-outline-primary" type="button">プロフィールの編集</button>
