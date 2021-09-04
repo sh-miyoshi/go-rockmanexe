@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  post 'session/create'
-  delete 'session/destroy'
+  post "session/create"
+  delete "session/destroy"
 
   get "user/index"
   get "user/show"
