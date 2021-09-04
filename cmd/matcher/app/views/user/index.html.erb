@@ -14,7 +14,7 @@
                 <%= button_to "ログイン", '/auth/auth0', {method: :post, class: "btn btn-outline-primary"} %>
               </div>
               <div>
-                <button class="btn btn-link" type="button">アカウントの新規作成</button>
+                <%= button_to "アカウントの新規作成", '/auth/auth0', {method: :post, class: "btn btn-link", params: {screen_hint: "signup"}} %>
               </div>
             </div>
           </div>
