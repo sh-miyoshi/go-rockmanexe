@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  post 'login/create'
+  delete 'login/destroy'
+  get 'login/callback'
+
   post "session/create"
   delete "session/destroy"
 
