@@ -10,29 +10,12 @@
 
 ## マッチングサーバー情報
 
-- Model
-  - User
-    - ID
-    - name
-    - 対戦履歴
-    - Session情報
-  - Session
-    - Owner
-    - Router Addr
-    - Client ID
-    - Client Key
-    - 有効期限
-  - History
-    - Users
-      - 対戦したユーザーすべて
-    - FinishedAt
-    - Winner
-  - LoginSession
-    - refresh_token
-    - expires_at
-    - refresh_expires_at
-    - user_id
-    - access_token
+- 残作業
+  - 対戦方法の説明文
+  - Session周り
+- 未実装項目
+  - プロフィールの閲覧
+  - プロフィールの編集
 - 流れ
   - ユーザーログイン
   - 対戦相手を見つける
@@ -41,6 +24,24 @@
     - もう片方は応答する
   - セッション情報をconfigファイルに記述
   - client.exeを起動・対戦
+
+- UserとSessionの関係
+  - やりたいこと
+    - userがセッションを作る
+      - 参加者(1人)
+        - 名前検索
+        - ※誰でも
+      - セッション名
+      - (有効期限)
+      - (client_id)
+      - (client_key)
+    - 参加者が参加したいセッション情報を取得
+      - セッション名で検索
+        - ※誰でもを表示するかのオプションが欲しい
+    - client.exeを起動
+  - SessionはUserに紐付く必要はなさそう
+    - 自分のuidで検索できれば良い
+    - Sessionに参加者リストを持っておく必要があるかな
 
 ## マイルストーン
 
