@@ -1,6 +1,6 @@
 class UserController < ApplicationController
   include Login
-  before_action :set_login_user, except: :index
+  before_action :set_login_user, except: [:index, :new]
 
   # top page
   def index; end
@@ -8,7 +8,8 @@ class UserController < ApplicationController
   def show; end
 
   def new
-    
+    # TODO
+    # redirect_to '/' unless session[:user_id].present?
   end
 
   def create; end
@@ -18,6 +19,6 @@ class UserController < ApplicationController
   private
 
   def set_login_user
-    @user = login_user()
+    @user = login_user
   end
 end
