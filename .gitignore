@@ -3,3 +3,5 @@ Log.txt
 tmp/
 save.dat
 *.log
+
+.DS_Store
