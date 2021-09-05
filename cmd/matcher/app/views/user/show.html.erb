@@ -37,7 +37,7 @@
                 <a class="btn btn-outline-primary" href="https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.2/project.zip" role="button">最新版のアプリを入手</a>
               </div>
               <div class="row mb-2">
-                <button class="btn btn-outline-danger" type="button">ログアウト</button>
+                <%= button_to "ログアウト", auth_logout_path, {method: :get, class: "btn btn-outline-danger"} %>
               </div>
             </div>
           </div>
