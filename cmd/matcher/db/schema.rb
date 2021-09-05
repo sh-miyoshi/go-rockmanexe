@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_210_824_233_712) do
+ActiveRecord::Schema.define(version: 2021_09_05_091428) do
+
   create_table "histories", force: :cascade do |t|
     t.text "users"
     t.date "finished_at"
@@ -20,13 +21,16 @@ ActiveRecord::Schema.define(version: 20_210_824_233_712) do
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.string "owner"
+    t.string "owner_id"
     t.string "router_addr"
     t.string "client_id"
     t.string "client_key"
     t.date "expires_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "guest_id"
+    t.string "session_name", null: false
+    t.index ["owner_id", "guest_id"], name: "index_sessions_on_owner_id_and_guest_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -35,4 +39,5 @@ ActiveRecord::Schema.define(version: 20_210_824_233_712) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
+
 end
