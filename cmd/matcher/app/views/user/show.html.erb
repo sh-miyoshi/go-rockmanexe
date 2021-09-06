@@ -12,19 +12,34 @@
           <div class="card ml-4">
             <div class="card-header">対戦の仕方</div>
             <div class="card-body">
-              テストテストテストテストテストテストテストテストテスト<br/>
-              テストテストテストテストテストテストテストテストテスト<br/>
-              テストテストテストテストテストテストテストテストテスト<br/>
+              テストテストテストテストテストテストテストテストテスト<br />
+              テストテストテストテストテストテストテストテストテスト<br />
+              テストテストテストテストテストテストテストテストテスト<br />
             </div>
           </div>
         </div>
-        
+
         <!-- ユーザー情報 -->
-        <div class="col-lg-4">
-          <div class="card" style="width: 280px;">
+        <div class="col-5 text-right">
+          <div class="card" style="width: 370px;">
             <div class="card-body ml-2">
-              <div class="char-icon mb-2"><%= @user.name[0].upcase %></div>
-              <div class="row mb-2">名前：<%= @user.name %></div>
+              <div class="row mb-2">
+                <div class="char-icon"><%= @user.name[0].upcase %></div>
+              </div>
+              <div class="row mb-2">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td width="40px">名前</td>
+                      <td><%= @user.name %></td>
+                    </tr>
+                    <tr>
+                      <td>ID</td>
+                      <td><%= @user.user_id %></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <!-- TODO
               <div class="row mb-2">
                 <%= button_to "プロフィールの閲覧", user_detail_show_path, {method: :get, class: "btn btn-outline-primary"} %>
@@ -34,7 +49,9 @@
               </div>
               -->
               <div class="row mb-2">
-                <a class="btn btn-outline-primary" href="https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.2/project.zip" role="button">最新版のアプリを入手</a>
+                <a class="btn btn-outline-primary"
+                  href="https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.2/project.zip"
+                  role="button">最新版のアプリを入手</a>
               </div>
               <div class="row mb-2">
                 <%= button_to "ログアウト", auth_logout_path, {method: :get, class: "btn btn-outline-danger"} %>
@@ -44,20 +61,21 @@
         </div>
       </div>
 
-        <!-- 対戦する -->
-        <div class="row-lg-10">
-          <div class="card">
-            <div class="card-header">
-              <div class="row justify-content-between">
-                <div class="ml-3 h4">対戦する</div>
-                <button class="btn btn-secondary mr-3">更新</button>
-              </div>
-            </div>
-            <div class="card-body">
-              TODO
+      <!-- 対戦する -->
+      <div class="row-lg-10">
+        <div class="card">
+          <div class="card-header">
+            <div class="row justify-content-between">
+              <div class="ml-3 h4">対戦する</div>
+              <button class="btn btn-secondary mr-3">更新</button>
             </div>
           </div>
+          <div class="card-body">
+            TODO
+            <%= button_to "自分でセッションを作成", session_new_path, {method: :get, class: "btn btn-primary"} %>
+          </div>
         </div>
+      </div>
     </div>
   </main>
 </div>
