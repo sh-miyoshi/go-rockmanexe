@@ -15,5 +15,7 @@ class SessionController < ApplicationController
     redirect_to controller: :user, action: :show
   end
 
+  def new; end
+
   def destroy; end
 end
