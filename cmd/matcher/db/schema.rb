@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_05_091428) do
+ActiveRecord::Schema.define(version: 2021_09_05_124113) do
 
   create_table "histories", force: :cascade do |t|
     t.text "users"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2021_09_05_091428) do
     t.string "login_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "user_id", null: false
   end
 
 end
