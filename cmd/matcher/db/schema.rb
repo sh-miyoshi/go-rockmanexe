@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_05_124113) do
+ActiveRecord::Schema.define(version: 2021_09_07_081642) do
 
   create_table "histories", force: :cascade do |t|
     t.text "users"
@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 2021_09_05_124113) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "user_id", null: false
+    t.index ["login_id"], name: "index_users_on_login_id", unique: true
+    t.index ["user_id"], name: "index_users_on_user_id", unique: true
   end
 
 end
