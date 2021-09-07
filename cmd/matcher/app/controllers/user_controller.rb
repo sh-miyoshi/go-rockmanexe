@@ -18,16 +18,17 @@ class UserController < ApplicationController
     session[:user_id] = "tester"
     return redirect_to '/' unless session[:user_id].present?
 
-    User.create(
+    User.create!(
       name: params[:name],
       login_id: session[:user_id],
       user_id: SecureRandom.uuid
     )
 
     redirect_to user_show_path
-  rescue e
+  rescue => e
     Rails.logger.info("Failed to create user: #{e}")
-    # TODO set error render new_page
+    flash[:danger] = "ユーザーの作成に失敗しました。<br/>#{e}"
+    redirect_to user_new_path
   end
 
   def destroy; end

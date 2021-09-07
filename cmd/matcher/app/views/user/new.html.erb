@@ -20,6 +20,11 @@
                 <%= f.text_field :name, class: "form-control" %>
               </div>
             </div>
+            <% if flash[:danger].present? %>
+            <div class="alert alert-danger">
+              <%== flash[:danger] %>
+            </div>
+            <% end %>
             <div class="row text-center ml-2">
               <%= f.submit "登録", class: "btn btn-outline-primary" %>
               <button class="btn btn-link mr-2">キャンセル</button>
