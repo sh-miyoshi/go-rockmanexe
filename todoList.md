@@ -11,8 +11,47 @@
 ## マッチングサーバー情報
 
 - 残作業
-  - 対戦方法の説明文
+  - User
+    - new
+      - キャンセルボタンの処理
+      - ログイン後しか表示させない
+    - show
+      - 対戦方法の説明文
+      - Session周り(後述)
+    - destroy
+      - ユーザー削除処理
+      - redirect to top page
   - Session周り
+    - new
+      - ページレイアウト
+      - 選択項目
+        - 参加者(一人)
+          - inputでユーザーIDを入れてもらう
+        - セッション名
+      - 作成ボタン
+        - Session#createを呼ぶ
+      - キャンセルボタン
+        - user_show_pathに戻る
+    - create
+      - Sessionの作成
+      - routerにRequest
+      - redirect_to user_show_path
+      - エラー時はsession_new_pathで表示
+    - destroy
+      - user_showで呼べるようにする
+      - Session削除
+      - routerにRequest
+      - redirect_to user_show_path
+    - User#show
+      - 自分のセッションを表示
+        - 自分で作成した際は作成ボタンを非表示
+      - 招待されたセッションを表示
+      - セッション情報
+        - 有効期限
+        - セッション名
+        - client_id
+        - client_key
+        - deleteボタン
 - 未実装項目
   - プロフィールの閲覧
   - プロフィールの編集
