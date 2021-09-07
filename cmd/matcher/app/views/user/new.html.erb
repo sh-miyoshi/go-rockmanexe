@@ -8,14 +8,23 @@
   <main class="c-main">
     <div class="container-fluid">
       <div class="row justify-content-center">
-        <div class="card col-md-5 py-5">
-          <div class="card-body text-center">
+        <div class="card col-md-5">
+          <div class="card-header">
+            <div class="h3">新規ユーザーの登録</div>
+          </div>
+          <div class="card-body">
             <%= form_with url: user_create_path do |f| %>
-            <%= f.submit "登録", class: "btn btn-outline-primary" %>
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">ニックネーム</label>
+              <div class="col-sm-8">
+                <%= f.text_field :name, class: "form-control" %>
+              </div>
+            </div>
+            <div class="row text-center ml-2">
+              <%= f.submit "登録", class: "btn btn-outline-primary" %>
+              <button class="btn btn-link mr-2">キャンセル</button>
+            </div>
             <% end %>
-            name
-            登録ボタン
-            キャンセルボタン(auth0からも消す)
           </div>
         </div>
       </div>
