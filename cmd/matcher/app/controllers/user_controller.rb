@@ -1,6 +1,8 @@
+require 'securerandom'
+
 class UserController < ApplicationController
   include Login
-  before_action :set_login_user, except: [:index, :new]
+  before_action :set_login_user, except: [:index, :new, :create]
 
   # top page
   def index; end
@@ -12,7 +14,21 @@ class UserController < ApplicationController
     # redirect_to '/' unless session[:user_id].present?
   end
 
-  def create; end
+  def create
+    session[:user_id] = "tester"
+    return redirect_to '/' unless session[:user_id].present?
+
+    User.create(
+      name: params[:name],
+      login_id: session[:user_id],
+      user_id: SecureRandom.uuid
+    )
+
+    redirect_to user_show_path
+  rescue e
+    Rails.logger.info("Failed to create user: #{e}")
+    # TODO set error render new_page
+  end
 
   def destroy; end
 

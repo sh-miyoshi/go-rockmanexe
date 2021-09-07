@@ -3,7 +3,7 @@ module Login
 
   def login_user
     # redirect top page if not logged in
-    # redirect_to '/' unless session[:user_id].present?
+    # return redirect_to '/' unless session[:user_id].present?
 
     # Userがいなければ作成ページにリダイレクト
 
