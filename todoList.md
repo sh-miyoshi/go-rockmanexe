@@ -14,14 +14,10 @@
   - User
     - new
       - inputの説明
-      - キャンセルボタンの処理
       - ログイン後しか表示させない
     - show
       - 対戦方法の説明文
       - Session周り(後述)
-    - destroy
-      - ユーザー削除処理
-      - redirect to top page
   - Session周り
     - new
       - inputの説明
@@ -50,6 +46,9 @@
 - 未実装項目
   - プロフィールの閲覧
   - プロフィールの編集
+  - User#destroy
+    - ユーザー削除処理
+    - redirect to top page
 - 流れ
   - ユーザーログイン
   - 対戦相手を見つける
