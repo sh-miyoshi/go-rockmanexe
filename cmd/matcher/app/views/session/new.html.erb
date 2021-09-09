@@ -7,13 +7,37 @@
 <div class="c-body">
   <main class="c-main">
     <div class="container-fluid">
-      - 参加者(1人)
-      - 名前検索
-      - ※誰でも
-      - セッション名
-      - (有効期限)
-      - (client_id)
-      - (client_key)
-    </div>
+      <div class="row justify-content-center">
+        <div class="card col-md-7">
+          <div class="card-header">
+            <div class="h3">新しいセッションの作成</div>
+          </div>
+          <div class="card-body">
+            <%= form_with url: session_create_path do |f| %>
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">セッション名</label>
+              <div class="col-sm-8">
+                <%= f.text_field :name, class: "form-control" %>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">対戦するユーザーのID</label>
+              <div class="col-sm-8">
+                <%= f.text_field :name, class: "form-control" %>
+              </div>
+            </div>
+            <% if flash[:danger].present? %>
+            <div class="alert alert-danger">
+              <%== flash[:danger] %>
+            </div>
+            <% end %>
+            <div class="row text-center ml-2">
+              <%= f.submit "作成", class: "btn btn-outline-primary" %>
+              <%= link_to "キャンセル", user_show_path, class: "btn btn-link mr-2" %>
+            </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
   </main>
 </div>

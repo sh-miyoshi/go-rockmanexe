@@ -13,6 +13,7 @@
 - 残作業
   - User
     - new
+      - inputの説明
       - キャンセルボタンの処理
       - ログイン後しか表示させない
     - show
@@ -23,15 +24,9 @@
       - redirect to top page
   - Session周り
     - new
-      - ページレイアウト
-      - 選択項目
-        - 参加者(一人)
-          - inputでユーザーIDを入れてもらう
-        - セッション名
+      - inputの説明
       - 作成ボタン
         - Session#createを呼ぶ
-      - キャンセルボタン
-        - user_show_pathに戻る
     - create
       - Sessionの作成
       - routerにRequest
