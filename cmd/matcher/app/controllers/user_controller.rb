@@ -1,4 +1,4 @@
-require 'securerandom'
+require "securerandom"
 
 class UserController < ApplicationController
   include Login
@@ -16,7 +16,7 @@ class UserController < ApplicationController
 
   def create
     session[:user_id] = "tester"
-    return redirect_to '/' unless session[:user_id].present?
+    return redirect_to "/" unless session[:user_id].present?
 
     User.create!(
       name: params[:name],
@@ -25,7 +25,7 @@ class UserController < ApplicationController
     )
 
     redirect_to user_show_path
-  rescue => e
+  rescue StandardError => e
     Rails.logger.info("Failed to create user: #{e}")
     flash[:danger] = "ユーザーの作成に失敗しました。<br/>#{e}"
     redirect_to user_new_path
