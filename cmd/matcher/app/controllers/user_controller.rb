@@ -8,12 +8,9 @@ class UserController < ApplicationController
   def index; end
 
   def show
-    # TODO set session
+    # Set session info
     @own_session = Session.find_by(owner_id: @user.user_id)
-
-    if @own_session.blank?
-      @guest_session = Session.where(guest_id: @user.user_id)
-    end
+    @guest_session = Session.where(guest_id: @user.user_id)
   end
 
   def new

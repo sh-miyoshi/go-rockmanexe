@@ -67,10 +67,60 @@
           <div class="card-header">
             <div class="row justify-content-between">
               <div class="ml-3 h4">対戦する</div>
-              <button class="btn btn-secondary mr-3">更新</button>
+              <!--<button class="btn btn-secondary mr-3">更新</button>-->
             </div>
           </div>
           <div class="card-body">
+            <% if @guest_session.present? %>
+            <% @guest_session.each do |s| %>
+            <div class="card border-dark mb-3 mr-2 ml-2">
+              <div class="card-header"><%= s.session_name %></div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <label for="router_addr" class="col-sm-2 col-form-label">
+                    Router Addr
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'router_addr', s.router_addr, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="client_id" class="col-sm-2 col-form-label">
+                    Client ID
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'client_id', s.owner_client_id, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="client_key" class="col-sm-2 col-form-label">
+                    Client Key
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'client_key', s.owner_client_key, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="expires_at" class="col-sm-2 col-form-label">
+                    有効期限
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'expires_at', s.expires_at, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="owner" class="col-sm-2 col-form-label">
+                    対戦相手
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'owner', s.owner_id, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% end %>
+            <% end %>
+
             <% if @own_session.present? %>
             <div class="card text-white bg-dark mb-3 mr-2 ml-2">
               <div class="card-header"><%= @own_session.session_name %></div>
@@ -123,7 +173,6 @@
               </div>
             </div>
             <% else %>
-            TODO
             <%= button_to "自分でセッションを作成", session_new_path, {method: :get, class: "btn btn-primary"} %>
             <% end %>
           </div>
