@@ -1,15 +1,15 @@
 package routerapi
 
 type ClientInfo struct {
-	ID  string `yaml:"id"`
-	Key string `yaml:"key"`
+	ID  string `json:"id"`
+	Key string `json:"key"`
 }
 
 type RouteInfo struct {
-	ID      string    `yaml:"id"`
-	Clients [2]string `yaml:"clients"`
+	ID      string    `json:"id"`
+	Clients [2]string `json:"clients"`
 }
 
 type RouteAddRequest struct {
-	Clients [2]string `yaml:"clients"`
+	Clients [2]string `json:"clients"`
 }

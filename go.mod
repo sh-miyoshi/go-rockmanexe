@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/sh-miyoshi/dxlib v1.2.1
