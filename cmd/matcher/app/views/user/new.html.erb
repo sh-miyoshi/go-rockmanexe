@@ -18,6 +18,7 @@
               <label class="col-sm-4 col-form-label">ニックネーム</label>
               <div class="col-sm-8">
                 <%= f.text_field :name, class: "form-control" %>
+                <small>* 3 ~ 20字</small>
               </div>
             </div>
             <% if flash[:danger].present? %>
