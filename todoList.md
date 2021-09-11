@@ -17,32 +17,19 @@
       - ログイン後しか表示させない
     - show
       - 対戦方法の説明文
-      - Session周り(後述)
-  - Session周り
+      - Session
+        - 招待されたセッションを表示
+        - 自分のSession削除するボタンの追加
+  - Session
     - new
       - inputの説明
-      - 作成ボタン
-        - Session#createを呼ぶ
     - create
-      - Sessionの作成
       - routerにRequest
-      - redirect_to user_show_path
-      - エラー時はsession_new_pathで表示
     - destroy
       - user_showで呼べるようにする
       - Session削除
       - routerにRequest
       - redirect_to user_show_path
-    - User#show
-      - 自分のセッションを表示
-        - 自分で作成した際は作成ボタンを非表示
-      - 招待されたセッションを表示
-      - セッション情報
-        - 有効期限
-        - セッション名
-        - client_id
-        - client_key
-        - deleteボタン
 - 未実装項目
   - プロフィールの閲覧
   - プロフィールの編集
