@@ -39,15 +39,27 @@ class SessionController < ApplicationController
     session.save!
 
     redirect_to controller: :user, action: :show
-  rescue => e
-      Rails.logger.error("Failed to create session: #{e}")
-      flash[:danger] = "セッション情報の作成に失敗しました。#{e}"
-      return redirect_to session_new_path
+  rescue StandardError => e
+    Rails.logger.error("Failed to create session: #{e}")
+    flash[:danger] = "セッション情報の作成に失敗しました。#{e}"
+    redirect_to session_new_path
   end
 
   def new; end
 
-  def destroy; end
+  def destroy
+    # TODO: request to router
+    # delete route
+    # delete clients
+
+    Session.destroy(params[:id])
+
+    redirect_to user_show_path
+  rescue StandardError => e
+    Rails.logger.error("Failed to delete session: #{e}")
+    flash[:danger] = "セッション削除に失敗しました。#{e}"
+    redirect_to user_show_path
+  end
 
   private
 

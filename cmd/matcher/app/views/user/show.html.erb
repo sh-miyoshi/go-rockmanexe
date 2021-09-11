@@ -117,7 +117,7 @@
                 </div>
                 <div class="row mb-2">
                   <div class="col-md-5">
-                    <%= button_to "削除", session_destroy_path, {class: "btn btn-danger"} %>
+                    <%= button_to "削除", session_destroy_path, {method: :delete, class: "btn btn-danger", params: {id: @own_session.id}} %>
                   </div>
                 </div>
               </div>
