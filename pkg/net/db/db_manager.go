@@ -49,12 +49,12 @@ func (m *Manager) ClientDelete(clientID string) error {
 }
 
 func (m *Manager) ClientGet() ([]model.ClientInfo, error) {
-	return m.client.Get()
+	return m.client.GetAll()
 }
 
 func (m *Manager) ClientGetByID(id string) (*model.ClientInfo, error) {
 	// TODO refactoring
-	clients, err := m.client.Get()
+	clients, err := m.client.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -72,16 +72,25 @@ func (m *Manager) RouteAdd(ent model.RouteInfo) error {
 }
 
 func (m *Manager) RouteDelete(routeID string) error {
+	route, err := m.route.Get(routeID)
+	if err != nil {
+		return fmt.Errorf("route get failed: %w", err)
+	}
+
+	for _, cid := range route.Clients {
+		m.ClientDelete(cid)
+	}
+
 	return m.route.Delete(routeID)
 }
 
 func (m *Manager) RouteGet() ([]model.RouteInfo, error) {
-	return m.route.Get()
+	return m.route.GetAll()
 }
 
 func (m *Manager) RouteGetByClient(clientID string) (*model.RouteInfo, error) {
 	// TODO refactoring
-	routes, err := m.route.Get()
+	routes, err := m.route.GetAll()
 	if err != nil {
 		return nil, err
 	}

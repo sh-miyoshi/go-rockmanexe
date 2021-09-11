@@ -39,6 +39,6 @@ func (h *ClientInfoHandler) Delete(clientID string) error {
 	return fmt.Errorf("no such client %s", clientID)
 }
 
-func (h *ClientInfoHandler) Get() ([]model.ClientInfo, error) {
+func (h *ClientInfoHandler) GetAll() ([]model.ClientInfo, error) {
 	return h.clientList, nil
 }

@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"fmt"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db/model"
 )
 
@@ -23,11 +21,11 @@ func (h *RouteInfoHandler) Add(ent model.RouteInfo) error {
 func (h *RouteInfoHandler) Delete(routeID string) error {
 	newList := []model.RouteInfo{}
 	found := false
-	for _, c := range h.routeList {
-		if c.ID == routeID {
+	for _, r := range h.routeList {
+		if r.ID == routeID {
 			found = true
 		} else {
-			newList = append(newList, c)
+			newList = append(newList, r)
 		}
 	}
 
@@ -36,9 +34,19 @@ func (h *RouteInfoHandler) Delete(routeID string) error {
 		return nil
 	}
 
-	return fmt.Errorf("no such route %s", routeID)
+	return model.ErrNoSuchRoute
 }
 
-func (h *RouteInfoHandler) Get() ([]model.RouteInfo, error) {
+func (h *RouteInfoHandler) GetAll() ([]model.RouteInfo, error) {
 	return h.routeList, nil
+}
+
+func (h *RouteInfoHandler) Get(routeID string) (*model.RouteInfo, error) {
+	for _, r := range h.routeList {
+		if r.ID == routeID {
+			return &r, nil
+		}
+	}
+
+	return nil, model.ErrNoSuchRoute
 }

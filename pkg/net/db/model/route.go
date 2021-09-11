@@ -1,5 +1,11 @@
 package model
 
+import "errors"
+
+var (
+	ErrNoSuchRoute = errors.New("no such route")
+)
+
 type RouteInfo struct {
 	ID      string
 	Clients [2]string
@@ -8,5 +14,6 @@ type RouteInfo struct {
 type RouteHandler interface {
 	Add(ent RouteInfo) error
 	Delete(routeID string) error
-	Get() ([]RouteInfo, error)
+	GetAll() ([]RouteInfo, error)
+	Get(routeID string) (*RouteInfo, error)
 }

@@ -8,5 +8,5 @@ type ClientInfo struct {
 type ClientHandler interface {
 	Add(ent ClientInfo) error
 	Delete(clientID string) error
-	Get() ([]ClientInfo, error)
+	GetAll() ([]ClientInfo, error)
 }
