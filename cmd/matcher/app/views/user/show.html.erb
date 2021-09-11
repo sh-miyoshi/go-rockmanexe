@@ -71,8 +71,61 @@
             </div>
           </div>
           <div class="card-body">
+            <% if @own_session.present? %>
+            <div class="card text-white bg-dark mb-3 mr-2 ml-2">
+              <div class="card-header"><%= @own_session.session_name %></div>
+              <div class="card-body">
+                <div class="row mb-2">
+                  <label for="router_addr" class="col-sm-2 col-form-label">
+                    Router Addr
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'router_addr', @own_session.router_addr, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="client_id" class="col-sm-2 col-form-label">
+                    Client ID
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'client_id', @own_session.owner_client_id, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="client_key" class="col-sm-2 col-form-label">
+                    Client Key
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'client_key', @own_session.owner_client_key, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="expires_at" class="col-sm-2 col-form-label">
+                    有効期限
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'expires_at', @own_session.expires_at, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="guest" class="col-sm-2 col-form-label">
+                    対戦相手
+                  </label>
+                  <div class="col-md-5">
+                    <%= text_field_tag 'guest', @own_session.guest_id, class: 'form-control read-text-dark', readonly: true %>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-5">
+                    <%= button_to "削除", session_destroy_path, {class: "btn btn-danger"} %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% else %>
             TODO
             <%= button_to "自分でセッションを作成", session_new_path, {method: :get, class: "btn btn-primary"} %>
+            <% end %>
           </div>
         </div>
       </div>

@@ -7,7 +7,14 @@ class UserController < ApplicationController
   # top page
   def index; end
 
-  def show; end
+  def show
+    # TODO set session
+    @own_session = Session.find_by(owner_id: @user.user_id)
+
+    if @own_session.blank?
+      @guest_session = Session.where(guest_id: @user.user_id)
+    end
+  end
 
   def new
     # TODO
