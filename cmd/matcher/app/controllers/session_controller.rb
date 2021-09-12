@@ -1,5 +1,6 @@
 class SessionController < ApplicationController
   include Login
+  include HTTP
   before_action :set_login_user
 
   def create
@@ -27,6 +28,8 @@ class SessionController < ApplicationController
 
     # TODO: request to router
     # add owner client
+    url = "#{Settings.router.api_addr}/api/v1/client"
+    http_request(url: url, method: "post")
     # add guest client
     # add route fot clients
 
