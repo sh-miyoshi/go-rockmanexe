@@ -19,6 +19,8 @@ module RouterApiRequester
       res = http.get(uri.path, body&.to_json, headers)
     when "post"
       res = http.post(uri.path, body&.to_json, headers)
+    when "delete"
+      res = http.delete(uri.path)
     else
       raise RequestError, "invalid method #{method} was specified"
     end

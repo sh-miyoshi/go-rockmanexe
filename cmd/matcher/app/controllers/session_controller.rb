@@ -64,9 +64,12 @@ class SessionController < ApplicationController
   def new; end
 
   def destroy
-    # TODO: request to router
+    # request to router
     # delete route
-    # delete clients
+    session = Session.find(params["id"])
+    url = "#{Settings.router.api_addr}/api/v1/route/#{session.route_id}"
+    res = router_request(url: url, method: "delete")
+    Rails.logger.error("Failed to delete session by #{res[:code]} with #{res[:body]}") unless res[:success]
 
     Session.destroy(params["id"])
 

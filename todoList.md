@@ -16,9 +16,6 @@
   - User
     - new
       - ログイン後しか表示させない
-  - Session
-    - destroy
-      - routerにRequest
 
 ### 本番リリース
 
