@@ -15,7 +15,6 @@ class SessionController < ApplicationController
         session_name: params[:name],
         owner_id: @user.user_id,
         guest_id: params[:guest_id],
-        expires_at: Time.current.since(30.minutes),
         router_addr: Settings.router.data_addr
       }
     )

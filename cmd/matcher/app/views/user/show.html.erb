@@ -134,14 +134,6 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="expires_at" class="col-sm-2 col-form-label">
-                    有効期限
-                  </label>
-                  <div class="col-md-5">
-                    <%= text_field_tag 'expires_at', s.expires_at.strftime("%F %T"), class: 'form-control read-text-dark', readonly: true %>
-                  </div>
-                </div>
-                <div class="row mb-2">
                   <label for="owner" class="col-sm-2 col-form-label">
                     対戦相手
                   </label>
@@ -180,14 +172,6 @@
                   </label>
                   <div class="col-md-5">
                     <%= text_field_tag 'client_key', @own_session.owner_client_key, class: 'form-control read-text-dark', readonly: true %>
-                  </div>
-                </div>
-                <div class="row mb-2">
-                  <label for="expires_at" class="col-sm-2 col-form-label">
-                    有効期限
-                  </label>
-                  <div class="col-md-5">
-                    <%= text_field_tag 'expires_at', @own_session.expires_at.strftime("%F %T"), class: 'form-control read-text-dark', readonly: true %>
                   </div>
                 </div>
                 <div class="row mb-2">

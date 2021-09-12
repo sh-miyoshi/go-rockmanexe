@@ -14,10 +14,8 @@ Session.create(
   router_addr: Settings.router.data_addr,
   owner_client_id: "tester1",
   owner_client_key: "testtest",
-  expires_at: Time.local(2021, 12, 31),
   guest_id: user2_id,
   guest_client_id: "tester2",
   guest_client_key: "testtest",
   route_id: "nagnlabmklabjng"
 )
-
