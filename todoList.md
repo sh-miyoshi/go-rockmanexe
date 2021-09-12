@@ -17,8 +17,6 @@
     - new
       - ログイン後しか表示させない
   - Session
-    - create
-      - routerにRequest
     - destroy
       - routerにRequest
 

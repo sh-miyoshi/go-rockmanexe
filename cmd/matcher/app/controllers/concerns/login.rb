@@ -1,6 +1,8 @@
 module Login
   extend ActiveSupport::Concern
 
+  private
+
   def login_user
     # redirect top page if not logged in
     # return redirect_to '/' unless session[:user_id].present?

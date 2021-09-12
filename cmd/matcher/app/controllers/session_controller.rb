@@ -1,6 +1,6 @@
 class SessionController < ApplicationController
+  include RouterApiRequester
   include Login
-  include HTTP
   before_action :set_login_user
 
   def create
@@ -26,18 +26,31 @@ class SessionController < ApplicationController
       return redirect_to session_new_path
     end
 
-    # TODO: request to router
+    # request to router
     # add owner client
     url = "#{Settings.router.api_addr}/api/v1/client"
-    http_request(url: url, method: "post")
-    # add guest client
-    # add route fot clients
+    res = router_request(url: url, method: "post")
+    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
 
-    session.owner_client_id = "tester1"
-    session.owner_client_key = "testtest"
-    session.guest_client_id = "tester2"
-    session.guest_client_key = "testtest"
-    session.route_id = "nagnagnklrbhm"
+    Rails.logger.debug("add owner client response: #{res[:body]}")
+    session.owner_client_id = res[:body]["id"]
+    session.owner_client_key = res[:body]["key"]
+
+    # add guest client
+    res = router_request(url: url, method: "post")
+    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
+
+    Rails.logger.debug("add guest client response: #{res[:body]}")
+    session.guest_client_id = res[:body]["id"]
+    session.guest_client_key = res[:body]["key"]
+
+    # add route fot clients
+    url = "#{Settings.router.api_addr}/api/v1/route"
+    res = router_request(url: url, method: "post", body: { clients: [session.owner_client_id, session.guest_client_id] })
+    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
+
+    Rails.logger.debug("add route response: #{res[:body]}")
+    session.route_id = res[:body]["id"]
 
     session.save!
 
@@ -55,7 +68,7 @@ class SessionController < ApplicationController
     # delete route
     # delete clients
 
-    Session.destroy(params[:id])
+    Session.destroy(params["id"])
 
     redirect_to user_show_path
   rescue StandardError => e

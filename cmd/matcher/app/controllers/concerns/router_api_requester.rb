@@ -1,12 +1,14 @@
 require "net/http"
 
-module HTTP
+module RouterApiRequester
   extend ActiveSupport::Concern
 
   class RequestError < StandardError
   end
 
-  def http_request(url:, method:, body: nil)
+  private
+
+  def router_request(url:, method:, body: nil)
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = uri.scheme === "https"
@@ -21,13 +23,15 @@ module HTTP
       raise RequestError, "invalid method #{method} was specified"
     end
 
-    if 200 <= res.code && res.code < 300
+    if 200 <= res.code.to_i && res.code.to_i < 300
       {
+        success: true,
         code: res.code,
         body: JSON.parse(res.body)
       }
     else
       {
+        success: false,
         code: res.code,
         body: res.body
       }
