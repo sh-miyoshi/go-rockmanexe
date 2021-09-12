@@ -55,7 +55,8 @@ type session struct {
 }
 
 var (
-	errSendFailed = errors.New("send failed")
+	errSendFailed     = errors.New("send failed")
+	errSessionExpired = errors.New("session was already expired")
 
 	sessionLock sync.Mutex
 	sessionList = make(map[string]*session)
@@ -262,6 +263,8 @@ func (s *session) dataSend(cancel chan struct{}) {
 			return
 		default:
 			before := time.Now().UnixNano() / (1000 * 1000)
+
+			// TODO check session expires
 
 			// Field data send
 			if s.status == statusChipSelectWait || s.status == statusActing {
