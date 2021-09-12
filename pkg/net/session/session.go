@@ -20,6 +20,7 @@ import (
 
 const (
 	publishInterval = 100 * time.Millisecond // debug
+	expireTime      = 30 * time.Minute
 )
 
 const (
@@ -52,6 +53,7 @@ type session struct {
 	fieldLock  sync.Mutex
 	dmMgr      damage.Manager
 	exitErr    chan sessionError
+	expiresAt  time.Time
 }
 
 var (
@@ -95,6 +97,7 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 		nextStatus: -1,
 		started:    false,
 		exitErr:    make(chan sessionError),
+		expiresAt:  time.Now().Add(expireTime),
 	}
 
 	index := 0
@@ -262,9 +265,16 @@ func (s *session) dataSend(cancel chan struct{}) {
 		case <-cancel:
 			return
 		default:
-			before := time.Now().UnixNano() / (1000 * 1000)
+			now := time.Now()
+			before := now.UnixNano() / (1000 * 1000)
 
-			// TODO check session expires
+			// check session expires
+			if s.expiresAt.Before(now) {
+				s.exitErr <- sessionError{
+					reason: errSessionExpired,
+				}
+				return
+			}
 
 			// Field data send
 			if s.status == statusChipSelectWait || s.status == statusActing {
