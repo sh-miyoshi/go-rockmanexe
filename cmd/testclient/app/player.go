@@ -77,9 +77,9 @@ func (p *player) Action() bool {
 		return false
 	}
 
-	actTable := []int{0, 1, 1, 2}
-	// Wait, Move, Cannon, Buster
-	actInterval := []int{60, 60, 120, 30}
+	actTable := []int{0, 4}
+	// Wait, Move, Cannon, Buster, Vulcan
+	actInterval := []int{60, 60, 120, 30, 60}
 
 	current := actTable[p.ActNo]
 
@@ -100,8 +100,14 @@ func (p *player) Action() bool {
 				X: p.Object.X,
 				Y: p.Object.Y,
 			}, p.Object.ClientID)
-		case 3:
+		case 3: // Buster
 			p.Act.Set(battlecommon.PlayerActBuster, nil)
+		case 4: // Vulcan
+			p.Act.Set(battlecommon.PlayerActShot, nil)
+			skill.Add(appskill.SkillVulcan1, skill.Argument{
+				X: p.Object.X,
+				Y: p.Object.Y,
+			}, p.Object.ClientID)
 		}
 	}
 

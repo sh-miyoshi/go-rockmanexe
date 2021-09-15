@@ -58,6 +58,8 @@ func (a *Act) Process() bool {
 		}
 	case battlecommon.PlayerActCannon:
 		num = 6
+	case battlecommon.PlayerActShot:
+		num = 6
 	case battlecommon.PlayerActBuster:
 		num = 6
 
