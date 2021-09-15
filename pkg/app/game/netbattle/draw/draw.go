@@ -362,7 +362,7 @@ func objectVulcan(vx, vy int32, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
 		no = no % 2
 	}
 
-	dxlib.DrawRotaGraph(vx+ofsBody, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE)
+	dxlib.DrawRotaGraph(vx+ofsBody, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE, dxopts)
 	// Show attack
 	if imgNo != 0 {
 		if imgNo%2 == 0 {
