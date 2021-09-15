@@ -399,12 +399,16 @@ func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGra
 func objectMiniBomb(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
 
-	// y = ax^2 + bx +c
+	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
 	size := field.PanelSizeX * 3
 	ofsx := size * obj.Count / obj.Speed
 	ymax := 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
+
+	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
+		ofsx *= -1
+	}
 
 	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 }
