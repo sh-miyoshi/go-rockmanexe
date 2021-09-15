@@ -46,6 +46,8 @@ func Add(skillID int, arg Argument, clientID string) string {
 		skills[id] = newCannon(arg.X, arg.Y, clientID)
 	case skill.SkillVulcan1:
 		skills[id] = newVulcan(arg.X, arg.Y, 3)
+	case skill.SkillMiniBomb:
+		skills[id] = newMiniBomb(arg.X, arg.Y, 50)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
