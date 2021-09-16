@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/stretchr/stew/slice"
 )
 
 type Argument struct {
@@ -20,8 +21,14 @@ type Skill interface {
 }
 
 var (
-	skills = make(map[string]Skill)
+	skills   map[string]Skill
+	clientID string
 )
+
+func Init(cid string) {
+	skills = make(map[string]Skill)
+	clientID = cid
+}
 
 func Process() error {
 	for id, s := range skills {
@@ -48,6 +55,8 @@ func Add(skillID int, arg Argument, clientID string) string {
 		skills[id] = newVulcan(arg.X, arg.Y, 3)
 	case skill.SkillMiniBomb:
 		skills[id] = newMiniBomb(arg.X, arg.Y, 50)
+	case skill.SkillThunderBall:
+		skills[id] = newThunderBall(arg.X, arg.Y, 30)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}
@@ -63,4 +72,29 @@ func removeObjects(id string) {
 	for _, obj := range skills[id].GetObjects() {
 		netconn.RemoveObject(obj.ID)
 	}
+}
+
+func getEnemies() []object.Object {
+	res := []object.Object{}
+	rockmanObj := []int{
+		object.TypeRockmanStand,
+		object.TypeRockmanMove,
+		object.TypeRockmanDamage,
+		object.TypeRockmanShot,
+		object.TypeRockmanCannon,
+		object.TypeRockmanSword,
+		object.TypeRockmanBomb,
+		object.TypeRockmanBuster,
+		object.TypeRockmanPick,
+	}
+
+	myClientID := clientID
+	finfo := netconn.GetFieldInfo()
+	for _, obj := range finfo.Objects {
+		if obj.ClientID != myClientID && slice.Contains(rockmanObj, obj.Type) {
+			res = append(res, obj)
+		}
+	}
+
+	return res
 }

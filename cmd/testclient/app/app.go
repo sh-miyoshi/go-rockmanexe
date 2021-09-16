@@ -26,6 +26,8 @@ var (
 func Init(clientID string) error {
 	playerInst = newPlayer(clientID)
 
+	skill.Init(clientID)
+
 	return nil
 }
 
