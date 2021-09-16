@@ -125,6 +125,10 @@ func (p *BattlePlayer) End() {
 	}
 }
 
+func (p *BattlePlayer) InitBattleFrame() {
+	p.GaugeCount = 0
+}
+
 func (p *BattlePlayer) DrawOptions() {
 	// Show Charge Shot
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -215,7 +219,6 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
-			p.GaugeCount = 0
 			netconn.SendSignal(pb.Action_GOCHIPSELECT)
 
 			return false, nil

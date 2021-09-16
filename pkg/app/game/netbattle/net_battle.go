@@ -120,6 +120,7 @@ func Process() error {
 		}
 	case stateBeforeMain:
 		if battleCount == 0 {
+			playerInst.InitBattleFrame()
 			fname := common.ImagePath + "battle/msg_start.png"
 			var err error
 			b4mainInst, err = titlemsg.New(fname, 0)
