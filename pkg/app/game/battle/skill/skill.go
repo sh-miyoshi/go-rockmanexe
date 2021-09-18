@@ -197,6 +197,8 @@ type thunderBall struct {
 	damageID  string
 	nextX     int
 	nextY     int
+	prevX     int
+	prevY     int
 }
 
 type wideShot struct {
@@ -434,14 +436,13 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
 	case SkillThunderBall:
 		px, py := anim.GetObjPos(arg.OwnerID)
+		x := px + 1
 		if arg.TargetType == damage.TargetPlayer {
-			px--
-		} else {
-			px++
+			x = px - 1
 		}
 
 		max := 6 // debug
-		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: px, y: py}
+		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: x, y: py, prevX: px, prevY: py, nextX: x, nextY: py}
 	case SkillWideShot:
 		px, py := anim.GetObjPos(arg.OwnerID)
 		direct := common.DirectRight
@@ -997,36 +998,72 @@ func (p *thunderBall) Draw() {
 	x, y := battlecommon.ViewPos(p.x, p.y)
 	n := (p.count / delayThunderBall) % len(imgThunderBall)
 
-	c := p.count % thunderBallNextStepCount
-	if c != 0 {
-		ofsx := field.PanelSizeX * (p.nextX - p.x) * c / thunderBallNextStepCount
-		ofsy := field.PanelSizeY * (p.nextY - p.y) * c / thunderBallNextStepCount
-		dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgThunderBall[n], dxlib.TRUE)
-	} else {
-		x, y = battlecommon.ViewPos(p.nextX, p.nextY)
-		dxlib.DrawRotaGraph(x, y+25, 1, 0, imgThunderBall[n], dxlib.TRUE)
+	cnt := p.count % thunderBallNextStepCount
+	if cnt == 0 {
+		// Skip drawing because the position is updated in Process method and return unexpected value
+		return
 	}
+
+	sx := field.PanelSizeX*cnt/thunderBallNextStepCount - field.PanelSizeX/2
+	sy := field.PanelSizeY*cnt/thunderBallNextStepCount - field.PanelSizeY/2
+
+	var ofsx, ofsy int
+	if cnt < thunderBallNextStepCount/2 {
+		ofsx = sx * (p.x - p.prevX)
+		ofsy = sy * (p.y - p.prevY)
+	} else {
+		ofsx = (sx) * (p.nextX - p.x)
+		ofsy = (sy) * (p.nextY - p.y)
+	}
+
+	dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgThunderBall[n], dxlib.TRUE)
 }
 
 func (p *thunderBall) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SEThunderBall)
-		p.nextX = p.x
-		p.nextY = p.y
 	}
 
-	halfNext := thunderBallNextStepCount / 2
-	if p.damageID != "" {
-		if !damage.Exists(p.damageID) && p.count%halfNext != 0 {
-			// attack hit to target
-			return true, nil
+	if p.count%thunderBallNextStepCount == 2 {
+		if p.damageID != "" {
+			if !damage.Exists(p.damageID) {
+				// attack hit to target
+				return true, nil
+			}
 		}
 	}
 
 	if p.count%thunderBallNextStepCount == 0 {
-		p.x = p.nextX
-		p.y = p.nextY
+		tx := p.x
+		ty := p.y
+		if p.count != 0 {
+			// Update current pos
+			p.prevX = p.x
+			p.prevY = p.y
+			p.x = p.nextX
+			p.y = p.nextY
 
+			p.moveCount++
+			if p.moveCount > p.MaxMoveCount {
+				return true, nil
+			}
+
+			if p.x < 0 || p.x > field.FieldNumX || p.y < 0 || p.y > field.FieldNumY {
+				return true, nil
+			}
+		}
+
+		p.damageID = damage.New(damage.Damage{
+			PosX:          p.x,
+			PosY:          p.y,
+			Power:         int(p.Power),
+			TTL:           thunderBallNextStepCount + 1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+			ShowHitArea:   true,
+		})
+
+		// Set next pos
 		objType := anim.ObjTypePlayer
 		if p.TargetType == damage.TargetEnemy {
 			objType = anim.ObjTypeEnemy
@@ -1041,8 +1078,8 @@ func (p *thunderBall) Process() (bool, error) {
 				p.nextX++
 			}
 		} else {
-			xdif := objs[0].PosX - p.x
-			ydif := objs[0].PosY - p.y
+			xdif := objs[0].PosX - tx
+			ydif := objs[0].PosY - ty
 
 			if xdif != 0 || ydif != 0 {
 				if common.Abs(xdif) > common.Abs(ydif) {
@@ -1054,33 +1091,6 @@ func (p *thunderBall) Process() (bool, error) {
 				}
 			}
 		}
-
-		p.moveCount++
-		if p.moveCount > p.MaxMoveCount {
-			return true, nil
-		}
-
-		if p.x < 0 || p.x > field.FieldNumX || p.y < 0 || p.y > field.FieldNumY {
-			return true, nil
-		}
-	}
-	if p.count%halfNext == 0 {
-		x := p.x
-		y := p.y
-		if p.count%thunderBallNextStepCount >= halfNext {
-			x = p.nextX
-			y = p.nextY
-		}
-
-		p.damageID = damage.New(damage.Damage{
-			PosX:          x,
-			PosY:          y,
-			Power:         int(p.Power),
-			TTL:           halfNext + 1,
-			TargetType:    p.TargetType,
-			HitEffectType: effect.TypeNone,
-			ShowHitArea:   true,
-		})
 	}
 
 	p.count++
