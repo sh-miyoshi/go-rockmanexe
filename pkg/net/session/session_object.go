@@ -16,6 +16,8 @@ func updateObject(objects *[]object.Object, obj object.Object, clientID string, 
 
 	if !myObject {
 		obj.X = config.FieldNumX - obj.X - 1
+		obj.PrevX = config.FieldNumX - obj.PrevX - 1
+		obj.TargetX = config.FieldNumX - obj.TargetX - 1
 	}
 
 	updated := false

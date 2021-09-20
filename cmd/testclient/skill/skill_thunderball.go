@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -22,37 +23,58 @@ type thunderBall struct {
 	moveCnt int
 	nextX   int
 	nextY   int
+	prevX   int
+	prevY   int
 }
 
 func newThunderBall(x, y int, power int) *thunderBall {
 	return &thunderBall{
 		id:    uuid.New().String(),
-		x:     x,
+		x:     x + 1,
 		y:     y,
 		power: power,
 		nextX: x + 1,
 		nextY: y,
+		prevX: x,
+		prevY: y,
 	}
 }
 
 func (p *thunderBall) Process() (bool, error) {
-	if p.count == 0 {
-		// Add object
-		netconn.SendObject(p.getObject())
-	}
+	// if p.count%nextStepCount == 2 {
+	// 	if isObjectHit(p.x, p.y) {
+	// 		return true, nil
+	// 	}
+	// }
 
-	halfNext := nextStepCount / 2
 	if p.count%nextStepCount == 0 {
-		p.x = p.nextX
-		p.y = p.nextY
+		tx := p.x
+		ty := p.y
+		if p.count != 0 {
+			// Update current pos
+			p.prevX = p.x
+			p.prevY = p.y
+			p.x = p.nextX
+			p.y = p.nextY
 
+			p.moveCnt++
+			if p.moveCnt > maxMoveCount {
+				return true, nil
+			}
+
+			if p.x < 0 || p.x > 6 || p.y < 0 || p.y > 3 {
+				return true, nil
+			}
+		}
+
+		// Set next pos
 		objs := getEnemies()
 		if len(objs) == 0 {
 			// no target
 			p.nextX++
 		} else {
-			xdif := objs[0].X - p.x
-			ydif := objs[0].Y - p.y
+			xdif := objs[0].X - tx
+			ydif := objs[0].Y - ty
 
 			if xdif != 0 || ydif != 0 {
 				if common.Abs(xdif) > common.Abs(ydif) {
@@ -65,34 +87,20 @@ func (p *thunderBall) Process() (bool, error) {
 			}
 		}
 
-		p.moveCnt++
-		if p.x < 0 || p.x >= 6 || p.y < 0 || p.y > 3 || p.moveCnt > maxMoveCount {
-			return true, nil
-		}
-
-		netconn.SendObject(p.getObject())
-	}
-
-	if p.count%halfNext == 0 {
-		x := p.x
-		y := p.y
-		if p.count%nextStepCount >= halfNext {
-			x = p.nextX
-			y = p.nextY
-		}
-
 		netconn.SendDamages([]damage.Damage{
 			{
 				ID:          uuid.New().String(),
-				PosX:        x,
-				PosY:        y,
+				PosX:        p.x,
+				PosY:        p.y,
 				Power:       p.power,
-				TTL:         halfNext,
+				TTL:         nextStepCount,
 				TargetType:  damage.TargetOtherClient,
 				ShowHitArea: true,
 				BigDamage:   true, // TODO make paralysis
 			},
 		})
+
+		netconn.SendObject(p.getObject())
 	}
 
 	p.count++
@@ -104,6 +112,8 @@ func (p *thunderBall) GetObjects() []object.Object {
 }
 
 func (p *thunderBall) getObject() object.Object {
+	logger.Debug("Object info: %+v", p)
+
 	return object.Object{
 		ID:             p.id,
 		Type:           object.TypeThunderBall,
@@ -113,5 +123,7 @@ func (p *thunderBall) getObject() object.Object {
 		TargetX:        p.nextX,
 		TargetY:        p.nextY,
 		Speed:          nextStepCount,
+		PrevX:          p.prevX,
+		PrevY:          p.prevY,
 	}
 }
