@@ -64,10 +64,14 @@ func (m *Manager) GetHitAreas(clientID string) [][2]int {
 
 	for _, dm := range m.damages {
 		if dm.ShowHitArea {
+			if dm.PosX < 0 || dm.PosX >= config.FieldNumX || dm.PosY < 0 || dm.PosY >= config.FieldNumY {
+				continue
+			}
+
 			if dm.ClientID == clientID {
 				res = append(res, [2]int{dm.PosX, dm.PosY})
 			} else {
-				res = append(res, [2]int{config.FieldNumX - dm.PosX, dm.PosY})
+				res = append(res, [2]int{config.FieldNumX - dm.PosX - 1, dm.PosY})
 			}
 		}
 	}
