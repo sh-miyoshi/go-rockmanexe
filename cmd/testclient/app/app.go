@@ -2,10 +2,10 @@ package app
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -34,6 +34,8 @@ func Init(clientID string) error {
 func Process(exitErr chan error) {
 	// set init data to router
 	netconn.SendObject(playerInst.Object)
+
+	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
 	for {
@@ -68,7 +70,7 @@ func Process(exitErr chan error) {
 			return
 		}
 
-		time.Sleep(16 * time.Millisecond)
+		fpsMgr.Wait()
 	}
 }
 
