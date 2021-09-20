@@ -389,11 +389,36 @@ func objectWideShotMove(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGr
 
 func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
-	if obj.Count < obj.Speed {
-		ofsx := field.PanelSizeX * (obj.TargetX - obj.X) * obj.Count / obj.Speed
-		ofsy := field.PanelSizeY * (obj.TargetY - obj.Y) * obj.Count / obj.Speed
-		dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
+
+	if obj.Count >= obj.Speed {
+		// Skip drawing because the position is updated in Process method and return unexpected value
+		return
 	}
+
+	cnt := obj.Count % obj.Speed
+	sx := field.PanelSizeX*cnt/obj.Speed - field.PanelSizeX/2
+	sy := field.PanelSizeY*cnt/obj.Speed - field.PanelSizeY/2
+
+	var ofsx, ofsy int
+	if cnt < obj.Speed/2 {
+		ofsx = sx * (obj.X - obj.PrevX)
+		ofsy = sy * (obj.Y - obj.PrevY)
+	} else {
+		ofsx = (sx) * (obj.TargetX - obj.X)
+		ofsy = (sy) * (obj.TargetY - obj.Y)
+	}
+
+	// if obj.Count < obj.Speed {
+	// 	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
+	// 		obj.TargetX *= -1
+	// 		obj.X *= -1
+	// 	}
+	// 	ofsx := field.PanelSizeX * (obj.TargetX - obj.X) * obj.Count / obj.Speed
+	// 	ofsy := field.PanelSizeY * (obj.TargetY - obj.Y) * obj.Count / obj.Speed
+	// 	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
+	// }
+
+	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
 }
 
 func objectMiniBomb(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {

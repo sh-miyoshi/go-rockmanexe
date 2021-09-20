@@ -47,13 +47,13 @@ type session struct {
 	sessionID  string
 	routeID    string
 	clients    [2]clientInfo
-	started    bool
 	status     int
 	nextStatus int
 	fieldLock  sync.Mutex
 	dmMgr      damage.Manager
 	exitErr    chan sessionError
 	expiresAt  time.Time
+	cancel     chan struct{}
 }
 
 var (
@@ -95,9 +95,9 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 		routeID:    route.ID,
 		status:     statusConnectWait,
 		nextStatus: -1,
-		started:    false,
 		exitErr:    make(chan sessionError),
 		expiresAt:  time.Now().Add(expireTime),
+		cancel:     make(chan struct{}),
 	}
 
 	index := 0
@@ -115,6 +115,7 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 		clientID:  route.Clients[1-index],
 		fieldInfo: &field.Info{},
 	}
+	go v.frameProc()
 
 	sessionList[sessionID] = &v
 
@@ -123,12 +124,25 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 
 func Run(sessionID string) {
 	s := sessionList[sessionID]
-	logger.Info("start new session for route %s", s.routeID)
-	logger.Debug("client info: %+v", s.clients)
+
+	// init info
+	s.clients[0].fieldInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
+	s.clients[1].fieldInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
+
+	go s.dataSend()
+
+	err := <-s.exitErr
+	if errors.Is(err.reason, errSendFailed) {
+		s.publishGameEnd(err.generatorClientID)
+	}
+	close(s.cancel)
 	sessionLock.Lock()
-	s.started = true
+	delete(sessionList, s.sessionID)
 	sessionLock.Unlock()
-	s.mainProcess()
+
+	if err.reason != nil && !errors.Is(err.reason, errSendFailed) {
+		logger.Error("Run failed: %v", err)
+	}
 }
 
 func ActionProc(action *pb.Action) error {
@@ -205,34 +219,11 @@ func ActionProc(action *pb.Action) error {
 	return nil
 }
 
-func (s *session) mainProcess() {
-	// init info
-	s.clients[0].fieldInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
-	s.clients[1].fieldInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
-
-	cancel := make(chan struct{})
-	go s.frameProc(cancel)
-	go s.dataSend(cancel)
-
-	err := <-s.exitErr
-	if errors.Is(err.reason, errSendFailed) {
-		s.publishGameEnd(err.generatorClientID)
-	}
-	close(cancel)
-	sessionLock.Lock()
-	delete(sessionList, s.sessionID)
-	sessionLock.Unlock()
-
-	if err.reason != nil && !errors.Is(err.reason, errSendFailed) {
-		logger.Error("Run failed: %v", err)
-	}
-}
-
-func (s *session) frameProc(cancel chan struct{}) {
+func (s *session) frameProc() {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 	for {
 		select {
-		case <-cancel:
+		case <-s.cancel:
 			return
 		default:
 			if s.status == statusActing {
@@ -259,10 +250,10 @@ func (s *session) frameProc(cancel chan struct{}) {
 	}
 }
 
-func (s *session) dataSend(cancel chan struct{}) {
+func (s *session) dataSend() {
 	for {
 		select {
-		case <-cancel:
+		case <-s.cancel:
 			return
 		default:
 			now := time.Now()

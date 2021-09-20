@@ -66,6 +66,8 @@ type Object struct {
 	TargetX        int
 	TargetY        int
 	Invincible     bool
+	PrevX          int
+	PrevY          int
 }
 
 func Marshal(obj Object) []byte {
