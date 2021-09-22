@@ -1,15 +1,14 @@
 package player
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"strconv"
-	"strings"
+	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -19,7 +18,6 @@ import (
 const (
 	defaultHP        uint = 100
 	defaultShotPower uint = 1
-	separater             = "#"
 
 	FolderSize          = 30
 	SameChipNumInFolder = 4
@@ -27,29 +25,41 @@ const (
 
 // ChipInfo ...
 type ChipInfo struct {
-	ID   int
-	Code string
+	ID   int    `json:"id"`
+	Code string `json:"code"`
 }
 
-// Player ...
+type History struct {
+	OpponentID string    `json:"opponent_id"`
+	Date       time.Time `json:"date"`
+	IsWin      bool      `json:"is_win"`
+}
+
 type Player struct {
-	HP         uint
-	ShotPower  uint
-	Zenny      uint
-	ChipFolder [FolderSize]ChipInfo
-	WinNum     int
-	PlayCount  uint
-	BackPack   []ChipInfo
+	HP              uint                 `json:"hp"`
+	ShotPower       uint                 `json:"shot_power"`
+	Zenny           uint                 `json:"zenny"`
+	ChipFolder      [FolderSize]ChipInfo `json:"chip_folder"`
+	WinNum          int                  `json:"win_num"`
+	PlayCount       uint                 `json:"play_count"`
+	BackPack        []ChipInfo           `json:"back_pack"`
+	BattleHistories []History            `json:"battle_histories"`
+}
+
+type SaveData struct {
+	Player         Player `json:"player"`
+	ProgramVersion string `json:"program_version"`
 }
 
 // New returns player data with default values
 func New() *Player {
 	res := &Player{
-		HP:        defaultHP,
-		ShotPower: defaultShotPower,
-		Zenny:     0,
-		WinNum:    0,
-		BackPack:  []ChipInfo{},
+		HP:              defaultHP,
+		ShotPower:       defaultShotPower,
+		Zenny:           0,
+		WinNum:          0,
+		BackPack:        []ChipInfo{},
+		BattleHistories: []History{},
 	}
 	res.setChipFolder()
 	return res
@@ -86,115 +96,34 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		stream.XORKeyStream(bin, src)
 	}
 
-	data := strings.Split(string(bin), separater)
-	if len(data) < 7+FolderSize+1 {
-		logger.Error("save data requires %d data at least, but got %d", 7+FolderSize+1, len(data))
+	var rawData SaveData
+	if err := json.Unmarshal(bin, &rawData); err != nil {
+		logger.Error("Failed to unmarshal save data: %v", err)
 		return nil, fmt.Errorf("save data maybe broken or invalid version")
 	}
 
-	version := data[0]
-	if version != common.ProgramVersion {
-		logger.Error("Invalid version save data. expect %s, but got %s", common.ProgramVersion, version)
-		return nil, fmt.Errorf("version miss matched")
+	if rawData.ProgramVersion != common.ProgramVersion {
+		logger.Error("Expect %s, but got %s in save data", common.ProgramVersion, rawData.ProgramVersion)
+		return nil, fmt.Errorf("invalid save data version")
 	}
 
-	playCnt, err := strconv.ParseUint(data[1], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse play count: %w", err)
-	}
-	hp, err := strconv.ParseUint(data[2], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse hp: %w", err)
-	}
-	shot, err := strconv.ParseUint(data[3], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse shot power: %w", err)
-	}
-	zenny, err := strconv.ParseUint(data[4], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse zenny: %w", err)
-	}
-	win, err := strconv.ParseInt(data[5], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse win num: %w", err)
-	}
-
-	res := &Player{
-		PlayCount: uint(playCnt),
-		HP:        uint(hp),
-		ShotPower: uint(shot),
-		Zenny:     uint(zenny),
-		WinNum:    int(win),
-	}
-
-	for i := 0; i < FolderSize; i++ {
-		var id int
-		var code string
-		if _, err := fmt.Sscanf(data[6+i], "%d%s", &id, &code); err != nil {
-			return nil, fmt.Errorf("failed to parse chip %d: %w", i, err)
-		}
-		res.ChipFolder[i].ID = id
-		res.ChipFolder[i].Code = code
-	}
-
-	// back pack data
-	n, err := strconv.ParseInt(data[6+FolderSize], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse back pack chip num: %w", err)
-	}
-	bpIndex := 7 + FolderSize
-	logger.Debug("%d chips in a back pack", n)
-	if len(data)-(bpIndex+1) != int(n) {
-		logger.Error("required %d chips in a back pack, but got %d", len(data)-(bpIndex+1), n)
-		return nil, fmt.Errorf("failed to get back pack chips")
-	}
-	for i := 0; i < int(n); i++ {
-		var id int
-		var code string
-		if _, err := fmt.Sscanf(data[bpIndex+i], "%d%s", &id, &code); err != nil {
-			return nil, fmt.Errorf("failed to parse chip %d in back pack: %w", i, err)
-		}
-		res.BackPack = append(res.BackPack, ChipInfo{ID: id, Code: code})
-	}
-
-	return res, nil
+	return &rawData.Player, nil
 }
 
 func (p *Player) Save(fname string, key []byte) error {
-	// Convert player info to string
-	var buf bytes.Buffer
-	buf.WriteString(common.ProgramVersion)
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatUint(uint64(p.PlayCount), 10))
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatUint(uint64(p.HP), 10))
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatUint(uint64(p.ShotPower), 10))
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatUint(uint64(p.Zenny), 10))
-	buf.WriteString(separater)
-	buf.WriteString(strconv.FormatInt(int64(p.WinNum), 10))
-	buf.WriteString(separater)
-
-	for _, c := range p.ChipFolder {
-		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
+	dst, err := json.Marshal(SaveData{
+		Player:         *p,
+		ProgramVersion: common.ProgramVersion,
+	})
+	if err != nil {
+		return fmt.Errorf("save data marshal failed: %w", err)
 	}
 
-	// back pack chips
-	buf.WriteString(strconv.FormatInt(int64(len(p.BackPack)), 10))
-	buf.WriteString(separater)
-	for _, c := range p.BackPack {
-		buf.WriteString(fmt.Sprintf("%d%s%s", c.ID, c.Code, separater))
-	}
-
-	var dst []byte
-
-	if key == nil {
+	if len(key) == 0 {
 		logger.Info("Save with no encryption")
-		dst = buf.Bytes()
 	} else {
 		logger.Info("Save with encryption")
-		src := buf.Bytes()
+		src := append([]byte{}, dst...)
 		block, err := aes.NewCipher(key)
 		if err != nil {
 			return fmt.Errorf("failed to init AES: %w", err)
