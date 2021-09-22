@@ -12,6 +12,7 @@ import (
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -72,8 +73,6 @@ func Init(plyr *player.Player) error {
 
 	skill.Init(playerInst.Object.ID)
 
-	// TODO
-
 	return nil
 }
 
@@ -95,9 +94,13 @@ func Process() error {
 			return nil
 		}
 	case stateOpening:
-		// TODO animation処理
-		stateChange(stateChipSelect)
-		return nil
+		if battleCount == 0 {
+			opening.Init()
+		}
+		if opening.Process() {
+			stateChange(stateChipSelect)
+			return nil
+		}
 	case stateChipSelect:
 		if battleCount == 0 {
 			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
@@ -107,7 +110,6 @@ func Process() error {
 		if chipsel.Process() {
 			// set selected chips
 			playerInst.SetChipSelectResult(chipsel.GetSelected())
-			// TODO error handling
 			netconn.SendObject(playerInst.Object)
 			netconn.SendSignal(pb.Action_CHIPSEND)
 			stateChange(stateWaitSelect)
@@ -206,7 +208,7 @@ func Draw() {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
-		// TODO animation
+		opening.Draw()
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()
