@@ -2,6 +2,11 @@
 
 ## v0.3の未実装項目
 
+- 勝敗のセーブ
+- router DBの永続化
+- BulkSendFieldInfoのリファクタリング
+- remove hit damage data
+
 ### ネット対戦未実装部分
 
 - 敵側の攻撃でどうなるかチェック
@@ -12,6 +17,7 @@
 
 - production build
   - 開発者用コードの確認
+  - version validation
 - 通しでのテスト
 
 ## マイルストーン
