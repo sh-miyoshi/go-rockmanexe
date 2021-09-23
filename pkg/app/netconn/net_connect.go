@@ -3,6 +3,7 @@ package netconn
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -40,9 +41,10 @@ var (
 	clientID     string
 
 	// variables for application data
-	status    pb.Data_Status
-	fieldInfo field.Info
-	sendData  sendInfo
+	status     pb.Data_Status
+	fieldInfo  field.Info
+	sendData   sendInfo
+	allUserIDs []string
 
 	// variables for system control
 	exitErr   error
@@ -50,6 +52,8 @@ var (
 )
 
 func Connect(conf Config) error {
+	initVars()
+
 	var err error
 	conn, err = grpc.Dial(conf.StreamAddr, grpc.WithInsecure())
 	if err != nil {
@@ -75,11 +79,14 @@ func Connect(conf Config) error {
 	if authRes.GetType() != pb.Data_AUTHRESPONSE {
 		return fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
 	}
-	if res := authRes.GetAuthRes(); !res.Success {
+	res := authRes.GetAuthRes()
+	if !res.Success {
 		return fmt.Errorf("failed to auth request: %s", res.ErrMsg)
 	}
-	sessionID = authRes.GetAuthRes().SessionID
+
+	sessionID = res.SessionID
 	clientID = conf.ClientID
+	allUserIDs = append([]string{}, res.AllUserIDs...)
 	sendData.Init()
 
 	go dataRecv()
@@ -169,6 +176,24 @@ func dataRecv() {
 			return
 		}
 	}
+}
+
+func GetOpponentUserID() string {
+	for _, rawID := range allUserIDs {
+		t := strings.Split(rawID, ":")
+		if len(t) != 2 {
+			logger.Error("User ID data maybe broken: %v", allUserIDs)
+			continue
+		}
+		cid := t[0]
+		uid := t[1]
+		if cid == clientID {
+			return uid
+		}
+	}
+
+	logger.Error("Failed to get opponent user id in %v", allUserIDs)
+	return ""
 }
 
 func GetStatus() pb.Data_Status {
@@ -330,4 +355,15 @@ func (i *sendInfo) Init() {
 	i.damages = []damage.Damage{}
 	i.effects = []effect.Effect{}
 	i.sounds = []sound.SEType{}
+}
+
+func initVars() {
+	Disconnect()
+	sessionID = ""
+	clientID = ""
+	status = pb.Data_CONNECTWAIT
+	fieldInfo = field.Info{}
+	sendData = sendInfo{}
+	allUserIDs = []string{}
+	exitErr = nil
 }

@@ -62,8 +62,10 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 	}
 	logger.Info("add to session %s for client %s", sid, authReq.Id)
 
-	authRes.AllUserIDs = append(authRes.AllUserIDs, sinfo.OwnerUserID)
-	authRes.AllUserIDs = append(authRes.AllUserIDs, sinfo.GuestUserID)
+	authRes.AllUserIDs = []string{
+		fmt.Sprintf("%s:%s", sinfo.OwnerClientID, sinfo.OwnerUserID),
+		fmt.Sprintf("%s:%s", sinfo.GuestClientID, sinfo.GuestUserID),
+	}
 
 	authRes.Success = true
 	authRes.SessionID = sid

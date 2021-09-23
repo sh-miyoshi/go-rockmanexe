@@ -3,12 +3,14 @@ package game
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
 
@@ -116,12 +118,28 @@ func Process() error {
 
 		if err := netbattle.Process(); err != nil {
 			netbattle.End()
+
+			history := player.History{
+				Date:       time.Now(),
+				OpponentID: netconn.GetOpponentUserID(),
+			}
+
 			if errors.Is(err, battle.ErrWin) {
-				// TODO save
+				history.IsWin = true
+				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
+				key := []byte(common.EncryptKey)
+				if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+					return fmt.Errorf("save failed: %w", err)
+				}
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, battle.ErrLose) {
-				// TODO save
+				history.IsWin = false
+				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
+				key := []byte(common.EncryptKey)
+				if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+					return fmt.Errorf("save failed: %w", err)
+				}
 				stateChange(stateMenu)
 				return nil
 			}
