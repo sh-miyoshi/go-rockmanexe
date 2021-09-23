@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -28,12 +29,6 @@ const (
 	statusActing
 	statusGameEnd
 )
-
-type APISessionInfo struct {
-	ID            string `json:"id"`
-	OwnerClientID string `json:"owner_client_id"`
-	GuestClientID string `json:"guest_client_id"`
-}
 
 type sessionError struct {
 	generatorClientID string
@@ -69,7 +64,7 @@ var (
 	sessionList = make(map[string]*session)
 )
 
-func Add(clientID string, sinfo APISessionInfo, dataStream pb.Router_PublishDataServer) (string, error) {
+func Add(clientID string, sinfo api.SessionInfo, dataStream pb.Router_PublishDataServer) (string, error) {
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
 
@@ -101,8 +96,10 @@ func Add(clientID string, sinfo APISessionInfo, dataStream pb.Router_PublishData
 	}
 
 	index := 0
-	if sinfo.GuestClientID == clientID {
+	anotherClientID := sinfo.GuestClientID
+	if clientID == sinfo.GuestClientID {
 		index = 1
+		anotherClientID = sinfo.OwnerClientID
 	}
 
 	v.clients[index] = clientInfo{
@@ -112,7 +109,7 @@ func Add(clientID string, sinfo APISessionInfo, dataStream pb.Router_PublishData
 		fieldInfo:  &field.Info{},
 	}
 	v.clients[1-index] = clientInfo{
-		clientID:  clientID,
+		clientID:  anotherClientID,
 		fieldInfo: &field.Info{},
 	}
 	go v.frameProc()
