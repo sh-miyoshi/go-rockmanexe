@@ -20,12 +20,13 @@ type Config struct {
 	ClientData []struct {
 		ClientID  string `yaml:"client_id"`
 		ClientKey string `yaml:"client_key"`
-		UserID    string `yaml:"user_id"`
 		RouteID   string `json:"route_id"`
 	} `yaml:"client_data"`
 	SessionData []struct {
 		ID            string `yaml:"id"`
+		OwnerUserID   string `yaml:"owner_user_id"`
 		OwnerClientID string `yaml:"owner_client_id"`
+		GuestUserID   string `yaml:"guest_user_id"`
 		GuestClientID string `yaml:"guest_client_id"`
 	} `yaml:"session_data"`
 }
@@ -36,7 +37,6 @@ type AuthRequest struct {
 }
 
 type AuthResponse struct {
-	UserID    string `json:"user_id"`
 	SessionID string `json:"session_id"`
 }
 
@@ -75,7 +75,6 @@ func setAPI(r *mux.Router) {
 		for _, d := range cfg.ClientData {
 			if d.ClientID == req.ClientID && d.ClientKey == req.ClientKey {
 				res := &AuthResponse{
-					UserID:    d.UserID,
 					SessionID: d.RouteID,
 				}
 				w.Header().Add("Content-Type", "application/json")
