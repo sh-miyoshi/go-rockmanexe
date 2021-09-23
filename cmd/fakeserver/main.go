@@ -20,7 +20,7 @@ type Config struct {
 	ClientData []struct {
 		ClientID  string `yaml:"client_id"`
 		ClientKey string `yaml:"client_key"`
-		RouteID   string `json:"route_id"`
+		SessionID string `yaml:"session_id"`
 	} `yaml:"client_data"`
 	SessionData []struct {
 		ID            string `yaml:"id"`
@@ -77,7 +77,7 @@ func setAPI(r *mux.Router) {
 		for _, d := range cfg.ClientData {
 			if d.ClientID == req.ClientID && d.ClientKey == req.ClientKey {
 				res := &AuthResponse{
-					SessionID: d.RouteID,
+					SessionID: d.SessionID,
 				}
 				w.Header().Add("Content-Type", "application/json")
 				if err := json.NewEncoder(w).Encode(res); err != nil {
@@ -134,6 +134,7 @@ func main() {
 	}
 
 	logger.InitLogger(true, cfg.Log.FileName)
+	logger.Debug("config: %+v", cfg)
 
 	// Start API server
 	r := mux.NewRouter()
