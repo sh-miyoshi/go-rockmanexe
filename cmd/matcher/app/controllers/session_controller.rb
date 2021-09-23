@@ -10,48 +10,19 @@ class SessionController < ApplicationController
       return redirect_to session_new_path
     end
 
-    session = Session.new(
+    Session.create(
       {
         session_name: params[:name],
+        router_addr: Settings.router.data_addr,
         owner_id: @user.user_id,
+        owner_client_id: SecureRandom.uuid,
+        owner_client_key: SecureRandom.uuid,
         guest_id: params[:guest_id],
-        router_addr: Settings.router.data_addr
+        guest_client_id: SecureRandom.uuid,
+        guest_client_key: SecureRandom.uuid,
+        route_id: SecureRandom.uuid,
       }
     )
-
-    if session.invalid?
-      Rails.logger.info("Invalid request was specified: #{session.errors.messages}")
-      flash[:danger] = "不正な値が入力されました。#{session.errors.messages}"
-      return redirect_to session_new_path
-    end
-
-    # request to router
-    # add owner client
-    url = "#{Settings.router.api_addr}/api/v1/client"
-    res = router_request(url: url, method: "post")
-    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
-
-    Rails.logger.debug("add owner client response: #{res[:body]}")
-    session.owner_client_id = res[:body]["id"]
-    session.owner_client_key = res[:body]["key"]
-
-    # add guest client
-    res = router_request(url: url, method: "post")
-    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
-
-    Rails.logger.debug("add guest client response: #{res[:body]}")
-    session.guest_client_id = res[:body]["id"]
-    session.guest_client_key = res[:body]["key"]
-
-    # add route fot clients
-    url = "#{Settings.router.api_addr}/api/v1/route"
-    res = router_request(url: url, method: "post", body: { clients: [session.owner_client_id, session.guest_client_id] })
-    raise RouterApiRequester::RequestError, res[:body] unless res[:success]
-
-    Rails.logger.debug("add route response: #{res[:body]}")
-    session.route_id = res[:body]["id"]
-
-    session.save!
 
     redirect_to controller: :user, action: :show
   rescue StandardError => e
@@ -63,13 +34,6 @@ class SessionController < ApplicationController
   def new; end
 
   def destroy
-    # request to router
-    # delete route
-    session = Session.find(params["id"])
-    url = "#{Settings.router.api_addr}/api/v1/route/#{session.route_id}"
-    res = router_request(url: url, method: "delete")
-    Rails.logger.error("Failed to delete session by #{res[:code]} with #{res[:body]}") unless res[:success]
-
     Session.destroy(params["id"])
 
     redirect_to user_show_path
