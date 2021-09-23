@@ -10,7 +10,7 @@ class SessionController < ApplicationController
       return redirect_to session_new_path
     end
 
-    Session.create(
+    session = Session.new(
       {
         session_name: params[:name],
         router_addr: Settings.router.data_addr,
@@ -23,6 +23,21 @@ class SessionController < ApplicationController
         route_id: SecureRandom.uuid,
       }
     )
+
+    Client.create(
+      {
+        client_id: session.owner_client_id,
+        session_id: session.id,
+      }
+    )
+    Client.create(
+      {
+        client_id: session.guest_client_id,
+        session_id: session.id,
+      }
+    )
+
+    session.save!
 
     redirect_to controller: :user, action: :show
   rescue StandardError => e

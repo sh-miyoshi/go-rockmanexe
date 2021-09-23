@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_12_105635) do
+ActiveRecord::Schema.define(version: 2021_09_23_115222) do
+
+  create_table "clients", force: :cascade do |t|
+    t.string "client_id"
+    t.string "session_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["client_id"], name: "index_clients_on_client_id", unique: true
+  end
 
   create_table "histories", force: :cascade do |t|
     t.text "users"
