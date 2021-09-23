@@ -1,4 +1,4 @@
-api_addr: "0.0.0.0:8880"
+api_addr: "0.0.0.0:3000"
 log:
   file: "server.log"
 data:
