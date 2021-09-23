@@ -1,14 +1,5 @@
-api_addr: "0.0.0.0:8880"
+api_addr: "http://localhost:3000"
 data_stream_addr: "0.0.0.0:16283"
-db:
-  type: "memory"
-  conn_string: ""
 log:
   debug_log: true
   file: "router.log"
-debug:
-  enabled: true
-  client1_id: "tester1"
-  client1_key: "testtest"
-  client2_id: "tester2"
-  client2_key: "testtest"

@@ -11,7 +11,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/db"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -29,6 +28,12 @@ const (
 	statusActing
 	statusGameEnd
 )
+
+type APISessionInfo struct {
+	ID            string `json:"id"`
+	OwnerClientID string `json:"owner_client_id"`
+	GuestClientID string `json:"guest_client_id"`
+}
 
 type sessionError struct {
 	generatorClientID string
@@ -64,17 +69,12 @@ var (
 	sessionList = make(map[string]*session)
 )
 
-func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error) {
-	route, err := db.GetInst().RouteGetByClient(clientID)
-	if err != nil {
-		return "", fmt.Errorf("route get failed: %v", err)
-	}
-
+func Add(clientID string, sinfo APISessionInfo, dataStream pb.Router_PublishDataServer) (string, error) {
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
 
 	for _, se := range sessionList {
-		if se.routeID == route.ID {
+		if se.routeID == sinfo.ID {
 			if se.clients[0].clientID == clientID {
 				se.clients[0].active = true
 				se.clients[0].dataStream = dataStream
@@ -92,7 +92,7 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 	sessionID := uuid.New().String()
 	v := session{
 		sessionID:  sessionID,
-		routeID:    route.ID,
+		routeID:    sinfo.ID,
 		status:     statusConnectWait,
 		nextStatus: -1,
 		exitErr:    make(chan sessionError),
@@ -101,18 +101,18 @@ func Add(clientID string, dataStream pb.Router_PublishDataServer) (string, error
 	}
 
 	index := 0
-	if route.Clients[1] == clientID {
+	if sinfo.GuestClientID == clientID {
 		index = 1
 	}
 
 	v.clients[index] = clientInfo{
 		active:     true,
-		clientID:   route.Clients[index],
+		clientID:   clientID,
 		dataStream: dataStream,
 		fieldInfo:  &field.Info{},
 	}
 	v.clients[1-index] = clientInfo{
-		clientID:  route.Clients[1-index],
+		clientID:  clientID,
 		fieldInfo: &field.Info{},
 	}
 	go v.frameProc()

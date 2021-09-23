@@ -10,21 +10,10 @@ import (
 type Config struct {
 	APIAddr        string `yaml:"api_addr"`
 	DataStreamAddr string `yaml:"data_stream_addr"`
-	DB             struct {
-		Type       string `yaml:"type"`
-		ConnString string `yaml:"conn_string"`
-	} `yaml:"db"`
-	Log struct {
+	Log            struct {
 		DebugLog bool   `yaml:"debug_log"`
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
-	Debug struct {
-		Enabled    bool   `yaml:"enabled"`
-		Client1ID  string `yaml:"client1_id"`
-		Client1Key string `yaml:"client1_key"`
-		Client2ID  string `yaml:"client2_id"`
-		Client2Key string `yaml:"client2_key"`
-	} `yaml:"debug"`
 }
 
 var (

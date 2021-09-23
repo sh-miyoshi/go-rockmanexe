@@ -17,11 +17,17 @@ type Config struct {
 	Log     struct {
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
-	Data []struct {
+	ClientData []struct {
 		ClientID  string `yaml:"client_id"`
 		ClientKey string `yaml:"client_key"`
 		UserID    string `yaml:"user_id"`
-	} `yaml:"data"`
+		RouteID   string `json:"route_id"`
+	} `yaml:"client_data"`
+	SessionData []struct {
+		ID            string `yaml:"id"`
+		OwnerClientID string `yaml:"owner_client_id"`
+		GuestClientID string `yaml:"guest_client_id"`
+	} `yaml:"session_data"`
 }
 
 type AuthRequest struct {
@@ -30,7 +36,14 @@ type AuthRequest struct {
 }
 
 type AuthResponse struct {
-	UserID string `json:"user_id"`
+	UserID    string `json:"user_id"`
+	SessionID string `json:"session_id"`
+}
+
+type SessionResponse struct {
+	ID            string `json:"id"`
+	OwnerClientID string `json:"owner_client_id"`
+	GuestClientID string `json:"guest_client_id"`
 }
 
 var (
@@ -59,10 +72,11 @@ func setAPI(r *mux.Router) {
 			return
 		}
 
-		for _, d := range cfg.Data {
+		for _, d := range cfg.ClientData {
 			if d.ClientID == req.ClientID && d.ClientKey == req.ClientKey {
 				res := &AuthResponse{
-					UserID: d.UserID,
+					UserID:    d.UserID,
+					SessionID: d.RouteID,
 				}
 				w.Header().Add("Content-Type", "application/json")
 				if err := json.NewEncoder(w).Encode(res); err != nil {
@@ -79,6 +93,10 @@ func setAPI(r *mux.Router) {
 		logger.Info("Failed to auth user with request: %+v", req)
 		http.Error(w, "User Authentication Failed", http.StatusBadRequest)
 	}).Methods("POST")
+
+	r.HandleFunc("/api/v1/session/{sessionID}", func(w http.ResponseWriter, r *http.Request) {
+		// TODO
+	}).Methods("GET")
 }
 
 func main() {
