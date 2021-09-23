@@ -42,7 +42,9 @@ type AuthResponse struct {
 
 type SessionResponse struct {
 	ID            string `json:"id"`
+	OwnerUserID   string `json:"owner_user_id"`
 	OwnerClientID string `json:"owner_client_id"`
+	GuestUserID   string `json:"guest_user_id"`
 	GuestClientID string `json:"guest_client_id"`
 }
 
@@ -84,7 +86,6 @@ func setAPI(r *mux.Router) {
 					return
 				}
 				logger.Info("Successfully auth user")
-
 				return
 			}
 		}
@@ -94,7 +95,31 @@ func setAPI(r *mux.Router) {
 	}).Methods("POST")
 
 	r.HandleFunc("/api/v1/session/{sessionID}", func(w http.ResponseWriter, r *http.Request) {
-		// TODO
+		vars := mux.Vars(r)
+		sessionID := vars["sessionID"]
+
+		for _, d := range cfg.SessionData {
+			if d.ID == sessionID {
+				res := &SessionResponse{
+					ID:            d.ID,
+					OwnerUserID:   d.OwnerUserID,
+					OwnerClientID: d.OwnerClientID,
+					GuestUserID:   d.GuestUserID,
+					GuestClientID: d.GuestClientID,
+				}
+				w.Header().Add("Content-Type", "application/json")
+				if err := json.NewEncoder(w).Encode(res); err != nil {
+					logger.Error("Failed to encode a response: %+v", err)
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+				logger.Info("Successfully return session info")
+				return
+			}
+		}
+
+		logger.Info("Failed to get session for: %s", sessionID)
+		http.Error(w, "No such session", http.StatusNotFound)
 	}).Methods("GET")
 }
 
