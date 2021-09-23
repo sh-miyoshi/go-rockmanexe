@@ -2,16 +2,8 @@
 
 ## v0.3の未実装項目
 
-- routerのアーキテクチャ変更
-  - データは持たない
-  - Clientからのリクエスト時にDataServerに問い合わせ
-  - DataServerはClient ID, Keyを検証し、検証結果とUser情報を返す
-  - RouterはUser情報をClientに渡す
-  - Clientは最初に保存する(結果は未成立？)
-  - Clientの勝敗決定時にWin/LosesにUpdate
-- debug用のサーバー構築
 - matcherにAPI追加
-- 勝敗のセーブ
+- testの修正
 
 ### ネット対戦未実装部分
 
