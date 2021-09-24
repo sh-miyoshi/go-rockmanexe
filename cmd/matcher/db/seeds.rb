@@ -17,5 +17,5 @@ Session.create(
   guest_id: user2_id,
   guest_client_id: "tester2",
   guest_client_key: "testtest",
-  route_id: "nagnlabmklabjng"
+  session_id: "nagnlabmklabjng"
 )

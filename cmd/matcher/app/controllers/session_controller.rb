@@ -20,7 +20,7 @@ class SessionController < ApplicationController
         guest_id: params[:guest_id],
         guest_client_id: SecureRandom.uuid,
         guest_client_key: SecureRandom.uuid,
-        route_id: SecureRandom.uuid,
+        session_id: SecureRandom.uuid,
       }
     )
 
