@@ -15,6 +15,13 @@ Rails.application.routes.draw do
 
   get "user/detail/show"
 
+   namespace :api, { format: 'json' } do
+    namespace :v1 do
+      get "session/:session_id", to: "session#show"
+      post "client/auth", to: "client#auth"
+    end
+  end
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
   root "user#index"

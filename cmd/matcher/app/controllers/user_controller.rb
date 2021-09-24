@@ -14,12 +14,10 @@ class UserController < ApplicationController
   end
 
   def new
-    # TODO
-    # redirect_to '/' unless session[:user_id].present?
+    redirect_to '/' unless session[:user_id].present?
   end
 
   def create
-    session[:user_id] = "tester"
     return redirect_to "/" unless session[:user_id].present?
 
     User.create!(
