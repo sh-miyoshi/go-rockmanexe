@@ -1,5 +1,4 @@
 class SessionController < ApplicationController
-  include RouterApiRequester
   include Login
   before_action :set_login_user
 

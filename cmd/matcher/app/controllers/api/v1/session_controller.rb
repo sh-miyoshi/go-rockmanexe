@@ -1,4 +1,6 @@
 class Api::V1::SessionController < ApplicationController
+  include ApiHelper
+
   def show
     # TODO request auth
 
