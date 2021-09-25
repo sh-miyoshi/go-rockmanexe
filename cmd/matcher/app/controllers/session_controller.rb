@@ -19,20 +19,22 @@ class SessionController < ApplicationController
         guest_id: params[:guest_id],
         guest_client_id: SecureRandom.uuid,
         guest_client_key: SecureRandom.uuid,
-        session_id: SecureRandom.uuid,
+        session_id: SecureRandom.uuid
       }
     )
 
     Client.create(
       {
         client_id: session.owner_client_id,
-        session_id: session.id,
+        client_key: session.owner_client_key,
+        session_id: session.session_id
       }
     )
     Client.create(
       {
         client_id: session.guest_client_id,
-        session_id: session.id,
+        client_key: session.guest_client_key,
+        session_id: session.session_id
       }
     )
 

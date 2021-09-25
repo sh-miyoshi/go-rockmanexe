@@ -14,7 +14,7 @@ class UserController < ApplicationController
   end
 
   def new
-    redirect_to '/' unless session[:user_id].present?
+    redirect_to "/" unless session[:user_id].present?
   end
 
   def create

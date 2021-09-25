@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   get "user/detail/show"
 
-   namespace :api, { format: 'json' } do
+  namespace :api, { format: "json" } do
     namespace :v1 do
       get "session/:session_id", to: "session#show"
       post "client/auth", to: "client#auth"

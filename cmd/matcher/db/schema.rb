@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_24_140611) do
-
+ActiveRecord::Schema.define(version: 20_210_925_005_101) do
   create_table "clients", force: :cascade do |t|
     t.string "client_id"
     t.string "session_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "client_key"
     t.index ["client_id"], name: "index_clients_on_client_id", unique: true
   end
 
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2021_09_24_140611) do
     t.string "guest_client_id"
     t.string "guest_client_key"
     t.string "session_id"
-    t.index ["owner_id", "guest_id"], name: "index_sessions_on_owner_id_and_guest_id"
+    t.index %w[owner_id guest_id], name: "index_sessions_on_owner_id_and_guest_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -52,5 +52,4 @@ ActiveRecord::Schema.define(version: 2021_09_24_140611) do
     t.index ["login_id"], name: "index_users_on_login_id", unique: true
     t.index ["user_id"], name: "index_users_on_user_id", unique: true
   end
-
 end
