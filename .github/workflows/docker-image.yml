@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build server image
-      run: docker build -t smiyoshi/rockmanexe --build-arg SECRET_KEY_BASE={{ secrets.SECRET_KEY_BASE }} .
+      run: docker build -t smiyoshi/rockmanexe .
     - name: Login to Docker Hub
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
     - name: Push to Docker Hub
