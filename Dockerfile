@@ -17,7 +17,7 @@ COPY cmd/matcher/Gemfile.lock Gemfile.lock
 RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
-COPY cmd/matcher cmd/matcher
+COPY cmd/matcher .
 RUN rails assets:precompile
 RUN rails db:migrate
 
@@ -38,5 +38,5 @@ COPY cmd/matcher/Gemfile.lock Gemfile.lock
 RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
-COPY cmd/matcher matcher
+COPY cmd/matcher .
 RUN rails server -e production
