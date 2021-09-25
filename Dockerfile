@@ -14,7 +14,7 @@ ENV RAILS_ENV production
 WORKDIR /app/cmd/matcher
 COPY cmd/matcher/Gemfile Gemfile
 COPY cmd/matcher/Gemfile.lock Gemfile.lock
-RUN gem install bundler
+RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
 COPY cmd/matcher cmd/matcher
@@ -35,7 +35,7 @@ RUN ./router --config=config.yaml &
 WORKDIR /app/matcher
 COPY cmd/matcher/Gemfile Gemfile
 COPY cmd/matcher/Gemfile.lock Gemfile.lock
-RUN gem install bundler
+RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
 COPY cmd/matcher matcher
