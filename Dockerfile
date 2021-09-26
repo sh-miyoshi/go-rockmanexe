@@ -27,6 +27,9 @@ RUN rails db:migrate
 
 FROM ruby:2.7.4-slim
 
+EXPOSE 3000
+EXPOSE 16283
+
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
 WORKDIR /app
