@@ -3,5 +3,6 @@ Log.txt
 tmp/
 save.dat
 *.log
+secrets
 
 .DS_Store

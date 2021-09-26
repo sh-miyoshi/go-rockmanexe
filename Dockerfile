@@ -9,7 +9,6 @@ RUN go build ./cmd/router
 
 FROM ruby:2.7.4 as app-builder
 
-ARG SECRET_KEY_BASE
 ENV RAILS_ENV production
 WORKDIR /app/cmd/matcher
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
@@ -21,12 +20,13 @@ RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
 COPY cmd/matcher .
+COPY secrets/master.key config/master.key
+COPY secrets/auth0_prod.yml config/auth0.yml
 RUN rails assets:precompile
 RUN rails db:migrate
 
 FROM ruby:2.7.4-slim
 
-ARG SECRET_KEY_BASE
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
 WORKDIR /app
@@ -44,4 +44,7 @@ RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
 RUN bundle install
 COPY cmd/matcher .
+COPY secrets/master.key config/master.key
+COPY secrets/auth0_prod.yml config/auth0.yml
+COPY secrets/settings_prod.yml config/settings/production.yml
 CMD rails server -e production
