@@ -13,5 +13,5 @@ EXPOSE 16283
 
 WORKDIR /app
 COPY --from=builder /app/router router
-COPY cmd/router/config.yaml config.yaml
+COPY secrets/config.yaml config.yaml
 CMD ./router --config=config.yaml
