@@ -41,6 +41,7 @@ func main() {
 		ClientID:       clientID,
 		ClientKey:      clientKey,
 		ProgramVersion: "testclient",
+		Insecure:       true,
 	}); err != nil {
 		logger.Error("Failed to connect router: %v", err)
 		return

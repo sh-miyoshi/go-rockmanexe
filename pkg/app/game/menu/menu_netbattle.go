@@ -46,6 +46,7 @@ func (m *menuNetBattle) Process() bool {
 			ClientID:       c.Net.ClientID,
 			ClientKey:      c.Net.ClientKey,
 			ProgramVersion: common.ProgramVersion,
+			Insecure:       c.Debug.Enabled,
 		}); err != nil {
 			logger.Error("Failed to connect server: %v", err)
 			m.messages = []string{

@@ -2,6 +2,7 @@ package netconn
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"strings"
 	"sync"
@@ -15,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type Config struct {
@@ -22,6 +24,7 @@ type Config struct {
 	ClientID       string
 	ClientKey      string
 	ProgramVersion string
+	Insecure       bool
 }
 
 type sendInfo struct {
@@ -55,7 +58,7 @@ func Connect(conf Config) error {
 	initVars()
 
 	var err error
-	conn, err = grpc.Dial(conf.StreamAddr, grpc.WithInsecure())
+	conn, err = newConn(conf)
 	if err != nil {
 		return fmt.Errorf("failed to connect server: %w", err)
 	}
@@ -366,4 +369,18 @@ func initVars() {
 	sendData = sendInfo{}
 	allUserIDs = []string{}
 	exitErr = nil
+}
+
+func newConn(conf Config) (*grpc.ClientConn, error) {
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithAuthority(conf.StreamAddr))
+
+	if conf.Insecure {
+		opts = append(opts, grpc.WithInsecure())
+	} else {
+		cred := credentials.NewTLS(&tls.Config{})
+		opts = append(opts, grpc.WithTransportCredentials(cred))
+	}
+
+	return grpc.Dial(conf.StreamAddr, opts...)
 }
