@@ -22,4 +22,3 @@ protoc:
 docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
 	docker build -t smiyoshi/rockmanexe-router -f build/Dockerfile.router .
-	docker build -t smiyoshi/rockmanexe-server -f build/Dockerfile.all-in-one .

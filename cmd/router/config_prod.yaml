@@ -1,0 +1,5 @@
+api_addr: "https://rockmanexe.herokuapp.com"
+data_stream_addr: "0.0.0.0:16283"
+log:
+  debug_log: true
+  file: ""

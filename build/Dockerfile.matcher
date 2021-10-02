@@ -9,12 +9,10 @@ COPY cmd/matcher/Gemfile Gemfile
 COPY cmd/matcher/Gemfile.lock Gemfile.lock
 RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
-RUN bundle install
+RUN bundle install --without test development
 COPY cmd/matcher .
 COPY secrets/master.key config/master.key
-COPY secrets/auth0_prod.yml config/auth0.yml
 RUN rails assets:precompile
-RUN rails db:migrate
 
 FROM ruby:2.7.4-slim
 
@@ -22,19 +20,19 @@ EXPOSE 3000
 ARG DB_HOST
 ARG DB_USERNAME
 ARG DB_PASSWORD
+ARG AUTH0_CLIENT_ID
+ARG AUTH0_CLIENT_KEY
+ARG RAILS_MASTER_KEY
 
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
 WORKDIR /app/matcher
-RUN apt update -y && apt install -y ruby-dev gcc make build-essential
+RUN apt update -y && apt install -y gcc make postgresql postgresql-contrib libpq-dev
 COPY --from=app-builder /app/cmd/matcher/public public
 COPY cmd/matcher/Gemfile Gemfile
 COPY cmd/matcher/Gemfile.lock Gemfile.lock
 RUN gem install bundler:1.17.2
 RUN bundle config set --local disable_checksum_validation true
-RUN bundle install
+RUN bundle install --without test development
 COPY cmd/matcher .
-COPY secrets/master.key config/master.key
-COPY secrets/auth0_prod.yml config/auth0.yml
-COPY secrets/settings_prod.yml config/settings/production.yml
 CMD rails server -e production
