@@ -2,20 +2,16 @@
 
 ## v0.3の未実装項目
 
-- matcherにAPI追加
-- testの修正
-
 ### ネット対戦未実装部分
 
 - 敵側の攻撃でどうなるかチェック
-- マッチングサーバー構築
-  - 本番デプロイ
 
 ### 本番リリース
 
 - production build
   - 開発者用コードの確認
-  - version validation
+  - router version validation
+  - matcher app version URL
 - 通しでのテスト
 
 ## マイルストーン
