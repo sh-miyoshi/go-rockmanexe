@@ -12,6 +12,7 @@ debug:
 bgm:
   disabled: true
 net:
+  insecure: true
   client_id: "tester1"
   client_key: "testtest"
   addr: "localhost:16283"

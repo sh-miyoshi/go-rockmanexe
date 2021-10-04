@@ -25,6 +25,7 @@ type Config struct {
 		Disabled bool `yaml:"disabled"`
 	} `yaml:"bgm"`
 	Net struct {
+		Insecure   bool   `yaml:"insecure"`
 		ClientID   string `yaml:"client_id"`
 		ClientKey  string `yaml:"client_key"`
 		StreamAddr string `yaml:"addr"`
