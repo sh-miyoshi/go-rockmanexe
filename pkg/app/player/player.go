@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	defaultHP        uint = 100
+	defaultHP        uint = 200
 	defaultShotPower uint = 1
 
 	FolderSize          = 30
