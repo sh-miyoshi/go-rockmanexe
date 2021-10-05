@@ -1,4 +1,8 @@
 log:
   file: "application.log"
-debug:
-  enabled: false
+
+# ネット対戦を使用する場合、コメントアウトして適切な値を入れてください
+# net:
+#   client_id: "81719014-d299-48e0-8905-5746d8704f94"
+#   client_key: "44467e8a-cf34-4fae-9a3f-de49409e1f88"
+#   addr: "localhost:16283"

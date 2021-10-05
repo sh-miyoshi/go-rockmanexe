@@ -9,7 +9,7 @@
 ### 本番リリース
 
 - production build
-  - 開発者用コードの確認
+  - save file version validation
   - router version validation
   - matcher app version URL
 - 通しでのテスト

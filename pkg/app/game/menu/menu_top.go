@@ -2,7 +2,6 @@ package menu
 
 import (
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -48,12 +47,7 @@ func topProcess() {
 				topPointer--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			max := topSelectMax - 2
-			if config.Get().Debug.EnableDevFeature {
-				max++
-			}
-
-			if topPointer < max {
+			if topPointer < topSelectMax-1 {
 				sound.On(sound.SECursorMove)
 				topPointer++
 			}
@@ -66,9 +60,7 @@ func topDraw() {
 		"チップフォルダ",
 		"バトル",
 		"戦績",
-	}
-	if config.Get().Debug.EnableDevFeature {
-		msgs = append(msgs, "ネット対戦")
+		"ネット対戦",
 	}
 
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
