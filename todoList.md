@@ -8,8 +8,6 @@
 
 ### 本番リリース
 
-- production build
-  - matcher app version URL
 - 通しでのテスト
 
 ## マイルストーン
