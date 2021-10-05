@@ -14,6 +14,7 @@ type Config struct {
 		DebugLog bool   `yaml:"debug_log"`
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
+	AcceptableVersion string `yaml:"acceptable_version"`
 }
 
 var (

@@ -9,8 +9,6 @@
 ### 本番リリース
 
 - production build
-  - save file version validation
-  - router version validation
   - matcher app version URL
 - 通しでのテスト
 
@@ -36,6 +34,7 @@
     - redirect to top page
 - BulkSendFieldInfoのリファクタリング
 - remove hit damage data
+- save file version validation
 
 ## 機能一覧
 

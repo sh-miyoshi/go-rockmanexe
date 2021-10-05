@@ -34,7 +34,13 @@ func (s *RouterStream) PublishData(authReq *pb.AuthRequest, dataStream pb.Router
 	// Verify auth request
 	authRes := &pb.AuthResponse{}
 
-	// TODO validate version
+	if err := api.VersionCheck(authReq.Version); err != nil {
+		logger.Info("Got missmatched version: %v", err)
+		authRes.Success = false
+		authRes.ErrMsg = err.Error()
+		dataStream.Send(makeAuthRes(authRes))
+		return nil
+	}
 
 	caRes, err := api.ClientAuth(authReq.Id, authReq.Key)
 	if err != nil {

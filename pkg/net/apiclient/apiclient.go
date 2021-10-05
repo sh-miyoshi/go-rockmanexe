@@ -21,6 +21,19 @@ type SessionInfo struct {
 	GuestClientID string `json:"guest_client_id"`
 }
 
+func VersionCheck(version string) error {
+	c := config.Get()
+	if c.AcceptableVersion == "" {
+		return nil
+	}
+
+	if c.AcceptableVersion != version {
+		return fmt.Errorf("router acceptable version is %s, but got %s", c.AcceptableVersion, version)
+	}
+
+	return nil
+}
+
 func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
 	c := config.Get()
 	url := fmt.Sprintf("%s/api/v1/client/auth", c.APIAddr)
