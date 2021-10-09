@@ -1,20 +1,10 @@
 # TODO List
 
-## v0.3の未実装項目
-
-### バグ修正
-
-- (攻撃力が3桁のチップの表示)
-
-### 本番リリース
-
-- 通しでのテスト
-
 ## マイルストーン
 
-### v0.3
+### v0.4
 
-- ネット対戦
+- 未定
 
 ### v0.4以降
 
@@ -33,6 +23,7 @@
 - BulkSendFieldInfoのリファクタリング
 - remove hit damage data
 - save file version validation
+- 攻撃力が3桁のチップの表示を修正
 
 ## 機能一覧
 
