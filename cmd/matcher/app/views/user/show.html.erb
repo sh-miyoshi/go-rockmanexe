@@ -104,8 +104,7 @@
             </div>
           </div>
           <div class="card-body">
-            <% if @guest_session.present? %>
-            <% @guest_session.each do |s| %>
+            <% @guest_sessions&.each do |s| %>
             <div class="card border-dark mb-3 mr-2 ml-2">
               <div class="card-header"><%= s.session_name %></div>
               <div class="card-body">
@@ -138,12 +137,11 @@
                     対戦相手
                   </label>
                   <div class="col-md-5">
-                    <%= text_field_tag 'owner', s.owner_id, class: 'form-control read-text-dark', readonly: true %>
+                    <%= text_field_tag 'owner', s.owner_name, class: 'form-control read-text-dark', readonly: true %>
                   </div>
                 </div>
               </div>
             </div>
-            <% end %>
             <% end %>
 
             <% if @own_session.present? %>
@@ -179,7 +177,7 @@
                     対戦相手
                   </label>
                   <div class="col-md-5">
-                    <%= text_field_tag 'guest', @own_session.guest_id, class: 'form-control read-text-dark', readonly: true %>
+                    <%= text_field_tag 'guest', @own_session.guest_name, class: 'form-control read-text-dark', readonly: true %>
                   </div>
                 </div>
                 <div class="row mb-2">

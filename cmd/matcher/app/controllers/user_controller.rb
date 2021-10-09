@@ -10,7 +10,11 @@ class UserController < ApplicationController
   def show
     # Set session info
     @own_session = Session.find_by(owner_id: @user.user_id)
-    @guest_session = Session.where(guest_id: @user.user_id)
+    @own_session.guest_name = user_name(@own_session.guest_id) if @own_session.present?
+    @guest_sessions = Session.where(guest_id: @user.user_id)
+    @guest_sessions&.each do |s|
+      s.owner_name = user_name(s.owner_id)
+    end
   end
 
   def new
@@ -39,5 +43,10 @@ class UserController < ApplicationController
 
   def set_login_user
     @user = login_user
+  end
+
+  def user_name(id)
+    user = User.find_by(user_id: id)
+    user.name
   end
 end
