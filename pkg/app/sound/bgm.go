@@ -14,6 +14,7 @@ const (
 	BGMBattle
 	BGMWin
 	BGMLose
+	BGMNetBattle
 
 	bgmTypeMax
 )
@@ -25,6 +26,7 @@ var (
 		"battle.mp3",
 		"win.mp3",
 		"lose.mp3",
+		"net_battle.mp3",
 	}
 	bgmHandle int32 = -1
 )
