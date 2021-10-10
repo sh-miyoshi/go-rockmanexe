@@ -28,6 +28,15 @@ type Act struct {
 	Object *object.Object
 }
 
+var (
+	moveTable = [][]int{
+		{1, 2},
+		{0, 2},
+		{0, 1},
+	}
+	moveCount = 0
+)
+
 func NewAct(obj *object.Object) *Act {
 	res := &Act{
 		Object: obj,
@@ -53,8 +62,11 @@ func (a *Act) Process() bool {
 		num = 4
 
 		if a.Count == 2 {
-			a.Object.X = rand.Intn(3)
-			a.Object.Y = rand.Intn(3)
+			// a.Object.X = rand.Intn(3)
+			// a.Object.Y = rand.Intn(3)
+			a.Object.X = moveTable[moveCount][0]
+			a.Object.Y = moveTable[moveCount][1]
+			moveCount = (moveCount + 1) % len(moveTable)
 		}
 	case battlecommon.PlayerActCannon:
 		num = 6

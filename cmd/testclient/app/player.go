@@ -77,7 +77,7 @@ func (p *player) Action() bool {
 		return false
 	}
 
-	actTable := []int{0, 0, 0, 7}
+	actTable := []int{0, 1, 1, 3, 1, 2}
 	// Wait, Move, Cannon, Buster, Vulcan, MiniBomb, ChipSelect
 	actInterval := []int{60, 60, 120, 30, 60, 60, 60, 120}
 
