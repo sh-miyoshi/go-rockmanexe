@@ -17,4 +17,4 @@ protoc:
 	rd /s /q github.com
 docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
-	docker build -t smiyoshi/rockmanexe-router -f build/Dockerfile.router .
+	docker build -t asia-northeast1-docker.pkg.dev/rockmanexe/router/router -f build/Dockerfile.router .
