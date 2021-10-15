@@ -71,10 +71,7 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to add init player object: %w", err)
 	}
 
-	if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
-	}
-
+	sound.BGMStop()
 	skill.Init(playerInst.Object.ID)
 
 	return nil
@@ -94,6 +91,10 @@ func Process() error {
 	switch battleState {
 	case stateWaiting:
 		if status == pb.Data_CHIPSELECTWAIT {
+			if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
+				return fmt.Errorf("failed to play bgm: %v", err)
+			}
+
 			stateChange(stateOpening)
 			return nil
 		}
