@@ -128,13 +128,8 @@ func SendSignal(signal pb.Action_SignalType) error {
 		Data:      &pb.Action_Signal{Signal: signal},
 	}
 
-	res, err := routerClient.SendAction(context.TODO(), req)
-	if err != nil {
+	if err := sendAction(req); err != nil {
 		return fmt.Errorf("send signal failed: %w", err)
-	}
-
-	if !res.Success {
-		return fmt.Errorf("send signal got unexpected response: %s", res.ErrMsg)
 	}
 
 	return nil
@@ -276,13 +271,8 @@ func BulkSendFieldInfo() error {
 			},
 		}
 
-		res, err := routerClient.SendAction(context.TODO(), req)
-		if err != nil {
-			return fmt.Errorf("send action failed: %w", err)
-		}
-
-		if !res.Success {
-			return fmt.Errorf("send action got unexpected response: %s", res.ErrMsg)
+		if err := sendAction(req); err != nil {
+			return fmt.Errorf("send object failed: %w", err)
 		}
 	}
 
@@ -294,13 +284,8 @@ func BulkSendFieldInfo() error {
 			Data:      &pb.Action_ObjectID{ObjectID: objID},
 		}
 
-		res, err := routerClient.SendAction(context.TODO(), req)
-		if err != nil {
+		if err := sendAction(req); err != nil {
 			return fmt.Errorf("remove object failed: %w", err)
-		}
-
-		if !res.Success {
-			return fmt.Errorf("remove object got unexpected response: %s", res.ErrMsg)
 		}
 	}
 
@@ -314,13 +299,8 @@ func BulkSendFieldInfo() error {
 			},
 		}
 
-		res, err := routerClient.SendAction(context.TODO(), req)
-		if err != nil {
+		if err := sendAction(req); err != nil {
 			return fmt.Errorf("add damages failed: %w", err)
-		}
-
-		if !res.Success {
-			return fmt.Errorf("add damages got unexpected response: %s", res.ErrMsg)
 		}
 	}
 
@@ -334,13 +314,8 @@ func BulkSendFieldInfo() error {
 			},
 		}
 
-		res, err := routerClient.SendAction(context.TODO(), req)
-		if err != nil {
+		if err := sendAction(req); err != nil {
 			return fmt.Errorf("add effect failed: %w", err)
-		}
-
-		if !res.Success {
-			return fmt.Errorf("add effect got unexpected response: %s", res.ErrMsg)
 		}
 	}
 
@@ -354,13 +329,8 @@ func BulkSendFieldInfo() error {
 			},
 		}
 
-		res, err := routerClient.SendAction(context.TODO(), req)
-		if err != nil {
+		if err := sendAction(req); err != nil {
 			return fmt.Errorf("add sound failed: %w", err)
-		}
-
-		if !res.Success {
-			return fmt.Errorf("add sound got unexpected response: %s", res.ErrMsg)
 		}
 	}
 
@@ -400,4 +370,23 @@ func newConn(conf Config) (*grpc.ClientConn, error) {
 	}
 
 	return grpc.Dial(conf.StreamAddr, opts...)
+}
+
+func sendAction(req *pb.Action) error {
+	const retryNum = 3
+	for i := 0; i < retryNum; i++ {
+		res, err := routerClient.SendAction(context.TODO(), req)
+		if err != nil {
+			logger.Error("Failed to send action: %v", err)
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+
+		if !res.Success {
+			return fmt.Errorf("send action got unexpected response: %s", res.ErrMsg)
+		}
+
+		return nil
+	}
+	return nil
 }
