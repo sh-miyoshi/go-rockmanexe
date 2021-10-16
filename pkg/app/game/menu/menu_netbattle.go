@@ -41,21 +41,13 @@ func (m *menuNetBattle) Process() bool {
 	if !m.isConnect {
 		m.isConnect = true
 		c := config.Get()
-		if err := netconn.Connect(netconn.Config{
+		netconn.Connect(netconn.Config{
 			StreamAddr:     c.Net.StreamAddr,
 			ClientID:       c.Net.ClientID,
 			ClientKey:      c.Net.ClientKey,
 			ProgramVersion: common.ProgramVersion,
 			Insecure:       c.Net.Insecure,
-		}); err != nil {
-			logger.Error("Failed to connect server: %v", err)
-			m.messages = []string{
-				"サーバーへの接続に失敗しました。",
-				"設定を見直してください。",
-			}
-			return false
-		}
-		return true
+		})
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
@@ -66,6 +58,19 @@ func (m *menuNetBattle) Process() bool {
 
 		stateChange(stateTop)
 	}
+
+	if err := netconn.GetConnectStatus(); err != nil {
+		if err == netconn.ErrConnected {
+			return true
+		} else {
+			logger.Error("Failed to connect server: %v", err)
+			m.messages = []string{
+				"サーバーへの接続に失敗しました。",
+				"設定を見直してください。",
+			}
+		}
+	}
+
 	return false
 }
 

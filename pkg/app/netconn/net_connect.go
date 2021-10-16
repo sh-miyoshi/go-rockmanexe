@@ -3,6 +3,7 @@ package netconn
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -36,6 +37,8 @@ type sendInfo struct {
 }
 
 var (
+	ErrConnected = errors.New("connected")
+
 	// variables for router connection
 	conn         *grpc.ClientConn
 	routerClient pb.RouterClient
@@ -51,50 +54,63 @@ var (
 
 	// variables for system control
 	exitErr   error
+	connState error
 	fieldLock sync.Mutex
 )
 
-func Connect(conf Config) error {
+func Connect(conf Config) {
 	initVars()
 
-	var err error
-	conn, err = newConn(conf)
-	if err != nil {
-		return fmt.Errorf("failed to connect server: %w", err)
-	}
+	go func() {
+		var err error
+		conn, err = newConn(conf)
+		if err != nil {
+			connState = fmt.Errorf("failed to connect server: %w", err)
+			return
+		}
 
-	routerClient = pb.NewRouterClient(conn)
-	authReq := &pb.AuthRequest{
-		Id:      conf.ClientID,
-		Key:     conf.ClientKey,
-		Version: conf.ProgramVersion,
-	}
-	dataStream, err = routerClient.PublishData(context.TODO(), authReq)
-	if err != nil {
-		return fmt.Errorf("failed to get data stream: %w", err)
-	}
+		routerClient = pb.NewRouterClient(conn)
+		authReq := &pb.AuthRequest{
+			Id:      conf.ClientID,
+			Key:     conf.ClientKey,
+			Version: conf.ProgramVersion,
+		}
+		dataStream, err = routerClient.PublishData(context.TODO(), authReq)
+		if err != nil {
+			connState = fmt.Errorf("failed to get data stream: %w", err)
+			return
+		}
 
-	// At first, receive authenticate response
-	authRes, err := dataStream.Recv()
-	if err != nil {
-		return fmt.Errorf("failed to recv authenticate res: %w", err)
-	}
-	if authRes.GetType() != pb.Data_AUTHRESPONSE {
-		return fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
-	}
-	res := authRes.GetAuthRes()
-	if !res.Success {
-		return fmt.Errorf("failed to auth request: %s", res.ErrMsg)
-	}
+		// At first, receive authenticate response
+		authRes, err := dataStream.Recv()
+		if err != nil {
+			connState = fmt.Errorf("failed to recv authenticate res: %w", err)
+			return
+		}
+		if authRes.GetType() != pb.Data_AUTHRESPONSE {
+			connState = fmt.Errorf("expect type is auth res, but got: %d", authRes.GetType())
+			return
+		}
+		res := authRes.GetAuthRes()
+		if !res.Success {
+			connState = fmt.Errorf("failed to auth request: %s", res.ErrMsg)
+			return
+		}
 
-	sessionID = res.SessionID
-	clientID = conf.ClientID
-	allUserIDs = append([]string{}, res.AllUserIDs...)
-	sendData.Init()
+		sessionID = res.SessionID
+		clientID = conf.ClientID
+		allUserIDs = append([]string{}, res.AllUserIDs...)
+		sendData.Init()
+		time.Sleep(100 * time.Millisecond)
 
-	go dataRecv()
+		go dataRecv()
 
-	return nil
+		connState = ErrConnected
+	}()
+}
+
+func GetConnectStatus() error {
+	return connState
 }
 
 func Disconnect() {
@@ -369,6 +385,7 @@ func initVars() {
 	sendData = sendInfo{}
 	allUserIDs = []string{}
 	exitErr = nil
+	connState = nil
 }
 
 func newConn(conf Config) (*grpc.ClientConn, error) {

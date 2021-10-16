@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/testclient/app"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -36,16 +37,27 @@ func main() {
 	// run with debug client
 	clientKey := "testtest"
 
-	if err := netconn.Connect(netconn.Config{
+	netconn.Connect(netconn.Config{
 		StreamAddr:     streamAddr,
 		ClientID:       clientID,
 		ClientKey:      clientKey,
 		ProgramVersion: "testclient",
 		Insecure:       true,
-	}); err != nil {
-		logger.Error("Failed to connect router: %v", err)
-		return
+	})
+
+	for {
+		if err := netconn.GetConnectStatus(); err != nil {
+			if err == netconn.ErrConnected {
+				break
+			} else {
+				logger.Error("Failed to connect router: %v", err)
+				return
+			}
+		}
+
+		time.Sleep(100 * time.Microsecond)
 	}
+
 	logger.Info("Success to connect router")
 
 	exitErr := make(chan error)
