@@ -67,9 +67,6 @@ func Init(plyr *player.Player) error {
 	}
 
 	netconn.SendObject(playerInst.Object)
-	if err := netconn.BulkSendFieldInfo(); err != nil {
-		return fmt.Errorf("failed to add init player object: %w", err)
-	}
 
 	sound.BGMStop()
 	skill.Init(playerInst.Object.ID)
@@ -93,6 +90,11 @@ func Process() error {
 		if status == pb.Data_CHIPSELECTWAIT {
 			if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
 				return fmt.Errorf("failed to play bgm: %v", err)
+			}
+
+			// Delay udpate due to Cloud Run Rate Exceeded
+			if err := netconn.BulkSendFieldInfo(); err != nil {
+				return fmt.Errorf("failed to add init player object: %w", err)
 			}
 
 			stateChange(stateOpening)

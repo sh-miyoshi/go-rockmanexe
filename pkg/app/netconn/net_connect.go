@@ -101,7 +101,6 @@ func Connect(conf Config) {
 		clientID = conf.ClientID
 		allUserIDs = append([]string{}, res.AllUserIDs...)
 		sendData.Init()
-		time.Sleep(100 * time.Millisecond)
 
 		go dataRecv()
 
@@ -378,7 +377,7 @@ func sendAction(req *pb.Action) error {
 		res, err := routerClient.SendAction(context.TODO(), req)
 		if err != nil {
 			logger.Error("Failed to send action: %v", err)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(20 * time.Millisecond)
 			continue
 		}
 
