@@ -57,6 +57,8 @@ func Add(skillID int, arg Argument, clientID string) string {
 		skills[id] = newMiniBomb(arg.X, arg.Y, 50)
 	case skill.SkillThunderBall:
 		skills[id] = newThunderBall(arg.X, arg.Y, 30)
+	case skill.SkillLongSword:
+		skills[id] = newLongSword(arg.X, arg.Y, 80)
 	default:
 		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
 	}

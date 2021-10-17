@@ -78,8 +78,8 @@ func (p *player) Action() bool {
 	}
 
 	actTable := []int{0, 1, 1, 3, 1, 2}
-	// Wait, Move, Cannon, Buster, Vulcan, MiniBomb, ChipSelect
-	actInterval := []int{60, 60, 120, 30, 60, 60, 60, 120}
+	// Wait, Move, Cannon, Buster, Vulcan, MiniBomb, ChipSelect, ThunderBall, LongSword
+	actInterval := []int{60, 60, 120, 30, 60, 60, 60, 120, 60}
 
 	current := actTable[p.ActNo]
 
@@ -118,6 +118,12 @@ func (p *player) Action() bool {
 			netconn.SendSignal(pb.Action_GOCHIPSELECT)
 		case 7: // ThunderBall
 			skill.Add(appskill.SkillThunderBall, skill.Argument{
+				X: p.Object.X,
+				Y: p.Object.Y,
+			}, p.Object.ClientID)
+		case 8: // LongSword
+			p.Act.Set(battlecommon.PlayerActSword, nil)
+			skill.Add(appskill.SkillLongSword, skill.Argument{
 				X: p.Object.X,
 				Y: p.Object.Y,
 			}, p.Object.ClientID)
