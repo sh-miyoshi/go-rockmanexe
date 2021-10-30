@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -74,7 +75,10 @@ func (e *enemyTarget) GetParam() anim.Param {
 		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypeEnemy,
+		AnimType: anim.AnimTypeObject,
 	}
+}
+
+func (e *enemyTarget) GetObjectType() int {
+	return objanim.ObjTypeEnemy
 }

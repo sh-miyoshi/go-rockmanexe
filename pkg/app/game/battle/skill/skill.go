@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -414,7 +415,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillMegaCannon:
 		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMiniBomb:
-		px, py := anim.GetObjPos(arg.OwnerID)
+		px, py := objanim.GetObjPos(arg.OwnerID)
 		return &miniBomb{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
 	case SkillSword:
 		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeSword, Power: arg.Power, TargetType: arg.TargetType}
@@ -423,7 +424,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillLongSword:
 		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
-		px, py := anim.GetObjPos(arg.OwnerID)
+		px, py := objanim.GetObjPos(arg.OwnerID)
 		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
 	case SkillRecover:
 		return &recover{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
@@ -432,10 +433,10 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillVulcan1:
 		return &vulcan{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
 	case SkillPlayerShockWave:
-		px, py := anim.GetObjPos(arg.OwnerID)
+		px, py := objanim.GetObjPos(arg.OwnerID)
 		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
 	case SkillThunderBall:
-		px, py := anim.GetObjPos(arg.OwnerID)
+		px, py := objanim.GetObjPos(arg.OwnerID)
 		x := px + 1
 		if arg.TargetType == damage.TargetPlayer {
 			x = px - 1
@@ -444,7 +445,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 		max := 6 // debug
 		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: x, y: py, prevX: px, prevY: py, nextX: x, nextY: py}
 	case SkillWideShot:
-		px, py := anim.GetObjPos(arg.OwnerID)
+		px, py := objanim.GetObjPos(arg.OwnerID)
 		direct := common.DirectRight
 		nextStep := 8
 		if arg.TargetType == damage.TargetPlayer {
@@ -493,7 +494,7 @@ func GetSkillID(chipID int) int {
 }
 
 func (p *cannon) Draw() {
-	px, py := anim.GetObjPos(p.OwnerID)
+	px, py := objanim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := p.count / delayCannonBody
@@ -516,7 +517,7 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		dm := damage.Damage{
 			PosY:          py,
 			Power:         int(p.Power),
@@ -555,20 +556,15 @@ func (p *cannon) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *cannon) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }
 
 func (p *sword) Draw() {
-	px, py := anim.GetObjPos(p.OwnerID)
+	px, py := objanim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	n := (p.count - 5) / delaySword
@@ -590,7 +586,7 @@ func (p *sword) Process() (bool, error) {
 			HitEffectType: effect.TypeNone,
 		}
 
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 
 		dm.PosX = px + 1
 		dm.PosY = py
@@ -616,15 +612,10 @@ func (p *sword) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *sword) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }
 
@@ -640,7 +631,7 @@ func (p *miniBomb) Draw() {
 func (p *miniBomb) Process() (bool, error) {
 	if p.count == 0 {
 		// Initialize
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		p.baseX, p.baseY = battlecommon.ViewPos(px, py)
 		// TODO: yが等しい場合でかつプレイヤー側のみ
 		p.dist = (p.TargetX - px) * field.PanelSizeX
@@ -672,15 +663,10 @@ func (p *miniBomb) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *miniBomb) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }
 
@@ -702,7 +688,7 @@ func (p *shockWave) Draw() {
 	if p.ShowPick {
 		n = (p.count / delayPick)
 		if n < len(imgPick) {
-			px, py := anim.GetObjPos(p.OwnerID)
+			px, py := objanim.GetObjPos(p.OwnerID)
 			vx, vy := battlecommon.ViewPos(px, py)
 			dxlib.DrawRotaGraph(vx, vy-15, 1, 0, imgPick[n], dxlib.TRUE)
 		}
@@ -742,22 +728,17 @@ func (p *shockWave) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *shockWave) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }
 
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x, y, 1, 0, imgRecover[n], dxlib.TRUE)
 	}
@@ -766,7 +747,7 @@ func (p *recover) Draw() {
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SERecover)
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		damage.New(damage.Damage{
 			PosX:          px,
 			PosY:          py,
@@ -785,15 +766,10 @@ func (p *recover) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *recover) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *recover) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 
@@ -802,7 +778,7 @@ func (p *spreadGun) Draw() {
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
 	}
@@ -810,7 +786,7 @@ func (p *spreadGun) Draw() {
 	// Show atk
 	n = (p.count - 4) / delaySpreadGun
 	if n >= 0 && n < len(imgSpreadGunAtk) {
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		x, y := battlecommon.ViewPos(px, py)
 		dxlib.DrawRotaGraph(x+100, y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
 	}
@@ -820,7 +796,7 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		px, py := anim.GetObjPos(p.OwnerID)
+		px, py := objanim.GetObjPos(p.OwnerID)
 		for x := px + 1; x < field.FieldNumX; x++ {
 			if field.GetPanelInfo(x, py).ObjectID != "" {
 				// Hit
@@ -872,15 +848,10 @@ func (p *spreadGun) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *spreadGun) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 
@@ -905,20 +876,15 @@ func (p *spreadHit) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *spreadHit) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 
 func (p *vulcan) Draw() {
-	px, py := anim.GetObjPos(p.OwnerID)
+	px, py := objanim.GetObjPos(p.OwnerID)
 	x, y := battlecommon.ViewPos(px, py)
 
 	// Show body
@@ -941,7 +907,7 @@ func (p *vulcan) Process() (bool, error) {
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			px, py := anim.GetObjPos(p.OwnerID)
+			px, py := objanim.GetObjPos(p.OwnerID)
 			hit := false
 			for x := px + 1; x < field.FieldNumX; x++ {
 				if field.GetPanelInfo(x, py).ObjectID != "" {
@@ -982,15 +948,10 @@ func (p *vulcan) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *vulcan) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 
@@ -1064,12 +1025,12 @@ func (p *thunderBall) Process() (bool, error) {
 		})
 
 		// Set next pos
-		objType := anim.ObjTypePlayer
+		objType := objanim.ObjTypePlayer
 		if p.TargetType == damage.TargetEnemy {
-			objType = anim.ObjTypeEnemy
+			objType = objanim.ObjTypeEnemy
 		}
 
-		objs := anim.GetObjs(anim.Filter{ObjType: objType})
+		objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
 			if p.TargetType == damage.TargetPlayer {
@@ -1097,15 +1058,10 @@ func (p *thunderBall) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *thunderBall) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }
 
@@ -1207,14 +1163,9 @@ func (p *wideShot) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *wideShot) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.TypeSkill,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeSkill,
 	}
 }

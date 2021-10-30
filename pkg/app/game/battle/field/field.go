@@ -5,7 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -114,7 +114,7 @@ func Update() {
 		}
 	}
 
-	objs := anim.GetObjs(anim.Filter{ObjType: anim.ObjTypePlayer | anim.ObjTypeEnemy})
+	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer | objanim.ObjTypeEnemy})
 	for _, obj := range objs {
 		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -63,7 +64,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	if err != nil {
 		return fmt.Errorf("battle player init failed: %w", err)
 	}
-	anim.New(playerInst)
+	objanim.New(playerInst)
 
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("battle field init failed: %w", err)
@@ -87,6 +88,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 // End ...
 func End() {
 	anim.Cleanup()
+	objanim.Cleanup()
 	damage.RemoveAll()
 	field.End()
 	playerInst.End()
@@ -143,8 +145,8 @@ func Process() error {
 		}
 	case stateMain:
 		gameCount++
-		if err := anim.MgrProcess(true); err != nil {
-			return fmt.Errorf("failed to handle animation: %w", err)
+		if err := objanim.MgrProcess(true); err != nil {
+			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
 		switch playerInst.NextAction {
@@ -177,8 +179,8 @@ func Process() error {
 			}
 		}
 
-		if err := anim.MgrProcess(false); err != nil {
-			return fmt.Errorf("failed to handle animation: %w", err)
+		if err := objanim.MgrProcess(false); err != nil {
+			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
 		if win.Process() {
@@ -200,6 +202,10 @@ func Process() error {
 		}
 	}
 
+	if err := anim.MgrProcess(); err != nil {
+		return fmt.Errorf("failed to handle animation: %w", err)
+	}
+
 	battleCount++
 	return nil
 }
@@ -207,6 +213,7 @@ func Process() error {
 // Draw ...
 func Draw() {
 	field.Draw()
+	objanim.MgrDraw()
 	anim.MgrDraw()
 
 	switch battleState {

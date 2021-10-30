@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -416,8 +417,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if anim.IsProcessing(p.act.ID) {
-			anim.Delete(p.act.ID)
+		if objanim.IsProcessing(p.act.ID) {
+			objanim.Delete(p.act.ID)
 			p.act.ID = ""
 		}
 
@@ -435,9 +436,12 @@ func (p *BattlePlayer) GetParam() anim.Param {
 		ObjID:    p.ID,
 		PosX:     p.PosX,
 		PosY:     p.PosY,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypePlayer,
+		AnimType: anim.AnimTypeObject,
 	}
+}
+
+func (p *BattlePlayer) GetObjectType() int {
+	return objanim.ObjTypePlayer
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {

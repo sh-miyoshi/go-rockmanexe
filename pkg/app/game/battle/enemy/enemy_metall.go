@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -118,7 +119,7 @@ func (e *enemyMetall) Process() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		_, py := anim.GetObjPos(e.pm.PlayerID)
+		_, py := objanim.GetObjPos(e.pm.PlayerID)
 		if py == e.pm.PosY || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
@@ -178,9 +179,12 @@ func (e *enemyMetall) GetParam() anim.Param {
 		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypeEnemy,
+		AnimType: anim.AnimTypeObject,
 	}
+}
+
+func (e *enemyMetall) GetObjectType() int {
+	return objanim.ObjTypeEnemy
 }
 
 func (a *metallAtk) Draw() {
@@ -201,15 +205,10 @@ func (a *metallAtk) Process() (bool, error) {
 	return a.count >= (len(a.images) * delayMetallAtk), nil
 }
 
-func (a *metallAtk) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.id,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 

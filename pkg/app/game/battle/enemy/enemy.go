@@ -5,7 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 )
 
 const (
@@ -33,7 +33,7 @@ type EnemyParam struct {
 }
 
 type enemyObject interface {
-	anim.Anim
+	objanim.Anim
 	Init(ID string) error
 	End()
 }
@@ -55,7 +55,7 @@ func Init(playerID string, enemyList []EnemyParam) error {
 		e.PlayerID = playerID
 		e.ActNo = i
 		obj := getObject(e.CharID, e)
-		objID := anim.New(obj)
+		objID := objanim.New(obj)
 		enemies[objID] = obj
 	}
 
@@ -77,7 +77,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !anim.IsProcessing(id) {
+		if !objanim.IsProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}

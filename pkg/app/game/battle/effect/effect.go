@@ -9,7 +9,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -195,17 +194,12 @@ func (e *effect) Draw() {
 	dxlib.DrawRotaGraph(x+e.ofsX, y+e.ofsY+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
 
-func (e *effect) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (e *effect) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.ID,
 		PosX:     e.X,
 		PosY:     e.Y,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
 
@@ -217,14 +211,9 @@ func (e *noEffect) Process() (bool, error) {
 func (e *noEffect) Draw() {
 }
 
-func (e *noEffect) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (e *noEffect) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    uuid.New().String(), // set dummy param
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }

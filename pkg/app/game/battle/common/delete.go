@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -49,16 +48,11 @@ func (p *deleteAction) Draw() {
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 }
 
-func (p *deleteAction) DamageProc(dm *damage.Damage) bool {
-	return false
-}
-
 func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.id,
 		PosX:     p.x,
 		PosY:     p.y,
-		AnimType: anim.TypeEffect,
-		ObjType:  anim.ObjTypeNone,
+		AnimType: anim.AnimTypeEffect,
 	}
 }
