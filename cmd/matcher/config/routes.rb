@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   post "user/create"
   delete "user/destroy"
 
-  get "user/detail/show"
+  get "user/detail/edit"
 
   namespace :api, { format: "json" } do
     namespace :v1 do
