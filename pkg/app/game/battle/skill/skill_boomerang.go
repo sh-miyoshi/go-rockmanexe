@@ -105,7 +105,7 @@ func (p *boomerang) Process() (bool, error) {
 			Power:         int(p.Power),
 			TTL:           boomerangNextStepCount + 1,
 			TargetType:    p.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: effect.TypeSpreadHit,
 			ShowHitArea:   false,
 		})
 
