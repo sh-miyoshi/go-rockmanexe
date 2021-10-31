@@ -4,6 +4,8 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
@@ -97,7 +99,15 @@ func (p *boomerang) Process() (bool, error) {
 		p.x = p.nextX
 		p.y = p.nextY
 
-		// TODO damage
+		damage.New(damage.Damage{
+			PosX:          p.x,
+			PosY:          p.y,
+			Power:         int(p.Power),
+			TTL:           boomerangNextStepCount + 1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeNone,
+			ShowHitArea:   false,
+		})
 
 		switch p.ActType {
 		case boomerangActTypeCounterClockwise:
