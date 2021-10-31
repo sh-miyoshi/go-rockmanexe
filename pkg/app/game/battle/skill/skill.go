@@ -341,3 +341,44 @@ func GetSkillID(chipID int) int {
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 }
+
+/*
+Skill template
+
+type tmpskill struct {
+	ID         string
+	OwnerID    string
+	Power      uint
+	TargetType int
+
+	count int
+}
+
+func (p *tmpskill) Draw() {
+	px, py := objanim.GetObjPos(p.OwnerID)
+	x, y := battlecommon.ViewPos(px, py)
+
+	n := p.count / delay
+	if n < len(img) {
+		dxlib.DrawRotaGraph(x, y, 1, 0, img[n], dxlib.TRUE)
+	}
+}
+
+func (p *tmpskill) Process() (bool, error) {
+	p.count++
+
+	max := len(img) * delay
+	if p.count > max {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *tmpskill) GetParam() anim.Param {
+	return anim.Param{
+		ObjID:    p.ID,
+		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+*/
