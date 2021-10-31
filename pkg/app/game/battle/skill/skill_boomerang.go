@@ -5,6 +5,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type boomerang struct {
@@ -85,6 +86,10 @@ func (p *boomerang) Draw() {
 }
 
 func (p *boomerang) Process() (bool, error) {
+	if p.count == 0 {
+		sound.On(sound.SEBoomerangThrow)
+	}
+
 	if p.count%boomerangNextStepCount == 0 {
 		// Update current pos
 		p.prevX = p.x
