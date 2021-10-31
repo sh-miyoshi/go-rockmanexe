@@ -29,7 +29,7 @@ type SelectParam struct {
 }
 
 const (
-	// Must same as in chipList.yaml
+	// ID must be same as in chipList.yaml
 
 	IDCannon      = 1
 	IDHighCannon  = 2
@@ -42,6 +42,7 @@ const (
 	IDSword       = 54
 	IDWideSword   = 55
 	IDLongSword   = 56
+	IDBoomerang1  = 69
 	IDRecover10   = 109
 	IDRecover30   = 110
 	IDShockWave   = 229

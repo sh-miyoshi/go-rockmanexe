@@ -27,6 +27,7 @@ const (
 	SkillPlayerShockWave
 	SkillThunderBall
 	SkillWideShot
+	SkillBoomerang
 )
 
 const (
@@ -40,6 +41,7 @@ const (
 	delayPick        = 3
 	delayThunderBall = 6
 	delayWideShot    = 4
+	delayBoomerang   = 8
 )
 
 type Argument struct {
@@ -63,6 +65,7 @@ var (
 	imgWideShotBody  []int32
 	imgWideShotBegin []int32
 	imgWideShotMove  []int32
+	imgBoomerang     []int32
 )
 
 func Init() error {
@@ -186,6 +189,14 @@ func Init() error {
 		imgWideShotMove = append(imgWideShotMove, tmp[i])
 	}
 
+	fname = path + "ブーメラン.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 80, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 4; i++ {
+		imgBoomerang = append(imgBoomerang, tmp[i])
+	}
+
 	return nil
 }
 
@@ -250,6 +261,10 @@ func End() {
 		dxlib.DeleteGraph(imgWideShotMove[i])
 	}
 	imgWideShotMove = []int32{}
+	for i := 0; i < len(imgBoomerang); i++ {
+		dxlib.DeleteGraph(imgBoomerang[i])
+	}
+	imgBoomerang = []int32{}
 }
 
 // Get ...
@@ -302,6 +317,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 			nextStep = 16
 		}
 		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, x: px, y: py, state: wideShotStateBegin}
+	case SkillBoomerang:
+		return newBoomerang(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -337,6 +354,8 @@ func GetSkillID(chipID int) int {
 		return SkillThunderBall
 	case chip.IDWideShot:
 		return SkillWideShot
+	case chip.IDBoomerang1:
+		return SkillBoomerang
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
@@ -344,6 +363,7 @@ func GetSkillID(chipID int) int {
 
 /*
 Skill template
+package skill
 
 type tmpskill struct {
 	ID         string

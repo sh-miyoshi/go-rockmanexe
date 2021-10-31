@@ -1,5 +1,5 @@
-# type: 0(無), 3(剣), 11(電気)
-# player_act.type: 3(cannon), 4(sword)
+# type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
+# player_act.type: -1(none), 3(cannon), 4(sword)
 - id: 1
   name: "キャノン"
   power: 40
@@ -73,3 +73,8 @@
   power: 60
   type: 10
   player_act: 2
+- id: 69
+  name: "ブーメラン1"
+  power: 60
+  type: 0
+  player_act: -1

@@ -3,7 +3,7 @@ log:
 debug:
   enabled: true
   skip_title: true
-  skip_menu: false
+  skip_menu: true
   skip_battle_opening: true
   start_continue: false
   init_sleep_sec: 0
