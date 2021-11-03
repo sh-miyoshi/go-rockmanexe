@@ -396,17 +396,8 @@ func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGra
 	}
 
 	cnt := obj.Count % obj.Speed
-	sx := field.PanelSizeX*cnt/obj.Speed - field.PanelSizeX/2
-	sy := field.PanelSizeY*cnt/obj.Speed - field.PanelSizeY/2
-
-	var ofsx, ofsy int
-	if cnt < obj.Speed/2 {
-		ofsx = sx * (obj.X - obj.PrevX)
-		ofsy = sy * (obj.Y - obj.PrevY)
-	} else {
-		ofsx = (sx) * (obj.TargetX - obj.X)
-		ofsy = (sy) * (obj.TargetY - obj.Y)
-	}
+	ofsx := battlecommon.GetOffset(obj.TargetX, obj.X, obj.PrevX, cnt, obj.Speed, field.PanelSizeX)
+	ofsy := battlecommon.GetOffset(obj.TargetY, obj.Y, obj.PrevY, cnt, obj.Speed, field.PanelSizeY)
 
 	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
 }

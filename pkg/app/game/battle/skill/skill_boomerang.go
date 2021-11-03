@@ -72,18 +72,8 @@ func (p *boomerang) Draw() {
 		return
 	}
 
-	sx := field.PanelSizeX*cnt/boomerangNextStepCount - field.PanelSizeX/2
-	sy := field.PanelSizeY*cnt/boomerangNextStepCount - field.PanelSizeY/2
-
-	var ofsx, ofsy int
-	if cnt < boomerangNextStepCount/2 {
-		ofsx = sx * (p.x - p.prevX)
-		ofsy = sy * (p.y - p.prevY)
-	} else {
-		ofsx = (sx) * (p.nextX - p.x)
-		ofsy = (sy) * (p.nextY - p.y)
-	}
-
+	ofsx := battlecommon.GetOffset(p.nextX, p.x, p.prevX, cnt, boomerangNextStepCount, field.PanelSizeX)
+	ofsy := battlecommon.GetOffset(p.nextY, p.y, p.prevY, cnt, boomerangNextStepCount, field.PanelSizeY)
 	dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgBoomerang[n], dxlib.TRUE)
 }
 

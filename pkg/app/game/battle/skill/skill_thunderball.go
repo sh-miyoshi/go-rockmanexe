@@ -43,17 +43,8 @@ func (p *thunderBall) Draw() {
 		return
 	}
 
-	sx := field.PanelSizeX*cnt/thunderBallNextStepCount - field.PanelSizeX/2
-	sy := field.PanelSizeY*cnt/thunderBallNextStepCount - field.PanelSizeY/2
-
-	var ofsx, ofsy int
-	if cnt < thunderBallNextStepCount/2 {
-		ofsx = sx * (p.x - p.prevX)
-		ofsy = sy * (p.y - p.prevY)
-	} else {
-		ofsx = (sx) * (p.nextX - p.x)
-		ofsy = (sy) * (p.nextY - p.y)
-	}
+	ofsx := battlecommon.GetOffset(p.nextX, p.x, p.prevX, cnt, thunderBallNextStepCount, field.PanelSizeX)
+	ofsy := battlecommon.GetOffset(p.nextY, p.y, p.prevY, cnt, thunderBallNextStepCount, field.PanelSizeY)
 
 	dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgThunderBall[n], dxlib.TRUE)
 }
