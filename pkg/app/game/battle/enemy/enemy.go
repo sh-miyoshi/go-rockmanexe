@@ -13,6 +13,7 @@ const (
 	IDTarget
 	IDBilly
 	IDLark
+	IDBoomer
 )
 
 type EnemyChipInfo struct {
@@ -47,6 +48,7 @@ var (
 		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
 		{CharID: IDBilly, ChipID: chip.IDThunderBall, Code: "l", RequiredLevel: 7},
 		{CharID: IDLark, ChipID: chip.IDWideShot, Code: "c", RequiredLevel: 7},
+		// TODO boomer chip
 	}
 )
 
@@ -114,6 +116,8 @@ func GetStandImageFile(id int) (name, ext string) {
 		name = path + "ビリー"
 	case IDLark:
 		name = path + "ゲイラーク"
+	case IDBoomer:
+		name = path + "ラウンダ"
 	}
 	return
 }
@@ -128,12 +132,23 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyBilly{pm: initParam}
 	case IDLark:
 		return &enemyLark{pm: initParam}
+	case IDBoomer:
+		return &enemyBoomer{pm: initParam}
 	}
 	return nil
 }
 
 /*
 Enemy template
+
+package enemy
+
+import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+)
 
 type enemy struct {
 	pm EnemyParam
@@ -177,9 +192,12 @@ func (e *enemy) GetParam() anim.Param {
 		ObjID:    e.pm.ObjectID,
 		PosX:     e.pm.PosX,
 		PosY:     e.pm.PosY,
-		AnimType: anim.TypeObject,
-		ObjType:  anim.ObjTypeEnemy,
+		AnimType: anim.AnimTypeObject,
 	}
+}
+
+func (e *enemy) GetObjectType() int {
+	return objanim.ObjTypeEnemy
 }
 
 */
