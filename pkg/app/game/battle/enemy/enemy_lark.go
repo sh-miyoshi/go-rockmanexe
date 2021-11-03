@@ -136,7 +136,7 @@ func (e *enemyLark) Process() (bool, error) {
 		if e.moveCount >= moveNum && e.pm.PosY != 1 && attacker == "" {
 			attacker = e.pm.ObjectID
 			e.moveCount = 0
-			e.atk.SetAtttack()
+			e.atk.SetAttack()
 			return false, nil
 		}
 
@@ -212,7 +212,7 @@ func (e *enemyLark) GetObjectType() int {
 	return objanim.ObjTypeEnemy
 }
 
-func (a *larkAtk) SetAtttack() {
+func (a *larkAtk) SetAttack() {
 	a.count = 0
 	a.attacking = true
 }
