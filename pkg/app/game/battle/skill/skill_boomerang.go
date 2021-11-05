@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -39,11 +40,20 @@ const (
 )
 
 func newBoomerang(objID string, arg Argument) *boomerang {
-	// TODO(敵の場合, 直線移動)
+	// TODO(直線移動)
 	sx := 0
 	sy := field.FieldNumY - 1
 	act := boomerangActTypeCounterClockwise
 	px := -1
+	if arg.TargetType == damage.TargetPlayer {
+		// 敵の攻撃
+		sx = field.FieldNumX - 2
+		_, sy = objanim.GetObjPos(arg.OwnerID)
+		if sy == field.FieldNumY-1 {
+			act = boomerangActTypeClockwise
+		}
+		px = field.FieldNumX - 1
+	}
 
 	return &boomerang{
 		ID:         objID,
@@ -126,6 +136,34 @@ func (p *boomerang) Process() (bool, error) {
 					p.nextY++
 				} else {
 					p.nextY--
+				}
+			}
+		case boomerangActTypeClockwise:
+			if p.nextY == 0 {
+				if p.nextX == field.FieldNumX-1 && p.turnNum < 2 {
+					p.turnNum++
+					p.nextY++
+				} else {
+					if p.nextX == 0 {
+						p.turnNum++
+					}
+					p.nextX++
+				}
+			} else if p.nextY == field.FieldNumY-1 {
+				if p.nextX == 0 && p.turnNum < 2 {
+					p.turnNum++
+					p.nextY--
+				} else {
+					if p.nextX == field.FieldNumX-1 {
+						p.turnNum++
+					}
+					p.nextX--
+				}
+			} else {
+				if p.nextX == 0 {
+					p.nextY--
+				} else {
+					p.nextY++
 				}
 			}
 		default:
