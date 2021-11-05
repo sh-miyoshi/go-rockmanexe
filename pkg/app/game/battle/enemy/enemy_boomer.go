@@ -32,6 +32,7 @@ type boomerAtk struct {
 	ownerID string
 	count   int
 	images  []int32
+	atkID   string
 }
 
 type enemyBoomer struct {
@@ -114,7 +115,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 				e.state = boomerStateWait
 				e.nextState = boomerStateAtk
 				e.waitCount = 60
-				return false, nil
+				e.atk.Init()
 			}
 
 			if e.direct == common.DirectUp {
@@ -146,6 +147,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 			e.state = boomerStateWait
 			e.waitCount = 20
 			e.nextState = boomerStateMove
+			// TODO 移動しない
 		}
 	}
 
@@ -211,9 +213,14 @@ func (e *enemyBoomer) getCurrentImagePointer() *int32 {
 	return &e.imgMove[n]
 }
 
+func (a *boomerAtk) Init() {
+	a.atkID = ""
+	a.count = 0
+}
+
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
-		anim.New(skill.Get(
+		a.atkID = anim.New(skill.Get(
 			skill.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
@@ -225,6 +232,5 @@ func (a *boomerAtk) Process() bool {
 
 	a.count++
 
-	// TODO
-	return false
+	return !anim.IsProcessing(a.atkID)
 }
