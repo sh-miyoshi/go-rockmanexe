@@ -218,7 +218,7 @@ func (a *larkAtk) SetAttack() {
 }
 
 func (a *larkAtk) Process() {
-	if a.count == 1*delayBillyAtk {
+	if a.count == 1*delayLarkAtk {
 		anim.New(skill.Get(
 			skill.SkillWideShot,
 			skill.Argument{
@@ -231,7 +231,7 @@ func (a *larkAtk) Process() {
 
 	a.count++
 
-	if a.count > len(a.images)*delayBillyAtk {
+	if a.count > len(a.images)*delayLarkAtk {
 		// Reset params
 		a.count = 0
 		a.attacking = false
