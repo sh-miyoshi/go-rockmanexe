@@ -14,6 +14,7 @@ const (
 	IDBilly
 	IDLark
 	IDBoomer
+	IDAquaman
 )
 
 type EnemyChipInfo struct {
@@ -49,6 +50,7 @@ var (
 		{CharID: IDBilly, ChipID: chip.IDThunderBall, Code: "l", RequiredLevel: 7},
 		{CharID: IDLark, ChipID: chip.IDWideShot, Code: "c", RequiredLevel: 7},
 		// TODO boomer chip
+		// TODO aquaman chip
 	}
 )
 
@@ -118,6 +120,8 @@ func GetStandImageFile(id int) (name, ext string) {
 		name = path + "ゲイラーク"
 	case IDBoomer:
 		name = path + "ラウンダ"
+	case IDAquaman:
+		name = path + "アクアマン"
 	}
 	return
 }
@@ -134,6 +138,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyLark{pm: initParam}
 	case IDBoomer:
 		return &enemyBoomer{pm: initParam}
+	case IDAquaman:
+		return &enemyAquaman{pm: initParam}
 	}
 	return nil
 }
