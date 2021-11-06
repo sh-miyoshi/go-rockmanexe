@@ -141,6 +141,31 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "舞戻るやいば",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDBoomer,
+						PosX:   5,
+						PosY:   1,
+						HP:     60,
+					},
+					ViewPosX: viewCenterX + 20,
+					ViewPosY: viewCenterY - 5,
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDMetall,
+						PosX:   4,
+						PosY:   0,
+						HP:     40,
+					},
+					ViewPosX: viewCenterX - 30,
+					ViewPosY: viewCenterY + 5,
+				},
+			},
+		},
+		{
 			Name: "練習",
 			Enemies: []selectEnemyData{
 				{
