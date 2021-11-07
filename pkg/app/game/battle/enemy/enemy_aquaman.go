@@ -17,12 +17,13 @@ import (
 const (
 	aquamanActTypeStand = iota
 	aquamanActTypeMove
+	aquamanActTypeShot
 
 	aquamanActTypeMax
 )
 
 var (
-	aquamanDelays = [aquamanActTypeMax]int{8, 4}
+	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4}
 )
 
 type enemyAquaman struct {
@@ -31,19 +32,14 @@ type enemyAquaman struct {
 	count     int
 	state     int
 	nextState int
-
-	actStand aquamanActStand
-}
-
-type aquamanActStand struct {
-	count int
+	waitCount int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = aquamanActTypeStand
-	e.actStand.Init(10)
-	e.nextState = aquamanActTypeMove
+	e.waitCount = 10
+	e.nextState = aquamanActTypeShot
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -57,6 +53,12 @@ func (e *enemyAquaman) Init(objID string) error {
 	fname = name + "_move" + ext
 	e.images[aquamanActTypeMove] = make([]int32, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 126, e.images[aquamanActTypeMove]); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	fname = name + "_shot" + ext
+	e.images[aquamanActTypeShot] = make([]int32, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 104, 90, e.images[aquamanActTypeShot]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -78,14 +80,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 	// Enemy Logic
 	switch e.state {
 	case aquamanActTypeStand:
-		if e.actStand.Process() {
+		e.waitCount--
+		if e.waitCount <= 0 {
 			e.state = e.nextState
 			e.count = 0
 			return false, nil
 		}
 	case aquamanActTypeMove:
 		if e.count == 5*aquamanDelays[aquamanActTypeMove] {
-			// move
 			for i := 0; i < 10; i++ {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.PosX,
@@ -99,12 +101,22 @@ func (e *enemyAquaman) Process() (bool, error) {
 					break
 				}
 			}
-			// standへ
-			e.actStand.Init(60)
+			e.waitCount = 60
 			e.state = aquamanActTypeStand
+			e.count = 0
+			return false, nil
+		}
+	case aquamanActTypeShot:
+		if e.count == 5*aquamanDelays[aquamanActTypeShot] {
+			// TODO
+
+			e.waitCount = 60
+			e.state = aquamanActTypeStand
+			e.count = 0
+			return false, nil
 		}
 	}
-	// TODO
+
 	e.count++
 	return false, nil
 }
@@ -114,7 +126,13 @@ func (e *enemyAquaman) Draw() {
 	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
 	img := e.getCurrentImagePointer()
 
-	dxlib.DrawRotaGraph(x, y, 1, 0, *img, dxlib.TRUE)
+	ofs := [aquamanActTypeMax][]int32{
+		{0, 0},    // stand
+		{0, 0},    // move
+		{-20, 10}, // shot
+	}
+
+	dxlib.DrawRotaGraph(x+ofs[e.state][0], y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
@@ -154,16 +172,4 @@ func (e *enemyAquaman) getCurrentImagePointer() *int32 {
 	// TODO
 	n := (e.count / aquamanDelays[e.state]) % len(e.images[e.state])
 	return &e.images[e.state][n]
-}
-
-func (a *aquamanActStand) Init(waitCount int) {
-	a.count = waitCount
-}
-
-func (a *aquamanActStand) Process() bool {
-	if a.count <= 0 {
-		return true
-	}
-	a.count--
-	return false
 }
