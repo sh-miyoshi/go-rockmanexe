@@ -108,19 +108,18 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeShot:
 		if e.count == 6*aquamanDelays[aquamanActTypeShot] {
-			anim.New(effect.Get(
-				effect.TypeWaterBomb,
-				e.pm.PosX-2,
-				e.pm.PosY,
-				0,
-			))
-			anim.New(effect.Get(
-				effect.TypeWaterBomb,
-				e.pm.PosX-3,
-				e.pm.PosY,
-				0,
-			))
-			// TODO(damage)
+			for i := 0; i < 2; i++ {
+				x := e.pm.PosX - (2 + i)
+				anim.New(effect.Get(effect.TypeWaterBomb, x, e.pm.PosY, 0))
+				damage.New(damage.Damage{
+					PosX:          x,
+					PosY:          e.pm.PosY,
+					Power:         20, // TODO(ダメージ量)
+					TTL:           1,
+					TargetType:    damage.TargetPlayer,
+					HitEffectType: effect.TypeNone,
+				})
+			}
 
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
