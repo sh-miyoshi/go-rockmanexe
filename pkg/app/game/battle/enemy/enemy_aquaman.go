@@ -2,6 +2,7 @@ package enemy
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -10,33 +11,52 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
 const (
-	aquamanActStand = iota
+	aquamanActTypeStand = iota
+	aquamanActTypeMove
 
-	aquamanActMax
+	aquamanActTypeMax
 )
 
 var (
-	aquamanDelays = [aquamanActMax]int{8}
+	aquamanDelays = [aquamanActTypeMax]int{8, 4}
 )
 
 type enemyAquaman struct {
-	pm     EnemyParam
-	images [aquamanActMax][]int32
-	count  int
+	pm        EnemyParam
+	images    [aquamanActTypeMax][]int32
+	count     int
+	state     int
+	nextState int
+
+	actStand aquamanActStand
+}
+
+type aquamanActStand struct {
+	count int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
+	e.state = aquamanActTypeStand
+	e.actStand.Init(10)
+	e.nextState = aquamanActTypeMove
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
 
 	fname := name + "_stand" + ext
-	e.images[aquamanActStand] = make([]int32, 9)
-	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, e.images[aquamanActStand]); res == -1 {
+	e.images[aquamanActTypeStand] = make([]int32, 9)
+	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, e.images[aquamanActTypeStand]); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	fname = name + "_move" + ext
+	e.images[aquamanActTypeMove] = make([]int32, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 126, e.images[aquamanActTypeMove]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -45,7 +65,7 @@ func (e *enemyAquaman) Init(objID string) error {
 
 func (e *enemyAquaman) End() {
 	// Delete Images
-	for i := 0; i < aquamanActMax; i++ {
+	for i := 0; i < aquamanActTypeMax; i++ {
 		for j := 0; j < len(e.images[i]); j++ {
 			dxlib.DeleteGraph(e.images[i][j])
 		}
@@ -56,6 +76,34 @@ func (e *enemyAquaman) End() {
 func (e *enemyAquaman) Process() (bool, error) {
 	// Return true if finished(e.g. hp=0)
 	// Enemy Logic
+	switch e.state {
+	case aquamanActTypeStand:
+		if e.actStand.Process() {
+			e.state = e.nextState
+			e.count = 0
+			return false, nil
+		}
+	case aquamanActTypeMove:
+		if e.count == 5*aquamanDelays[aquamanActTypeMove] {
+			// move
+			for i := 0; i < 10; i++ {
+				if battlecommon.MoveObjectDirect(
+					&e.pm.PosX,
+					&e.pm.PosY,
+					rand.Intn(field.FieldNumX/2)+field.FieldNumX/2,
+					rand.Intn(field.FieldNumY),
+					field.PanelTypeEnemy,
+					true,
+					field.GetPanelInfo,
+				) {
+					break
+				}
+			}
+			// standへ
+			e.actStand.Init(60)
+			e.state = aquamanActTypeStand
+		}
+	}
 	// TODO
 	e.count++
 	return false, nil
@@ -104,6 +152,18 @@ func (e *enemyAquaman) GetObjectType() int {
 
 func (e *enemyAquaman) getCurrentImagePointer() *int32 {
 	// TODO
-	n := (e.count / aquamanDelays[0]) % len(e.images[0])
-	return &e.images[0][n]
+	n := (e.count / aquamanDelays[e.state]) % len(e.images[e.state])
+	return &e.images[e.state][n]
+}
+
+func (a *aquamanActStand) Init(waitCount int) {
+	a.count = waitCount
+}
+
+func (a *aquamanActStand) Process() bool {
+	if a.count <= 0 {
+		return true
+	}
+	a.count--
+	return false
 }
