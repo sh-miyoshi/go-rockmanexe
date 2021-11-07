@@ -21,12 +21,14 @@ const (
 	TypeSpreadHit
 	TypeVulcanHit1
 	TypeVulcanHit2
+	TypeWaterBomb
 
 	typeMax
 )
 
 const (
-	explodeDelay = 2
+	explodeDelay   = 2
+	waterBombDelay = 4
 )
 
 var (
@@ -37,6 +39,7 @@ var (
 	imgSpreadHitEffect  []int32
 	imgVulcanHit1Effect []int32
 	imgVulcanHit2Effect []int32
+	imgWaterBomb        []int32
 	sounds              [typeMax]sound.SEType
 )
 
@@ -92,6 +95,11 @@ func Init() error {
 		imgVulcanHit1Effect = append(imgVulcanHit1Effect, tmp[i])
 		imgVulcanHit2Effect = append(imgVulcanHit2Effect, tmp[i+4])
 	}
+	imgWaterBomb = make([]int32, 7)
+	fname = common.ImagePath + "battle/effect/water_bomb.png"
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, imgWaterBomb); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	for i := 0; i < typeMax; i++ {
 		sounds[i] = -1
@@ -123,6 +131,9 @@ func End() {
 		dxlib.DeleteGraph(img)
 	}
 	for _, img := range imgVulcanHit2Effect {
+		dxlib.DeleteGraph(img)
+	}
+	for _, img := range imgWaterBomb {
 		dxlib.DeleteGraph(img)
 	}
 }
@@ -165,6 +176,9 @@ func Get(typ int, x, y int, randRange int) anim.Anim {
 	case TypeVulcanHit2:
 		res.images = imgVulcanHit2Effect
 		res.ofsY -= 10
+	case TypeWaterBomb:
+		res.images = imgWaterBomb
+		res.delay = waterBombDelay
 	default:
 		panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
 	}

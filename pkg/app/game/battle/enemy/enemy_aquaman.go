@@ -107,8 +107,20 @@ func (e *enemyAquaman) Process() (bool, error) {
 			return false, nil
 		}
 	case aquamanActTypeShot:
-		if e.count == 5*aquamanDelays[aquamanActTypeShot] {
-			// TODO
+		if e.count == 6*aquamanDelays[aquamanActTypeShot] {
+			anim.New(effect.Get(
+				effect.TypeWaterBomb,
+				e.pm.PosX-2,
+				e.pm.PosY,
+				0,
+			))
+			anim.New(effect.Get(
+				effect.TypeWaterBomb,
+				e.pm.PosX-3,
+				e.pm.PosY,
+				0,
+			))
+			// TODO(damage)
 
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
@@ -150,6 +162,9 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+
+		// TODO(ダメージ時アクション)
+
 		return true
 	}
 	return false
@@ -169,7 +184,9 @@ func (e *enemyAquaman) GetObjectType() int {
 }
 
 func (e *enemyAquaman) getCurrentImagePointer() *int32 {
-	// TODO
-	n := (e.count / aquamanDelays[e.state]) % len(e.images[e.state])
+	n := (e.count / aquamanDelays[e.state])
+	if n >= len(e.images[e.state]) {
+		n = len(e.images[e.state]) - 1
+	}
 	return &e.images[e.state][n]
 }
