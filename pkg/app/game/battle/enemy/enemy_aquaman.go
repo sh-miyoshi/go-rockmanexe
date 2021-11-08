@@ -24,16 +24,17 @@ const (
 )
 
 var (
-	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4}
+	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4, 4}
 )
 
 type enemyAquaman struct {
-	pm        EnemyParam
-	images    [aquamanActTypeMax][]int32
-	count     int
-	state     int
-	nextState int
-	waitCount int
+	pm              EnemyParam
+	images          [aquamanActTypeMax][]int32
+	count           int
+	state           int
+	nextState       int
+	waitCount       int
+	invincibleCount int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
@@ -63,6 +64,12 @@ func (e *enemyAquaman) Init(objID string) error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
+	fname = name + "_damage" + ext
+	e.images[aquamanActTypeDamage] = make([]int32, 1)
+	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 70, 86, e.images[aquamanActTypeDamage]); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -79,6 +86,13 @@ func (e *enemyAquaman) End() {
 func (e *enemyAquaman) Process() (bool, error) {
 	// Return true if finished(e.g. hp=0)
 	// Enemy Logic
+	if e.invincibleCount > 0 {
+		e.invincibleCount++
+		if e.invincibleCount > battlecommon.PlayerDefaultInvincibleTime {
+			e.invincibleCount = 0
+		}
+	}
+
 	switch e.state {
 	case aquamanActTypeStand:
 		e.waitCount--
@@ -130,6 +144,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 			e.count = 0
 			return false, nil
 		}
+	case aquamanActTypeDamage:
+		if e.count == 4*aquamanDelays[aquamanActTypeDamage] {
+			e.waitCount = 20
+			e.state = aquamanActTypeStand
+			e.nextState = aquamanActTypeMove // TODO(次の行動)
+			e.count = 0
+			return false, nil
+		}
 	}
 
 	e.count++
@@ -137,6 +159,10 @@ func (e *enemyAquaman) Process() (bool, error) {
 }
 
 func (e *enemyAquaman) Draw() {
+	if e.invincibleCount/5%2 != 0 {
+		return
+	}
+
 	// Show Enemy Images
 	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
 	img := e.getCurrentImagePointer()
@@ -145,6 +171,7 @@ func (e *enemyAquaman) Draw() {
 		{0, 0},    // stand
 		{0, 0},    // move
 		{-20, 10}, // shot
+		{0, 0},    // damage
 	}
 
 	dxlib.DrawRotaGraph(x+ofs[e.state][0], y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)
@@ -166,10 +193,13 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
 
-		// TODO(ダメージ時アクション)
-		// e.nextState = e.state
-		// e.state = aquamanActTypeDamage
+		if !dm.BigDamage {
+			return true
+		}
 
+		e.state = aquamanActTypeDamage
+		e.invincibleCount = 1
+		e.count = 0
 		return true
 	}
 	return false
