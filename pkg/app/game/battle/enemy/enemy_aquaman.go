@@ -18,6 +18,7 @@ const (
 	aquamanActTypeStand = iota
 	aquamanActTypeMove
 	aquamanActTypeShot
+	aquamanActTypeDamage
 
 	aquamanActTypeMax
 )
@@ -107,6 +108,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 			return false, nil
 		}
 	case aquamanActTypeShot:
+		// TODO(sound)
+
 		if e.count == 6*aquamanDelays[aquamanActTypeShot] {
 			for i := 0; i < 2; i++ {
 				x := e.pm.PosX - (2 + i)
@@ -118,6 +121,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 					TTL:           1,
 					TargetType:    damage.TargetPlayer,
 					HitEffectType: effect.TypeNone,
+					BigDamage:     true,
 				})
 			}
 
@@ -163,6 +167,8 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
 
 		// TODO(ダメージ時アクション)
+		// e.nextState = e.state
+		// e.state = aquamanActTypeDamage
 
 		return true
 	}

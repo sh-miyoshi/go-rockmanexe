@@ -49,6 +49,7 @@ func (p *sword) Process() (bool, error) {
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeNone,
+			BigDamage:     true,
 		}
 
 		px, py := objanim.GetObjPos(p.OwnerID)

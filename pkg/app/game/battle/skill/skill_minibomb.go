@@ -65,6 +65,7 @@ func (p *miniBomb) Process() (bool, error) {
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeNone,
+			BigDamage:     true,
 		})
 		return true, nil
 	}

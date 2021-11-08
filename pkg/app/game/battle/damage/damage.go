@@ -16,6 +16,7 @@ type Damage struct {
 	TargetType    int
 	HitEffectType int
 	ShowHitArea   bool
+	BigDamage     bool
 	// TODO: のけぞり, インビジ貫通
 }
 

@@ -394,6 +394,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
+	// TODO: Recover系は使えるようにする
 	if p.invincibleCount > 0 {
 		return false
 	}
@@ -411,6 +412,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 
 		if dm.Power <= 0 {
 			// Not damage, maybe recover or special anim
+			return true
+		}
+
+		if !dm.BigDamage {
 			return true
 		}
 

@@ -50,6 +50,8 @@ func (p *vulcan) Process() (bool, error) {
 			// Add damage
 			px, py := objanim.GetObjPos(p.OwnerID)
 			hit := false
+			p.atkCount++
+			lastAtk := p.atkCount == p.Times
 			for x := px + 1; x < field.FieldNumX; x++ {
 				if field.GetPanelInfo(x, py).ObjectID != "" {
 					damage.New(damage.Damage{
@@ -59,6 +61,7 @@ func (p *vulcan) Process() (bool, error) {
 						TTL:           1,
 						TargetType:    p.TargetType,
 						HitEffectType: effect.TypeSpreadHit,
+						BigDamage:     lastAtk,
 					})
 					anim.New(effect.Get(effect.TypeVulcanHit1, x, py, 20))
 					if p.hit && x < field.FieldNumX-1 {
@@ -70,6 +73,7 @@ func (p *vulcan) Process() (bool, error) {
 							TTL:           1,
 							TargetType:    p.TargetType,
 							HitEffectType: effect.TypeNone,
+							BigDamage:     lastAtk,
 						})
 					}
 					hit = true
@@ -78,8 +82,7 @@ func (p *vulcan) Process() (bool, error) {
 				}
 			}
 			p.hit = hit
-			p.atkCount++
-			if p.atkCount == p.Times {
+			if lastAtk {
 				return true, nil
 			}
 		}

@@ -60,6 +60,7 @@ func (p *cannon) Process() (bool, error) {
 			TTL:           1,
 			TargetType:    p.TargetType,
 			HitEffectType: effect.TypeCannonHit,
+			BigDamage:     true,
 		}
 
 		if p.TargetType == damage.TargetEnemy {

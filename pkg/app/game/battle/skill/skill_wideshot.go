@@ -119,6 +119,7 @@ func (p *wideShot) Process() (bool, error) {
 					TTL:           p.NextStepCount,
 					TargetType:    p.TargetType,
 					HitEffectType: effect.TypeNone,
+					BigDamage:     true,
 				})
 			}
 		}
