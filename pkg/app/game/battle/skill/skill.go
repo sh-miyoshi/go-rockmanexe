@@ -279,8 +279,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillMegaCannon:
 		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMiniBomb:
-		px, py := objanim.GetObjPos(arg.OwnerID)
-		return &miniBomb{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, TargetX: px + 3, TargetY: py}
+		return newMinoBomb(objID, arg)
 	case SkillSword:
 		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillWideSword:
