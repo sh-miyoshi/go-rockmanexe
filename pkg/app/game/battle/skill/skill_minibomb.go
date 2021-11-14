@@ -28,7 +28,7 @@ type miniBomb struct {
 	targetY int
 }
 
-func newMinoBomb(objID string, arg Argument) *miniBomb {
+func newMiniBomb(objID string, arg Argument) *miniBomb {
 	px, py := objanim.GetObjPos(arg.OwnerID)
 	return &miniBomb{
 		ID:         objID,

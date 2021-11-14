@@ -279,7 +279,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillMegaCannon:
 		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillMiniBomb:
-		return newMinoBomb(objID, arg)
+		return newMiniBomb(objID, arg)
 	case SkillSword:
 		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillWideSword:
