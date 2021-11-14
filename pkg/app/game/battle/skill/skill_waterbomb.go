@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	miniBombEndCount = 60
+	waterBombEndCount = 60
 )
 
-type miniBomb struct {
+type waterBomb struct {
 	ID         string
 	OwnerID    string
 	Power      uint
@@ -28,21 +28,34 @@ type miniBomb struct {
 	targetY int
 }
 
-func newMiniBomb(objID string, arg Argument) *miniBomb {
+func newWaterBomb(objID string, arg Argument) *waterBomb {
 	px, py := objanim.GetObjPos(arg.OwnerID)
-	return &miniBomb{
+	tx := px + 3
+	ty := py
+	objType := objanim.ObjTypePlayer
+	if arg.TargetType == damage.TargetEnemy {
+		objType = objanim.ObjTypeEnemy
+	}
+
+	objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+	if len(objs) > 0 {
+		tx = objs[0].PosX
+		ty = objs[0].PosY
+	}
+
+	return &waterBomb{
 		ID:         objID,
 		OwnerID:    arg.OwnerID,
 		Power:      arg.Power,
 		TargetType: arg.TargetType,
-		targetX:    px + 3,
-		targetY:    py,
+		targetX:    tx,
+		targetY:    ty,
 		x:          px,
 		y:          py,
 	}
 }
 
-func (p *miniBomb) Draw() {
+func (p *waterBomb) Draw() {
 	imgNo := (p.count / delayBombThrow) % len(imgBombThrow)
 	vx, vy := battlecommon.ViewPos(p.x, p.y)
 
@@ -50,28 +63,29 @@ func (p *miniBomb) Draw() {
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
 	size := field.PanelSizeX * (p.targetX - p.x)
-	ofsx := size * p.count / miniBombEndCount
+	ofsx := size * p.count / waterBombEndCount
 	ymax := 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if p.targetY != p.y {
 		size = field.PanelSizeY * (p.targetY - p.y)
-		dy := size * p.count / miniBombEndCount
+		dy := size * p.count / waterBombEndCount
 		ofsy += dy
 	}
 
 	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+int32(ofsy), 1, 0, imgBombThrow[imgNo], dxlib.TRUE)
 }
 
-func (p *miniBomb) Process() (bool, error) {
+func (p *waterBomb) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
 		sound.On(sound.SEBombThrow)
 	}
 
-	if p.count == miniBombEndCount {
+	if p.count == waterBombEndCount {
 		// TODO 不発処理(画面外やパネル状況など)
+		// TODO(sound, effect)
 		sound.On(sound.SEExplode)
 		anim.New(effect.Get(effect.TypeExplode, p.targetX, p.targetY, 0))
 		damage.New(damage.Damage{
@@ -88,7 +102,7 @@ func (p *miniBomb) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *miniBomb) GetParam() anim.Param {
+func (p *waterBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,

@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 )
 
 const (
@@ -19,12 +20,13 @@ const (
 	aquamanActTypeMove
 	aquamanActTypeShot
 	aquamanActTypeDamage
+	aquamanActTypeBomb
 
 	aquamanActTypeMax
 )
 
 var (
-	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4, 4}
+	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4, 4, 3}
 )
 
 type enemyAquaman struct {
@@ -41,7 +43,7 @@ func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = aquamanActTypeStand
 	e.waitCount = 10
-	e.nextState = aquamanActTypeShot
+	e.nextState = aquamanActTypeBomb
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -67,6 +69,12 @@ func (e *enemyAquaman) Init(objID string) error {
 	fname = name + "_damage" + ext
 	e.images[aquamanActTypeDamage] = make([]int32, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 70, 86, e.images[aquamanActTypeDamage]); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	fname = name + "_bomb" + ext
+	e.images[aquamanActTypeBomb] = make([]int32, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 124, e.images[aquamanActTypeBomb]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -152,6 +160,23 @@ func (e *enemyAquaman) Process() (bool, error) {
 			e.count = 0
 			return false, nil
 		}
+	case aquamanActTypeBomb:
+		if e.count == 3*aquamanDelays[aquamanActTypeBomb] {
+			// ボム登録
+			anim.New(skill.Get(skill.SkillWaterBomb, skill.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      20, // TODO(ダメージ量)
+				TargetType: damage.TargetPlayer,
+			}))
+		}
+
+		if e.count == 6*aquamanDelays[aquamanActTypeBomb] {
+			e.waitCount = 120
+			e.state = aquamanActTypeStand
+			e.count = 0
+			// TODO(次の行動)
+			return false, nil
+		}
 	}
 
 	e.count++
@@ -172,6 +197,7 @@ func (e *enemyAquaman) Draw() {
 		{0, 0},    // move
 		{-20, 10}, // shot
 		{0, 0},    // damage
+		{0, 0},    // bomb
 	}
 
 	dxlib.DrawRotaGraph(x+ofs[e.state][0], y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)

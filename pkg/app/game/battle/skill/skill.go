@@ -28,13 +28,14 @@ const (
 	SkillThunderBall
 	SkillWideShot
 	SkillBoomerang
+	SkillWaterBomb
 )
 
 const (
 	delayCannonAtk   = 2
 	delayCannonBody  = 6
 	delaySword       = 3
-	delayMiniBomb    = 4
+	delayBombThrow   = 4
 	delayRecover     = 1
 	delaySpreadGun   = 2
 	delayVulcan      = 2
@@ -54,7 +55,7 @@ var (
 	imgCannonAtk     [TypeCannonMax][]int32
 	imgCannonBody    [TypeCannonMax][]int32
 	imgSword         [TypeSwordMax][]int32
-	imgMiniBomb      []int32
+	imgBombThrow     []int32
 	imgShockWave     []int32
 	imgRecover       []int32
 	imgSpreadGunAtk  []int32
@@ -96,7 +97,7 @@ func Init() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
-		imgMiniBomb = append(imgMiniBomb, tmp[i])
+		imgBombThrow = append(imgBombThrow, tmp[i])
 	}
 
 	fname = path + "ソード.png"
@@ -217,10 +218,10 @@ func End() {
 		}
 		imgSword[i] = []int32{}
 	}
-	for i := 0; i < len(imgMiniBomb); i++ {
-		dxlib.DeleteGraph(imgMiniBomb[i])
+	for i := 0; i < len(imgBombThrow); i++ {
+		dxlib.DeleteGraph(imgBombThrow[i])
 	}
-	imgMiniBomb = []int32{}
+	imgBombThrow = []int32{}
 	for i := 0; i < len(imgShockWave); i++ {
 		dxlib.DeleteGraph(imgShockWave[i])
 	}
@@ -318,6 +319,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, x: px, y: py, state: wideShotStateBegin}
 	case SkillBoomerang:
 		return newBoomerang(objID, arg)
+	case SkillWaterBomb:
+		return newWaterBomb(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
