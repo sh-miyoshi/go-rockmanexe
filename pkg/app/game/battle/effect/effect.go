@@ -28,7 +28,7 @@ const (
 
 const (
 	explodeDelay   = 2
-	waterBombDelay = 4
+	waterBombDelay = 2
 )
 
 var (
@@ -95,10 +95,13 @@ func Init() error {
 		imgVulcanHit1Effect = append(imgVulcanHit1Effect, tmp[i])
 		imgVulcanHit2Effect = append(imgVulcanHit2Effect, tmp[i+4])
 	}
-	imgWaterBomb = make([]int32, 7)
+	imgWaterBomb = make([]int32, 12)
 	fname = common.ImagePath + "battle/effect/water_bomb.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, imgWaterBomb); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 7; i < 12; i++ {
+		imgWaterBomb[i] = imgWaterBomb[6]
 	}
 
 	for i := 0; i < typeMax; i++ {

@@ -43,6 +43,7 @@ const (
 	SEThunderBall
 	SEWideShot
 	SEBoomerangThrow
+	SEWaterLanding
 
 	seMax
 )
@@ -87,6 +88,7 @@ func Init() error {
 	soundEffects[SEThunderBall] = dxlib.LoadSoundMem(basePath + "thunder_ball.mp3")
 	soundEffects[SEWideShot] = dxlib.LoadSoundMem(basePath + "wide_shot.mp3")
 	soundEffects[SEBoomerangThrow] = dxlib.LoadSoundMem(basePath + "boomerang_throw.mp3")
+	soundEffects[SEWaterLanding] = dxlib.LoadSoundMem(basePath + "water_landing.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

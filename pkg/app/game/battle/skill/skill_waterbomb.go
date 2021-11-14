@@ -85,9 +85,8 @@ func (p *waterBomb) Process() (bool, error) {
 
 	if p.count == waterBombEndCount {
 		// TODO 不発処理(画面外やパネル状況など)
-		// TODO(sound, effect)
-		sound.On(sound.SEExplode)
-		anim.New(effect.Get(effect.TypeExplode, p.targetX, p.targetY, 0))
+		sound.On(sound.SEWaterLanding)
+		anim.New(effect.Get(effect.TypeWaterBomb, p.targetX, p.targetY, 0))
 		damage.New(damage.Damage{
 			PosX:          p.targetX,
 			PosY:          p.targetY,
