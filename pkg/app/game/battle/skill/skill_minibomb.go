@@ -48,10 +48,17 @@ func (p *miniBomb) Draw() {
 
 	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
-	size := field.PanelSizeX * 3
+	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
+	size := field.PanelSizeX * (p.targetX - p.x)
 	ofsx := size * p.count / endCount
 	ymax := 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
+
+	if p.targetY != p.y {
+		size = field.PanelSizeY * (p.targetY - p.y)
+		dy := size * p.count / endCount
+		ofsy += dy
+	}
 
 	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+int32(ofsy), 1, 0, imgMiniBomb[imgNo], dxlib.TRUE)
 }
