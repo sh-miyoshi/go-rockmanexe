@@ -37,13 +37,14 @@ type enemyAquaman struct {
 	nextState       int
 	waitCount       int
 	invincibleCount int
+	actID           string
 }
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = aquamanActTypeStand
 	e.waitCount = 10
-	e.nextState = aquamanActTypeBomb
+	e.nextState = aquamanActTypeShot
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -130,23 +131,15 @@ func (e *enemyAquaman) Process() (bool, error) {
 			return false, nil
 		}
 	case aquamanActTypeShot:
-		// TODO(sound)
+		if e.count == 0 {
+			e.actID = anim.New(skill.Get(skill.SkillAquamanShot, skill.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      10,
+				TargetType: damage.TargetPlayer,
+			}))
+		}
 
-		if e.count == 6*aquamanDelays[aquamanActTypeShot] {
-			for i := 0; i < 2; i++ {
-				x := e.pm.PosX - (2 + i)
-				anim.New(effect.Get(effect.TypeWaterBomb, x, e.pm.PosY, 0))
-				damage.New(damage.Damage{
-					PosX:          x,
-					PosY:          e.pm.PosY,
-					Power:         20, // TODO(ダメージ量)
-					TTL:           1,
-					TargetType:    damage.TargetPlayer,
-					HitEffectType: effect.TypeNone,
-					BigDamage:     true,
-				})
-			}
-
+		if !anim.IsProcessing(e.actID) {
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
 			e.count = 0

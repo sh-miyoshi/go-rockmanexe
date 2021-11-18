@@ -29,6 +29,7 @@ const (
 	SkillWideShot
 	SkillBoomerang
 	SkillWaterBomb
+	SkillAquamanShot
 )
 
 const (
@@ -67,6 +68,7 @@ var (
 	imgWideShotBegin []int32
 	imgWideShotMove  []int32
 	imgBoomerang     []int32
+	imgAquamanShot   []int32
 )
 
 func Init() error {
@@ -197,6 +199,11 @@ func Init() error {
 	for i := 0; i < 4; i++ {
 		imgBoomerang = append(imgBoomerang, tmp[i])
 	}
+	fname = path + "aquaman_shot.png"
+	imgAquamanShot = make([]int32, 1)
+	if imgAquamanShot[0] = dxlib.LoadGraph(fname); imgAquamanShot[0] == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	return nil
 }
@@ -266,6 +273,10 @@ func End() {
 		dxlib.DeleteGraph(imgBoomerang[i])
 	}
 	imgBoomerang = []int32{}
+	for i := 0; i < len(imgAquamanShot); i++ {
+		dxlib.DeleteGraph(imgAquamanShot[i])
+	}
+	imgAquamanShot = []int32{}
 }
 
 // Get ...
@@ -321,6 +332,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return newBoomerang(objID, arg)
 	case SkillWaterBomb:
 		return newWaterBomb(objID, arg)
+	case SkillAquamanShot:
+		return newAquamanShot(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -374,6 +387,10 @@ type tmpskill struct {
 	TargetType int
 
 	count int
+}
+
+func newTmpSkill(objID string, arg Argument) *tmpskill {
+	return &tmpskill{}
 }
 
 func (p *tmpskill) Draw() {
