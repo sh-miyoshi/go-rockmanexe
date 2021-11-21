@@ -114,7 +114,7 @@ func Update() {
 		}
 	}
 
-	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer | objanim.ObjTypeEnemy})
+	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
 	for _, obj := range objs {
 		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
 	}

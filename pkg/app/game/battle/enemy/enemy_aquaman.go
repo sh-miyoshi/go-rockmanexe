@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 )
 
@@ -21,12 +22,13 @@ const (
 	aquamanActTypeShot
 	aquamanActTypeDamage
 	aquamanActTypeBomb
+	aquamanActTypeCreate
 
 	aquamanActTypeMax
 )
 
 var (
-	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4, 4, 3}
+	aquamanDelays = [aquamanActTypeMax]int{8, 4, 4, 4, 3, 1}
 )
 
 type enemyAquaman struct {
@@ -38,13 +40,15 @@ type enemyAquaman struct {
 	waitCount       int
 	invincibleCount int
 	actID           string
+	waterPipeObjIDs []string
 }
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = aquamanActTypeStand
 	e.waitCount = 10
-	e.nextState = aquamanActTypeShot
+	e.nextState = aquamanActTypeCreate
+	e.waterPipeObjIDs = []string{}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -79,6 +83,12 @@ func (e *enemyAquaman) Init(objID string) error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
+	fname = name + "_create" + ext
+	e.images[aquamanActTypeCreate] = make([]int32, 1)
+	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, e.images[aquamanActTypeCreate]); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -90,6 +100,11 @@ func (e *enemyAquaman) End() {
 		}
 		e.images[i] = []int32{}
 	}
+
+	for _, id := range e.waterPipeObjIDs {
+		anim.Delete(id)
+	}
+	e.waterPipeObjIDs = []string{}
 }
 
 func (e *enemyAquaman) Process() (bool, error) {
@@ -101,6 +116,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 			e.invincibleCount = 0
 		}
 	}
+
+	// TODO(waterPipeの終了)
 
 	switch e.state {
 	case aquamanActTypeStand:
@@ -170,6 +187,21 @@ func (e *enemyAquaman) Process() (bool, error) {
 			// TODO(次の行動)
 			return false, nil
 		}
+	case aquamanActTypeCreate:
+		if e.count == 5 {
+			obj := &object.WaterPipe{}
+			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 3, PosY: 0, HP: 500}); err != nil {
+				return false, fmt.Errorf("water pipe create failed: %w", err)
+			}
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, anim.New(obj))
+			obj = &object.WaterPipe{}
+			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 3, PosY: 2, HP: 500}); err != nil {
+				return false, fmt.Errorf("water pipe create failed: %w", err)
+			}
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, anim.New(obj))
+		}
+
+		// TODO(Next Action)
 	}
 
 	e.count++
@@ -191,6 +223,7 @@ func (e *enemyAquaman) Draw() {
 		{-20, 10}, // shot
 		{0, 0},    // damage
 		{0, 0},    // bomb
+		{0, 0},    // create
 	}
 
 	dxlib.DrawRotaGraph(x+ofs[e.state][0], y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)

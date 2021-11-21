@@ -12,6 +12,11 @@ import (
 const (
 	ObjTypePlayer int = 1 << iota
 	ObjTypeEnemy
+	ObjTypeNone
+)
+
+const (
+	ObjTypeAll = ObjTypePlayer | ObjTypeEnemy | ObjTypeNone
 )
 
 type Filter struct {
