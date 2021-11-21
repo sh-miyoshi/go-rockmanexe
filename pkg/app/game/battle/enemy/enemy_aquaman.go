@@ -190,15 +190,15 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeCreate:
 		if e.count == 5 {
 			obj := &object.WaterPipe{}
-			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 3, PosY: 0, HP: 500}); err != nil {
+			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 2, PosY: 0, HP: 500}); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, anim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 			obj = &object.WaterPipe{}
-			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 3, PosY: 2, HP: 500}); err != nil {
+			if err := obj.Init(e.pm.ObjectID, object.ObjectParam{PosX: 2, PosY: 2, HP: 500}); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, anim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 		}
 
 		// TODO(Next Action)

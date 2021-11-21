@@ -24,10 +24,11 @@ type WaterPipeAtk struct {
 }
 
 type WaterPipe struct {
-	pm     ObjectParam
-	atk    WaterPipeAtk
-	imgSet []int32
-	count  int
+	pm       ObjectParam
+	atk      WaterPipeAtk
+	imgSet   []int32
+	count    int
+	atkCount int
 }
 
 func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
@@ -65,9 +66,13 @@ func (o *WaterPipe) Process() (bool, error) {
 
 	o.count++
 
-	// TODO
-	if o.count == 50 {
+	if o.count%150 == 0 {
 		o.atk.Start()
+		o.atkCount++
+
+		if o.atkCount > 5 {
+			return true, nil
+		}
 	}
 
 	return false, nil
