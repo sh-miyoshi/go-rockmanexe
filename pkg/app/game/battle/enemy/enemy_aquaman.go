@@ -201,7 +201,12 @@ func (e *enemyAquaman) Process() (bool, error) {
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 		}
 
-		// TODO(Next Action)
+		if e.count == 50 {
+			e.waitCount = 60
+			e.state = aquamanActTypeStand
+			e.nextState = aquamanActTypeMove
+			e.count = 0
+		}
 	}
 
 	e.count++
