@@ -10,6 +10,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 )
 
 const (
@@ -94,7 +95,15 @@ func (o *WaterPipe) Draw() {
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
-	// TODO: はじかれエフェクト
+	if dm == nil {
+		return false
+	}
+
+	if dm.TargetType&damage.TargetEnemy != 0 {
+		o.pm.HP--
+		anim.New(effect.Get(effect.TypeBlock, o.pm.PosX, o.pm.PosY, 5))
+	}
+
 	return false
 }
 

@@ -22,6 +22,7 @@ const (
 	TypeVulcanHit1
 	TypeVulcanHit2
 	TypeWaterBomb
+	TypeBlock
 
 	typeMax
 )
@@ -32,15 +33,8 @@ const (
 )
 
 var (
-	imgHitSmallEffect   []int32
-	imgHitBigEffect     []int32
-	imgExplodeEffect    []int32
-	imgCannonHitEffect  []int32
-	imgSpreadHitEffect  []int32
-	imgVulcanHit1Effect []int32
-	imgVulcanHit2Effect []int32
-	imgWaterBomb        []int32
-	sounds              [typeMax]sound.SEType
+	images [typeMax][]int32
+	sounds [typeMax]sound.SEType
 )
 
 type effect struct {
@@ -59,29 +53,29 @@ type effect struct {
 type noEffect struct{}
 
 func Init() error {
-	imgHitSmallEffect = make([]int32, 4)
+	images[TypeHitSmall] = make([]int32, 4)
 	fname := common.ImagePath + "battle/effect/hit_small.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, imgHitSmallEffect); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[TypeHitSmall]); res == -1 {
 		return fmt.Errorf("failed to load hit small effect image %s", fname)
 	}
-	imgHitBigEffect = make([]int32, 6)
+	images[TypeHitBig] = make([]int32, 6)
 	fname = common.ImagePath + "battle/effect/hit_big.png"
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, imgHitBigEffect); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[TypeHitBig]); res == -1 {
 		return fmt.Errorf("failed to load hit big effect image %s", fname)
 	}
-	imgExplodeEffect = make([]int32, 16)
+	images[TypeExplode] = make([]int32, 16)
 	fname = common.ImagePath + "battle/effect/explode.png"
-	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, imgExplodeEffect); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[TypeExplode]); res == -1 {
 		return fmt.Errorf("failed to load explode effect image %s", fname)
 	}
-	imgCannonHitEffect = make([]int32, 7)
+	images[TypeCannonHit] = make([]int32, 7)
 	fname = common.ImagePath + "battle/effect/cannon_hit.png"
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, imgCannonHitEffect); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[TypeCannonHit]); res == -1 {
 		return fmt.Errorf("failed to load cannon hit effect image %s", fname)
 	}
-	imgSpreadHitEffect = make([]int32, 6)
+	images[TypeSpreadHit] = make([]int32, 6)
 	fname = common.ImagePath + "battle/effect/spread_hit.png"
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHitEffect); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[TypeSpreadHit]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	tmp := make([]int32, 8)
@@ -89,19 +83,25 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	imgVulcanHit1Effect = []int32{}
-	imgVulcanHit2Effect = []int32{}
+	images[TypeVulcanHit1] = []int32{}
+	images[TypeVulcanHit2] = []int32{}
 	for i := 0; i < 4; i++ {
-		imgVulcanHit1Effect = append(imgVulcanHit1Effect, tmp[i])
-		imgVulcanHit2Effect = append(imgVulcanHit2Effect, tmp[i+4])
+		images[TypeVulcanHit1] = append(images[TypeVulcanHit1], tmp[i])
+		images[TypeVulcanHit2] = append(images[TypeVulcanHit2], tmp[i+4])
 	}
-	imgWaterBomb = make([]int32, 12)
+	images[TypeWaterBomb] = make([]int32, 12)
 	fname = common.ImagePath + "battle/effect/water_bomb.png"
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, imgWaterBomb); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, images[TypeWaterBomb]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 7; i < 12; i++ {
-		imgWaterBomb[i] = imgWaterBomb[6]
+		images[TypeWaterBomb][i] = images[TypeWaterBomb][6]
+	}
+
+	images[TypeBlock] = make([]int32, 4)
+	fname = common.ImagePath + "battle/effect/block.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[TypeBlock]); res == -1 {
+		return fmt.Errorf("failed to load block effect image %s", fname)
 	}
 
 	for i := 0; i < typeMax; i++ {
@@ -110,34 +110,16 @@ func Init() error {
 	sounds[TypeCannonHit] = sound.SECannonHit
 	sounds[TypeHitSmall] = sound.SEBusterHit
 	sounds[TypeHitBig] = sound.SEBusterHit
+	sounds[TypeBlock] = sound.SEBlock
 
 	return nil
 }
 
 func End() {
-	for _, img := range imgHitSmallEffect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgHitBigEffect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgExplodeEffect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgCannonHitEffect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgSpreadHitEffect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgVulcanHit1Effect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgVulcanHit2Effect {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range imgWaterBomb {
-		dxlib.DeleteGraph(img)
+	for _, imgs := range images {
+		for _, img := range imgs {
+			dxlib.DeleteGraph(img)
+		}
 	}
 }
 
@@ -150,40 +132,27 @@ func Get(typ int, x, y int, randRange int) anim.Anim {
 	}
 
 	res := &effect{
-		ID:    uuid.New().String(),
-		Type:  typ,
-		X:     x,
-		Y:     y,
-		delay: 1,
-		ofsX:  int32(ofsX),
-		ofsY:  int32(ofsY),
+		ID:     uuid.New().String(),
+		Type:   typ,
+		X:      x,
+		Y:      y,
+		delay:  1,
+		ofsX:   int32(ofsX),
+		ofsY:   int32(ofsY),
+		images: images[typ],
 	}
 
 	switch typ {
 	case TypeNone:
 		return &noEffect{}
-	case TypeHitSmall:
-		res.images = imgHitSmallEffect
-	case TypeHitBig:
-		res.images = imgHitBigEffect
 	case TypeExplode:
-		res.images = imgExplodeEffect
 		res.delay = explodeDelay
-	case TypeCannonHit:
-		res.images = imgCannonHitEffect
-	case TypeSpreadHit:
-		res.images = imgSpreadHitEffect
 	case TypeVulcanHit1:
-		res.images = imgVulcanHit1Effect
 		res.ofsY -= 30
 	case TypeVulcanHit2:
-		res.images = imgVulcanHit2Effect
 		res.ofsY -= 10
 	case TypeWaterBomb:
-		res.images = imgWaterBomb
 		res.delay = waterBombDelay
-	default:
-		panic(fmt.Sprintf("Effect type %d is not implement yet.", typ))
 	}
 
 	return res
