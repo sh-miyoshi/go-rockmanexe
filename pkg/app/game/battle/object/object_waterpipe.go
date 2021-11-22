@@ -15,13 +15,14 @@ import (
 
 const (
 	delayWaterPipeSet    = 3
-	delayWaterPipeAttack = 8
+	delayWaterPipeAttack = 6
 )
 
 type WaterPipeAtk struct {
 	count       int
 	images      []int32
 	isAttacking bool
+	pm          ObjectParam
 }
 
 type WaterPipe struct {
@@ -43,7 +44,7 @@ func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	if err := o.atk.Init(); err != nil {
+	if err := o.atk.Init(o.pm); err != nil {
 		return fmt.Errorf("failed to init water pipe attack %w", err)
 	}
 
@@ -99,7 +100,12 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	if dm.TargetType&damage.TargetEnemy != 0 {
+	target := damage.TargetEnemy
+	if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+		target = damage.TargetPlayer
+	}
+
+	if dm.TargetType&target != 0 {
 		o.pm.HP--
 		anim.New(effect.Get(effect.TypeBlock, o.pm.PosX, o.pm.PosY, 5))
 	}
@@ -120,9 +126,10 @@ func (o *WaterPipe) GetObjectType() int {
 	return objanim.ObjTypeNone
 }
 
-func (a *WaterPipeAtk) Init() error {
+func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.count = 0
 	a.isAttacking = false
+	a.pm = pm
 	a.images = make([]int32, 9)
 	fname := common.ImagePath + "battle/character/水道管_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 234, 110, a.images); res == -1 {
@@ -159,7 +166,25 @@ func (a *WaterPipeAtk) Draw(x, y int32) {
 func (a *WaterPipeAtk) Process() {
 	a.count++
 
-	// TODO(ダメージ)
+	if a.count == 7*delayWaterPipeAttack-2 {
+		target := damage.TargetPlayer
+		if a.pm.OnwerCharType == objanim.ObjTypePlayer {
+			target = damage.TargetEnemy
+		}
+
+		dm := damage.Damage{
+			PosY:          a.pm.PosY,
+			Power:         20, // TODO(ダメージ量)
+			TTL:           6 * delayWaterPipeAttack,
+			TargetType:    target,
+			HitEffectType: effect.TypeNone,
+			BigDamage:     true,
+		}
+		dm.PosX = a.pm.PosX - 1
+		damage.New(dm)
+		dm.PosX = a.pm.PosX - 2
+		damage.New(dm)
+	}
 
 	if a.count > len(a.images)*2*delayWaterPipeAttack {
 		a.count = 0
