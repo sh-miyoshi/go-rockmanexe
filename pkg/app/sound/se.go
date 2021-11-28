@@ -45,6 +45,8 @@ const (
 	SEBoomerangThrow
 	SEWaterLanding
 	SEBlock
+	SEObjectCreate
+	SEWaterpipeAttack
 
 	seMax
 )
@@ -91,6 +93,8 @@ func Init() error {
 	soundEffects[SEBoomerangThrow] = dxlib.LoadSoundMem(basePath + "boomerang_throw.mp3")
 	soundEffects[SEWaterLanding] = dxlib.LoadSoundMem(basePath + "water_landing.mp3")
 	soundEffects[SEBlock] = dxlib.LoadSoundMem(basePath + "block.mp3")
+	soundEffects[SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
+	soundEffects[SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

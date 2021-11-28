@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 const (
@@ -67,6 +68,10 @@ func (o *WaterPipe) Process() (bool, error) {
 	}
 
 	o.count++
+
+	if o.count == 1 {
+		sound.On(sound.SEObjectCreate)
+	}
 
 	if o.count%150 == 0 {
 		o.atk.Start()
@@ -165,6 +170,10 @@ func (a *WaterPipeAtk) Draw(x, y int32) {
 
 func (a *WaterPipeAtk) Process() {
 	a.count++
+
+	if a.count == 1 {
+		sound.On(sound.SEWaterpipeAttack)
+	}
 
 	if a.count == 7*delayWaterPipeAttack-2 {
 		target := damage.TargetPlayer
