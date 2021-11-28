@@ -41,14 +41,16 @@ type enemyAquaman struct {
 	invincibleCount int
 	actID           string
 	waterPipeObjIDs []string
+	moveNum         int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = aquamanActTypeStand
-	e.waitCount = 10
-	e.nextState = aquamanActTypeCreate
+	e.waitCount = 60
+	e.nextState = aquamanActTypeMove
 	e.waterPipeObjIDs = []string{}
+	e.moveNum = rand.Intn(2) + 2
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -140,12 +142,30 @@ func (e *enemyAquaman) Process() (bool, error) {
 					break
 				}
 			}
-			e.waitCount = 60
+			e.waitCount = 20
 			e.state = aquamanActTypeStand
+			e.moveNum--
+			if e.moveNum <= 0 {
+				// Select attack
+				n := rand.Intn(100)
+				if n < 60 {
+					e.nextState = aquamanActTypeShot
+					e.moveNum = rand.Intn(2) + 1
+				} else if n < 90 {
+					e.nextState = aquamanActTypeBomb
+					e.moveNum = rand.Intn(2) + 2
+				} else {
+					e.nextState = aquamanActTypeCreate
+					e.moveNum = rand.Intn(2) + 2
+				}
+			}
+
 			e.count = 0
 			return false, nil
 		}
 	case aquamanActTypeShot:
+		// TODO(移動する)
+
 		if e.count == 0 {
 			e.actID = anim.New(skill.Get(skill.SkillAquamanShot, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
@@ -157,6 +177,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		if !anim.IsProcessing(e.actID) {
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
+			e.nextState = aquamanActTypeMove
 			e.count = 0
 			return false, nil
 		}
@@ -164,7 +185,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		if e.count == 4*aquamanDelays[aquamanActTypeDamage] {
 			e.waitCount = 20
 			e.state = aquamanActTypeStand
-			e.nextState = aquamanActTypeMove // TODO(次の行動)
+			e.nextState = aquamanActTypeMove
 			e.count = 0
 			return false, nil
 		}
@@ -173,16 +194,16 @@ func (e *enemyAquaman) Process() (bool, error) {
 			// ボム登録
 			anim.New(skill.Get(skill.SkillWaterBomb, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      20, // TODO(ダメージ量)
+				Power:      50,
 				TargetType: damage.TargetPlayer,
 			}))
 		}
 
 		if e.count == 6*aquamanDelays[aquamanActTypeBomb] {
-			e.waitCount = 120
+			e.waitCount = 90
 			e.state = aquamanActTypeStand
+			e.nextState = aquamanActTypeMove
 			e.count = 0
-			// TODO(次の行動)
 			return false, nil
 		}
 	case aquamanActTypeCreate:
