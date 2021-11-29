@@ -42,6 +42,9 @@ type enemyAquaman struct {
 	actID           string
 	waterPipeObjIDs []string
 	moveNum         int
+	targetPosX      int
+	targetPosY      int
+	beforeAction    int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
@@ -51,6 +54,9 @@ func (e *enemyAquaman) Init(objID string) error {
 	e.nextState = aquamanActTypeMove
 	e.waterPipeObjIDs = []string{}
 	e.moveNum = rand.Intn(2) + 2
+	e.targetPosX = -1
+	e.targetPosY = -1
+	e.beforeAction = -1
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -129,6 +135,25 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeMove:
 		if e.count == 5*aquamanDelays[aquamanActTypeMove] {
+			if e.targetPosX != -1 && e.targetPosY != -1 {
+				if battlecommon.MoveObjectDirect(
+					&e.pm.PosX,
+					&e.pm.PosY,
+					e.targetPosX,
+					e.targetPosY,
+					field.PanelTypeEnemy,
+					true,
+					field.GetPanelInfo,
+				) {
+					e.targetPosX = -1
+					e.targetPosY = -1
+					e.count = 0
+					e.waitCount = 20
+					e.state = aquamanActTypeStand
+					return false, nil
+				}
+			}
+
 			for i := 0; i < 10; i++ {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.PosX,
@@ -148,16 +173,17 @@ func (e *enemyAquaman) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				// Select attack
 				n := rand.Intn(100)
-				if n < 60 {
-					e.nextState = aquamanActTypeShot
-					e.moveNum = rand.Intn(2) + 1
-				} else if n < 90 {
+				if n < 20 && e.beforeAction != aquamanActTypeCreate {
+					e.nextState = aquamanActTypeCreate
+					e.moveNum = rand.Intn(2) + 2
+				} else if n < 50 {
 					e.nextState = aquamanActTypeBomb
 					e.moveNum = rand.Intn(2) + 2
 				} else {
-					e.nextState = aquamanActTypeCreate
-					e.moveNum = rand.Intn(2) + 2
+					e.nextState = aquamanActTypeShot
+					e.moveNum = rand.Intn(2) + 1
 				}
+				e.beforeAction = e.nextState
 			}
 
 			e.count = 0
@@ -207,6 +233,16 @@ func (e *enemyAquaman) Process() (bool, error) {
 			return false, nil
 		}
 	case aquamanActTypeCreate:
+		if e.count == 0 {
+			if e.pm.PosX == 3 && (e.pm.PosY == 0 || e.pm.PosY == 2) {
+				e.targetPosX = 5
+				e.targetPosY = 1
+				e.state = aquamanActTypeMove
+				e.count = 0
+				return false, nil
+			}
+		}
+
 		if e.count == 5 {
 			obj := &object.WaterPipe{}
 			pm := object.ObjectParam{PosX: 3, HP: 500, OnwerCharType: objanim.ObjTypeEnemy}
