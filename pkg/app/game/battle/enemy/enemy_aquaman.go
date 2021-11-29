@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -190,7 +191,24 @@ func (e *enemyAquaman) Process() (bool, error) {
 			return false, nil
 		}
 	case aquamanActTypeShot:
-		// TODO(移動する)
+		if e.count == 0 {
+			// Move to attack position
+			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			tx := 1
+			ty := 1
+			if len(objs) > 0 {
+				tx = objs[0].PosX
+				ty = objs[0].PosY
+			}
+			if e.pm.PosX != tx+3 || e.pm.PosY != ty {
+				e.targetPosX = tx + 3
+				e.targetPosY = ty
+				e.state = aquamanActTypeMove
+				e.count = 0
+				logger.Debug("%+v", e)
+				return false, nil
+			}
+		}
 
 		if e.count == 0 {
 			e.actID = anim.New(skill.Get(skill.SkillAquamanShot, skill.Argument{
@@ -273,6 +291,11 @@ func (e *enemyAquaman) Process() (bool, error) {
 
 func (e *enemyAquaman) Draw() {
 	if e.invincibleCount/5%2 != 0 {
+		return
+	}
+
+	if e.state == aquamanActTypeShot && e.count == 0 {
+		// 移動が必要な際にShotの画像を表示したくないため
 		return
 	}
 
