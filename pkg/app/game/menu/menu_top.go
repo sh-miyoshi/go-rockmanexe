@@ -3,8 +3,11 @@ package menu
 import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -16,21 +19,25 @@ const (
 	topSelectMax
 )
 
-var (
-	topPointer = 0
-)
-
-func topInit() error {
-	return nil
+type menuTop struct {
+	pointer    int
+	playerInfo *player.Player
 }
 
-func topEnd() {
+func topNew(plyr *player.Player) (*menuTop, error) {
+	return &menuTop{
+		pointer:    0,
+		playerInfo: plyr,
+	}, nil
 }
 
-func topProcess() {
+func (t *menuTop) End() {
+}
+
+func (t *menuTop) Process() {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		sound.On(sound.SEMenuEnter)
-		switch topPointer {
+		switch t.pointer {
 		case topSelectChipFolder:
 			stateChange(stateChipFolder)
 		case topSelectGoBattle:
@@ -38,24 +45,28 @@ func topProcess() {
 		case topSelectRecord:
 			stateChange(stateRecord)
 		case topSelectNetBattle:
-			stateChange(stateNetBattle)
+			if t.haveInvalidChip() {
+				stateChange(stateInvalidChip)
+			} else {
+				stateChange(stateNetBattle)
+			}
 		}
 	} else {
 		if inputs.CheckKey(inputs.KeyUp) == 1 {
-			if topPointer > 0 {
+			if t.pointer > 0 {
 				sound.On(sound.SECursorMove)
-				topPointer--
+				t.pointer--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			if topPointer < topSelectMax-1 {
+			if t.pointer < topSelectMax-1 {
 				sound.On(sound.SECursorMove)
-				topPointer++
+				t.pointer++
 			}
 		}
 	}
 }
 
-func topDraw() {
+func (t *menuTop) Draw() {
 	msgs := []string{
 		"チップフォルダ",
 		"バトル",
@@ -71,7 +82,7 @@ func topDraw() {
 	}
 
 	const s = 2
-	y := int32(50 + topPointer*35)
+	y := int32(50 + t.pointer*35)
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, dxlib.TRUE)
 
 	// Show description
@@ -82,7 +93,7 @@ func topDraw() {
 	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
 	draw.String(280, 40, 0xffffff, "Description")
 
-	switch topPointer {
+	switch t.pointer {
 	case topSelectChipFolder:
 		draw.String(270, 70, 0xffffff, "チップフォルダを閲覧し")
 		draw.String(270, 100, 0xffffff, "ます")
@@ -96,4 +107,13 @@ func topDraw() {
 		draw.String(270, 70, 0xffffff, "インターネットを経由し")
 		draw.String(270, 100, 0xffffff, "て対戦します")
 	}
+}
+
+func (t *menuTop) haveInvalidChip() bool {
+	for _, c := range t.playerInfo.ChipFolder {
+		if slice.Contains(netbattle.InvalidChips, c.ID) {
+			return true
+		}
+	}
+	return false
 }

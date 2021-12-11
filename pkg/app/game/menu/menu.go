@@ -19,16 +19,19 @@ const (
 	stateGoBattle
 	stateRecord
 	stateNetBattle
+	stateInvalidChip
 
 	stateMax
 )
 
 var (
-	menuState         int
-	imgBack           int32
-	menuFolderInst    *menuFolder
-	menuRecordInst    *menuRecord
-	menuNetBattleInst *menuNetBattle
+	menuState           int
+	imgBack             int32
+	menuTopInst         *menuTop
+	menuFolderInst      *menuFolder
+	menuRecordInst      *menuRecord
+	menuNetBattleInst   *menuNetBattle
+	menuInvalidChipInst *menuInvalidChip
 
 	ErrGoBattle    = errors.New("go to battle")
 	ErrGoNetBattle = errors.New("go to net battle")
@@ -43,11 +46,12 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to load menu back image %s", fname)
 	}
 
-	if err := topInit(); err != nil {
+	var err error
+	menuTopInst, err = topNew(plyr)
+	if err != nil {
 		return fmt.Errorf("failed to init menu top: %w", err)
 	}
 
-	var err error
 	menuFolderInst, err = folderNew(plyr)
 	if err != nil {
 		return fmt.Errorf("failed to init menu folder: %w", err)
@@ -67,6 +71,11 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu net battle: %w", err)
 	}
 
+	menuInvalidChipInst, err = invalidChipNew()
+	if err != nil {
+		return fmt.Errorf("failed to init menu invalid chip: %w", err)
+	}
+
 	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
@@ -76,7 +85,9 @@ func Init(plyr *player.Player) error {
 
 func End() {
 	dxlib.DeleteGraph(imgBack)
-	topEnd()
+	if menuTopInst != nil {
+		menuTopInst.End()
+	}
 	if menuFolderInst != nil {
 		menuFolderInst.End()
 	}
@@ -87,6 +98,9 @@ func End() {
 	if menuNetBattleInst != nil {
 		menuNetBattleInst.End()
 	}
+	if menuInvalidChipInst != nil {
+		menuInvalidChipInst.End()
+	}
 }
 
 func Process() error {
@@ -96,7 +110,7 @@ func Process() error {
 
 	switch menuState {
 	case stateTop:
-		topProcess()
+		menuTopInst.Process()
 	case stateChipFolder:
 		menuFolderInst.Process()
 	case stateGoBattle:
@@ -109,6 +123,8 @@ func Process() error {
 		if menuNetBattleInst.Process() {
 			return ErrGoNetBattle
 		}
+	case stateInvalidChip:
+		menuInvalidChipInst.Process()
 	}
 
 	return nil
@@ -119,7 +135,7 @@ func Draw() {
 
 	switch menuState {
 	case stateTop:
-		topDraw()
+		menuTopInst.Draw()
 	case stateChipFolder:
 		menuFolderInst.Draw()
 	case stateGoBattle:
@@ -128,6 +144,8 @@ func Draw() {
 		menuRecordInst.Draw()
 	case stateNetBattle:
 		menuNetBattleInst.Draw()
+	case stateInvalidChip:
+		menuInvalidChipInst.Draw()
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
@@ -41,6 +42,11 @@ var (
 	b4mainInst  *titlemsg.TitleMsg
 	resultInst  *titlemsg.TitleMsg
 	playerInst  *battleplayer.BattlePlayer
+
+	// TODO
+	InvalidChips = []int{
+		chip.IDCannon,
+	}
 )
 
 func Init(plyr *player.Player) error {
