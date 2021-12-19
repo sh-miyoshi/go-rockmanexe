@@ -43,9 +43,8 @@ var (
 	resultInst  *titlemsg.TitleMsg
 	playerInst  *battleplayer.BattlePlayer
 
-	// TODO
 	InvalidChips = []int{
-		chip.IDCannon,
+		chip.IDBoomerang1,
 	}
 )
 
