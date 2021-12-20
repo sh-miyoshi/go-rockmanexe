@@ -238,6 +238,8 @@ func Draw() {
 			loseInst.Draw()
 		}
 	}
+
+	field.DrawBlackout()
 }
 
 func stateChange(nextState int) {

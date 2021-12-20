@@ -37,9 +37,9 @@ type PanelInfo struct {
 }
 
 var (
-	imgPanel = [2]int32{-1, -1}
-
-	panels [FieldNumX][FieldNumY]PanelInfo
+	imgPanel      = [2]int32{-1, -1}
+	blackoutCount = 0
+	panels        [FieldNumX][FieldNumY]PanelInfo
 )
 
 // Init ...
@@ -106,6 +106,14 @@ func Draw() {
 	}
 }
 
+func DrawBlackout() {
+	if blackoutCount > 0 {
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 128)
+		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0x000000, dxlib.TRUE)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
+	}
+}
+
 func Update() {
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
@@ -118,8 +126,20 @@ func Update() {
 	for _, obj := range objs {
 		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
 	}
+
+	if blackoutCount > 0 {
+		blackoutCount--
+	}
 }
 
 func GetPanelInfo(x, y int) PanelInfo {
 	return panels[x][y]
+}
+
+func SetBlackoutCount(cnt int) {
+	blackoutCount = cnt
+}
+
+func IsBlackout() bool {
+	return blackoutCount > 0
 }
