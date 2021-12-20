@@ -14,6 +14,7 @@ const (
 	KeyDown
 	KeyLButton
 	KeyRButton
+	KeyDebug
 
 	keyMax
 )
@@ -33,6 +34,7 @@ func InitByDefault() {
 	keyBind[KeyDown] = dxlib.KEY_INPUT_DOWN
 	keyBind[KeyLButton] = dxlib.KEY_INPUT_A
 	keyBind[KeyRButton] = dxlib.KEY_INPUT_S
+	keyBind[KeyDebug] = dxlib.KEY_INPUT_D
 }
 
 // TODO: InitBySetting(settingFile string)
@@ -47,7 +49,6 @@ func KeyStateUpdate() {
 		} else {
 			keyState[i] = 0
 		}
-
 	}
 }
 
