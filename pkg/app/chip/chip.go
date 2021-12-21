@@ -45,6 +45,7 @@ const (
 	IDBoomerang1  = 69
 	IDRecover10   = 109
 	IDRecover30   = 110
+	IDAquaman     = 211
 	IDShockWave   = 229
 )
 

@@ -78,3 +78,8 @@
   power: 60
   type: 0
   player_act: -1
+- id: 211
+  name: "アクアマン"
+  power: 50
+  type: 10
+  player_act: -1

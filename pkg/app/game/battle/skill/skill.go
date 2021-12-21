@@ -30,6 +30,7 @@ const (
 	SkillBoomerang
 	SkillWaterBomb
 	SkillAquamanShot
+	SkillAquaman
 )
 
 const (
@@ -334,6 +335,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return newWaterBomb(objID, arg)
 	case SkillAquamanShot:
 		return newAquamanShot(objID, arg)
+	case SkillAquaman:
+		return newAquaman(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -371,6 +374,8 @@ func GetSkillID(chipID int) int {
 		return SkillWideShot
 	case chip.IDBoomerang1:
 		return SkillBoomerang
+	case chip.IDAquaman:
+		return SkillAquaman
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
