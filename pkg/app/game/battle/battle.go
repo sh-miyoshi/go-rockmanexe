@@ -145,27 +145,31 @@ func Process() error {
 		}
 	case stateMain:
 		gameCount++
-		if err := objanim.MgrProcess(true); err != nil {
+
+		if err := objanim.MgrProcess(true, field.IsBlackout()); err != nil {
 			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
-		switch playerInst.NextAction {
-		case battleplayer.NextActChipSelect:
-			stateChange(stateChipSelect)
-			playerInst.NextAction = battleplayer.NextActNone
-			return nil
-		case battleplayer.NextActLose:
-			stateChange(stateResultLose)
-			return nil
-		}
-		if err := enemy.MgrProcess(); err != nil {
-			if errors.Is(err, enemy.ErrGameEnd) {
-				playerInst.EnableAct = false
-				stateChange(stateResultWin)
+		if !field.IsBlackout() {
+			switch playerInst.NextAction {
+			case battleplayer.NextActChipSelect:
+				stateChange(stateChipSelect)
+				playerInst.NextAction = battleplayer.NextActNone
+				return nil
+			case battleplayer.NextActLose:
+				stateChange(stateResultLose)
 				return nil
 			}
-			return fmt.Errorf("failed to process enemy: %w", err)
+			if err := enemy.MgrProcess(); err != nil {
+				if errors.Is(err, enemy.ErrGameEnd) {
+					playerInst.EnableAct = false
+					stateChange(stateResultWin)
+					return nil
+				}
+				return fmt.Errorf("failed to process enemy: %w", err)
+			}
 		}
+
 		field.Update()
 	case stateResultWin:
 		if battleCount == 0 {
@@ -179,7 +183,7 @@ func Process() error {
 			}
 		}
 
-		if err := objanim.MgrProcess(false); err != nil {
+		if err := objanim.MgrProcess(false, field.IsBlackout()); err != nil {
 			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
@@ -202,6 +206,7 @@ func Process() error {
 		}
 	}
 
+	// TODO(blackout中はエフェクトもとめておく？)
 	if err := anim.MgrProcess(); err != nil {
 		return fmt.Errorf("failed to handle animation: %w", err)
 	}

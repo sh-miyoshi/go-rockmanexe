@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -36,11 +37,16 @@ type Anim interface {
 var (
 	anims         = map[string]Anim{}
 	sortedAnimIDs = []string{}
+	activeAnimIDs = []string{}
 )
 
 // MgrProcess ...
-func MgrProcess(enableDamage bool) error {
+func MgrProcess(enableDamage, blackout bool) error {
 	for id, anim := range anims {
+		if blackout && !slice.Contains(activeAnimIDs, id) {
+			continue
+		}
+
 		end, err := anim.Process()
 		if err != nil {
 			return fmt.Errorf("Anim process failed: %w", err)
@@ -99,6 +105,7 @@ func IsProcessing(animID string) bool {
 func Cleanup() {
 	anims = map[string]Anim{}
 	sortedAnimIDs = []string{}
+	activeAnimIDs = []string{}
 }
 
 func Delete(animID string) {
@@ -140,6 +147,10 @@ func GetObjs(filter Filter) []anim.Param {
 	}
 
 	return res
+}
+
+func AddActiveAnim(id string) {
+	activeAnimIDs = append(activeAnimIDs, id)
 }
 
 func sortAnim() {
