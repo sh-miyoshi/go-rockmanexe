@@ -94,17 +94,19 @@ func (o *WaterPipe) Draw() {
 		return
 	}
 
+	ofsx := int32(-8)
 	opt := dxlib.DrawRotaGraphOption{}
 	if o.pm.xFlip {
 		f := int32(dxlib.TRUE)
 		opt.ReverseXFlag = &f
+		ofsx *= -1
 	}
 
 	n := o.count / delayWaterPipeSet
 	if n > len(o.imgSet)-1 {
 		n = len(o.imgSet) - 1
 	}
-	dxlib.DrawRotaGraph(x-8, y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(x+ofsx, y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
@@ -172,13 +174,15 @@ func (a *WaterPipeAtk) Draw(x, y int32) {
 		n = c - (c/s)*((c-s)*2+1)
 	}
 
+	ofsx := int32(-81)
 	opt := dxlib.DrawRotaGraphOption{}
 	if a.pm.xFlip {
 		f := int32(dxlib.TRUE)
 		opt.ReverseXFlag = &f
+		ofsx *= -1
 	}
 
-	dxlib.DrawRotaGraph(x-81, y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(x+ofsx, y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
 }
 
 func (a *WaterPipeAtk) Process() {

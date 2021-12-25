@@ -161,9 +161,14 @@ func sortAnim() {
 	sortAnims := []sortParam{}
 	for id, anim := range anims {
 		pm := anim.GetParam()
+		index := pm.PosY*6 + pm.PosX
+		if slice.Contains(activeAnimIDs, id) {
+			index += 100
+		}
+
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.PosY*6 + pm.PosX,
+			Index: index,
 		})
 	}
 

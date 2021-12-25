@@ -108,7 +108,7 @@ func Draw() {
 
 func DrawBlackout() {
 	if blackoutCount > 0 {
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 160)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 128)
 		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0x000000, dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 	}
