@@ -117,7 +117,15 @@ func (e *enemyAquaman) End() {
 }
 
 func (e *enemyAquaman) Process() (bool, error) {
-	// Return true if finished(e.g. hp=0)
+	if e.pm.HP <= 0 {
+		// Delete Animation
+		img := e.getCurrentImagePointer()
+		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		*img = -1 // DeleteGraph at delete animation
+		return true, nil
+	}
+
 	// Enemy Logic
 	if e.invincibleCount > 0 {
 		e.invincibleCount++
@@ -334,6 +342,11 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 	if dm == nil {
 		return false
 	}
+
+	if e.invincibleCount > 0 {
+		return false
+	}
+
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
