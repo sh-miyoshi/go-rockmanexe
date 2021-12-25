@@ -263,7 +263,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 
 		if e.count == 5 {
 			obj := &object.WaterPipe{}
-			pm := object.ObjectParam{PosX: 3, HP: 500, OnwerCharType: objanim.ObjTypeEnemy}
+			pm := object.ObjectParam{
+				PosX:          3,
+				HP:            500,
+				OnwerCharType: objanim.ObjTypeEnemy,
+				AttackNum:     5,
+				Interval:      150,
+				Power:         20,
+			}
 			pm.PosY = 0
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)

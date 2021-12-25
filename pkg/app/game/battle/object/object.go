@@ -1,9 +1,14 @@
 package object
 
 type ObjectParam struct {
-	ObjectID      string
 	PosX          int
 	PosY          int
 	HP            int
 	OnwerCharType int
+	AttackNum     int
+	Interval      int
+	Power         int
+
+	objectID string
+	xFlip    bool
 }

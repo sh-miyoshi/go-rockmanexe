@@ -36,7 +36,8 @@ type WaterPipe struct {
 
 func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
 	o.pm = initParam
-	o.pm.ObjectID = uuid.New().String()
+	o.pm.objectID = uuid.New().String()
+	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
 
 	// Load Images
 	o.imgSet = make([]int32, 4)
@@ -73,11 +74,11 @@ func (o *WaterPipe) Process() (bool, error) {
 		sound.On(sound.SEObjectCreate)
 	}
 
-	if o.count%150 == 0 {
+	if o.count%o.pm.Interval == 0 {
 		o.atk.Start()
 		o.atkCount++
 
-		if o.atkCount > 5 {
+		if o.atkCount > o.pm.AttackNum {
 			return true, nil
 		}
 	}
@@ -93,11 +94,17 @@ func (o *WaterPipe) Draw() {
 		return
 	}
 
+	opt := dxlib.DrawRotaGraphOption{}
+	if o.pm.xFlip {
+		f := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &f
+	}
+
 	n := o.count / delayWaterPipeSet
 	if n > len(o.imgSet)-1 {
 		n = len(o.imgSet) - 1
 	}
-	dxlib.DrawRotaGraph(x-8, y+16, 1, 0, o.imgSet[n], dxlib.TRUE)
+	dxlib.DrawRotaGraph(x-8, y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
@@ -120,7 +127,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 func (o *WaterPipe) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    o.pm.ObjectID,
+		ObjID:    o.pm.objectID,
 		PosX:     o.pm.PosX,
 		PosY:     o.pm.PosY,
 		AnimType: anim.AnimTypeObject,
@@ -165,7 +172,13 @@ func (a *WaterPipeAtk) Draw(x, y int32) {
 		n = c - (c/s)*((c-s)*2+1)
 	}
 
-	dxlib.DrawRotaGraph(x-81, y+13, 1, 0, a.images[n], dxlib.TRUE)
+	opt := dxlib.DrawRotaGraphOption{}
+	if a.pm.xFlip {
+		f := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &f
+	}
+
+	dxlib.DrawRotaGraph(x-81, y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
 }
 
 func (a *WaterPipeAtk) Process() {
@@ -183,16 +196,24 @@ func (a *WaterPipeAtk) Process() {
 
 		dm := damage.Damage{
 			PosY:          a.pm.PosY,
-			Power:         20, // TODO(ダメージ量)
+			Power:         a.pm.Power,
 			TTL:           6 * delayWaterPipeAttack,
 			TargetType:    target,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		}
-		dm.PosX = a.pm.PosX - 1
-		damage.New(dm)
-		dm.PosX = a.pm.PosX - 2
-		damage.New(dm)
+
+		if a.pm.xFlip {
+			dm.PosX = a.pm.PosX + 1
+			damage.New(dm)
+			dm.PosX = a.pm.PosX + 2
+			damage.New(dm)
+		} else {
+			dm.PosX = a.pm.PosX - 1
+			damage.New(dm)
+			dm.PosX = a.pm.PosX - 2
+			damage.New(dm)
+		}
 	}
 
 	if a.count > len(a.images)*2*delayWaterPipeAttack {
