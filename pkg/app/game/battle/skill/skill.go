@@ -336,7 +336,11 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillAquamanShot:
 		return newAquamanShot(objID, arg)
 	case SkillAquaman:
-		return newAquaman(objID, arg)
+		res, err := newAquaman(objID, arg)
+		if err != nil {
+			panic(err)
+		}
+		return res
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
