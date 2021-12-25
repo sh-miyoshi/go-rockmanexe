@@ -223,7 +223,7 @@ func (a *larkAtk) Process() {
 			skill.SkillWideShot,
 			skill.Argument{
 				OwnerID:    a.ownerID,
-				Power:      20, // TODO: ダメージ
+				Power:      20,
 				TargetType: damage.TargetPlayer,
 			},
 		))

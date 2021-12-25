@@ -203,7 +203,7 @@ func (a *billyAct) Process() bool {
 		if a.count == 5*delayBillyAtk {
 			anim.New(skill.Get(skill.SkillThunderBall, skill.Argument{
 				OwnerID:    a.ownerID,
-				Power:      20, // TODO: ダメージ
+				Power:      20,
 				TargetType: damage.TargetPlayer,
 			}))
 		}

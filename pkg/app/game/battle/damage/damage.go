@@ -17,7 +17,7 @@ type Damage struct {
 	HitEffectType int
 	ShowHitArea   bool
 	BigDamage     bool
-	// TODO: のけぞり, インビジ貫通
+	// TODO: のけぞり(単体), インビジ貫通
 }
 
 var (

@@ -197,7 +197,7 @@ func (a *metallAtk) Process() (bool, error) {
 	if a.count == delayMetallAtk*10 {
 		anim.New(skill.Get(skill.SkillShockWave, skill.Argument{
 			OwnerID:    a.ownerID,
-			Power:      10, // TODO: ダメージ
+			Power:      10,
 			TargetType: damage.TargetPlayer,
 		}))
 	}
