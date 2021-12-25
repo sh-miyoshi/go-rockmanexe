@@ -394,8 +394,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	// TODO: Recover系は使えるようにする
-	if p.invincibleCount > 0 {
+	// Recover系は使えるようにする
+	if p.invincibleCount > 0 && dm.Power >= 0 {
 		return false
 	}
 

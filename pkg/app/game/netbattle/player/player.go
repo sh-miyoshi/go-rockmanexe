@@ -309,9 +309,6 @@ func (p *BattlePlayer) damageProc() bool {
 		return false
 	}
 
-	if p.Object.Invincible {
-		return false
-	}
 	dm := finfo.HitDamages[0]
 	defer netconn.RemoveDamage(dm.ID)
 
@@ -319,6 +316,11 @@ func (p *BattlePlayer) damageProc() bool {
 		return false
 	} else {
 		p.HitDamages[dm.ID] = true
+	}
+
+	// Recover系は使えるようにする
+	if p.Object.Invincible && dm.Power >= 0 {
+		return false
 	}
 
 	logger.Debug("Got damage: %+v", dm)
