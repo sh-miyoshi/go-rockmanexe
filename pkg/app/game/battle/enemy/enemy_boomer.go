@@ -17,7 +17,7 @@ import (
 
 const (
 	delayBoomerMove = 32
-	delayBoomerAtk  = 16
+	delayBoomerAtk  = 2
 
 	boomerActNextStepCount = 120
 )
@@ -46,6 +46,7 @@ type enemyBoomer struct {
 	state     int
 	nextState int
 	waitCount int
+	prevOfsY  int
 }
 
 func (e *enemyBoomer) Init(objID string) error {
@@ -99,16 +100,25 @@ func (e *enemyBoomer) Process() (bool, error) {
 	}
 
 	// Enemy Logic
-	e.count++
-	cnt := e.count % boomerActNextStepCount
-
 	switch e.state {
 	case boomerStateWait:
 		e.waitCount--
 		if e.waitCount <= 0 {
-			e.state = e.nextState
+			e.setState(e.nextState)
+			return false, nil
 		}
 	case boomerStateMove:
+		if e.count == 0 {
+			e.count = boomerActNextStepCount/2 + 1
+		}
+
+		cnt := e.count % boomerActNextStepCount
+		if cnt == 0 {
+			// Update current pos
+			e.prevY = e.pm.PosY
+			e.pm.PosY = e.nextY
+		}
+
 		if cnt == boomerActNextStepCount/2 {
 			// 次の行動を決定
 			if e.pm.PosY == 0 || e.pm.PosY == field.FieldNumY-1 {
@@ -136,21 +146,16 @@ func (e *enemyBoomer) Process() (bool, error) {
 				}
 			}
 		}
-
-		if cnt == 0 {
-			// Update current pos
-			e.prevY = e.pm.PosY
-			e.pm.PosY = e.nextY
-		}
 	case boomerStateAtk:
 		if e.atk.Process() {
-			e.state = boomerStateWait
-			e.waitCount = 20
+			e.waitCount = 60
 			e.nextState = boomerStateMove
-			// TODO 移動しない
+			e.setState(boomerStateWait)
+			return false, nil
 		}
 	}
 
+	e.count++
 	return false, nil
 }
 
@@ -162,7 +167,12 @@ func (e *enemyBoomer) Draw() {
 	ofsy := 0
 	if e.state == boomerStateMove {
 		c := e.count % boomerActNextStepCount
-		ofsy = battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, boomerActNextStepCount, field.PanelSizeY)
+		if c == 0 || c == boomerActNextStepCount/2 {
+			ofsy = e.prevOfsY
+		} else {
+			ofsy = battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, boomerActNextStepCount, field.PanelSizeY)
+			e.prevOfsY = ofsy
+		}
 	}
 	dxlib.DrawRotaGraph(x, y+int32(ofsy), 1, 0, *img, dxlib.TRUE)
 
@@ -213,6 +223,11 @@ func (e *enemyBoomer) getCurrentImagePointer() *int32 {
 	return &e.imgMove[n]
 }
 
+func (e *enemyBoomer) setState(next int) {
+	e.state = next
+	e.count = 0
+}
+
 func (a *boomerAtk) Init() {
 	a.atkID = ""
 	a.count = 0
@@ -224,7 +239,7 @@ func (a *boomerAtk) Process() bool {
 			skill.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
-				Power:      20, // TODO: ダメージ
+				Power:      20,
 				TargetType: damage.TargetPlayer,
 			},
 		))
