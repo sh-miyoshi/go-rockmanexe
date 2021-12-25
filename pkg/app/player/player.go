@@ -102,8 +102,14 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		return nil, fmt.Errorf("save data maybe broken or invalid version")
 	}
 
-	if rawData.ProgramVersion != common.ProgramVersion {
-		logger.Error("Expect %s, but got %s in save data", common.ProgramVersion, rawData.ProgramVersion)
+	switch rawData.ProgramVersion {
+	case "development":
+		logger.Info("Save data is development data")
+	case "v0.3":
+		logger.Info("Save data version is v0.3, but it is compatible with the current version.")
+	case "v0.4":
+	default:
+		logger.Error("Unexpected version %s is in save data", rawData.ProgramVersion)
 		return nil, fmt.Errorf("invalid save data version")
 	}
 
