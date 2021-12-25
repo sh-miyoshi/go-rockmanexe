@@ -78,7 +78,15 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 		return fmt.Errorf("effect init failed: %w", err)
 	}
 
-	if err := sound.BGMPlay(sound.BGMBattle); err != nil {
+	bgm := sound.BGMBattle
+	for _, e := range enemies {
+		if enemy.IsBoss(e.CharID) {
+			bgm = sound.BGMBossBattle
+			break
+		}
+	}
+
+	if err := sound.BGMPlay(bgm); err != nil {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 

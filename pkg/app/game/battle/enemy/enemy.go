@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -51,7 +52,7 @@ var (
 		{CharID: IDLark, ChipID: chip.IDWideShot, Code: "c", RequiredLevel: 7},
 		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "m", RequiredLevel: 7},
 		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "*", RequiredLevel: 9},
-		// TODO aquaman chip
+		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
 	}
 )
 
@@ -125,6 +126,11 @@ func GetStandImageFile(id int) (name, ext string) {
 		name = path + "アクアマン"
 	}
 	return
+}
+
+func IsBoss(id int) bool {
+	bossList := []int{IDAquaman}
+	return slice.Contains(bossList, id)
 }
 
 func getObject(id int, initParam EnemyParam) enemyObject {

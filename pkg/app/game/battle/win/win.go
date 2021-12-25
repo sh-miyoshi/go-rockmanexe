@@ -70,7 +70,7 @@ func Init(args WinArg, plyr *player.Player) error {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
-	bustingLevel = calcBustingLevel(args.PlayerMoveNum, args.PlayerDamageNum)
+	bustingLevel = calcBustingLevel(args)
 
 	m := getMoney(bustingLevel)
 	list := []rewardInfo{
@@ -184,7 +184,7 @@ func showDeleteTime() {
 	draw.Number(350, 77, int32(sec), draw.NumberOption{Padding: &zero, Length: 2})
 }
 
-func calcBustingLevel(moveNum, damageNum int) int {
+func calcBustingLevel(args WinArg) int {
 	// バスティングレベルの決定
 	// ウィルス戦
 	//   ～ 5秒:	7point
@@ -209,17 +209,34 @@ func calcBustingLevel(moveNum, damageNum int) int {
 	//   2体同時:	2point
 	//   3体同時:	4point
 
-	lv := 4
-	// TODO v.s. Navi
-	deadlines := []int{36, 12, 5, -1}
-	for i := 0; i < len(deadlines); i++ {
-		if deleteTimeSec > deadlines[i] {
-			lv += i
+	isBoss := false
+	for _, e := range args.DeletedEnemies {
+		if enemy.IsBoss(e.CharID) {
+			isBoss = true
 			break
 		}
 	}
 
-	switch damageNum {
+	lv := 4
+	if isBoss {
+		deadlines := []int{50, 40, 30, -1}
+		for i := 0; i < len(deadlines); i++ {
+			if deleteTimeSec > deadlines[i] {
+				lv += i * 2
+				break
+			}
+		}
+	} else {
+		deadlines := []int{36, 12, 5, -1}
+		for i := 0; i < len(deadlines); i++ {
+			if deleteTimeSec > deadlines[i] {
+				lv += i
+				break
+			}
+		}
+	}
+
+	switch args.PlayerDamageNum {
 	case 0:
 		lv++
 	case 1:
@@ -231,7 +248,7 @@ func calcBustingLevel(moveNum, damageNum int) int {
 		lv -= 3
 	}
 
-	if moveNum < 3 {
+	if args.PlayerMoveNum < 3 {
 		lv++
 	}
 
