@@ -166,6 +166,21 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "水を操りし者",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDAquaman,
+						PosX:   4,
+						PosY:   1,
+						HP:     500,
+					},
+					ViewPosX: viewCenterX,
+					ViewPosY: viewCenterY,
+				},
+			},
+		},
+		{
 			Name: "練習",
 			Enemies: []selectEnemyData{
 				{
