@@ -1,6 +1,6 @@
 # Release Note
 
-## [WIP]v0.4
+## v0.4
 
 - 敵追加
   - ラウンダ
