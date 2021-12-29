@@ -30,14 +30,22 @@ const (
 	panelTypeMax
 )
 
+const (
+	PanelStatusNormal int = iota
+	PanelStatusCrack
+	PanelStatusHole
+
+	panelStatusMax
+)
+
 type PanelInfo struct {
 	Type     int
 	ObjectID string
-	// TODO status(毒とか穴とか)
+	Status   int
 }
 
 var (
-	imgPanel      = [2]int32{-1, -1}
+	imgPanel      [panelStatusMax][panelTypeMax]int32
 	blackoutCount = 0
 	panels        [FieldNumX][FieldNumY]PanelInfo
 )
@@ -47,15 +55,20 @@ func Init() error {
 	logger.Info("Initialize battle field data")
 
 	// Initialize images
-	fname := common.ImagePath + "battle/panel_player.png"
-	imgPanel[PanelTypePlayer] = dxlib.LoadGraph(fname)
-	if imgPanel[PanelTypePlayer] < 0 {
-		return fmt.Errorf("failed to read player panel image %s", fname)
+	files := [panelStatusMax]string{"normal", "crack", "hole"}
+	for i := 0; i < panelStatusMax; i++ {
+		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
+		imgPanel[i][PanelTypePlayer] = dxlib.LoadGraph(fname)
+		if imgPanel[i][PanelTypePlayer] < 0 {
+			return fmt.Errorf("failed to read player panel image %s", fname)
+		}
 	}
-	fname = common.ImagePath + "battle/panel_enemy.png"
-	imgPanel[PanelTypeEnemy] = dxlib.LoadGraph(fname)
-	if imgPanel[PanelTypeEnemy] < 0 {
-		return fmt.Errorf("failed to read enemy panel image %s", fname)
+	for i := 0; i < panelStatusMax; i++ {
+		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
+		imgPanel[i][PanelTypeEnemy] = dxlib.LoadGraph(fname)
+		if imgPanel[i][PanelTypeEnemy] < 0 {
+			return fmt.Errorf("failed to read enemy panel image %s", fname)
+		}
 	}
 
 	// Initialize panel info
@@ -66,11 +79,11 @@ func Init() error {
 		}
 		for y := 0; y < FieldNumY; y++ {
 			panels[x][y] = PanelInfo{
-				Type: t,
+				Status: PanelStatusNormal,
+				Type:   t,
 			}
 		}
 	}
-	// TODO: special field
 
 	logger.Info("Successfully initialized battle field data")
 	return nil
@@ -79,9 +92,11 @@ func Init() error {
 // End ...
 func End() {
 	logger.Info("Cleanup battle field data")
-	for i := 0; i < panelTypeMax; i++ {
-		dxlib.DeleteGraph(imgPanel[i])
-		imgPanel[i] = -1
+	for i := 0; i < panelStatusMax; i++ {
+		for j := 0; j < panelTypeMax; j++ {
+			dxlib.DeleteGraph(imgPanel[i][j])
+			imgPanel[i][j] = -1
+		}
 	}
 	logger.Info("Successfully cleanuped battle field data")
 }
@@ -90,7 +105,7 @@ func End() {
 func Draw() {
 	for x := 0; x < FieldNumX; x++ {
 		for y := 0; y < FieldNumY; y++ {
-			img := imgPanel[panels[x][y].Type]
+			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
 			vx := int32(PanelSizeX * x)
 			vy := int32(DrawPanelTopY + PanelSizeY*y)
 			dxlib.DrawGraph(vx, vy, img, dxlib.TRUE)

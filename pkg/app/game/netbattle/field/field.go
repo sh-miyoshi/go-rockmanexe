@@ -21,12 +21,12 @@ var (
 
 func Init() error {
 	// Initialize images
-	fname := common.ImagePath + "battle/panel_player.png"
+	fname := common.ImagePath + "battle/panel_player_normal.png"
 	imgPanel[appfield.PanelTypePlayer] = dxlib.LoadGraph(fname)
 	if imgPanel[appfield.PanelTypePlayer] < 0 {
 		return fmt.Errorf("failed to read player panel image %s", fname)
 	}
-	fname = common.ImagePath + "battle/panel_enemy.png"
+	fname = common.ImagePath + "battle/panel_enemy_normal.png"
 	imgPanel[appfield.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 	if imgPanel[appfield.PanelTypeEnemy] < 0 {
 		return fmt.Errorf("failed to read enemy panel image %s", fname)
