@@ -35,11 +35,16 @@ func MoveObject(x, y *int, direct int, objPanelType int, isMove bool, GetPanelIn
 	}
 
 	pn := GetPanelInfo(nx, ny)
+	// Object exists?
 	if pn.ObjectID != "" {
 		return false
 	}
-	// Check panel type
+	// Panel owner?
 	if objPanelType != pn.Type {
+		return false
+	}
+	// Panel Status
+	if pn.Status == field.PanelStatusHole {
 		return false
 	}
 
