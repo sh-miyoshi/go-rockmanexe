@@ -116,6 +116,7 @@ func (p *aquaman) Process() (bool, error) {
 		}
 	case aquamanStateAttack:
 		if !objanim.IsProcessing(p.atkID) {
+			field.SetBlackoutCount(0)
 			p.end()
 			return true, nil
 		}

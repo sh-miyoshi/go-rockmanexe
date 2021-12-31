@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -72,6 +73,11 @@ func (o *WaterPipe) Process() (bool, error) {
 
 	if o.count == 1 {
 		sound.On(sound.SEObjectCreate)
+
+		pn := field.GetPanelInfo(o.pm.PosX, o.pm.PosY)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
 	}
 
 	if o.count%o.pm.Interval == 0 {
