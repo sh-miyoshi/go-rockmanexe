@@ -61,12 +61,18 @@ func (p *shockWave) Process() (bool, error) {
 	n := len(imgShockWave) * p.Speed
 	if p.count%(n) == 0 {
 		p.showWave = true
-		sound.On(sound.SEShockWave)
 		if p.Direct == common.DirectLeft {
 			p.x--
 		} else if p.Direct == common.DirectRight {
 			p.x++
 		}
+
+		pn := field.GetPanelInfo(p.x, p.y)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
+
+		sound.On(sound.SEShockWave)
 		damage.New(damage.Damage{
 			PosX:          p.x,
 			PosY:          p.y,

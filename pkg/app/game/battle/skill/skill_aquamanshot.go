@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -57,6 +58,11 @@ func (p *aquamanShot) Process() (bool, error) {
 	p.ofsY = 10*p.ofsX*p.ofsX/(size*size) - 20*p.ofsX/size
 
 	if p.ofsX < -size {
+		pn := field.GetPanelInfo(p.targetX, p.targetY)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
+
 		sound.On(sound.SEWaterLanding)
 		anim.New(effect.Get(effect.TypeWaterBomb, p.targetX, p.targetY, 0))
 		anim.New(effect.Get(effect.TypeWaterBomb, p.targetX-1, p.targetY, 0))

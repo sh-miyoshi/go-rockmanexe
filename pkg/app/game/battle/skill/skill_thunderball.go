@@ -83,6 +83,11 @@ func (p *thunderBall) Process() (bool, error) {
 			}
 		}
 
+		pn := field.GetPanelInfo(p.x, p.y)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
+
 		p.damageID = damage.New(damage.Damage{
 			PosX:          p.x,
 			PosY:          p.y,

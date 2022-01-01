@@ -71,7 +71,11 @@ func (p *miniBomb) Process() (bool, error) {
 	}
 
 	if p.count == miniBombEndCount {
-		// TODO 不発処理(画面外やパネル状況など)
+		pn := field.GetPanelInfo(p.targetX, p.targetY)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
+
 		sound.On(sound.SEExplode)
 		anim.New(effect.Get(effect.TypeExplode, p.targetX, p.targetY, 0))
 		damage.New(damage.Damage{

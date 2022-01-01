@@ -84,7 +84,11 @@ func (p *waterBomb) Process() (bool, error) {
 	}
 
 	if p.count == waterBombEndCount {
-		// TODO 不発処理(画面外やパネル状況など)
+		pn := field.GetPanelInfo(p.targetX, p.targetY)
+		if pn.Status == field.PanelStatusHole {
+			return true, nil
+		}
+
 		sound.On(sound.SEWaterLanding)
 		anim.New(effect.Get(effect.TypeWaterBomb, p.targetX, p.targetY, 0))
 		damage.New(damage.Damage{
