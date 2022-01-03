@@ -11,16 +11,13 @@ import (
 )
 
 const (
-	// FieldNumX ...
-	FieldNumX = 6
-	// FieldNumY ...
-	FieldNumY = 3
-	// PanelSizeX ...
-	PanelSizeX = 80
-	// PanelSizeY ...
-	PanelSizeY = 50
-	// DrawPanelTopY ...
+	FieldNumX     = 6
+	FieldNumY     = 3
+	PanelSizeX    = 80
+	PanelSizeY    = 50
 	DrawPanelTopY = common.ScreenY - (PanelSizeY * 3) - 30
+
+	panelReturnAnimCount = 60
 )
 
 const (
@@ -39,9 +36,10 @@ const (
 )
 
 type PanelInfo struct {
-	Type     int
-	ObjectID string
-	Status   int
+	Type      int
+	ObjectID  string
+	Status    int
+	HoleCount int
 }
 
 var (
@@ -79,8 +77,9 @@ func Init() error {
 		}
 		for y := 0; y < FieldNumY; y++ {
 			panels[x][y] = PanelInfo{
-				Status: PanelStatusNormal,
-				Type:   t,
+				Status:    PanelStatusNormal,
+				Type:      t,
+				HoleCount: 0,
 			}
 		}
 	}
@@ -108,7 +107,17 @@ func Draw() {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
 			vx := int32(PanelSizeX * x)
 			vy := int32(DrawPanelTopY + PanelSizeY*y)
+
+			// Note: panelReturnAnimCount以下の場合StatusはNormalになる
+			// HoleとNormalを点滅させるためCountによってイメージを変える
+			if panels[x][y].HoleCount > 0 {
+				if panels[x][y].HoleCount < panelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
+					img = imgPanel[PanelStatusHole][panels[x][y].Type]
+				}
+			}
+
 			dxlib.DrawGraph(vx, vy, img, dxlib.TRUE)
+
 			if dm := damage.Get(x, y); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
@@ -144,6 +153,24 @@ func Update() {
 
 	if blackoutCount > 0 {
 		blackoutCount--
+	}
+
+	// Panel status update
+	for x := 0; x < len(panels); x++ {
+		for y := 0; y < len(panels[x]); y++ {
+			if panels[x][y].HoleCount > 0 {
+				panels[x][y].HoleCount--
+			}
+
+			switch panels[x][y].Status {
+			case PanelStatusHole:
+				if panels[x][y].HoleCount <= panelReturnAnimCount {
+					panels[x][y].Status = PanelStatusNormal
+				}
+			case PanelStatusCrack:
+				// TODO: objectが乗って離れたらHoleへ
+			}
+		}
 	}
 }
 
