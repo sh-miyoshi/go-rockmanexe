@@ -16,6 +16,7 @@ const (
 	PlayerActBomb
 	PlayerActBuster
 	PlayerActPick
+	PlayerActThrow
 
 	PlayerActMax
 )
