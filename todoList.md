@@ -6,12 +6,14 @@
 - クラックアウト
 - ダブルクラック
 - トリプルクラック
+- チップのプレゼント
 
 ## バグ
 
 - 攻撃力が3桁のチップの表示を修正
 - 暗転中にエフェクトを止めておく
   - https://github.com/sh-miyoshi/go-rockmanexe/blob/5266150b836d903742fc2509910a614237a66103/pkg/app/game/battle/battle.go#L217
+- ネット対戦時のPlayerThrowのイメージを作る
 
 ## 新機能
 
