@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -18,6 +19,7 @@ const (
 	DrawPanelTopY = common.ScreenY - (PanelSizeY * 3) - 30
 
 	panelReturnAnimCount = 60
+	panelHoleCount       = 480
 )
 
 const (
@@ -40,6 +42,7 @@ type PanelInfo struct {
 	ObjectID  string
 	Status    int
 	HoleCount int
+	ObjExists bool
 }
 
 var (
@@ -80,6 +83,7 @@ func Init() error {
 				Status:    PanelStatusNormal,
 				Type:      t,
 				HoleCount: 0,
+				ObjExists: false,
 			}
 		}
 	}
@@ -108,8 +112,9 @@ func Draw() {
 			vx := int32(PanelSizeX * x)
 			vy := int32(DrawPanelTopY + PanelSizeY*y)
 
-			// Note: panelReturnAnimCount以下の場合StatusはNormalになる
-			// HoleとNormalを点滅させるためCountによってイメージを変える
+			// Note:
+			//   panelReturnAnimCount以下の場合StatusはNormalになる
+			//   HoleとNormalを点滅させるためCountによってイメージを変える
 			if panels[x][y].HoleCount > 0 {
 				if panels[x][y].HoleCount < panelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
 					img = imgPanel[PanelStatusHole][panels[x][y].Type]
@@ -149,6 +154,9 @@ func Update() {
 	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
 	for _, obj := range objs {
 		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
+		if panels[obj.PosX][obj.PosY].Status == PanelStatusCrack {
+			panels[obj.PosX][obj.PosY].ObjExists = true
+		}
 	}
 
 	if blackoutCount > 0 {
@@ -168,7 +176,13 @@ func Update() {
 					panels[x][y].Status = PanelStatusNormal
 				}
 			case PanelStatusCrack:
-				// TODO: objectが乗って離れたらHoleへ
+				// Objectが乗って離れたらHole状態へ
+				if panels[x][y].ObjExists && panels[x][y].ObjectID == "" {
+					sound.On(sound.SEPanelBreak)
+					panels[x][y].ObjExists = false
+					panels[x][y].Status = PanelStatusHole
+					panels[x][y].HoleCount = panelHoleCount
+				}
 			}
 		}
 	}
