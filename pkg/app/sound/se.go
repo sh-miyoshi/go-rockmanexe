@@ -47,6 +47,7 @@ const (
 	SEBlock
 	SEObjectCreate
 	SEWaterpipeAttack
+	SEPanelBreak
 
 	seMax
 )
@@ -95,6 +96,7 @@ func Init() error {
 	soundEffects[SEBlock] = dxlib.LoadSoundMem(basePath + "block.mp3")
 	soundEffects[SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
 	soundEffects[SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
+	soundEffects[SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
@@ -109,6 +111,7 @@ func Init() error {
 	dxlib.ChangeVolumeSoundMem(128, soundEffects[SESpreadHit])
 	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEEnemyDeleted])
 	dxlib.ChangeVolumeSoundMem(192, soundEffects[SEPlayerDeleted])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[SEPanelBreak])
 
 	return nil
 }
