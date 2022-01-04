@@ -43,6 +43,7 @@ const (
 	IDWideSword   = 55
 	IDLongSword   = 56
 	IDBoomerang1  = 69
+	IDCrackout    = 106
 	IDRecover10   = 109
 	IDRecover30   = 110
 	IDAquaman     = 211

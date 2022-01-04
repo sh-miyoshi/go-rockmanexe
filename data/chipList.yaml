@@ -1,5 +1,5 @@
 # type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
-# player_act.type: -1(none), 3(cannon), 4(sword)
+# player_act.type: -1(none), 3(cannon), 4(sword), 8(throw)
 - id: 1
   name: "キャノン"
   power: 40
@@ -83,3 +83,8 @@
   power: 70
   type: 10
   player_act: -1
+- id: 106
+  name: "クラックアウト"
+  power: 0
+  type: 4
+  player_act: 8
