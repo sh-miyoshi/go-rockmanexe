@@ -32,6 +32,8 @@ const (
 	SkillAquamanShot
 	SkillAquaman
 	SkillCrackout
+	SkillDoubleCrack
+	SkillTripleCrack
 )
 
 const (
@@ -344,6 +346,10 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return res
 	case SkillCrackout:
 		return newCrack(objID, crackType1, arg)
+	case SkillDoubleCrack:
+		return newCrack(objID, crackType2, arg)
+	case SkillTripleCrack:
+		return newCrack(objID, crackType3, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -385,6 +391,10 @@ func GetSkillID(chipID int) int {
 		return SkillAquaman
 	case chip.IDCrackout:
 		return SkillCrackout
+	case chip.IDDoubleCrack:
+		return SkillDoubleCrack
+	case chip.IDTripleCrack:
+		return SkillTripleCrack
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

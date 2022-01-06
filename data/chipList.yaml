@@ -88,3 +88,13 @@
   power: 0
   type: 4
   player_act: 8
+- id: 107
+  name: "ダブルクラック"
+  power: 0
+  type: 4
+  player_act: 8
+- id: 108
+  name: "トリプルクラック"
+  power: 0
+  type: 4
+  player_act: 8
