@@ -65,7 +65,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers    [battlecommon.PlayerActMax][]int32
-	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 4}
+	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3}
 	imgHPFrame    int32
 	imgGaugeFrame int32
 	imgGaugeMax   []int32
@@ -502,7 +502,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
 		}
-	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))

@@ -41,6 +41,7 @@
 
 ## 改善
 
+- battle/skill.goのリファクタリング
 - BulkSendFieldInfoのリファクタリング
 - remove hit damage data
 - panic時のエラーの表示の仕方

@@ -31,6 +31,7 @@ const (
 	SkillWaterBomb
 	SkillAquamanShot
 	SkillAquaman
+	SkillCrackout
 )
 
 const (
@@ -341,6 +342,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 			panic(err)
 		}
 		return res
+	case SkillCrackout:
+		return newCrack(objID, crackType1, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -380,6 +383,8 @@ func GetSkillID(chipID int) int {
 		return SkillBoomerang
 	case chip.IDAquaman:
 		return SkillAquaman
+	case chip.IDCrackout:
+		return SkillCrackout
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
@@ -399,7 +404,12 @@ type tmpskill struct {
 }
 
 func newTmpSkill(objID string, arg Argument) *tmpskill {
-	return &tmpskill{}
+	return &tmpskill{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+	}
 }
 
 func (p *tmpskill) Draw() {

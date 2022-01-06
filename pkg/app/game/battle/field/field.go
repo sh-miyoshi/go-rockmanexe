@@ -199,3 +199,16 @@ func SetBlackoutCount(cnt int) {
 func IsBlackout() bool {
 	return blackoutCount > 0
 }
+
+func PanelBreak(x, y int) {
+	if panels[x][y].Status == PanelStatusHole {
+		return
+	}
+
+	if panels[x][y].ObjectID != "" {
+		panels[x][y].Status = PanelStatusCrack
+	} else {
+		panels[x][y].Status = PanelStatusHole
+		panels[x][y].HoleCount = panelHoleCount
+	}
+}
