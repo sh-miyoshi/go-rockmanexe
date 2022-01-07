@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -62,6 +63,7 @@ func New() *Player {
 		BattleHistories: []History{},
 	}
 	res.setChipFolder()
+	res.addPresentChips()
 	return res
 }
 
@@ -113,6 +115,7 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		return nil, fmt.Errorf("invalid save data version")
 	}
 
+	rawData.Player.addPresentChips()
 	return &rawData.Player, nil
 }
 
@@ -253,5 +256,24 @@ func (p *Player) setChipFolder() {
 		{ID: chip.IDSpreadGun, Code: "n"},
 		{ID: chip.IDSpreadGun, Code: "m"},
 		{ID: chip.IDSpreadGun, Code: "m"},
+	}
+}
+
+func (p *Player) addPresentChips() {
+	presentChips := []ChipInfo{
+		{ID: chip.IDCrackout, Code: "*"},
+		{ID: chip.IDDoubleCrack, Code: "*"},
+		{ID: chip.IDTripleCrack, Code: "*"},
+	}
+
+	for _, c := range presentChips {
+		if slice.Contains(p.ChipFolder, c) {
+			continue
+		}
+		if slice.Contains(p.BackPack, c) {
+			continue
+		}
+
+		p.BackPack = append(p.BackPack, c)
 	}
 }
