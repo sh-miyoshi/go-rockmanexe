@@ -189,6 +189,10 @@ func Update() {
 }
 
 func GetPanelInfo(x, y int) PanelInfo {
+	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+		return PanelInfo{}
+	}
+
 	return panels[x][y]
 }
 
@@ -201,6 +205,10 @@ func IsBlackout() bool {
 }
 
 func PanelBreak(x, y int) {
+	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+		return
+	}
+
 	if panels[x][y].Status == PanelStatusHole {
 		return
 	}
@@ -214,6 +222,10 @@ func PanelBreak(x, y int) {
 }
 
 func PanelCrack(x, y int) {
+	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+		return
+	}
+
 	if panels[x][y].Status == PanelStatusHole {
 		return
 	}
