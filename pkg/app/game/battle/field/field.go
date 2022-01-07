@@ -212,3 +212,11 @@ func PanelBreak(x, y int) {
 		panels[x][y].HoleCount = panelHoleCount
 	}
 }
+
+func PanelCrack(x, y int) {
+	if panels[x][y].Status == PanelStatusHole {
+		return
+	}
+
+	panels[x][y].Status = PanelStatusCrack
+}

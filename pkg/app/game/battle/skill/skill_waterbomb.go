@@ -100,6 +100,7 @@ func (p *waterBomb) Process() (bool, error) {
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		})
+		field.PanelCrack(p.targetX, p.targetY)
 		return true, nil
 	}
 	return false, nil
