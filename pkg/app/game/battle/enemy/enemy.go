@@ -108,24 +108,27 @@ func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
 
 func GetStandImageFile(id int) (name, ext string) {
 	ext = ".png"
-
 	path := common.ImagePath + "battle/character/"
+	name = path + GetName(id)
+	return
+}
 
+func GetName(id int) string {
 	switch id {
 	case IDMetall:
-		name = path + "メットール"
+		return "メットール"
 	case IDTarget:
-		name = path + "的"
+		return "的"
 	case IDBilly:
-		name = path + "ビリー"
+		return "ビリー"
 	case IDLark:
-		name = path + "ゲイラーク"
+		return "ゲイラーク"
 	case IDBoomer:
-		name = path + "ラウンダ"
+		return "ラウンダ"
 	case IDAquaman:
-		name = path + "アクアマン"
+		return "アクアマン"
 	}
-	return
+	return ""
 }
 
 func IsBoss(id int) bool {
