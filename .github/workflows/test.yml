@@ -27,9 +27,13 @@ jobs:
         with:
           go-version: 1.17
       - name: Run server
-        run:
-          - cd cmd/fakeserver && go build && ./fakeserver &
-          - cd cmd/router && go build && ./router &
+        run: |
+          cd cmd/fakeserver
+          go build
+          ./fakeserver &
+          cd ../../cmd/router
+          go build
+          ./router &
       - name: Test
         working-directory: ./test/router
         run: ./api_test.sh
