@@ -4,7 +4,11 @@ class User::DetailController < ApplicationController
 
   def edit; end
 
-  def update; end
+  def update
+    @user.name = params[:user][:name]
+    msg = @user.save ? "User was successfully updated." : "Failed to update user."
+    redirect_to user_detail_edit_path, notice: msg
+  end
 
   private
 
