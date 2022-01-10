@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   delete "user/destroy"
 
   get "user/detail/edit"
+  patch "user/detail/update"
 
   namespace :api, { format: "json" } do
     namespace :v1 do

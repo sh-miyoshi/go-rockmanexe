@@ -15,12 +15,13 @@
             </div>
           </div>
           <div class="card-body">
+            <%= form_with url: user_detail_update_path, model: @user do |f| %>
             <div class="row mb-2">
               <label for="router_addr" class="col-sm-2 col-form-label">
                 ID
               </label>
               <div class="col-md-5">
-                <%= text_field_tag 'id', @user.user_id, class: 'form-control read-text-dark', readonly: true %>
+                <%= f.text_field :user_id, class: 'form-control read-text-dark', readonly: true %>
               </div>
             </div>
             <div class="row mb-2">
@@ -28,15 +29,21 @@
                 名前
               </label>
               <div class="col-md-5">
-                <%= text_field_tag 'name', @user.name, class: 'form-control' %>
+                <%= f.text_field :name, class: 'form-control' %>
               </div>
             </div>
+            <% if flash[:notice].present? %>
+            <div class="alert alert-primary">
+              <%== flash[:notice] %>
+            </div>
+            <% end %>
             <div class="row mb-2">
               <div class="col-md-5">
-                <%= link_to "キャンセル", user_show_path, {class: "btn btn-outline-primary mr-3"} %>
-                <button class="btn btn-primary mr-3">更新</button>
+                <%= link_to "戻る", user_show_path, {class: "btn btn-outline-primary mr-3"} %>
+                <%= f.submit "更新", {class: "btn btn-primary mr-3"} %>
               </div>
             </div>
+            <% end %>
           </div>
         </div>
       </div>
