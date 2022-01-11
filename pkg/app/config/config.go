@@ -9,17 +9,19 @@ import (
 
 type Config struct {
 	Log struct {
-		FileName string `yaml:"file"`
+		FileName     string `yaml:"file"`
+		DebugEnabled bool   `yaml:"debug_enabled"`
 	} `yaml:"log"`
 	Debug struct {
-		Enabled           bool `yaml:"enabled"`
-		SkipTitle         bool `yaml:"skip_title"`
-		SkipMenu          bool `yaml:"skip_menu"`
-		SkipBattleOpening bool `yaml:"skip_battle_opening"`
-		StartContinue     bool `yaml:"start_continue"`
-		InitSleepSec      int  `yaml:"init_sleep_sec"`
-		RunAlways         bool `yaml:"run_always"`
-		EnableDevFeature  bool `yaml:"enable_dev_feature"`
+		ShowFPS            bool `yaml:"show_fps"`
+		SkipTitle          bool `yaml:"skip_title"`
+		SkipMenu           bool `yaml:"skip_menu"`
+		SkipBattleOpening  bool `yaml:"skip_battle_opening"`
+		StartContinue      bool `yaml:"start_continue"`
+		InitSleepSec       int  `yaml:"init_sleep_sec"`
+		RunAlways          bool `yaml:"run_always"`
+		EnableDevFeature   bool `yaml:"enable_dev_feature"`
+		UsePrivateResource bool `yaml:"use_private_res"`
 	} `yaml:"debug"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`

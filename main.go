@@ -56,14 +56,17 @@ func main() {
 		dxlib.SetAlwaysRunFlag(dxlib.TRUE)
 	}
 
-	if config.Get().Debug.Enabled {
+	if config.Get().Debug.UsePrivateResource {
 		common.ImagePath = "data/private/images/"
 		common.SoundPath = "data/private/sounds/"
+	}
+
+	if config.Get().Log.DebugEnabled {
 		dxlib.SetOutApplicationLogValidFlag(dxlib.TRUE)
 	} else {
 		dxlib.SetOutApplicationLogValidFlag(dxlib.FALSE)
 	}
-	logger.InitLogger(config.Get().Debug.Enabled, config.Get().Log.FileName)
+	logger.InitLogger(config.Get().Log.DebugEnabled, config.Get().Log.FileName)
 
 	if res := dxlib.AddFontFile(common.FontFilePath); res == nil {
 		logger.Error("Failed to load font data %s", common.FontFilePath)
@@ -109,7 +112,7 @@ MAIN:
 		count++
 
 		fpsMgr.Wait()
-		if config.Get().Debug.Enabled {
+		if config.Get().Debug.ShowFPS {
 			dxlib.DrawFormatString(common.ScreenX-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
 		}
 	}

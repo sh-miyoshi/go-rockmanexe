@@ -1,7 +1,8 @@
 log:
   file: ""
+  debug_enabled: true
 debug:
-  enabled: true
+  show_fps: true
   skip_title: true
   skip_menu: false
   skip_battle_opening: true
@@ -9,6 +10,7 @@ debug:
   init_sleep_sec: 0
   run_always: true
   enable_dev_feature: true
+  use_private_res: true
 bgm:
   disabled: true
 net:
