@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
@@ -229,6 +231,8 @@ func Draw() {
 	objanim.MgrDraw()
 	anim.MgrDraw()
 
+	drawEnemyNames()
+
 	switch battleState {
 	case stateOpening:
 		opening.Draw()
@@ -262,4 +266,12 @@ func stateChange(nextState int) {
 	}
 	battleState = nextState
 	battleCount = 0
+}
+
+func drawEnemyNames() {
+	for i, e := range enemyList {
+		name := enemy.GetName(e.CharID)
+		ofs := dxlib.GetDrawStringWidth(name, int32(len(name)))
+		draw.String(common.ScreenX-ofs-5, int32(i)*20+10, 0xffffff, "%s", name)
+	}
 }
