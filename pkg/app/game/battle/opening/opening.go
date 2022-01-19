@@ -16,7 +16,12 @@ var (
 )
 
 func Init(enemyList []enemy.EnemyParam) error {
-	openingInst = &normal{}
+	if enemy.IsBoss(enemyList[0].CharID) {
+		openingInst = &boss{}
+	} else {
+		openingInst = &normal{}
+	}
+
 	return openingInst.Init(enemyList)
 }
 

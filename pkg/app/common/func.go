@@ -6,3 +6,11 @@ func Abs(a int) int {
 	}
 	return a
 }
+
+func MountainIndex(i, max int) int {
+	if i >= max/2 {
+		return max - i - 1
+	} else {
+		return i
+	}
+}
