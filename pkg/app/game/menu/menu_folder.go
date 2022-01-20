@@ -25,10 +25,11 @@ const (
 )
 
 type menuFolder struct {
-	imgChipFrame int32
-	imgArrow     int32
-	imgPointer   int32
-	imgMsgFrame  int32
+	imgChipFrame     int32
+	imgArrow         int32
+	imgPointer       int32
+	imgMsgFrame      int32
+	imgScrollPointer int32
 
 	pointer       [folderWindowTypeMax]int
 	scroll        [folderWindowTypeMax]int
@@ -78,6 +79,12 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
 	}
 
+	fname = common.ImagePath + "menu/scroll_point.png"
+	res.imgScrollPointer = dxlib.LoadGraph(fname)
+	if res.imgMsgFrame == -1 {
+		return nil, fmt.Errorf("failed to load menu scroll point image %s", fname)
+	}
+
 	return res, nil
 }
 
@@ -86,6 +93,7 @@ func (f *menuFolder) End() {
 	dxlib.DeleteGraph(f.imgPointer)
 	dxlib.DeleteGraph(f.imgArrow)
 	dxlib.DeleteGraph(f.imgMsgFrame)
+	dxlib.DeleteGraph(f.imgScrollPointer)
 }
 
 func (f *menuFolder) Process() {
@@ -228,6 +236,20 @@ func (f *menuFolder) Draw() {
 
 		dxlib.DrawGraph(tx, 78+int32(f.pointer[f.currentWindow])*30, f.imgPointer, dxlib.TRUE)
 	}
+
+	// Show scrol bar
+	var length, start int32
+	switch f.currentWindow {
+	case folderWindowTypeFolder:
+		start = 80
+		length = 205
+	case folderWindowTypeBackPack:
+		start = 60
+		length = 225
+	}
+	dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+	n := int32(f.scroll[f.currentWindow] + f.pointer[f.currentWindow])
+	dxlib.DrawGraph(442, start+(length-23)*n/int32(f.listNum[f.currentWindow]-1), f.imgScrollPointer, dxlib.TRUE)
 
 	// Show pointered chip detail
 	f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
