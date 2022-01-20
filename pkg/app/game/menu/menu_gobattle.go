@@ -24,19 +24,22 @@ type selectValue struct {
 }
 
 const (
-	viewCenterX = 350
-	viewCenterY = 150
+	viewCenterX         = 350
+	viewCenterY         = 150
+	goBattleListShowMax = 7
 )
 
 var (
 	goBattleSelectData []selectValue
 	goBattleCursor     int
+	goBattleScroll     int
 	goBattleWaitCount  int
 	images             = make(map[int]int32)
 )
 
 func goBattleInit() error {
 	goBattleCursor = 0
+	goBattleScroll = 0
 	goBattleWaitCount = 0
 
 	goBattleSelectData = []selectValue{
@@ -236,12 +239,28 @@ func goBattleProcess() bool {
 		goBattleWaitCount++
 		return false
 	}
-	if inputs.CheckKey(inputs.KeyUp) == 1 && goBattleCursor > 0 {
-		sound.On(sound.SECursorMove)
-		goBattleCursor--
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 && goBattleCursor < len(goBattleSelectData)-1 {
-		sound.On(sound.SECursorMove)
-		goBattleCursor++
+
+	if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
+		if goBattleCursor > 0 {
+			sound.On(sound.SECursorMove)
+			goBattleCursor--
+		} else if goBattleScroll > 0 {
+			sound.On(sound.SECursorMove)
+			goBattleScroll--
+		}
+	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
+		n := goBattleListShowMax - 1
+		if len(goBattleSelectData) < goBattleListShowMax {
+			n = len(goBattleSelectData) - 1
+		}
+
+		if goBattleCursor < n {
+			sound.On(sound.SECursorMove)
+			goBattleCursor++
+		} else if goBattleScroll < len(goBattleSelectData)-goBattleListShowMax {
+			sound.On(sound.SECursorMove)
+			goBattleScroll++
+		}
 	}
 
 	return false
@@ -249,10 +268,11 @@ func goBattleProcess() bool {
 
 func goBattleDraw() {
 	dxlib.DrawBox(20, 30, common.ScreenX-20, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawBox(30, 40, 210, int32(len(goBattleSelectData)*35)+50, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+	dxlib.DrawBox(30, 40, 210, int32(goBattleListShowMax*35)+50, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
 
-	for i, s := range goBattleSelectData {
-		draw.String(65, 50+int32(i)*35, 0xffffff, s.Name)
+	for i := 0; i < goBattleListShowMax; i++ {
+		c := i + goBattleScroll
+		draw.String(65, 50+int32(i)*35, 0xffffff, goBattleSelectData[c].Name)
 	}
 
 	const s = 2
@@ -260,9 +280,10 @@ func goBattleDraw() {
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, dxlib.TRUE)
 
 	// Show images
+	c := goBattleCursor + goBattleScroll
 	const size = 150
 	dxlib.DrawBox(viewCenterX-size/2, viewCenterY-size/2, viewCenterX+size/2, viewCenterY+size/2, 0, dxlib.TRUE)
-	for _, e := range goBattleSelectData[goBattleCursor].Enemies {
+	for _, e := range goBattleSelectData[c].Enemies {
 		dxlib.DrawRotaGraph(e.ViewPosX, e.ViewPosY, 1, 0, images[e.BattleParam.CharID], dxlib.TRUE)
 	}
 }
