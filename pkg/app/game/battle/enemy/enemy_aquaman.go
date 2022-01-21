@@ -182,7 +182,9 @@ func (e *enemyAquaman) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				// Select attack
 				n := rand.Intn(100)
-				if n < 20 && e.beforeAction != aquamanActTypeCreate {
+
+				if n < 20 && !e.pipeExists() {
+					e.waterPipeObjIDs = []string{}
 					e.nextState = aquamanActTypeCreate
 					e.moveNum = rand.Intn(2) + 2
 				} else if n < 50 {
@@ -382,4 +384,13 @@ func (e *enemyAquaman) getCurrentImagePointer() *int32 {
 		n = len(e.images[e.state]) - 1
 	}
 	return &e.images[e.state][n]
+}
+
+func (e *enemyAquaman) pipeExists() bool {
+	for _, id := range e.waterPipeObjIDs {
+		if objanim.IsProcessing(id) {
+			return true
+		}
+	}
+	return false
 }
