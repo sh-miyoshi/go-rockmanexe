@@ -56,8 +56,8 @@ func (a *Act) Process() bool {
 		if a.Count == 2 {
 			pos := common.Point{X: a.Object.X, Y: a.Object.Y}
 			battlecommon.MoveObject(&pos, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
-			a.Object.X = int(pos.X)
-			a.Object.Y = int(pos.Y)
+			a.Object.X = pos.X
+			a.Object.Y = pos.Y
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
 	case battlecommon.PlayerActBuster:
@@ -70,7 +70,7 @@ func (a *Act) Process() bool {
 				power *= 10
 			}
 
-			for x := a.Object.X + 1; x < int(appfield.FieldNum.X); x++ {
+			for x := a.Object.X + 1; x < appfield.FieldNum.X; x++ {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,

@@ -56,7 +56,7 @@ func Init() error {
 	logger.Info("Initialize battle field data")
 
 	panels = make([][]PanelInfo, FieldNum.X)
-	for i := int(0); i < FieldNum.X; i++ {
+	for i := 0; i < FieldNum.X; i++ {
 		panels[i] = make([]PanelInfo, FieldNum.Y)
 	}
 
@@ -78,12 +78,12 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := int(0); x < FieldNum.X; x++ {
+	for x := 0; x < FieldNum.X; x++ {
 		t := PanelTypePlayer
 		if x > 2 {
 			t = PanelTypeEnemy
 		}
-		for y := int(0); y < FieldNum.Y; y++ {
+		for y := 0; y < FieldNum.Y; y++ {
 			panels[x][y] = PanelInfo{
 				Status:    PanelStatusNormal,
 				Type:      t,
@@ -111,8 +111,8 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := int(0); x < FieldNum.X; x++ {
-		for y := int(0); y < FieldNum.Y; y++ {
+	for x := 0; x < FieldNum.X; x++ {
+		for y := 0; y < FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
 			vx := PanelSize.X * x
 			vy := DrawPanelTopY + PanelSize.Y*y

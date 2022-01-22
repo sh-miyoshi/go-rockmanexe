@@ -97,7 +97,7 @@ func (b *boss) Draw() {
 		x := (i + 1) * field.PanelSize.X
 		len := b.count - 40*40
 		s := 0
-		delay := 45 + common.MountainIndex(int(i), int(field.FieldNum.X-1))*5
+		delay := 45 + common.MountainIndex(i, field.FieldNum.X-1)*5
 		if b.count >= delay {
 			s = b.count - delay*20
 			if s > field.DrawPanelTopY {

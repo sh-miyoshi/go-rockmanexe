@@ -82,7 +82,7 @@ func (p *cannon) StopByPlayer() {
 
 func (p *cannon) addDamage() {
 	dm := []damage.Damage{}
-	for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
+	for x := p.x + 1; x < appfield.FieldNum.X; x++ {
 		dm = append(dm, damage.Damage{
 			ID:            uuid.New().String(),
 			PosX:          x,

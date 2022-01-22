@@ -54,7 +54,7 @@ func (e *enemyLark) Init(objID string) error {
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
 
-	for i := int(0); i < 6; i++ {
+	for i := 0; i < 6; i++ {
 		// x座標
 		if e.pm.Pos.X == 3 {
 			// Pattern 1. 前2列を周回
@@ -174,7 +174,7 @@ func (e *enemyLark) Draw() {
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, e.pm.HP, draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})

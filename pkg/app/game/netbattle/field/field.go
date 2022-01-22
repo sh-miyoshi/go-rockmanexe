@@ -63,8 +63,8 @@ func Draw(playerID string) {
 
 	objects := append([]object.Object{}, finfo.Objects...)
 	sort.Slice(objects, func(i, j int) bool {
-		ii := objects[i].Y*int(appfield.FieldNum.X) + objects[i].X
-		ij := objects[j].Y*int(appfield.FieldNum.X) + objects[j].X
+		ii := objects[i].Y*appfield.FieldNum.X + objects[i].X
+		ij := objects[j].Y*appfield.FieldNum.X + objects[j].X
 		return ii < ij
 	})
 	for _, obj := range objects {
@@ -96,7 +96,7 @@ func GetPanelInfo(pos common.Point) appfield.PanelInfo {
 
 	id := ""
 	for _, obj := range finfo.Objects {
-		if obj.Hittable && obj.X == int(pos.X) && obj.Y == int(pos.Y) {
+		if obj.Hittable && obj.X == pos.X && obj.Y == pos.Y {
 			id = obj.ID
 			break
 		}

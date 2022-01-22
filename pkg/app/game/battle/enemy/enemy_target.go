@@ -50,7 +50,7 @@ func (e *enemyTarget) Draw() {
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, e.pm.HP, draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})

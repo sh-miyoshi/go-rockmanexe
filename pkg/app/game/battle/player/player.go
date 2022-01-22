@@ -248,8 +248,8 @@ func (p *BattlePlayer) Draw() {
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + int((i*px)-max)
-			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + int((i*px)-max)
+			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + (i * px) - max
+			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + (i * px) - max
 			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
 			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
@@ -258,8 +258,8 @@ func (p *BattlePlayer) Draw() {
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
-	x := int(7)
-	y := int(5)
+	x := 7
+	y := 5
 	if xShift {
 		x += 235
 	}

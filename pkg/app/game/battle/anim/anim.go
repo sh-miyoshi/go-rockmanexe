@@ -94,7 +94,7 @@ func sortAnim() {
 		pm := anim.GetParam()
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.AnimType*100 + int(pm.Pos.Y*6+pm.Pos.X),
+			Index: pm.AnimType*100 + pm.Pos.Y*6 + pm.Pos.X,
 		})
 	}
 

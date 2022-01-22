@@ -79,10 +79,10 @@ func Draw() {
 	// Show chip data
 	for i, s := range selectList {
 		x := i*32 + 17
-		draw.ChipCode(int(x+10), 240, s.Code, 50)
+		draw.ChipCode(x+10, 240, s.Code, 50)
 		if !slice.Contains(selected, i) {
 			// Show Icon
-			dxlib.DrawGraph(int(x), 210, chip.GetIcon(s.ID, selectable(i)), true)
+			dxlib.DrawGraph(x, 210, chip.GetIcon(s.ID, selectable(i)), true)
 		}
 
 		// Show Detail Data
@@ -109,14 +109,14 @@ func Draw() {
 		} else {
 			x := (pointer%5)*32 + 8
 			y := (pointer/5)*20 + 202
-			dxlib.DrawGraph(int(x), int(y), imgPointer[0], true)
+			dxlib.DrawGraph(x, y, imgPointer[0], true)
 		}
 	}
 
 	// Show Selected Chips
 	for i, s := range selected {
 		y := i*32 + 50
-		dxlib.DrawGraph(193, int(y), chip.GetIcon(selectList[s].ID, true), true)
+		dxlib.DrawGraph(193, y, chip.GetIcon(selectList[s].ID, true), true)
 	}
 }
 

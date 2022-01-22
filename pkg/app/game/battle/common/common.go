@@ -90,5 +90,5 @@ func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int 
 		res = (nowPos - nextPos)
 	}
 
-	return res * size * int(totalCnt-2*cnt) / int(totalCnt*2)
+	return res*size*totalCnt - 2*cnt/totalCnt*2
 }

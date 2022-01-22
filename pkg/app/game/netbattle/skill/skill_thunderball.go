@@ -67,7 +67,7 @@ func (p *thunderBall) Process() (bool, error) {
 				return true, nil
 			}
 
-			if p.x < 0 || p.x > int(field.FieldNum.X) || p.y < 0 || p.y > int(field.FieldNum.Y) {
+			if p.x < 0 || p.x > field.FieldNum.X || p.y < 0 || p.y > field.FieldNum.Y {
 				return true, nil
 			}
 		}

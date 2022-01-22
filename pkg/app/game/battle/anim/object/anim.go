@@ -169,7 +169,7 @@ func sortAnim() {
 
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: int(index),
+			Index: index,
 		})
 	}
 

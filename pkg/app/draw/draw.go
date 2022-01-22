@@ -127,7 +127,7 @@ func ChipCode(x int, y int, code string, percent int) {
 func Number(x int, y int, number int, opts ...NumberOption) {
 	nums := []int{}
 	for number > 0 {
-		nums = append(nums, int(number)%10)
+		nums = append(nums, number%10)
 		number /= 10
 	}
 	for i := 0; i < len(nums)/2; i++ {
@@ -138,13 +138,13 @@ func Number(x int, y int, number int, opts ...NumberOption) {
 	if len(opts) > 0 {
 		color = opts[0].Color
 		if opts[0].Centered {
-			x -= int(len(nums) * numberSizeX / 2)
+			x -= len(nums) * numberSizeX / 2
 		} else if opts[0].RightAligned {
 			n := opts[0].Length - len(nums)
 			if n < 0 {
 				panic(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
 			}
-			x += int(n * numberSizeX)
+			x += n * numberSizeX
 		} else if opts[0].Padding != nil {
 			v := *opts[0].Padding
 			n := opts[0].Length - len(nums)

@@ -100,8 +100,8 @@ func (a *Act) Process() bool {
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: effect.TypeHitSmallEffect,
-					ViewOfsX:      int(rand.Intn(2*5) - 5),
-					ViewOfsY:      int(rand.Intn(2*5) - 5),
+					ViewOfsX:      rand.Intn(2*5) - 5,
+					ViewOfsY:      rand.Intn(2*5) - 5,
 				})
 			}
 			netconn.SendDamages(dm)

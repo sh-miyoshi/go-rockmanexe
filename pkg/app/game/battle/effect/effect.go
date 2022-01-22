@@ -124,8 +124,8 @@ func End() {
 func Get(typ int, pos common.Point, randRange int) anim.Anim {
 	ofs := common.Point{}
 	if randRange > 0 {
-		ofs.X = int(rand.Intn(2*randRange) - randRange)
-		ofs.Y = int(rand.Intn(2*randRange) - randRange)
+		ofs.X = rand.Intn(2*randRange) - randRange
+		ofs.Y = rand.Intn(2*randRange) - randRange
 	}
 
 	res := &effect{
