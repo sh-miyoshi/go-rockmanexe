@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
@@ -19,6 +20,7 @@ const (
 	stateBattle
 	stateNetBattle
 	stateMenu
+	stateMap
 
 	stateMax
 )
@@ -83,6 +85,9 @@ func Process() error {
 			} else if errors.Is(err, menu.ErrGoNetBattle) {
 				stateChange(stateNetBattle)
 				return nil
+			} else if errors.Is(err, menu.ErrGoMap) {
+				stateChange(stateMap)
+				return nil
 			}
 			return fmt.Errorf("game process in state menu failed: %w", err)
 		}
@@ -146,6 +151,16 @@ func Process() error {
 
 			return fmt.Errorf("battle process failed: %w", err)
 		}
+	case stateMap:
+		if count == 0 {
+			if err := mapmove.Init(); err != nil {
+				return fmt.Errorf("game process in state map move failed: %w", err)
+			}
+		}
+		if err := mapmove.Process(); err != nil {
+			mapmove.End()
+			// TODO
+		}
 	}
 	count++
 	return nil
@@ -167,6 +182,8 @@ func Draw() {
 		battle.Draw()
 	case stateNetBattle:
 		netbattle.Draw()
+	case stateMap:
+		mapmove.Draw()
 	}
 }
 

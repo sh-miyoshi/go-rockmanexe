@@ -7,7 +7,9 @@ import (
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -35,6 +37,7 @@ var (
 
 	ErrGoBattle    = errors.New("go to battle")
 	ErrGoNetBattle = errors.New("go to net battle")
+	ErrGoMap       = errors.New("go to map")
 )
 
 func Init(plyr *player.Player) error {
@@ -111,6 +114,10 @@ func Process() error {
 	switch menuState {
 	case stateTop:
 		menuTopInst.Process()
+
+		if config.Get().Debug.EnableDevFeature && inputs.CheckKey(inputs.KeyLButton) == 1 {
+			return ErrGoMap
+		}
 	case stateChipFolder:
 		menuFolderInst.Process()
 	case stateGoBattle:
@@ -136,6 +143,10 @@ func Draw() {
 	switch menuState {
 	case stateTop:
 		menuTopInst.Draw()
+
+		if config.Get().Debug.EnableDevFeature {
+			draw.String(65, 250, 0x000000, "L-btn: マップ移動")
+		}
 	case stateChipFolder:
 		menuFolderInst.Draw()
 	case stateGoBattle:
