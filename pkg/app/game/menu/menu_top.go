@@ -1,12 +1,12 @@
 package menu
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -74,23 +74,23 @@ func (t *menuTop) Draw() {
 		"ネット対戦",
 	}
 
-	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawBox(30, 40, 210, int32(len(msgs)*35)+50, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(30, 40, 210, len(msgs)*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i, msg := range msgs {
-		draw.String(65, 50+int32(i)*35, 0xffffff, msg)
+		draw.String(65, 50+i*35, 0xffffff, msg)
 	}
 
 	const s = 2
-	y := int32(50 + t.pointer*35)
-	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, dxlib.TRUE)
+	y := 50 + t.pointer*35
+	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 
 	// Show description
-	dxlib.DrawBox(255, 55, 445, 285, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawBox(275, 38, 425, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawTriangle(255, 55, 275, 38, 275, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawTriangle(425, 55, 425, 38, 445, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+	dxlib.DrawBox(255, 55, 445, 285, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(275, 38, 425, 55, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawTriangle(255, 55, 275, 38, 275, 55, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawTriangle(425, 55, 425, 38, 445, 55, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), true)
 	draw.String(280, 40, 0xffffff, "Description")
 
 	switch t.pointer {

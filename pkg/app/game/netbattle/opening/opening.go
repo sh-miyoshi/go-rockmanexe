@@ -1,10 +1,10 @@
 package opening
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 )
 
 var (
-	count int32
+	count int
 )
 
 func Init() {
@@ -35,6 +35,6 @@ func Process() bool {
 func Draw() {
 	val := 255 * (endCount - count) / endCount
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, val)
-	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, dxlib.TRUE)
+	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 }

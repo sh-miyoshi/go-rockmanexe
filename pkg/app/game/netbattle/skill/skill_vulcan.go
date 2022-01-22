@@ -79,7 +79,7 @@ func (p *vulcan) addDamage() {
 	hit := false
 	eff := effect.Effect{}
 	for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
-		pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
+		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 		if pn.ObjectID != "" {
 			dm = append(dm, damage.Damage{
 				ID:            uuid.New().String(),
@@ -95,8 +95,8 @@ func (p *vulcan) addDamage() {
 				Type:     effect.TypeVulcanHit1Effect,
 				X:        x,
 				Y:        p.y,
-				ViewOfsX: int32(rand.Intn(2*20) - 20),
-				ViewOfsY: int32(rand.Intn(2*20) - 20),
+				ViewOfsX: rand.Intn(2*20) - 20,
+				ViewOfsY: rand.Intn(2*20) - 20,
 			}
 			if p.hit && x < int(appfield.FieldNum.X)-1 {
 				dm = append(dm, damage.Damage{
@@ -107,8 +107,8 @@ func (p *vulcan) addDamage() {
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: effect.TypeVulcanHit2Effect,
-					ViewOfsX:      int32(rand.Intn(2*20) - 20),
-					ViewOfsY:      int32(rand.Intn(2*20) - 20),
+					ViewOfsX:      rand.Intn(2*20) - 20,
+					ViewOfsY:      rand.Intn(2*20) - 20,
 				})
 			}
 			hit = true

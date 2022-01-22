@@ -1,13 +1,13 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type recover struct {
@@ -24,7 +24,7 @@ func (p *recover) Draw() {
 	if n >= 0 {
 		pos := objanim.GetObjPos(p.OwnerID)
 		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], true)
 	}
 }
 

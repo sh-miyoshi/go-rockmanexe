@@ -34,7 +34,7 @@ message Action {
         string objectID = 6;
         bytes damageInfo = 7;
         bytes effect = 8;
-        int32 seType = 9;
+        int64 seType = 9;
     }
 }
 

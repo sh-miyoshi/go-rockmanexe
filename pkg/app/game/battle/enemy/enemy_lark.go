@@ -3,7 +3,6 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -13,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -30,17 +30,17 @@ type larkAtk struct {
 	ownerID   string
 	count     int
 	attacking bool
-	images    []int32
+	images    []int
 }
 
 type enemyLark struct {
 	pm      EnemyParam
-	imgMove []int32
+	imgMove []int
 	count   int
 	atk     larkAtk
 
-	movePoint   [6][2]int32
-	movePointer int32
+	movePoint   [6][2]int
+	movePointer int
 	moveCount   int
 
 	next common.Point
@@ -54,7 +54,7 @@ func (e *enemyLark) Init(objID string) error {
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
 
-	for i := int32(0); i < 6; i++ {
+	for i := int(0); i < 6; i++ {
 		// x座標
 		if e.pm.Pos.X == 3 {
 			// Pattern 1. 前2列を周回
@@ -78,13 +78,13 @@ func (e *enemyLark) Init(objID string) error {
 
 	// Load Images
 	name, ext := GetStandImageFile(IDLark)
-	e.imgMove = make([]int32, 8)
+	e.imgMove = make([]int, 8)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 140, 130, e.imgMove); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	e.atk.images = make([]int32, 3)
+	e.atk.images = make([]int, 3)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 160, 124, e.atk.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -162,7 +162,7 @@ func (e *enemyLark) Draw() {
 	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		dxlib.DrawRotaGraph(view.X+20, view.Y, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+20, view.Y, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		return
 	}
 
@@ -170,11 +170,11 @@ func (e *enemyLark) Draw() {
 	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, larkMoveNextStepCount, field.PanelSize.X)
 	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, larkMoveNextStepCount, field.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(view.X+20+ofsx, view.Y+ofsy, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X+20+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -232,7 +232,7 @@ func (a *larkAtk) Process() {
 	}
 }
 
-func (e *enemyLark) getCurrentImagePointer() *int32 {
+func (e *enemyLark) getCurrentImagePointer() *int {
 	if e.atk.attacking {
 		n := (e.count / delayLarkAtk)
 		if n >= len(e.atk.images) {

@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -40,12 +40,12 @@ func (p *cannon) Draw() {
 			view.X -= 15
 		}
 
-		dxlib.DrawRotaGraph(view.X+48, view.Y-12, 1, 0, imgCannonBody[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+48, view.Y-12, 1, 0, imgCannonBody[p.Type][n], true)
 	}
 
 	n = (p.count - 15) / delayCannonAtk
 	if n >= 0 && n < len(imgCannonAtk[p.Type]) {
-		dxlib.DrawRotaGraph(view.X+90, view.Y-10, 1, 0, imgCannonAtk[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+90, view.Y-10, 1, 0, imgCannonAtk[p.Type][n], true)
 	}
 }
 

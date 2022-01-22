@@ -74,7 +74,7 @@ func main() {
 	}
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
-	dxlib.SetGraphMode(common.ScreenSize.X, common.ScreenSize.Y)
+	dxlib.SetGraphMode(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
 
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
@@ -113,7 +113,7 @@ MAIN:
 
 		fpsMgr.Wait()
 		if config.Get().Debug.ShowFPS {
-			dxlib.DrawFormatString(common.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+			dxlib.DrawFormatString(int32(common.ScreenSize.X-60), 10, 0xff0000, "[%.1f]", fpsMgr.Get())
 		}
 	}
 

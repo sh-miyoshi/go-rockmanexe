@@ -107,7 +107,7 @@ func (p *spreadGun) Process() (bool, error) {
 		sound.On(sound.SEGun)
 
 		for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
-			pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
+			pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 			if pn.ObjectID != "" {
 				// Hit
 				sound.On(sound.SESpreadHit)

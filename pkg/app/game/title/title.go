@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -23,8 +23,8 @@ var (
 	ErrStartContinue = errors.New("start with continue")
 
 	count     int
-	imgLogo   int32
-	imgBack   int32
+	imgLogo   int
+	imgBack   int
 	state     int
 	cursor    int
 	selectMax int
@@ -67,25 +67,25 @@ func End() {
 }
 
 func Draw() {
-	x := int32(-count) % common.ScreenSize.X
-	dxlib.DrawGraph(x, 0, imgBack, dxlib.FALSE)
-	dxlib.DrawGraph(x+common.ScreenSize.X, 0, imgBack, dxlib.FALSE)
-	dxlib.DrawGraph(0, 0, imgLogo, dxlib.TRUE)
+	x := -count % common.ScreenSize.X
+	dxlib.DrawGraph(x, 0, imgBack, false)
+	dxlib.DrawGraph(x+common.ScreenSize.X, 0, imgBack, false)
+	dxlib.DrawGraph(0, 0, imgLogo, true)
 
 	switch state {
 	case stateSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 
 		msgs := []string{"はじめから", "つづきから"}
 		for i := 0; i < selectMax; i++ {
-			draw.String(180, 230+int32(i)*20, 0xffffff, msgs[i])
+			draw.String(180, 230+i*20, 0xffffff, msgs[i])
 		}
 		const s = 2
-		x := int32(160)
-		y := int32(230 + cursor*20)
-		dxlib.DrawTriangle(x, y+s, x+18-s*2, y+10, x, y+20-s, 0xffffff, dxlib.TRUE)
+		x := 160
+		y := 230 + cursor*20
+		dxlib.DrawTriangle(x, y+s, x+18-s*2, y+10, x, y+20-s, 0xffffff, true)
 	}
 }
 

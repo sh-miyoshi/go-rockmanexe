@@ -3,7 +3,6 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -13,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -31,22 +31,22 @@ const (
 type boomerAtk struct {
 	ownerID string
 	count   int
-	images  []int32
+	images  []int
 	atkID   string
 }
 
 type enemyBoomer struct {
 	pm        EnemyParam
-	imgMove   []int32
+	imgMove   []int
 	count     int
 	atk       boomerAtk
 	direct    int
-	nextY     int32
-	prevY     int32
+	nextY     int
+	prevY     int
 	state     int
 	nextState int
 	waitCount int
-	prevOfsY  int32
+	prevOfsY  int
 }
 
 func (e *enemyBoomer) Init(objID string) error {
@@ -61,13 +61,13 @@ func (e *enemyBoomer) Init(objID string) error {
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBoomer)
-	e.imgMove = make([]int32, 4)
+	e.imgMove = make([]int, 4)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 114, 102, e.imgMove); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	tmp := make([]int32, 5)
+	tmp := make([]int, 5)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 136, 104, tmp); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -164,7 +164,7 @@ func (e *enemyBoomer) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	var ofsy int32
+	var ofsy int
 	if e.state == boomerStateMove {
 		c := e.count % boomerActNextStepCount
 		if c == 0 || c == boomerActNextStepCount/2 {
@@ -174,11 +174,11 @@ func (e *enemyBoomer) Draw() {
 			e.prevOfsY = ofsy
 		}
 	}
-	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40+ofsy, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40+ofsy, e.pm.HP, draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -209,7 +209,7 @@ func (e *enemyBoomer) GetObjectType() int {
 	return objanim.ObjTypeEnemy
 }
 
-func (e *enemyBoomer) getCurrentImagePointer() *int32 {
+func (e *enemyBoomer) getCurrentImagePointer() *int {
 	if e.state == boomerStateAtk {
 		n := (e.count / delayBoomerAtk)
 		if n >= len(e.atk.images) {

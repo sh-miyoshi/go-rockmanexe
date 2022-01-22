@@ -3,13 +3,13 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type selectEnemyData struct {
@@ -33,7 +33,7 @@ var (
 	goBattleCursor     int
 	goBattleScroll     int
 	goBattleWaitCount  int
-	images             = make(map[int]int32)
+	images             = make(map[int]int)
 )
 
 func goBattleInit() error {
@@ -195,7 +195,7 @@ func goBattleEnd() {
 	for _, img := range images {
 		dxlib.DeleteGraph(img)
 	}
-	images = make(map[int]int32)
+	images = make(map[int]int)
 }
 
 func goBattleProcess() bool {
@@ -242,24 +242,24 @@ func goBattleProcess() bool {
 }
 
 func goBattleDraw() {
-	dxlib.DrawBox(20, 30, common.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-	dxlib.DrawBox(30, 40, 210, int32(goBattleListShowMax*35)+50, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+	dxlib.DrawBox(20, 30, common.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(30, 40, 210, goBattleListShowMax*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i := 0; i < goBattleListShowMax; i++ {
 		c := i + goBattleScroll
-		draw.String(65, 50+int32(i)*35, 0xffffff, goBattleSelectData[c].Name)
+		draw.String(65, 50+i*35, 0xffffff, goBattleSelectData[c].Name)
 	}
 
 	const s = 2
-	y := int32(50 + goBattleCursor*35)
-	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, dxlib.TRUE)
+	y := 50 + goBattleCursor*35
+	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 
 	// Show images
 	c := goBattleCursor + goBattleScroll
 	const size = 150
-	dxlib.DrawBox(viewCenter.X-size/2, viewCenter.Y-size/2, viewCenter.X+size/2, viewCenter.Y+size/2, 0, dxlib.TRUE)
+	dxlib.DrawBox(viewCenter.X-size/2, viewCenter.Y-size/2, viewCenter.X+size/2, viewCenter.Y+size/2, 0, true)
 	for _, e := range goBattleSelectData[c].Enemies {
-		dxlib.DrawRotaGraph(e.View.X, e.View.Y, 1, 0, images[e.BattleParam.CharID], dxlib.TRUE)
+		dxlib.DrawRotaGraph(e.View.X, e.View.Y, 1, 0, images[e.BattleParam.CharID], true)
 	}
 }
 

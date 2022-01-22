@@ -17,7 +17,7 @@ type cannon struct {
 	y            int
 	count        int
 	timeInit     bool
-	viewBodyOfsX int32
+	viewBodyOfsX int
 	clientID     string
 }
 
@@ -48,8 +48,8 @@ func (p *cannon) Process() (bool, error) {
 				TTL:           1,
 				TargetType:    damage.TargetOtherClient,
 				HitEffectType: effect.TypeCannonHitEffect,
-				ViewOfsX:      int32(rand.Intn(2*5) - 5),
-				ViewOfsY:      int32(rand.Intn(2*5) - 5),
+				ViewOfsX:      int(rand.Intn(2*5) - 5),
+				ViewOfsY:      int(rand.Intn(2*5) - 5),
 				BigDamage:     true,
 			})
 		}

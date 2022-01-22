@@ -15,7 +15,7 @@ const (
 type rewardInfo struct {
 	Type  int
 	Name  string
-	Image int32
+	Image int
 	Value interface{}
 }
 

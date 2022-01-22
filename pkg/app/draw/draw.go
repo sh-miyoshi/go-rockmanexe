@@ -3,8 +3,8 @@ package draw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type NumberOption struct {
@@ -31,10 +31,10 @@ const (
 )
 
 var (
-	defaultFont int32 = -1
-	msgFont     int32 = -1
-	imgCode     []int32
-	imgNumber   [numberColorMax][]int32
+	defaultFont int = -1
+	msgFont     int = -1
+	imgCode     []int
+	imgNumber   [numberColorMax][]int
 )
 
 func Init() error {
@@ -58,21 +58,21 @@ func Init() error {
 	}
 
 	// Load chip code
-	imgCode = make([]int32, 27)
+	imgCode = make([]int, 27)
 	fname := common.ImagePath + "chipInfo/chip_code.png"
 	if res := dxlib.LoadDivGraph(fname, 27, 9, 3, 20, 26, imgCode); res == -1 {
 		return fmt.Errorf("failed to load chip code image %s", fname)
 	}
 
 	// Load number data
-	tmp := make([]int32, 3*10)
+	tmp := make([]int, 3*10)
 	fname = common.ImagePath + "number.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 10, 3, numberSizeX, 26, tmp); res == -1 {
 		return fmt.Errorf("failed to load number image %s", fname)
 	}
 	// Sort and set to start from 0
 	for i := 0; i < 3; i++ {
-		imgNumber[i] = make([]int32, 10)
+		imgNumber[i] = make([]int, 10)
 		imgNumber[i][0] = tmp[i*10+9]
 		for n := 0; n < 9; n++ {
 			imgNumber[i][n+1] = tmp[i*10+n]
@@ -83,7 +83,7 @@ func Init() error {
 		return fmt.Errorf("failed to load small number image %s", fname)
 	}
 	// Sort and set to start from 0
-	imgNumber[NumberColorWhiteSmall] = make([]int32, 10)
+	imgNumber[NumberColorWhiteSmall] = make([]int, 10)
 	imgNumber[NumberColorWhiteSmall][0] = tmp[9]
 	for n := 0; n < 9; n++ {
 		imgNumber[NumberColorWhiteSmall][n+1] = tmp[n]
@@ -92,15 +92,15 @@ func Init() error {
 	return nil
 }
 
-func String(x int32, y int32, color uint32, format string, a ...interface{}) {
+func String(x int, y int, color uint, format string, a ...interface{}) {
 	dxlib.DrawFormatStringToHandle(x, y, color, defaultFont, format, a...)
 }
 
-func MessageText(x int32, y int32, color uint32, format string, a ...interface{}) {
+func MessageText(x int, y int, color uint, format string, a ...interface{}) {
 	dxlib.DrawFormatStringToHandle(x, y, color, msgFont, format, a...)
 }
 
-func ChipCode(x int32, y int32, code string, percent int32) {
+func ChipCode(x int, y int, code string, percent int) {
 	index := -1
 	if len(code) != 1 {
 		panic(fmt.Sprintf("Invalid chip code %s is specified.", code))
@@ -118,13 +118,13 @@ func ChipCode(x int32, y int32, code string, percent int32) {
 	}
 
 	if percent == 100 {
-		dxlib.DrawGraph(x, y, imgCode[index], dxlib.FALSE)
+		dxlib.DrawGraph(x, y, imgCode[index], false)
 	} else {
-		dxlib.DrawExtendGraph(x, y, x+20*percent/100, y+26*percent/100, imgCode[index], dxlib.FALSE)
+		dxlib.DrawExtendGraph(x, y, x+20*percent/100, y+26*percent/100, imgCode[index], false)
 	}
 }
 
-func Number(x int32, y int32, number int32, opts ...NumberOption) {
+func Number(x int, y int, number int, opts ...NumberOption) {
 	nums := []int{}
 	for number > 0 {
 		nums = append(nums, int(number)%10)
@@ -138,13 +138,13 @@ func Number(x int32, y int32, number int32, opts ...NumberOption) {
 	if len(opts) > 0 {
 		color = opts[0].Color
 		if opts[0].Centered {
-			x -= int32(len(nums) * numberSizeX / 2)
+			x -= int(len(nums) * numberSizeX / 2)
 		} else if opts[0].RightAligned {
 			n := opts[0].Length - len(nums)
 			if n < 0 {
 				panic(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
 			}
-			x += int32(n * numberSizeX)
+			x += int(n * numberSizeX)
 		} else if opts[0].Padding != nil {
 			v := *opts[0].Padding
 			n := opts[0].Length - len(nums)
@@ -155,7 +155,7 @@ func Number(x int32, y int32, number int32, opts ...NumberOption) {
 	}
 
 	for _, n := range nums {
-		dxlib.DrawGraph(x, y, imgNumber[color][n], dxlib.TRUE)
+		dxlib.DrawGraph(x, y, imgNumber[color][n], true)
 		x += numberSizeX
 	}
 }

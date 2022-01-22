@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -14,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -28,12 +28,12 @@ type metallAtk struct {
 	id      string
 	ownerID string
 	count   int
-	images  []int32
+	images  []int
 }
 
 type enemyMetall struct {
 	pm              EnemyParam
-	imgMove         []int32
+	imgMove         []int
 	count           int
 	moveFailedCount int
 	atkID           string
@@ -45,13 +45,13 @@ func (e *enemyMetall) Init(objID string) error {
 
 	e.pm.ObjectID = objID
 	e.atk.id = uuid.New().String()
-	e.imgMove = make([]int32, 1)
+	e.imgMove = make([]int, 1)
 	fname := name + "_move" + ext
 	e.imgMove[0] = dxlib.LoadGraph(fname)
 	if e.imgMove[0] == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
-	e.atk.images = make([]int32, 15)
+	e.atk.images = make([]int, 15)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 15, 15, 1, 100, 140, e.atk.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -151,11 +151,11 @@ func (e *enemyMetall) Draw() {
 	if e.atkID != "" {
 		img = e.atk.images[e.atk.GetImageNo()]
 	}
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})

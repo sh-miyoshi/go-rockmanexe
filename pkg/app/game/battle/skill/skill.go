@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -57,28 +57,28 @@ type Argument struct {
 }
 
 var (
-	imgCannonAtk     [TypeCannonMax][]int32
-	imgCannonBody    [TypeCannonMax][]int32
-	imgSword         [TypeSwordMax][]int32
-	imgBombThrow     []int32
-	imgShockWave     []int32
-	imgRecover       []int32
-	imgSpreadGunAtk  []int32
-	imgSpreadGunBody []int32
-	imgVulcan        []int32
-	imgPick          []int32
-	imgThunderBall   []int32
-	imgWideShotBody  []int32
-	imgWideShotBegin []int32
-	imgWideShotMove  []int32
-	imgBoomerang     []int32
-	imgAquamanShot   []int32
+	imgCannonAtk     [TypeCannonMax][]int
+	imgCannonBody    [TypeCannonMax][]int
+	imgSword         [TypeSwordMax][]int
+	imgBombThrow     []int
+	imgShockWave     []int
+	imgRecover       []int
+	imgSpreadGunAtk  []int
+	imgSpreadGunBody []int
+	imgVulcan        []int
+	imgPick          []int
+	imgThunderBall   []int
+	imgWideShotBody  []int
+	imgWideShotBegin []int
+	imgWideShotMove  []int
+	imgBoomerang     []int
+	imgAquamanShot   []int
 )
 
 func Init() error {
 	path := common.ImagePath + "battle/skill/"
 
-	tmp := make([]int32, 24)
+	tmp := make([]int, 24)
 	fname := path + "キャノン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -204,7 +204,7 @@ func Init() error {
 		imgBoomerang = append(imgBoomerang, tmp[i])
 	}
 	fname = path + "aquaman_shot.png"
-	imgAquamanShot = make([]int32, 1)
+	imgAquamanShot = make([]int, 1)
 	if imgAquamanShot[0] = dxlib.LoadGraph(fname); imgAquamanShot[0] == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -217,70 +217,70 @@ func End() {
 		for j := 0; j < len(imgCannonAtk[i]); j++ {
 			dxlib.DeleteGraph(imgCannonAtk[i][j])
 		}
-		imgCannonAtk[i] = []int32{}
+		imgCannonAtk[i] = []int{}
 		for j := 0; j < len(imgCannonBody[i]); j++ {
 			dxlib.DeleteGraph(imgCannonBody[i][j])
 		}
-		imgCannonBody[i] = []int32{}
+		imgCannonBody[i] = []int{}
 	}
 	for i := 0; i < 3; i++ {
 		for j := 0; j < len(imgSword[i]); j++ {
 			dxlib.DeleteGraph(imgSword[i][j])
 		}
-		imgSword[i] = []int32{}
+		imgSword[i] = []int{}
 	}
 	for i := 0; i < len(imgBombThrow); i++ {
 		dxlib.DeleteGraph(imgBombThrow[i])
 	}
-	imgBombThrow = []int32{}
+	imgBombThrow = []int{}
 	for i := 0; i < len(imgShockWave); i++ {
 		dxlib.DeleteGraph(imgShockWave[i])
 	}
-	imgShockWave = []int32{}
+	imgShockWave = []int{}
 	for i := 0; i < len(imgSpreadGunAtk); i++ {
 		dxlib.DeleteGraph(imgSpreadGunAtk[i])
 	}
-	imgSpreadGunAtk = []int32{}
+	imgSpreadGunAtk = []int{}
 	for i := 0; i < len(imgSpreadGunBody); i++ {
 		dxlib.DeleteGraph(imgSpreadGunBody[i])
 	}
-	imgSpreadGunBody = []int32{}
+	imgSpreadGunBody = []int{}
 	for i := 0; i < len(imgVulcan); i++ {
 		dxlib.DeleteGraph(imgVulcan[i])
 	}
-	imgVulcan = []int32{}
+	imgVulcan = []int{}
 	for i := 0; i < len(imgRecover); i++ {
 		dxlib.DeleteGraph(imgRecover[i])
 	}
-	imgRecover = []int32{}
+	imgRecover = []int{}
 	for i := 0; i < len(imgPick); i++ {
 		dxlib.DeleteGraph(imgPick[i])
 	}
-	imgPick = []int32{}
+	imgPick = []int{}
 	for i := 0; i < len(imgThunderBall); i++ {
 		dxlib.DeleteGraph(imgThunderBall[i])
 	}
-	imgThunderBall = []int32{}
+	imgThunderBall = []int{}
 	for i := 0; i < len(imgWideShotBody); i++ {
 		dxlib.DeleteGraph(imgWideShotBody[i])
 	}
-	imgWideShotBody = []int32{}
+	imgWideShotBody = []int{}
 	for i := 0; i < len(imgWideShotBegin); i++ {
 		dxlib.DeleteGraph(imgWideShotBegin[i])
 	}
-	imgWideShotBegin = []int32{}
+	imgWideShotBegin = []int{}
 	for i := 0; i < len(imgWideShotMove); i++ {
 		dxlib.DeleteGraph(imgWideShotMove[i])
 	}
-	imgWideShotMove = []int32{}
+	imgWideShotMove = []int{}
 	for i := 0; i < len(imgBoomerang); i++ {
 		dxlib.DeleteGraph(imgBoomerang[i])
 	}
-	imgBoomerang = []int32{}
+	imgBoomerang = []int{}
 	for i := 0; i < len(imgAquamanShot); i++ {
 		dxlib.DeleteGraph(imgAquamanShot[i])
 	}
-	imgAquamanShot = []int32{}
+	imgAquamanShot = []int{}
 }
 
 // Get ...
@@ -429,7 +429,7 @@ func (p *tmpskill) Draw() {
 
 	n := p.count / delay
 	if n < len(img) {
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img[n], true)
 	}
 }
 

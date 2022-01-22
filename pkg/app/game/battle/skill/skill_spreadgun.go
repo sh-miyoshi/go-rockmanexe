@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type spreadGun struct {
@@ -37,7 +37,7 @@ func (p *spreadGun) Draw() {
 	if n < len(imgSpreadGunBody) {
 		pos := objanim.GetObjPos(p.OwnerID)
 		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], true)
 	}
 
 	// Show atk
@@ -45,7 +45,7 @@ func (p *spreadGun) Draw() {
 	if n >= 0 && n < len(imgSpreadGunAtk) {
 		pos := objanim.GetObjPos(p.OwnerID)
 		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], true)
 	}
 }
 
@@ -68,11 +68,11 @@ func (p *spreadGun) Process() (bool, error) {
 					HitEffectType: effect.TypeHitBig,
 				})
 				// Spreading
-				for sy := int32(-1); sy <= 1; sy++ {
+				for sy := -1; sy <= 1; sy++ {
 					if pos.Y+sy < 0 || pos.Y+sy >= field.FieldNum.Y {
 						continue
 					}
-					for sx := int32(-1); sx <= 1; sx++ {
+					for sx := -1; sx <= 1; sx++ {
 						if sy == 0 && sx == 0 {
 							continue
 						}

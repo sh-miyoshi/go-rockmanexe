@@ -3,11 +3,11 @@ package opening
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -16,9 +16,9 @@ const (
 )
 
 type boss struct {
-	enemyImages []int32
+	enemyImages []int
 	enemies     []enemy.EnemyParam
-	playerImage int32
+	playerImage int
 	count       int
 }
 
@@ -44,7 +44,7 @@ func (b *boss) End() {
 	for _, img := range b.enemyImages {
 		dxlib.DeleteGraph(img)
 	}
-	b.enemyImages = []int32{}
+	b.enemyImages = []int{}
 }
 
 func (b *boss) Process() bool {
@@ -54,26 +54,26 @@ func (b *boss) Process() bool {
 }
 
 func (b *boss) Draw() {
-	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
+	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 
 	// debug(初期位置)
 	view := battlecommon.ViewPos(common.Point{X: 1, Y: 1})
 
 	dxlib.SetDrawBright(17, 168, 10)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, true)
 
 	for i, e := range b.enemies {
 		view := battlecommon.ViewPos(e.Pos)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], true)
 	}
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, true)
 
 	for i, e := range b.enemies {
 		view := battlecommon.ViewPos(e.Pos)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], true)
 	}
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
@@ -82,9 +82,9 @@ func (b *boss) Draw() {
 	color := dxlib.GetColor(17, 168, 10)
 
 	// horizontal lines
-	for i := int32(0); i < field.FieldNum.Y+1; i++ {
-		y := field.DrawPanelTopY + int32(i*field.PanelSize.Y)
-		len := int32(b.count) - i*10*40
+	for i := 0; i < field.FieldNum.Y+1; i++ {
+		y := field.DrawPanelTopY + i*field.PanelSize.Y
+		len := b.count - i*10*40
 		if len > common.ScreenSize.X {
 			len = common.ScreenSize.X
 		}
@@ -93,13 +93,13 @@ func (b *boss) Draw() {
 	}
 
 	// vertical lines
-	for i := int32(0); i < field.FieldNum.X-1; i++ {
+	for i := 0; i < field.FieldNum.X-1; i++ {
 		x := (i + 1) * field.PanelSize.X
-		len := int32(b.count-40) * 40
-		var s int32
+		len := b.count - 40*40
+		s := 0
 		delay := 45 + common.MountainIndex(int(i), int(field.FieldNum.X-1))*5
 		if b.count >= delay {
-			s = int32(b.count-delay) * 20
+			s = b.count - delay*20
 			if s > field.DrawPanelTopY {
 				s = field.DrawPanelTopY
 			}
@@ -110,11 +110,11 @@ func (b *boss) Draw() {
 			len = maxLen
 		}
 
-		drawLine(int32(x), s, len, vertical, color)
+		drawLine(x, s, len, vertical, color)
 	}
 }
 
-func drawLine(x, y int32, length int32, direct int, color uint32) {
+func drawLine(x, y int, length int, direct int, color uint) {
 	if length <= 0 {
 		return
 	}
@@ -123,8 +123,8 @@ func drawLine(x, y int32, length int32, direct int, color uint32) {
 
 	switch direct {
 	case horizontal:
-		dxlib.DrawBox(x, y-s, x+length, y+s, color, dxlib.TRUE)
+		dxlib.DrawBox(x, y-s, x+length, y+s, color, true)
 	case vertical:
-		dxlib.DrawBox(x-s, y, x+s, y+length, color, dxlib.TRUE)
+		dxlib.DrawBox(x-s, y, x+s, y+length, color, true)
 	}
 }

@@ -3,17 +3,17 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type menuInvalidChip struct {
-	imgMsgFrame int32
+	imgMsgFrame int
 }
 
 func invalidChipNew() (*menuInvalidChip, error) {
@@ -40,13 +40,13 @@ func (i *menuInvalidChip) Process() {
 }
 
 func (i *menuInvalidChip) Draw() {
-	dxlib.DrawBox(25, 45, 460, 200, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
+	dxlib.DrawBox(25, 45, 460, 200, dxlib.GetColor(168, 192, 216), true)
 	draw.MessageText(35, 55, 0x000000, "使用できないチップ一覧")
 	for i, cid := range netbattle.InvalidChips {
-		draw.MessageText(35, int32(80+(i*30)), 0x000000, fmt.Sprintf("・%s", chip.Get(cid).Name))
+		draw.MessageText(35, 80+(i*30), 0x000000, fmt.Sprintf("・%s", chip.Get(cid).Name))
 	}
 
-	dxlib.DrawGraph(40, 205, i.imgMsgFrame, dxlib.TRUE)
+	dxlib.DrawGraph(40, 205, i.imgMsgFrame, true)
 	draw.MessageText(120, 220, 0x000000, "これらのチップはまだ通信対戦では使えな")
 	draw.MessageText(120, 220+28, 0x000000, "いんだ。")
 	draw.MessageText(120, 220+56, 0x000000, "チップフォルダを編集しよう")

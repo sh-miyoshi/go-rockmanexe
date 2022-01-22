@@ -13,7 +13,7 @@ var (
 
 func Draw() {
 	for _, eff := range effects {
-		p := common.Point{X: int32(eff.X), Y: int32(eff.Y)}
+		p := common.Point{X: eff.X, Y: eff.Y}
 		draw.Effect(eff.Type, eff.Count, p, eff.ViewOfsX, eff.ViewOfsY)
 	}
 }

@@ -206,7 +206,7 @@ func ActionProc(action *pb.Action) error {
 	case pb.Action_ADDSOUND:
 		s.fieldLock.Lock()
 		for i := 0; i < len(s.clients); i++ {
-			s.clients[i].fieldInfo.Sounds = append(s.clients[i].fieldInfo.Sounds, action.GetSeType())
+			s.clients[i].fieldInfo.Sounds = append(s.clients[i].fieldInfo.Sounds, int(action.GetSeType()))
 		}
 		s.fieldLock.Unlock()
 	default:
@@ -423,7 +423,7 @@ func (s *session) publishField() {
 		s.fieldLock.Lock()
 		s.clients[i].fieldInfo.Effects = []effect.Effect{}
 		s.clients[i].fieldInfo.HitDamages = []damage.Damage{}
-		s.clients[i].fieldInfo.Sounds = []int32{}
+		s.clients[i].fieldInfo.Sounds = []int{}
 		s.fieldLock.Unlock()
 	}
 }

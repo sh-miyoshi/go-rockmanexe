@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -13,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 
 type WaterPipeAtk struct {
 	count       int
-	images      []int32
+	images      []int
 	isAttacking bool
 	pm          ObjectParam
 }
@@ -30,7 +30,7 @@ type WaterPipeAtk struct {
 type WaterPipe struct {
 	pm       ObjectParam
 	atk      WaterPipeAtk
-	imgSet   []int32
+	imgSet   []int
 	count    int
 	atkCount int
 }
@@ -41,7 +41,7 @@ func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
 
 	// Load Images
-	o.imgSet = make([]int32, 4)
+	o.imgSet = make([]int, 4)
 	fname := common.ImagePath + "battle/character/水道管_set.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 72, 88, o.imgSet); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -100,7 +100,7 @@ func (o *WaterPipe) Draw() {
 		return
 	}
 
-	ofsx := int32(-8)
+	ofsx := -8
 	opt := dxlib.DrawRotaGraphOption{}
 	if o.pm.xFlip {
 		f := int32(dxlib.TRUE)
@@ -112,7 +112,7 @@ func (o *WaterPipe) Draw() {
 	if n > len(o.imgSet)-1 {
 		n = len(o.imgSet) - 1
 	}
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16, 1, 0, o.imgSet[n], true, opt)
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
@@ -149,7 +149,7 @@ func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.count = 0
 	a.isAttacking = false
 	a.pm = pm
-	a.images = make([]int32, 9)
+	a.images = make([]int, 9)
 	fname := common.ImagePath + "battle/character/水道管_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 234, 110, a.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -179,7 +179,7 @@ func (a *WaterPipeAtk) Draw(pos common.Point) {
 		n = c - (c/s)*((c-s)*2+1)
 	}
 
-	ofsx := int32(-81)
+	ofsx := -81
 	opt := dxlib.DrawRotaGraphOption{}
 	if a.pm.xFlip {
 		f := int32(dxlib.TRUE)
@@ -187,7 +187,7 @@ func (a *WaterPipeAtk) Draw(pos common.Point) {
 		ofsx *= -1
 	}
 
-	dxlib.DrawRotaGraph(pos.X+ofsx, pos.Y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(pos.X+ofsx, pos.Y+13, 1, 0, a.images[n], true, opt)
 }
 
 func (a *WaterPipeAtk) Process() {

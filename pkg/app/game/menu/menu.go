@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -12,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -28,7 +28,7 @@ const (
 
 var (
 	menuState           int
-	imgBack             int32
+	imgBack             int
 	menuTopInst         *menuTop
 	menuFolderInst      *menuFolder
 	menuRecordInst      *menuRecord
@@ -138,7 +138,7 @@ func Process() error {
 }
 
 func Draw() {
-	dxlib.DrawGraph(0, 0, imgBack, dxlib.TRUE)
+	dxlib.DrawGraph(0, 0, imgBack, true)
 
 	switch menuState {
 	case stateTop:

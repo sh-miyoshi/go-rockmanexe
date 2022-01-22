@@ -249,7 +249,7 @@ func RemoveDamage(id string) {
 
 func RemoveSounds() {
 	fieldLock.Lock()
-	fieldInfo.Sounds = []int32{}
+	fieldInfo.Sounds = []int{}
 	fieldLock.Unlock()
 }
 
@@ -324,7 +324,7 @@ func BulkSendFieldInfo() error {
 			ClientID:  clientID,
 			Type:      pb.Action_ADDSOUND,
 			Data: &pb.Action_SeType{
-				SeType: int32(se),
+				SeType: int64(se),
 			},
 		}
 

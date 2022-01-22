@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/stretchr/stew/slice"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -20,7 +20,7 @@ type Chip struct {
 	ForMe     bool   `yaml:"for_me"`
 	KeepCount int    `yaml:"keep_cnt"`
 
-	Image int32
+	Image int
 }
 
 type SelectParam struct {
@@ -71,9 +71,9 @@ const (
 )
 
 var (
-	imgIcons     map[int]int32
-	imgMonoIcons map[int]int32
-	imgTypes     []int32
+	imgIcons     map[int]int
+	imgMonoIcons map[int]int
+	imgTypes     []int
 	chipData     []Chip
 )
 
@@ -97,12 +97,12 @@ func Init(fname string) error {
 	}
 
 	// Load Type Image
-	tmp := make([]int32, 14)
+	tmp := make([]int, 14)
 	fname = common.ImagePath + "chipInfo/chip_type.png"
 	if res := dxlib.LoadDivGraph(fname, 14, 7, 2, 28, 28, tmp); res == -1 {
 		return fmt.Errorf("failed to read chip type image %s", fname)
 	}
-	imgTypes = make([]int32, typeMax)
+	imgTypes = make([]int, typeMax)
 	for i := 0; i < typeMax; i++ {
 		imgTypes[i] = tmp[i]
 	}
@@ -111,8 +111,8 @@ func Init(fname string) error {
 	}
 
 	// Load Icon Image
-	tmp = make([]int32, 240)
-	tmp2 := make([]int32, 240)
+	tmp = make([]int, 240)
+	tmp2 := make([]int, 240)
 	fname = common.ImagePath + "chipInfo/chip_icon.png"
 	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp); res == -1 {
 		return fmt.Errorf("failed to read chip icon image %s", fname)
@@ -122,8 +122,8 @@ func Init(fname string) error {
 		return fmt.Errorf("failed to read chip monochro icon image %s", fname)
 	}
 
-	imgIcons = make(map[int]int32)
-	imgMonoIcons = make(map[int]int32)
+	imgIcons = make(map[int]int)
+	imgMonoIcons = make(map[int]int)
 	used := []int{}
 
 	// Set icons by manual
@@ -167,7 +167,7 @@ func GetByName(name string) Chip {
 }
 
 // GetIcon ...
-func GetIcon(id int, colored bool) int32 {
+func GetIcon(id int, colored bool) int {
 	if colored {
 		return imgIcons[id]
 	}
@@ -175,7 +175,7 @@ func GetIcon(id int, colored bool) int32 {
 }
 
 // GetTypeImage ...
-func GetTypeImage(typ int) int32 {
+func GetTypeImage(typ int) int {
 	return imgTypes[typ]
 }
 

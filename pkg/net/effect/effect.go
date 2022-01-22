@@ -28,8 +28,8 @@ type Effect struct {
 	Type     int
 	X        int
 	Y        int
-	ViewOfsX int32
-	ViewOfsY int32
+	ViewOfsX int
+	ViewOfsY int
 
 	Count int
 }

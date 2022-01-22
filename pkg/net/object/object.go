@@ -58,8 +58,8 @@ type Object struct {
 	Chips          []int
 	BaseTime       time.Time
 	UpdateBaseTime bool
-	ViewOfsX       int32
-	ViewOfsY       int32
+	ViewOfsX       int
+	ViewOfsY       int
 	Count          int
 	Hittable       bool
 	Speed          int

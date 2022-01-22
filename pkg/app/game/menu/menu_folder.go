@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -25,11 +25,11 @@ const (
 )
 
 type menuFolder struct {
-	imgChipFrame     int32
-	imgArrow         int32
-	imgPointer       int32
-	imgMsgFrame      int32
-	imgScrollPointer int32
+	imgChipFrame     int
+	imgArrow         int
+	imgPointer       int
+	imgMsgFrame      int
+	imgScrollPointer int
 
 	pointer       [folderWindowTypeMax]int
 	scroll        [folderWindowTypeMax]int
@@ -197,22 +197,22 @@ func (f *menuFolder) Draw() {
 		}
 
 		info := chip.Get(c.ID)
-		x := int32(220)
+		x := 220
 		if f.currentWindow == folderWindowTypeBackPack {
 			x = 50
 		}
 
-		y := 75 + int32(i)*30
-		dxlib.DrawGraph(x, y, chip.GetIcon(c.ID, true), dxlib.TRUE)
+		y := 75 + i*30
+		dxlib.DrawGraph(x, y, chip.GetIcon(c.ID, true), true)
 		draw.String(x+30, y+5, 0xffffff, info.Name)
-		dxlib.DrawGraph(x+160, y, chip.GetTypeImage(info.Type), dxlib.TRUE)
+		dxlib.DrawGraph(x+160, y, chip.GetTypeImage(info.Type), true)
 		// TODO font
 		draw.String(x+192, y+5, 0xffffff, strings.ToUpper(c.Code))
 	}
 
 	// Show pointer
 	if f.listNum[f.currentWindow] > 0 {
-		tx := int32(200)
+		tx := 200
 		if f.currentWindow == folderWindowTypeBackPack {
 			tx = 30
 		}
@@ -229,16 +229,16 @@ func (f *menuFolder) Draw() {
 				areaEnd := f.scroll[f.currentWindow] + folderShowNum
 				if areaBegin <= sel && sel <= areaEnd {
 					p := sel - areaBegin
-					dxlib.DrawGraph(tx+2, 80+int32(p)*30, f.imgPointer, dxlib.TRUE)
+					dxlib.DrawGraph(tx+2, 80+p*30, f.imgPointer, true)
 				}
 			}
 		}
 
-		dxlib.DrawGraph(tx, 78+int32(f.pointer[f.currentWindow])*30, f.imgPointer, dxlib.TRUE)
+		dxlib.DrawGraph(tx, 78+f.pointer[f.currentWindow]*30, f.imgPointer, true)
 	}
 
 	// Show scrol bar
-	var length, start int32
+	var length, start int
 	switch f.currentWindow {
 	case folderWindowTypeFolder:
 		start = 80
@@ -247,41 +247,41 @@ func (f *menuFolder) Draw() {
 		start = 60
 		length = 225
 	}
-	dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
-	n := int32(f.scroll[f.currentWindow] + f.pointer[f.currentWindow])
-	dxlib.DrawGraph(442, start+(length-23)*n/int32(f.listNum[f.currentWindow]-1), f.imgScrollPointer, dxlib.TRUE)
+	dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), true)
+	n := f.scroll[f.currentWindow] + f.pointer[f.currentWindow]
+	dxlib.DrawGraph(442, start+(length-23)*n/f.listNum[f.currentWindow]-1, f.imgScrollPointer, true)
 
 	// Show pointered chip detail
 	f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
 
 	// Show message
 	if f.msg != "" {
-		dxlib.DrawGraph(40, 205, f.imgMsgFrame, dxlib.TRUE)
+		dxlib.DrawGraph(40, 205, f.imgMsgFrame, true)
 		draw.MessageText(120, 220, 0x000000, f.msg)
 	}
 }
 
 func (f *menuFolder) drawBackGround() {
-	dxlib.DrawBox(25, 55, 460, 300, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
+	dxlib.DrawBox(25, 55, 460, 300, dxlib.GetColor(168, 192, 216), true)
 
 	switch f.currentWindow {
 	case folderWindowTypeFolder:
-		dxlib.DrawBox(45, 35, 325, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawTriangle(25, 55, 45, 35, 45, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawTriangle(325, 55, 325, 35, 345, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawBox(215, 70, 440, 290, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+		dxlib.DrawBox(45, 35, 325, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawTriangle(25, 55, 45, 35, 45, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawTriangle(325, 55, 325, 35, 345, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawBox(215, 70, 440, 290, dxlib.GetColor(16, 80, 104), true)
 
-		dxlib.DrawGraph(35, 40, f.imgChipFrame, dxlib.TRUE)
-		dxlib.DrawGraph(443, 57, f.imgArrow, dxlib.TRUE)
+		dxlib.DrawGraph(35, 40, f.imgChipFrame, true)
+		dxlib.DrawGraph(443, 57, f.imgArrow, true)
 		draw.String(220, 40, 0xffffff, "フォルダ")
 	case folderWindowTypeBackPack:
-		dxlib.DrawBox(440, 35, 160, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawTriangle(460, 55, 440, 35, 440, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawTriangle(160, 55, 160, 35, 140, 55, dxlib.GetColor(168, 192, 216), dxlib.TRUE)
-		dxlib.DrawBox(270, 70, 45, 290, dxlib.GetColor(16, 80, 104), dxlib.TRUE)
+		dxlib.DrawBox(440, 35, 160, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawTriangle(460, 55, 440, 35, 440, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawTriangle(160, 55, 160, 35, 140, 55, dxlib.GetColor(168, 192, 216), true)
+		dxlib.DrawBox(270, 70, 45, 290, dxlib.GetColor(16, 80, 104), true)
 
-		dxlib.DrawGraph(285, 40, f.imgChipFrame, dxlib.TRUE)
-		dxlib.DrawTurnGraph(28, 57, f.imgArrow, dxlib.TRUE)
+		dxlib.DrawGraph(285, 40, f.imgChipFrame, true)
+		dxlib.DrawTurnGraph(28, 57, f.imgArrow, true)
 		draw.String(200, 40, 0xffffff, "リュック")
 	}
 }
@@ -292,7 +292,7 @@ func (f *menuFolder) drawChipDetail(index int) {
 	}
 
 	var c player.ChipInfo
-	var ofsx int32
+	var ofsx int
 	switch f.currentWindow {
 	case folderWindowTypeFolder:
 		c = f.playerInfo.ChipFolder[index]
@@ -303,11 +303,11 @@ func (f *menuFolder) drawChipDetail(index int) {
 	}
 
 	info := chip.Get(c.ID)
-	dxlib.DrawGraph(23+ofsx, 65, info.Image, dxlib.TRUE)
+	dxlib.DrawGraph(23+ofsx, 65, info.Image, true)
 	draw.ChipCode(15+ofsx, 165, c.Code, 100)
-	dxlib.DrawGraph(50+ofsx, 165, chip.GetTypeImage(info.Type), dxlib.TRUE)
+	dxlib.DrawGraph(50+ofsx, 165, chip.GetTypeImage(info.Type), true)
 	if info.Power > 0 {
-		draw.Number(80+ofsx, 165, int32(info.Power), draw.NumberOption{
+		draw.Number(80+ofsx, 165, int(info.Power), draw.NumberOption{
 			RightAligned: true,
 			Length:       4,
 		})

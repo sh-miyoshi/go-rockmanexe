@@ -5,11 +5,11 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 )
 
 var (
-	images [typeMax][]int32
+	images [typeMax][]int
 	sounds [typeMax]sound.SEType
 )
 
@@ -43,7 +43,7 @@ type effect struct {
 	Type int
 
 	count  int
-	images []int32
+	images []int
 	delay  int
 	ofs    common.Point
 }
@@ -51,43 +51,43 @@ type effect struct {
 type noEffect struct{}
 
 func Init() error {
-	images[TypeHitSmall] = make([]int32, 4)
+	images[TypeHitSmall] = make([]int, 4)
 	fname := common.ImagePath + "battle/effect/hit_small.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[TypeHitSmall]); res == -1 {
 		return fmt.Errorf("failed to load hit small effect image %s", fname)
 	}
-	images[TypeHitBig] = make([]int32, 6)
+	images[TypeHitBig] = make([]int, 6)
 	fname = common.ImagePath + "battle/effect/hit_big.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[TypeHitBig]); res == -1 {
 		return fmt.Errorf("failed to load hit big effect image %s", fname)
 	}
-	images[TypeExplode] = make([]int32, 16)
+	images[TypeExplode] = make([]int, 16)
 	fname = common.ImagePath + "battle/effect/explode.png"
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[TypeExplode]); res == -1 {
 		return fmt.Errorf("failed to load explode effect image %s", fname)
 	}
-	images[TypeCannonHit] = make([]int32, 7)
+	images[TypeCannonHit] = make([]int, 7)
 	fname = common.ImagePath + "battle/effect/cannon_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[TypeCannonHit]); res == -1 {
 		return fmt.Errorf("failed to load cannon hit effect image %s", fname)
 	}
-	images[TypeSpreadHit] = make([]int32, 6)
+	images[TypeSpreadHit] = make([]int, 6)
 	fname = common.ImagePath + "battle/effect/spread_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[TypeSpreadHit]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	tmp := make([]int32, 8)
+	tmp := make([]int, 8)
 	fname = common.ImagePath + "battle/effect/vulcan_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	images[TypeVulcanHit1] = []int32{}
-	images[TypeVulcanHit2] = []int32{}
+	images[TypeVulcanHit1] = []int{}
+	images[TypeVulcanHit2] = []int{}
 	for i := 0; i < 4; i++ {
 		images[TypeVulcanHit1] = append(images[TypeVulcanHit1], tmp[i])
 		images[TypeVulcanHit2] = append(images[TypeVulcanHit2], tmp[i+4])
 	}
-	images[TypeWaterBomb] = make([]int32, 12)
+	images[TypeWaterBomb] = make([]int, 12)
 	fname = common.ImagePath + "battle/effect/water_bomb.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, images[TypeWaterBomb]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -96,7 +96,7 @@ func Init() error {
 		images[TypeWaterBomb][i] = images[TypeWaterBomb][6]
 	}
 
-	images[TypeBlock] = make([]int32, 4)
+	images[TypeBlock] = make([]int, 4)
 	fname = common.ImagePath + "battle/effect/block.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[TypeBlock]); res == -1 {
 		return fmt.Errorf("failed to load block effect image %s", fname)
@@ -124,8 +124,8 @@ func End() {
 func Get(typ int, pos common.Point, randRange int) anim.Anim {
 	ofs := common.Point{}
 	if randRange > 0 {
-		ofs.X = int32(rand.Intn(2*randRange) - randRange)
-		ofs.Y = int32(rand.Intn(2*randRange) - randRange)
+		ofs.X = int(rand.Intn(2*randRange) - randRange)
+		ofs.Y = int(rand.Intn(2*randRange) - randRange)
 	}
 
 	res := &effect{
@@ -172,7 +172,7 @@ func (e *effect) Draw() {
 	}
 
 	view := battlecommon.ViewPos(e.Pos)
-	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], true)
 }
 
 func (e *effect) GetParam() anim.Param {

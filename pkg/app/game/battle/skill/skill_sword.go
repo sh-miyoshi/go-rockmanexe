@@ -1,13 +1,13 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -34,7 +34,7 @@ func (p *sword) Draw() {
 
 	n := (p.count - 5) / delaySword
 	if n >= 0 && n < len(imgSword[p.Type]) {
-		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgSword[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgSword[p.Type][n], true)
 	}
 }
 

@@ -17,7 +17,7 @@ type Info struct {
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 	Effects     []effect.Effect
 	HitDamages  []damage.Damage
-	Sounds      []int32
+	Sounds      []int
 }
 
 func Marshal(fieldInfo *Info) []byte {

@@ -3,13 +3,13 @@ package chipsel
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -24,9 +24,9 @@ var (
 	selectList []player.ChipInfo
 	selected   []int
 
-	imgFrame   int32 = -1
-	imgPointer       = []int32{-1, -1}
-	pointer          = sendBtnNo
+	imgFrame   int = -1
+	imgPointer     = []int{-1, -1}
+	pointer        = sendBtnNo
 )
 
 // Init ...
@@ -74,26 +74,26 @@ func Draw() {
 		return
 	}
 
-	dxlib.DrawGraph(0, 0, imgFrame, dxlib.TRUE)
+	dxlib.DrawGraph(0, 0, imgFrame, true)
 
 	// Show chip data
 	for i, s := range selectList {
 		x := i*32 + 17
-		draw.ChipCode(int32(x+10), 240, s.Code, 50)
+		draw.ChipCode(int(x+10), 240, s.Code, 50)
 		if !slice.Contains(selected, i) {
 			// Show Icon
-			dxlib.DrawGraph(int32(x), 210, chip.GetIcon(s.ID, selectable(i)), dxlib.TRUE)
+			dxlib.DrawGraph(int(x), 210, chip.GetIcon(s.ID, selectable(i)), true)
 		}
 
 		// Show Detail Data
 		if i == pointer {
 			c := chip.Get(s.ID)
-			dxlib.DrawGraph(31, 64, c.Image, dxlib.TRUE)
-			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), dxlib.TRUE)
+			dxlib.DrawGraph(31, 64, c.Image, true)
+			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), true)
 			draw.String(20, 25, 0x000000, "%s", c.Name)
 			draw.ChipCode(30, 163, s.Code, 100)
 			if c.Power != 0 {
-				draw.Number(110, 163, int32(c.Power), draw.NumberOption{
+				draw.Number(110, 163, int(c.Power), draw.NumberOption{
 					Color:  draw.NumberColorWhite,
 					Length: 3,
 				})
@@ -105,18 +105,18 @@ func Draw() {
 	n := count / 20
 	if n%3 != 0 {
 		if pointer == sendBtnNo {
-			dxlib.DrawGraph(180, 225, imgPointer[1], dxlib.TRUE)
+			dxlib.DrawGraph(180, 225, imgPointer[1], true)
 		} else {
 			x := (pointer%5)*32 + 8
 			y := (pointer/5)*20 + 202
-			dxlib.DrawGraph(int32(x), int32(y), imgPointer[0], dxlib.TRUE)
+			dxlib.DrawGraph(int(x), int(y), imgPointer[0], true)
 		}
 	}
 
 	// Show Selected Chips
 	for i, s := range selected {
 		y := i*32 + 50
-		dxlib.DrawGraph(193, int32(y), chip.GetIcon(selectList[s].ID, true), dxlib.TRUE)
+		dxlib.DrawGraph(193, int(y), chip.GetIcon(selectList[s].ID, true), true)
 	}
 }
 

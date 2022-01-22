@@ -21,8 +21,8 @@ type Damage struct {
 	TargetType    int
 	HitEffectType int
 	BigDamage     bool
-	ViewOfsX      int32
-	ViewOfsY      int32
+	ViewOfsX      int
+	ViewOfsY      int
 	ShowHitArea   bool
 }
 

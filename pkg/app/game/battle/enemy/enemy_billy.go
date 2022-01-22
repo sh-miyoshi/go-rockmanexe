@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -14,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -38,8 +38,8 @@ type billyAct struct {
 
 type enemyBilly struct {
 	pm        EnemyParam
-	imgMove   []int32
-	imgAttack []int32
+	imgMove   []int
+	imgAttack []int
 	count     int
 	moveCount int
 	act       billyAct
@@ -53,13 +53,13 @@ func (e *enemyBilly) Init(objID string) error {
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBilly)
-	e.imgMove = make([]int32, 6)
+	e.imgMove = make([]int, 6)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 112, 114, e.imgMove); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	e.imgAttack = make([]int32, 8)
+	e.imgAttack = make([]int, 8)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 124, 114, e.imgAttack); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
@@ -132,11 +132,11 @@ func (e *enemyBilly) Process() (bool, error) {
 func (e *enemyBilly) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -167,7 +167,7 @@ func (e *enemyBilly) GetObjectType() int {
 	return objanim.ObjTypeEnemy
 }
 
-func (e *enemyBilly) getCurrentImagePointer() *int32 {
+func (e *enemyBilly) getCurrentImagePointer() *int {
 	img := &e.imgMove[0]
 	if e.act.typ != -1 {
 		imgs := e.imgMove

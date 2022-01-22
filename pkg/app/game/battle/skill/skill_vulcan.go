@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type vulcan struct {
@@ -30,13 +30,13 @@ func (p *vulcan) Draw() {
 	view := battlecommon.ViewPos(pos)
 
 	// Show body
-	dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgVulcan[p.imageNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgVulcan[p.imageNo], true)
 	// Show attack
 	if p.imageNo != 0 {
 		if p.imageNo%2 == 0 {
-			dxlib.DrawRotaGraph(view.X+100, view.Y-10, 1, 0, imgVulcan[3], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X+100, view.Y-10, 1, 0, imgVulcan[3], true)
 		} else {
-			dxlib.DrawRotaGraph(view.X+100, view.Y-15, 1, 0, imgVulcan[3], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X+100, view.Y-15, 1, 0, imgVulcan[3], true)
 		}
 	}
 }

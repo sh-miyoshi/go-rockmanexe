@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -15,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -35,7 +35,7 @@ var (
 
 type enemyAquaman struct {
 	pm              EnemyParam
-	images          [aquamanActTypeMax][]int32
+	images          [aquamanActTypeMax][]int
 	count           int
 	state           int
 	nextState       int
@@ -62,37 +62,37 @@ func (e *enemyAquaman) Init(objID string) error {
 	name, ext := GetStandImageFile(IDAquaman)
 
 	fname := name + "_stand" + ext
-	e.images[aquamanActTypeStand] = make([]int32, 9)
+	e.images[aquamanActTypeStand] = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, e.images[aquamanActTypeStand]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_move" + ext
-	e.images[aquamanActTypeMove] = make([]int32, 5)
+	e.images[aquamanActTypeMove] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 126, e.images[aquamanActTypeMove]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_shot" + ext
-	e.images[aquamanActTypeShot] = make([]int32, 5)
+	e.images[aquamanActTypeShot] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 104, 90, e.images[aquamanActTypeShot]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_damage" + ext
-	e.images[aquamanActTypeDamage] = make([]int32, 1)
+	e.images[aquamanActTypeDamage] = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 70, 86, e.images[aquamanActTypeDamage]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_bomb" + ext
-	e.images[aquamanActTypeBomb] = make([]int32, 5)
+	e.images[aquamanActTypeBomb] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 124, e.images[aquamanActTypeBomb]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_create" + ext
-	e.images[aquamanActTypeCreate] = make([]int32, 1)
+	e.images[aquamanActTypeCreate] = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, e.images[aquamanActTypeCreate]); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
@@ -106,7 +106,7 @@ func (e *enemyAquaman) End() {
 		for j := 0; j < len(e.images[i]); j++ {
 			dxlib.DeleteGraph(e.images[i][j])
 		}
-		e.images[i] = []int32{}
+		e.images[i] = []int{}
 	}
 
 	for _, id := range e.waterPipeObjIDs {
@@ -161,8 +161,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 
 			for i := 0; i < 10; i++ {
 				next := common.Point{
-					X: rand.Int31n(field.FieldNum.X/2) + field.FieldNum.X/2,
-					Y: rand.Int31n(field.FieldNum.Y),
+					X: rand.Intn(field.FieldNum.X/2) + field.FieldNum.X/2,
+					Y: rand.Intn(field.FieldNum.Y),
 				}
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
@@ -316,7 +316,7 @@ func (e *enemyAquaman) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofs := [aquamanActTypeMax][]int32{
+	ofs := [aquamanActTypeMax][]int{
 		{0, 0},    // stand
 		{0, 0},    // move
 		{-20, 10}, // shot
@@ -325,11 +325,11 @@ func (e *enemyAquaman) Draw() {
 		{0, 0},    // create
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofs[e.state][0], view.Y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofs[e.state][0], view.Y+ofs[e.state][1], 1, 0, *img, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -373,7 +373,7 @@ func (e *enemyAquaman) GetObjectType() int {
 	return objanim.ObjTypeEnemy
 }
 
-func (e *enemyAquaman) getCurrentImagePointer() *int32 {
+func (e *enemyAquaman) getCurrentImagePointer() *int {
 	n := (e.count / aquamanDelays[e.state])
 	if n >= len(e.images[e.state]) {
 		n = len(e.images[e.state]) - 1

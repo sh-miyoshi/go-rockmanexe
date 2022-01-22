@@ -3,11 +3,11 @@ package field
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -46,7 +46,7 @@ type PanelInfo struct {
 }
 
 var (
-	imgPanel      [panelStatusMax][panelTypeMax]int32
+	imgPanel      [panelStatusMax][panelTypeMax]int
 	blackoutCount = 0
 	panels        [][]PanelInfo
 )
@@ -56,7 +56,7 @@ func Init() error {
 	logger.Info("Initialize battle field data")
 
 	panels = make([][]PanelInfo, FieldNum.X)
-	for i := int32(0); i < FieldNum.X; i++ {
+	for i := int(0); i < FieldNum.X; i++ {
 		panels[i] = make([]PanelInfo, FieldNum.Y)
 	}
 
@@ -78,12 +78,12 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := int32(0); x < FieldNum.X; x++ {
+	for x := int(0); x < FieldNum.X; x++ {
 		t := PanelTypePlayer
 		if x > 2 {
 			t = PanelTypeEnemy
 		}
-		for y := int32(0); y < FieldNum.Y; y++ {
+		for y := int(0); y < FieldNum.Y; y++ {
 			panels[x][y] = PanelInfo{
 				Status:    PanelStatusNormal,
 				Type:      t,
@@ -111,8 +111,8 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := int32(0); x < FieldNum.X; x++ {
-		for y := int32(0); y < FieldNum.Y; y++ {
+	for x := int(0); x < FieldNum.X; x++ {
+		for y := int(0); y < FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
 			vx := PanelSize.X * x
 			vy := DrawPanelTopY + PanelSize.Y*y
@@ -126,7 +126,7 @@ func Draw() {
 				}
 			}
 
-			dxlib.DrawGraph(vx, vy, img, dxlib.TRUE)
+			dxlib.DrawGraph(vx, vy, img, true)
 
 			if dm := damage.Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
 				x1 := vx
@@ -134,7 +134,7 @@ func Draw() {
 				x2 := vx + PanelSize.X
 				y2 := vy + PanelSize.Y
 				const s = 5
-				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
+				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 			}
 		}
 	}
@@ -143,7 +143,7 @@ func Draw() {
 func DrawBlackout() {
 	if blackoutCount > 0 {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 128)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 	}
 }

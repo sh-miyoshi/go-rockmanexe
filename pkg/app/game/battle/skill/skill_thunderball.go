@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -44,7 +44,7 @@ func (p *thunderBall) Draw() {
 	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, thunderBallNextStepCount, field.PanelSize.X)
 	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, thunderBallNextStepCount, field.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], true)
 }
 
 func (p *thunderBall) Process() (bool, error) {
@@ -112,12 +112,12 @@ func (p *thunderBall) Process() (bool, error) {
 			ydif := objs[0].Pos.Y - t.Y
 
 			if xdif != 0 || ydif != 0 {
-				if common.AbsInt32(xdif) > common.AbsInt32(ydif) {
+				if common.Abs(xdif) > common.Abs(ydif) {
 					// move to x
-					p.next.X += (xdif / common.AbsInt32(xdif))
+					p.next.X += (xdif / common.Abs(xdif))
 				} else {
 					// move to y
-					p.next.Y += (ydif / common.AbsInt32(ydif))
+					p.next.Y += (ydif / common.Abs(ydif))
 				}
 			}
 		}

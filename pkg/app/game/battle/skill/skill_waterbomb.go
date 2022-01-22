@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -58,17 +58,17 @@ func (p *waterBomb) Draw() {
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
 	size := field.PanelSize.X * (p.target.X - p.pos.X)
-	ofsx := size * int32(p.count) / waterBombEndCount
+	ofsx := size * p.count / waterBombEndCount
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if p.target.Y != p.pos.Y {
 		size = field.PanelSize.Y * (p.target.Y - p.pos.Y)
-		dy := size * int32(p.count) / waterBombEndCount
+		dy := size * p.count / waterBombEndCount
 		ofsy += dy
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], true)
 }
 
 func (p *waterBomb) Process() (bool, error) {

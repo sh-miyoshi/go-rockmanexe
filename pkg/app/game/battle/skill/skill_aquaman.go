@@ -3,13 +3,13 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -27,8 +27,8 @@ type aquaman struct {
 
 	count         int
 	state         int
-	imgCharStand  []int32
-	imgCharCreate []int32
+	imgCharStand  []int
+	imgCharCreate []int
 	pos           common.Point
 	atkID         string
 }
@@ -44,13 +44,13 @@ func newAquaman(objID string, arg Argument) (*aquaman, error) {
 	}
 
 	fname := common.ImagePath + "battle/character/アクアマン_stand.png"
-	res.imgCharStand = make([]int32, 9)
+	res.imgCharStand = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, res.imgCharStand); res == -1 {
 		return nil, fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/アクアマン_create.png"
-	res.imgCharCreate = make([]int32, 1)
+	res.imgCharCreate = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, res.imgCharCreate); res == -1 {
 		return nil, fmt.Errorf("failed to load image: %s", fname)
 	}
@@ -68,16 +68,16 @@ func (p *aquaman) Draw() {
 		const delay = 8
 		if p.count > 20 {
 			imgNo := (p.count / delay) % len(p.imgCharStand)
-			dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharStand[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+			dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharStand[imgNo], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		}
 	case aquamanStateCreatePipe:
 		imgNo := p.count
 		if imgNo >= len(p.imgCharCreate) {
 			imgNo = len(p.imgCharCreate) - 1
 		}
-		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[imgNo], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 	case aquamanStateAttack:
-		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[len(p.imgCharCreate)-1], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[len(p.imgCharCreate)-1], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 	}
 }
 

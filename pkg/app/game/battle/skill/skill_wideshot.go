@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -9,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -32,7 +32,7 @@ type wideShot struct {
 
 func (p *wideShot) Draw() {
 	opt := dxlib.DrawRotaGraphOption{}
-	ofs := int32(1)
+	ofs := 1
 	if p.Direct == common.DirectLeft {
 		xflip := int32(dxlib.TRUE)
 		opt.ReverseXFlag = &xflip
@@ -45,12 +45,12 @@ func (p *wideShot) Draw() {
 		n := (p.count / delayWideShot)
 
 		if n < len(imgWideShotBody) && p.TargetType == damage.TargetEnemy {
-			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE, opt)
+			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
 		}
 		if n >= len(imgWideShotBegin) {
 			n = len(imgWideShotBegin) - 1
 		}
-		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE, opt)
+		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
 	case wideShotStateMove:
 		view := battlecommon.ViewPos(p.pos)
 		n := (p.count / delayWideShot) % len(imgWideShotMove)
@@ -63,7 +63,7 @@ func (p *wideShot) Draw() {
 		c := p.count % p.NextStepCount
 		if c != 0 {
 			ofsx := battlecommon.GetOffset(next, p.pos.X, prev, c, p.NextStepCount, field.PanelSize.X)
-			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE, opt)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true, opt)
 		}
 	}
 }
@@ -106,7 +106,7 @@ func (p *wideShot) Process() (bool, error) {
 				return true, nil
 			}
 
-			for i := int32(-1); i <= 1; i++ {
+			for i := -1; i <= 1; i++ {
 				y := p.pos.Y + i
 				if y < 0 || y >= field.FieldNum.Y {
 					continue

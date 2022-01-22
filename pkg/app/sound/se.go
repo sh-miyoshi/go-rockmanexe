@@ -3,11 +3,11 @@ package sound
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
-type SEType int32
+type SEType int
 
 const (
 	SENone SEType = iota // required no SE as 0
@@ -53,7 +53,7 @@ const (
 )
 
 var (
-	soundEffects = [seMax]int32{}
+	soundEffects = [seMax]int{}
 )
 
 func Init() error {
@@ -126,5 +126,5 @@ func On(typ SEType) {
 			dxlib.StopSoundMem(soundEffects[typ])
 		}
 	}
-	dxlib.PlaySoundMem(soundEffects[typ], dxlib.DX_PLAYTYPE_BACK, dxlib.TRUE)
+	dxlib.PlaySoundMem(soundEffects[typ], dxlib.DX_PLAYTYPE_BACK, true)
 }

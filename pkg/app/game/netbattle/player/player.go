@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -20,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -40,10 +40,10 @@ type BattlePlayer struct {
 }
 
 var (
-	imgHPFrame    int32
-	imgGaugeFrame int32
-	imgGaugeMax   []int32
-	imgCharge     [2][]int32
+	imgHPFrame    int
+	imgGaugeFrame int
+	imgGaugeMax   []int
+	imgCharge     [2][]int
 )
 
 // New ...
@@ -90,13 +90,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
-	imgGaugeMax = make([]int32, 4)
+	imgGaugeMax = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
 		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/skill/charge.png"
-	tmp := make([]int32, 16)
+	tmp := make([]int, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
@@ -121,7 +121,7 @@ func (p *BattlePlayer) End() {
 		for _, img := range imgCharge[i] {
 			dxlib.DeleteGraph(img)
 		}
-		imgCharge[i] = []int32{}
+		imgCharge[i] = []int{}
 	}
 }
 
@@ -136,10 +136,10 @@ func (p *BattlePlayer) DrawOptions() {
 		if p.ChargeCount > battlecommon.ChargeTime {
 			n = 1
 		}
-		view := battlecommon.ViewPos(common.Point{X: int32(p.Object.X), Y: int32(p.Object.Y)})
+		view := battlecommon.ViewPos(common.Point{X: p.Object.X, Y: p.Object.Y})
 		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 
@@ -151,38 +151,38 @@ func (p *BattlePlayer) DrawOptions() {
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := appfield.PanelSize.X*int32(p.Object.X) + appfield.PanelSize.X/2 - 2 + int32(i*px-max)
-			y := appfield.DrawPanelTopY + int32(int(appfield.PanelSize.Y)*p.Object.Y-10-81+(i*px)-max)
-			dxlib.DrawBox(int32(x-1), y-1, int32(x+29), y+29, 0x000000, dxlib.FALSE)
+			x := appfield.PanelSize.X*p.Object.X + appfield.PanelSize.X/2 - 2 + i*px - max
+			y := appfield.DrawPanelTopY + appfield.PanelSize.Y*p.Object.Y - 10 - 81 + (i * px) - max
+			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
-			dxlib.DrawGraph(int32(x), y, chip.GetIcon(p.Object.Chips[n-1-i], true), dxlib.TRUE)
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.Object.Chips[n-1-i], true), true)
 		}
 	}
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
-	x := int32(7)
-	y := int32(5)
+	x := 7
+	y := 5
 	if xShift {
 		x += 235
 	}
 
 	// Show HP
-	dxlib.DrawGraph(x, y, imgHPFrame, dxlib.TRUE)
-	draw.Number(x+2, y+2, int32(p.Object.HP), draw.NumberOption{RightAligned: true, Length: 4})
+	dxlib.DrawGraph(x, y, imgHPFrame, true)
+	draw.Number(x+2, y+2, p.Object.HP, draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Custom Gauge
 	if showGauge {
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
-			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
+			dxlib.DrawGraph(96, 5, imgGaugeFrame, true)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
-			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
-			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
-			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
+			size := gaugeMaxSize * int(p.GaugeCount) / battlecommon.GaugeMaxCount
+			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), true)
+			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), true)
 		} else {
 			i := (p.GaugeCount / 20) % 4
-			dxlib.DrawGraph(96, 5, imgGaugeMax[i], dxlib.TRUE)
+			dxlib.DrawGraph(96, 5, imgGaugeMax[i], true)
 		}
 	}
 }
@@ -238,7 +238,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if moveDirect >= 0 {
-		t := common.Point{X: int32(p.Object.X), Y: int32(p.Object.Y)}
+		t := common.Point{X: p.Object.X, Y: p.Object.Y}
 		if battlecommon.MoveObject(&t, moveDirect, appfield.PanelTypePlayer, false, netfield.GetPanelInfo) {
 			p.Act.Set(battlecommon.PlayerActMove, &ActOption{
 				MoveDirect: moveDirect,

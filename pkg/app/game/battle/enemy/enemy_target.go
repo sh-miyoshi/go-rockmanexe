@@ -3,19 +3,19 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 type enemyTarget struct {
 	pm    EnemyParam
-	image int32
+	image int
 }
 
 func (e *enemyTarget) Init(objID string) error {
@@ -46,11 +46,11 @@ func (e *enemyTarget) Process() (bool, error) {
 
 func (e *enemyTarget) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})

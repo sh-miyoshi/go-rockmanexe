@@ -3,7 +3,7 @@ package titlemsg
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -11,7 +11,7 @@ const (
 )
 
 type TitleMsg struct {
-	imgMsg    []int32
+	imgMsg    []int
 	count     int
 	waitCount int
 }
@@ -19,7 +19,7 @@ type TitleMsg struct {
 func New(fname string, waitCount int) (*TitleMsg, error) {
 	res := TitleMsg{
 		count:     0,
-		imgMsg:    make([]int32, 3),
+		imgMsg:    make([]int, 3),
 		waitCount: waitCount,
 	}
 
@@ -41,7 +41,7 @@ func (m *TitleMsg) Draw() {
 	if imgNo >= len(m.imgMsg) {
 		imgNo = len(m.imgMsg) - 1
 	}
-	dxlib.DrawGraph(105, 125, m.imgMsg[imgNo], dxlib.TRUE)
+	dxlib.DrawGraph(105, 125, m.imgMsg[imgNo], true)
 }
 
 func (m *TitleMsg) Process() bool {

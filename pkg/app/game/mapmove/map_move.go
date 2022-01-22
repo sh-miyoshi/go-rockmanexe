@@ -2,8 +2,6 @@ package mapmove
 
 import (
 	"errors"
-
-	"github.com/sh-miyoshi/dxlib"
 )
 
 var (
@@ -19,7 +17,6 @@ func End() {
 }
 
 func Draw() {
-	dxlib.DrawString(0, 0, "Map Move", 0xffffff)
 }
 
 func Process() error {

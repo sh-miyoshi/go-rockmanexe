@@ -3,7 +3,6 @@ package netbattle
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -19,6 +18,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
@@ -216,7 +216,7 @@ func Draw() {
 	switch battleState {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
@@ -226,7 +226,7 @@ func Draw() {
 		chipsel.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:

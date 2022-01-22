@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type boomerang struct {
@@ -39,10 +39,10 @@ const (
 
 func newBoomerang(objID string, arg Argument) *boomerang {
 	// TODO(直線移動)
-	sx := int32(0)
+	sx := 0
 	sy := field.FieldNum.Y - 1
 	act := boomerangActTypeCounterClockwise
-	px := int32(-1)
+	px := -1
 	if arg.TargetType == damage.TargetPlayer {
 		// 敵の攻撃
 		sx = field.FieldNum.X - 2
@@ -79,7 +79,7 @@ func (p *boomerang) Draw() {
 
 	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, boomerangNextStepCount, field.PanelSize.X)
 	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, boomerangNextStepCount, field.PanelSize.Y)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgBoomerang[n], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgBoomerang[n], true)
 }
 
 func (p *boomerang) Process() (bool, error) {

@@ -91,13 +91,13 @@ func (p *cannon) addDamage() {
 			TTL:           1,
 			TargetType:    damage.TargetOtherClient,
 			HitEffectType: effect.TypeCannonHitEffect,
-			ViewOfsX:      int32(rand.Intn(2*5) - 5),
-			ViewOfsY:      int32(rand.Intn(2*5) - 5),
+			ViewOfsX:      rand.Intn(2*5) - 5,
+			ViewOfsY:      rand.Intn(2*5) - 5,
 			BigDamage:     true,
 		})
 
 		// break if object exists
-		pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
+		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 		if pn.ObjectID != "" {
 			sound.On(sound.SECannonHit)
 			break
@@ -108,8 +108,8 @@ func (p *cannon) addDamage() {
 
 func (p *cannon) getObjectInfo(isBody bool, isShift bool, updateTime bool) object.Object {
 	id := p.atkID
-	vx := int32(90)
-	vy := int32(-10)
+	vx := 90
+	vy := -10
 	if isBody {
 		id = p.bodyID
 		if isShift {

@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 var (
-	imgPanel = [2]int32{-1, -1}
+	imgPanel = [2]int{-1, -1}
 )
 
 func Init() error {
@@ -41,14 +41,14 @@ func Draw(playerID string) {
 
 	for x := 0; x < netconfig.FieldNumX; x++ {
 		for y := 0; y < netconfig.FieldNumY; y++ {
-			vx := appfield.PanelSize.X * int32(x)
-			vy := appfield.DrawPanelTopY + appfield.PanelSize.Y*int32(y)
+			vx := appfield.PanelSize.X * x
+			vy := appfield.DrawPanelTopY + appfield.PanelSize.Y*y
 			pn := imgPanel[0]
 			if finfo.Panels[x][y].OwnerClientID != clientID {
 				pn = imgPanel[1]
 			}
 
-			dxlib.DrawGraph(vx, vy, pn, dxlib.TRUE)
+			dxlib.DrawGraph(vx, vy, pn, true)
 
 			if finfo.Panels[x][y].ShowHitArea {
 				x1 := vx
@@ -56,7 +56,7 @@ func Draw(playerID string) {
 				x2 := vx + appfield.PanelSize.X
 				y2 := vy + appfield.PanelSize.Y
 				const s = 5
-				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
+				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 			}
 		}
 	}

@@ -54,7 +54,7 @@ func (a *Act) Process() bool {
 		return false
 	case battlecommon.PlayerActMove:
 		if a.Count == 2 {
-			pos := common.Point{X: int32(a.Object.X), Y: int32(a.Object.Y)}
+			pos := common.Point{X: a.Object.X, Y: a.Object.Y}
 			battlecommon.MoveObject(&pos, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
 			a.Object.X = int(pos.X)
 			a.Object.Y = int(pos.Y)
@@ -79,12 +79,12 @@ func (a *Act) Process() bool {
 					TTL:           1,
 					TargetType:    damage.TargetOtherClient,
 					HitEffectType: effect.TypeHitSmallEffect,
-					ViewOfsX:      int32(rand.Intn(2*5) - 5),
-					ViewOfsY:      int32(rand.Intn(2*5) - 5),
+					ViewOfsX:      rand.Intn(2*5) - 5,
+					ViewOfsY:      rand.Intn(2*5) - 5,
 				})
 
 				// break if object exists
-				pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(y)})
+				pn := netfield.GetPanelInfo(common.Point{X: x, Y: y})
 				if pn.ObjectID != "" {
 					sound.On(sound.SEBusterHit)
 					break

@@ -78,17 +78,17 @@ func ViewPos(pos common.Point) common.Point {
 	}
 }
 
-func GetOffset(nextPos, nowPos, beforePos int32, cnt, totalCnt int, size int32) int32 {
+func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int {
 	// if cnt < total_count/2
 	//   init_offset = (before - now) * size / 2
 	//   offset = init_offset - (before - now)*(count*size/total_count))
 
-	var res int32
+	var res int
 	if cnt < totalCnt/2 {
 		res = (beforePos - nowPos)
 	} else {
 		res = (nowPos - nextPos)
 	}
 
-	return res * size * int32(totalCnt-2*cnt) / int32(totalCnt*2)
+	return res * size * int(totalCnt-2*cnt) / int(totalCnt*2)
 }

@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type aquamanShot struct {
@@ -39,7 +39,7 @@ func newAquamanShot(objID string, arg Argument) *aquamanShot {
 }
 
 func (p *aquamanShot) Draw() {
-	dxlib.DrawRotaGraph(p.pos.X+p.ofs.X, p.pos.Y+p.ofs.Y, 1, 0, imgAquamanShot[0], dxlib.TRUE)
+	dxlib.DrawRotaGraph(p.pos.X+p.ofs.X, p.pos.Y+p.ofs.Y, 1, 0, imgAquamanShot[0], true)
 }
 
 func (p *aquamanShot) Process() (bool, error) {

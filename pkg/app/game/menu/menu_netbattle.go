@@ -3,17 +3,17 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 type menuNetBattle struct {
-	imgMsgFrame int32
+	imgMsgFrame int
 	messages    []string
 	isConnect   bool
 }
@@ -75,8 +75,8 @@ func (m *menuNetBattle) Process() bool {
 }
 
 func (m *menuNetBattle) Draw() {
-	dxlib.DrawGraph(40, 205, m.imgMsgFrame, dxlib.TRUE)
+	dxlib.DrawGraph(40, 205, m.imgMsgFrame, true)
 	for i, msg := range m.messages {
-		draw.MessageText(120, 220+int32(i)*30, 0x000000, msg)
+		draw.MessageText(120, 220+i*30, 0x000000, msg)
 	}
 }

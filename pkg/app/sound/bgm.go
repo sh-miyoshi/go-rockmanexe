@@ -3,9 +3,9 @@ package sound
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
@@ -30,7 +30,7 @@ var (
 		"net_battle.mp3",
 		"boss_battle.mp3",
 	}
-	bgmHandle int32 = -1
+	bgmHandle int = -1
 )
 
 func BGMPlay(typ int) error {
@@ -45,7 +45,7 @@ func BGMPlay(typ int) error {
 		return fmt.Errorf("failed to load BGM: %s", fname)
 	}
 
-	dxlib.PlaySoundMem(bgmHandle, dxlib.DX_PLAYTYPE_LOOP, dxlib.TRUE)
+	dxlib.PlaySoundMem(bgmHandle, dxlib.DX_PLAYTYPE_LOOP, true)
 
 	return nil
 }

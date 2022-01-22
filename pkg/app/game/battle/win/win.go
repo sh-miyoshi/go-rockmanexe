@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -13,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -25,8 +25,8 @@ const (
 )
 
 var (
-	imgFrame      int32
-	imgZenny      int32
+	imgFrame      int
+	imgZenny      int
 	count         int
 	state         int
 	deleteTimeSec int
@@ -142,14 +142,14 @@ func Draw() {
 			winMsgInst.Draw()
 		}
 	case stateFrameIn:
-		x := int32(count * 2)
+		x := count * 2
 		if x > 45 {
 			x = 45
 		}
-		dxlib.DrawGraph(x, 30, imgFrame, dxlib.TRUE)
+		dxlib.DrawGraph(x, 30, imgFrame, true)
 	case stateResult:
-		dxlib.DrawGraph(45, 30, imgFrame, dxlib.TRUE)
-		dxlib.DrawGraph(272, 174, reward.Image, dxlib.TRUE)
+		dxlib.DrawGraph(45, 30, imgFrame, true)
+		dxlib.DrawGraph(272, 174, reward.Image, true)
 		draw.String(105, 230, 0xffffff, reward.Name)
 		if reward.Type == rewardTypeChip {
 			// Show chip code
@@ -157,7 +157,7 @@ func Draw() {
 			draw.String(240, 230, 0xffffff, c)
 		}
 		showDeleteTime()
-		draw.Number(360, 125, int32(bustingLevel))
+		draw.Number(360, 125, bustingLevel)
 	}
 }
 
@@ -179,9 +179,9 @@ func showDeleteTime() {
 		min = 99
 	}
 	zero := 0
-	draw.Number(300, 77, int32(min), draw.NumberOption{Padding: &zero, Length: 2})
+	draw.Number(300, 77, min, draw.NumberOption{Padding: &zero, Length: 2})
 	draw.String(333, 80, 0xffffff, "：")
-	draw.Number(350, 77, int32(sec), draw.NumberOption{Padding: &zero, Length: 2})
+	draw.Number(350, 77, sec, draw.NumberOption{Padding: &zero, Length: 2})
 }
 
 func calcBustingLevel(args WinArg) int {

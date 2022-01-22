@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type shockWave struct {
@@ -36,9 +36,9 @@ func (p *shockWave) Draw() {
 			dxopts := dxlib.DrawRotaGraphOption{
 				ReverseXFlag: &flag,
 			}
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], dxlib.TRUE, dxopts)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true, dxopts)
 		} else if p.Direct == common.DirectRight {
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true)
 		}
 	}
 
@@ -47,7 +47,7 @@ func (p *shockWave) Draw() {
 		if n < len(imgPick) {
 			pos := objanim.GetObjPos(p.OwnerID)
 			view := battlecommon.ViewPos(pos)
-			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], true)
 		}
 	}
 }

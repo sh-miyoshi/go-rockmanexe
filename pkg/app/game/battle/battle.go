@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -21,6 +20,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -271,7 +271,7 @@ func stateChange(nextState int) {
 func drawEnemyNames() {
 	for i, e := range enemyList {
 		name := enemy.GetName(e.CharID)
-		ofs := dxlib.GetDrawStringWidth(name, int32(len(name)))
-		draw.String(common.ScreenSize.X-ofs-5, int32(i)*20+10, 0xffffff, "%s", name)
+		ofs := dxlib.GetDrawStringWidth(name, len(name))
+		draw.String(common.ScreenSize.X-ofs-5, int(i)*20+10, 0xffffff, "%s", name)
 	}
 }

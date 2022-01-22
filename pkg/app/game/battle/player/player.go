@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -20,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -62,12 +62,12 @@ type BattlePlayer struct {
 }
 
 var (
-	imgPlayers    [battlecommon.PlayerActMax][]int32
+	imgPlayers    [battlecommon.PlayerActMax][]int
 	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3}
-	imgHPFrame    int32
-	imgGaugeFrame int32
-	imgGaugeMax   []int32
-	imgCharge     [2][]int32
+	imgHPFrame    int
+	imgGaugeFrame int
+	imgGaugeMax   []int
+	imgCharge     [2][]int
 )
 
 // New ...
@@ -99,13 +99,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Debug("Player info: %+v", res)
 
 	fname := common.ImagePath + "battle/character/player_move.png"
-	imgPlayers[battlecommon.PlayerActMove] = make([]int32, 4)
+	imgPlayers[battlecommon.PlayerActMove] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[battlecommon.PlayerActMove]); res == -1 {
 		return nil, fmt.Errorf("failed to load player move image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_damaged.png"
-	imgPlayers[battlecommon.PlayerActDamage] = make([]int32, 6)
+	imgPlayers[battlecommon.PlayerActDamage] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActDamage]); res == -1 {
 		return nil, fmt.Errorf("failed to load player damage image: %s", fname)
 	}
@@ -116,25 +116,25 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[battlecommon.PlayerActDamage][3] = imgPlayers[battlecommon.PlayerActDamage][1]
 
 	fname = common.ImagePath + "battle/character/player_shot.png"
-	imgPlayers[battlecommon.PlayerActShot] = make([]int32, 6)
+	imgPlayers[battlecommon.PlayerActShot] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActShot]); res == -1 {
 		return nil, fmt.Errorf("failed to load player shot image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_cannon.png"
-	imgPlayers[battlecommon.PlayerActCannon] = make([]int32, 6)
+	imgPlayers[battlecommon.PlayerActCannon] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActCannon]); res == -1 {
 		return nil, fmt.Errorf("failed to load player cannon image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_sword.png"
-	imgPlayers[battlecommon.PlayerActSword] = make([]int32, 7)
+	imgPlayers[battlecommon.PlayerActSword] = make([]int, 7)
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[battlecommon.PlayerActSword]); res == -1 {
 		return nil, fmt.Errorf("failed to load player sword image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_bomb.png"
-	imgPlayers[battlecommon.PlayerActBomb] = make([]int32, 7)
+	imgPlayers[battlecommon.PlayerActBomb] = make([]int, 7)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[battlecommon.PlayerActBomb]); res == -1 {
 		return nil, fmt.Errorf("failed to load player bomb image: %s", fname)
 	}
@@ -142,13 +142,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[battlecommon.PlayerActBomb][6] = imgPlayers[battlecommon.PlayerActBomb][4]
 
 	fname = common.ImagePath + "battle/character/player_buster.png"
-	imgPlayers[battlecommon.PlayerActBuster] = make([]int32, 6)
+	imgPlayers[battlecommon.PlayerActBuster] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActBuster]); res == -1 {
 		return nil, fmt.Errorf("failed to load player buster image: %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/character/player_pick.png"
-	imgPlayers[battlecommon.PlayerActPick] = make([]int32, 6)
+	imgPlayers[battlecommon.PlayerActPick] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgPlayers[battlecommon.PlayerActPick]); res == -1 {
 		return nil, fmt.Errorf("failed to load player pick image: %s", fname)
 	}
@@ -156,7 +156,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[battlecommon.PlayerActPick][5] = imgPlayers[battlecommon.PlayerActPick][3]
 
 	fname = common.ImagePath + "battle/character/player_throw.png"
-	imgPlayers[battlecommon.PlayerActThrow] = make([]int32, 4)
+	imgPlayers[battlecommon.PlayerActThrow] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, imgPlayers[battlecommon.PlayerActThrow]); res == -1 {
 		return nil, fmt.Errorf("failed to load player throw image: %s", fname)
 	}
@@ -172,13 +172,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
-	imgGaugeMax = make([]int32, 4)
+	imgGaugeMax = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
 		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/skill/charge.png"
-	tmp := make([]int32, 16)
+	tmp := make([]int, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
@@ -212,7 +212,7 @@ func (p *BattlePlayer) End() {
 		for _, img := range imgCharge[i] {
 			dxlib.DeleteGraph(img)
 		}
-		imgCharge[i] = []int32{}
+		imgCharge[i] = []int{}
 	}
 
 	logger.Info("Successfully cleanuped battle player data")
@@ -226,7 +226,7 @@ func (p *BattlePlayer) Draw() {
 
 	view := battlecommon.ViewPos(p.Pos)
 	img := p.act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
 
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -236,7 +236,7 @@ func (p *BattlePlayer) Draw() {
 		}
 		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 
@@ -248,38 +248,38 @@ func (p *BattlePlayer) Draw() {
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + int32((i*px)-max)
-			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + int32((i*px)-max)
-			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, dxlib.FALSE)
+			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + int((i*px)-max)
+			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + int((i*px)-max)
+			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
-			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
 		}
 	}
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
-	x := int32(7)
-	y := int32(5)
+	x := int(7)
+	y := int(5)
 	if xShift {
 		x += 235
 	}
 
 	// Show HP
-	dxlib.DrawGraph(x, y, imgHPFrame, dxlib.TRUE)
-	draw.Number(x+2, y+2, int32(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
+	dxlib.DrawGraph(x, y, imgHPFrame, true)
+	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Custom Gauge
 	if showGauge {
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
-			dxlib.DrawGraph(96, 5, imgGaugeFrame, dxlib.TRUE)
+			dxlib.DrawGraph(96, 5, imgGaugeFrame, true)
 			const gaugeMaxSize = 256
-			size := int32(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
-			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
-			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), dxlib.TRUE)
-			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), dxlib.TRUE)
+			size := int(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
+			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), true)
+			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), true)
 		} else {
 			i := (p.GaugeCount / 20) % 4
-			dxlib.DrawGraph(96, 5, imgGaugeMax[i], dxlib.TRUE)
+			dxlib.DrawGraph(96, 5, imgGaugeMax[i], true)
 		}
 	}
 }
@@ -522,7 +522,7 @@ func (a *act) SetAnim(animType int, keepCount int) {
 	a.keepCount = keepCount
 }
 
-func (a *act) GetImage() int32 {
+func (a *act) GetImage() int {
 	if a.typ == -1 {
 		// return stand image
 		return imgPlayers[battlecommon.PlayerActMove][0]
