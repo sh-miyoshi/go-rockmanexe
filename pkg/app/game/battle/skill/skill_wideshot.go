@@ -26,7 +26,7 @@ type wideShot struct {
 
 	state    int
 	count    int
-	x, y     int
+	pos      common.Point
 	damageID [3]string
 }
 
@@ -41,29 +41,29 @@ func (p *wideShot) Draw() {
 
 	switch p.state {
 	case wideShotStateBegin:
-		x, y := battlecommon.ViewPos(p.x, p.y)
+		view := battlecommon.ViewPos(p.pos)
 		n := (p.count / delayWideShot)
 
 		if n < len(imgWideShotBody) && p.TargetType == damage.TargetEnemy {
-			dxlib.DrawRotaGraph(x+40, y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE, opt)
+			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], dxlib.TRUE, opt)
 		}
 		if n >= len(imgWideShotBegin) {
 			n = len(imgWideShotBegin) - 1
 		}
-		dxlib.DrawRotaGraph(x+62*ofs, y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE, opt)
+		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], dxlib.TRUE, opt)
 	case wideShotStateMove:
-		x, y := battlecommon.ViewPos(p.x, p.y)
+		view := battlecommon.ViewPos(p.pos)
 		n := (p.count / delayWideShot) % len(imgWideShotMove)
-		next := p.x + 1
-		prev := p.x - 1
+		next := p.pos.X + 1
+		prev := p.pos.X - 1
 		if p.Direct == common.DirectLeft {
 			next, prev = prev, next
 		}
 
 		c := p.count % p.NextStepCount
 		if c != 0 {
-			ofsx := battlecommon.GetOffset(next, p.x, prev, c, p.NextStepCount, field.PanelSizeX)
-			dxlib.DrawRotaGraph(x+int32(ofsx), y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE, opt)
+			ofsx := battlecommon.GetOffset(next, p.pos.X, prev, c, p.NextStepCount, field.PanelSize.X)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], dxlib.TRUE, opt)
 		}
 	}
 }
@@ -97,24 +97,23 @@ func (p *wideShot) Process() (bool, error) {
 	case wideShotStateMove:
 		if p.count%p.NextStepCount == 0 {
 			if p.Direct == common.DirectRight {
-				p.x++
+				p.pos.X++
 			} else if p.Direct == common.DirectLeft {
-				p.x--
+				p.pos.X--
 			}
 
-			if p.x >= field.FieldNumX || p.x < 0 {
+			if p.pos.X >= field.FieldNum.X || p.pos.X < 0 {
 				return true, nil
 			}
 
-			for i := -1; i <= 1; i++ {
-				y := p.y + i
-				if y < 0 || y >= field.FieldNumY {
+			for i := int32(-1); i <= 1; i++ {
+				y := p.pos.Y + i
+				if y < 0 || y >= field.FieldNum.Y {
 					continue
 				}
 
 				p.damageID[i+1] = damage.New(damage.Damage{
-					PosX:          p.x,
-					PosY:          y,
+					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Power),
 					TTL:           p.NextStepCount,
 					TargetType:    p.TargetType,

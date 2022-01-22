@@ -2,6 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -25,17 +26,17 @@ type vulcan struct {
 }
 
 func (p *vulcan) Draw() {
-	px, py := objanim.GetObjPos(p.OwnerID)
-	x, y := battlecommon.ViewPos(px, py)
+	pos := objanim.GetObjPos(p.OwnerID)
+	view := battlecommon.ViewPos(pos)
 
 	// Show body
-	dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgVulcan[p.imageNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgVulcan[p.imageNo], dxlib.TRUE)
 	// Show attack
 	if p.imageNo != 0 {
 		if p.imageNo%2 == 0 {
-			dxlib.DrawRotaGraph(x+100, y-10, 1, 0, imgVulcan[3], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X+100, view.Y-10, 1, 0, imgVulcan[3], dxlib.TRUE)
 		} else {
-			dxlib.DrawRotaGraph(x+100, y-15, 1, 0, imgVulcan[3], dxlib.TRUE)
+			dxlib.DrawRotaGraph(view.X+100, view.Y-15, 1, 0, imgVulcan[3], dxlib.TRUE)
 		}
 	}
 }
@@ -48,27 +49,27 @@ func (p *vulcan) Process() (bool, error) {
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			px, py := objanim.GetObjPos(p.OwnerID)
+			pos := objanim.GetObjPos(p.OwnerID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
-			for x := px + 1; x < field.FieldNumX; x++ {
-				if field.GetPanelInfo(x, py).ObjectID != "" {
+			for x := pos.X + 1; x < field.FieldNum.X; x++ {
+				target := common.Point{X: x, Y: pos.Y}
+				if field.GetPanelInfo(target).ObjectID != "" {
 					damage.New(damage.Damage{
-						PosX:          x,
-						PosY:          py,
+						Pos:           target,
 						Power:         int(p.Power),
 						TTL:           1,
 						TargetType:    p.TargetType,
 						HitEffectType: effect.TypeSpreadHit,
 						BigDamage:     lastAtk,
 					})
-					anim.New(effect.Get(effect.TypeVulcanHit1, x, py, 20))
-					if p.hit && x < field.FieldNumX-1 {
-						anim.New(effect.Get(effect.TypeVulcanHit2, x+1, py, 20))
+					anim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
+					if p.hit && x < field.FieldNum.X-1 {
+						target = common.Point{X: x + 1, Y: pos.Y}
+						anim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
 						damage.New(damage.Damage{
-							PosX:          x + 1,
-							PosY:          py,
+							Pos:           target,
 							Power:         int(p.Power),
 							TTL:           1,
 							TargetType:    p.TargetType,

@@ -2,6 +2,7 @@ package skill
 
 import (
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
@@ -51,14 +52,14 @@ func (p *spreadGun) Process() (bool, error) {
 			x := dm.PosX
 			y := dm.PosY
 			for sy := -1; sy <= 1; sy++ {
-				if y+sy < 0 || y+sy >= appfield.FieldNumY {
+				if y+sy < 0 || y+sy >= int(appfield.FieldNum.Y) {
 					continue
 				}
 				for sx := -1; sx <= 1; sx++ {
 					if sy == 0 && sx == 0 {
 						continue
 					}
-					if x+sx >= 0 && x+sx < appfield.FieldNumX {
+					if x+sx >= 0 && x+sx < int(appfield.FieldNum.X) {
 						// Send effect
 						netconn.SendEffect(effect.Effect{
 							ID:   uuid.New().String(),
@@ -105,8 +106,8 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		for x := p.x + 1; x < appfield.FieldNumX; x++ {
-			pn := netfield.GetPanelInfo(x, p.y)
+		for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
+			pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
 			if pn.ObjectID != "" {
 				// Hit
 				sound.On(sound.SESpreadHit)

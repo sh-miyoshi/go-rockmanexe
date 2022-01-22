@@ -22,19 +22,18 @@ type recover struct {
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {
-		px, py := objanim.GetObjPos(p.OwnerID)
-		x, y := battlecommon.ViewPos(px, py)
-		dxlib.DrawRotaGraph(x, y, 1, 0, imgRecover[n], dxlib.TRUE)
+		pos := objanim.GetObjPos(p.OwnerID)
+		view := battlecommon.ViewPos(pos)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], dxlib.TRUE)
 	}
 }
 
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SERecover)
-		px, py := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.OwnerID)
 		damage.New(damage.Damage{
-			PosX:          px,
-			PosY:          py,
+			Pos:           pos,
 			Power:         -int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,

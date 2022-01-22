@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -53,7 +54,10 @@ func (a *Act) Process() bool {
 		return false
 	case battlecommon.PlayerActMove:
 		if a.Count == 2 {
-			battlecommon.MoveObject(&a.Object.X, &a.Object.Y, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
+			pos := common.Point{X: int32(a.Object.X), Y: int32(a.Object.Y)}
+			battlecommon.MoveObject(&pos, a.Opts.MoveDirect, appfield.PanelTypePlayer, true, netfield.GetPanelInfo)
+			a.Object.X = int(pos.X)
+			a.Object.Y = int(pos.Y)
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
 	case battlecommon.PlayerActBuster:
@@ -66,7 +70,7 @@ func (a *Act) Process() bool {
 				power *= 10
 			}
 
-			for x := a.Object.X + 1; x < appfield.FieldNumX; x++ {
+			for x := a.Object.X + 1; x < int(appfield.FieldNum.X); x++ {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,
@@ -80,7 +84,7 @@ func (a *Act) Process() bool {
 				})
 
 				// break if object exists
-				pn := netfield.GetPanelInfo(x, y)
+				pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(y)})
 				if pn.ObjectID != "" {
 					sound.On(sound.SEBusterHit)
 					break

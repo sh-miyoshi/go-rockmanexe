@@ -54,26 +54,26 @@ func (b *boss) Process() bool {
 }
 
 func (b *boss) Draw() {
-	dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0x000000, dxlib.TRUE)
+	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
 
 	// debug(初期位置)
-	x, y := battlecommon.ViewPos(1, 1)
+	view := battlecommon.ViewPos(common.Point{X: 1, Y: 1})
 
 	dxlib.SetDrawBright(17, 168, 10)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, b.playerImage, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, dxlib.TRUE)
 
 	for i, e := range b.enemies {
-		x, y := battlecommon.ViewPos(e.PosX, e.PosY)
-		dxlib.DrawRotaGraph(x, y, 1, 0, b.enemyImages[i], dxlib.TRUE)
+		view := battlecommon.ViewPos(e.Pos)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], dxlib.TRUE)
 	}
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, b.playerImage, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.playerImage, dxlib.TRUE)
 
 	for i, e := range b.enemies {
-		x, y := battlecommon.ViewPos(e.PosX, e.PosY)
-		dxlib.DrawRotaGraph(x, y, 1, 0, b.enemyImages[i], dxlib.TRUE)
+		view := battlecommon.ViewPos(e.Pos)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, b.enemyImages[i], dxlib.TRUE)
 	}
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
@@ -82,35 +82,35 @@ func (b *boss) Draw() {
 	color := dxlib.GetColor(17, 168, 10)
 
 	// horizontal lines
-	for i := 0; i < field.FieldNumY+1; i++ {
-		y := field.DrawPanelTopY + i*field.PanelSizeY
-		len := (b.count - i*10) * 40
-		if len > common.ScreenX {
-			len = common.ScreenX
+	for i := int32(0); i < field.FieldNum.Y+1; i++ {
+		y := field.DrawPanelTopY + int32(i*field.PanelSize.Y)
+		len := int32(b.count) - i*10*40
+		if len > common.ScreenSize.X {
+			len = common.ScreenSize.X
 		}
 
-		drawLine(0, int32(y), int32(len), horizontal, color)
+		drawLine(0, y, len, horizontal, color)
 	}
 
 	// vertical lines
-	for i := 0; i < field.FieldNumX-1; i++ {
-		x := (i + 1) * field.PanelSizeX
-		len := (b.count - 40) * 40
-		s := 0
-		delay := 45 + common.MountainIndex(i, field.FieldNumX-1)*5
+	for i := int32(0); i < field.FieldNum.X-1; i++ {
+		x := (i + 1) * field.PanelSize.X
+		len := int32(b.count-40) * 40
+		var s int32
+		delay := 45 + common.MountainIndex(int(i), int(field.FieldNum.X-1))*5
 		if b.count >= delay {
-			s = (b.count - delay) * 20
+			s = int32(b.count-delay) * 20
 			if s > field.DrawPanelTopY {
 				s = field.DrawPanelTopY
 			}
 		}
 
-		maxLen := common.ScreenY - field.DrawPanelTopY
+		maxLen := common.ScreenSize.Y - field.DrawPanelTopY
 		if len > maxLen {
 			len = maxLen
 		}
 
-		drawLine(int32(x), int32(s), int32(len), vertical, color)
+		drawLine(int32(x), s, len, vertical, color)
 	}
 }
 

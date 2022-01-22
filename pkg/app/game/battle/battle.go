@@ -272,6 +272,6 @@ func drawEnemyNames() {
 	for i, e := range enemyList {
 		name := enemy.GetName(e.CharID)
 		ofs := dxlib.GetDrawStringWidth(name, int32(len(name)))
-		draw.String(common.ScreenX-ofs-5, int32(i)*20+10, 0xffffff, "%s", name)
+		draw.String(common.ScreenSize.X-ofs-5, int32(i)*20+10, 0xffffff, "%s", name)
 	}
 }

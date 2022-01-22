@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -38,28 +39,24 @@ type enemyLark struct {
 	count   int
 	atk     larkAtk
 
-	movePoint   [6][2]int
-	movePointer int
+	movePoint   [6][2]int32
+	movePointer int32
 	moveCount   int
 
-	nextX int
-	nextY int
-	prevX int
-	prevY int
+	next common.Point
+	prev common.Point
 }
 
 func (e *enemyLark) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.atk.ownerID = objID
-	e.nextX = e.pm.PosX
-	e.nextY = e.pm.PosY
-	e.prevX = e.pm.PosX
-	e.prevY = e.pm.PosY
+	e.next = e.pm.Pos
+	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
 
-	for i := 0; i < 6; i++ {
+	for i := int32(0); i < 6; i++ {
 		// x座標
-		if e.pm.PosX == 3 {
+		if e.pm.Pos.X == 3 {
 			// Pattern 1. 前2列を周回
 			e.movePoint[i][0] = (i / 3) + 3
 		} else {
@@ -74,7 +71,7 @@ func (e *enemyLark) Init(objID string) error {
 			e.movePoint[i][1] = 5 - i
 		}
 
-		if e.movePoint[i][0] == e.pm.PosX && e.movePoint[i][1] == e.pm.PosY {
+		if e.movePoint[i][0] == e.pm.Pos.X && e.movePoint[i][1] == e.pm.Pos.Y {
 			e.movePointer = i
 		}
 	}
@@ -110,8 +107,8 @@ func (e *enemyLark) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -133,7 +130,7 @@ func (e *enemyLark) Process() (bool, error) {
 	np := (e.movePointer + 1) % 6
 
 	if cnt == larkMoveNextStepCount/2 {
-		if e.moveCount >= moveNum && e.pm.PosY != 1 && attacker == "" {
+		if e.moveCount >= moveNum && e.pm.Pos.Y != 1 && attacker == "" {
 			attacker = e.pm.ObjectID
 			e.moveCount = 0
 			e.atk.SetAttack()
@@ -142,19 +139,16 @@ func (e *enemyLark) Process() (bool, error) {
 
 		// 次の移動地点を決定
 		e.moveCount++
-		tx := e.movePoint[np][0]
-		ty := e.movePoint[np][1]
-		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, tx, ty, field.PanelTypeEnemy, false, field.GetPanelInfo) {
-			e.nextX = tx
-			e.nextY = ty
+		t := common.Point{X: e.movePoint[np][0], Y: e.movePoint[np][1]}
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, t, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+			e.next = t
 		}
 		return false, nil
 	}
 	if cnt == 0 {
 		// 実際に移動
-		e.prevX = e.pm.PosX
-		e.prevY = e.pm.PosY
-		if battlecommon.MoveObjectDirect(&e.pm.PosX, &e.pm.PosY, e.nextX, e.nextY, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+		e.prev = e.pm.Pos
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, e.next, field.PanelTypeEnemy, true, field.GetPanelInfo) {
 			e.movePointer = np
 		}
 	}
@@ -163,24 +157,24 @@ func (e *enemyLark) Process() (bool, error) {
 }
 
 func (e *enemyLark) Draw() {
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	view := battlecommon.ViewPos(e.pm.Pos)
 	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		dxlib.DrawRotaGraph(x+20, y, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+20, view.Y, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		return
 	}
 
 	c := e.count % larkMoveNextStepCount
-	ofsx := battlecommon.GetOffset(e.nextX, e.pm.PosX, e.prevX, c, larkMoveNextStepCount, field.PanelSizeX)
-	ofsy := battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, larkMoveNextStepCount, field.PanelSizeY)
+	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, larkMoveNextStepCount, field.PanelSize.X)
+	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, larkMoveNextStepCount, field.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(x+20+int32(ofsx), y+int32(ofsy), 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X+20+ofsx, view.Y+ofsy, 1, 0, *img, dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -193,7 +187,7 @@ func (e *enemyLark) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 		return true
 	}
 	return false
@@ -202,8 +196,7 @@ func (e *enemyLark) DamageProc(dm *damage.Damage) bool {
 func (e *enemyLark) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

@@ -2,6 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -26,7 +27,7 @@ type spreadHit struct {
 	TargetType int
 
 	count int
-	x, y  int
+	pos   common.Point
 }
 
 func (p *spreadGun) Draw() {
@@ -34,17 +35,17 @@ func (p *spreadGun) Draw() {
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
-		px, py := objanim.GetObjPos(p.OwnerID)
-		x, y := battlecommon.ViewPos(px, py)
-		dxlib.DrawRotaGraph(x+50, y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
+		pos := objanim.GetObjPos(p.OwnerID)
+		view := battlecommon.ViewPos(pos)
+		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], dxlib.TRUE)
 	}
 
 	// Show atk
 	n = (p.count - 4) / delaySpreadGun
 	if n >= 0 && n < len(imgSpreadGunAtk) {
-		px, py := objanim.GetObjPos(p.OwnerID)
-		x, y := battlecommon.ViewPos(px, py)
-		dxlib.DrawRotaGraph(x+100, y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
+		pos := objanim.GetObjPos(p.OwnerID)
+		view := battlecommon.ViewPos(pos)
+		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], dxlib.TRUE)
 	}
 }
 
@@ -52,35 +53,34 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		px, py := objanim.GetObjPos(p.OwnerID)
-		for x := px + 1; x < field.FieldNumX; x++ {
-			if field.GetPanelInfo(x, py).ObjectID != "" {
+		pos := objanim.GetObjPos(p.OwnerID)
+		for x := pos.X + 1; x < field.FieldNum.X; x++ {
+			target := common.Point{X: x, Y: pos.Y}
+			if field.GetPanelInfo(target).ObjectID != "" {
 				// Hit
 				sound.On(sound.SESpreadHit)
 
 				damage.New(damage.Damage{
-					PosX:          x,
-					PosY:          py,
+					Pos:           target,
 					Power:         int(p.Power),
 					TTL:           1,
 					TargetType:    p.TargetType,
 					HitEffectType: effect.TypeHitBig,
 				})
 				// Spreading
-				for sy := -1; sy <= 1; sy++ {
-					if py+sy < 0 || py+sy >= field.FieldNumY {
+				for sy := int32(-1); sy <= 1; sy++ {
+					if pos.Y+sy < 0 || pos.Y+sy >= field.FieldNum.Y {
 						continue
 					}
-					for sx := -1; sx <= 1; sx++ {
+					for sx := int32(-1); sx <= 1; sx++ {
 						if sy == 0 && sx == 0 {
 							continue
 						}
-						if x+sx >= 0 && x+sx < field.FieldNumX {
+						if x+sx >= 0 && x+sx < field.FieldNum.X {
 							anim.New(&spreadHit{
 								Power:      p.Power,
 								TargetType: p.TargetType,
-								x:          x + sx,
-								y:          py + sy,
+								pos:        common.Point{X: x + sx, Y: pos.Y + sy},
 							})
 						}
 					}
@@ -117,10 +117,9 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		anim.New(effect.Get(effect.TypeSpreadHit, p.x, p.y, 5))
+		anim.New(effect.Get(effect.TypeSpreadHit, p.pos, 5))
 		damage.New(damage.Damage{
-			PosX:          p.x,
-			PosY:          p.y,
+			Pos:           p.pos,
 			Power:         int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,

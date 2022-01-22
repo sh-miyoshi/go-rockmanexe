@@ -12,14 +12,14 @@ import (
 )
 
 const (
-	FieldNumX     = 6
-	FieldNumY     = 3
-	PanelSizeX    = 80
-	PanelSizeY    = 50
-	DrawPanelTopY = common.ScreenY - (PanelSizeY * 3) - 30
-
 	panelReturnAnimCount = 60
 	panelHoleCount       = 480
+)
+
+var (
+	FieldNum      = common.Point{X: 6, Y: 3}
+	PanelSize     = common.Point{X: 80, Y: 50}
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * 3) - 30
 )
 
 const (
@@ -48,12 +48,17 @@ type PanelInfo struct {
 var (
 	imgPanel      [panelStatusMax][panelTypeMax]int32
 	blackoutCount = 0
-	panels        [FieldNumX][FieldNumY]PanelInfo
+	panels        [][]PanelInfo
 )
 
 // Init ...
 func Init() error {
 	logger.Info("Initialize battle field data")
+
+	panels = make([][]PanelInfo, FieldNum.X)
+	for i := int32(0); i < FieldNum.X; i++ {
+		panels[i] = make([]PanelInfo, FieldNum.Y)
+	}
 
 	// Initialize images
 	files := [panelStatusMax]string{"normal", "crack", "hole"}
@@ -73,12 +78,12 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := 0; x < FieldNumX; x++ {
+	for x := int32(0); x < FieldNum.X; x++ {
 		t := PanelTypePlayer
 		if x > 2 {
 			t = PanelTypeEnemy
 		}
-		for y := 0; y < FieldNumY; y++ {
+		for y := int32(0); y < FieldNum.Y; y++ {
 			panels[x][y] = PanelInfo{
 				Status:    PanelStatusNormal,
 				Type:      t,
@@ -106,11 +111,11 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := 0; x < FieldNumX; x++ {
-		for y := 0; y < FieldNumY; y++ {
+	for x := int32(0); x < FieldNum.X; x++ {
+		for y := int32(0); y < FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
-			vx := int32(PanelSizeX * x)
-			vy := int32(DrawPanelTopY + PanelSizeY*y)
+			vx := PanelSize.X * x
+			vy := DrawPanelTopY + PanelSize.Y*y
 
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
@@ -123,11 +128,11 @@ func Draw() {
 
 			dxlib.DrawGraph(vx, vy, img, dxlib.TRUE)
 
-			if dm := damage.Get(x, y); dm != nil && dm.ShowHitArea {
+			if dm := damage.Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
-				x2 := vx + PanelSizeX
-				y2 := vy + PanelSizeY
+				x2 := vx + PanelSize.X
+				y2 := vy + PanelSize.Y
 				const s = 5
 				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
 			}
@@ -138,7 +143,7 @@ func Draw() {
 func DrawBlackout() {
 	if blackoutCount > 0 {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 128)
-		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0x000000, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 	}
 }
@@ -153,9 +158,9 @@ func Update() {
 
 	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
 	for _, obj := range objs {
-		panels[obj.PosX][obj.PosY].ObjectID = obj.ObjID
-		if panels[obj.PosX][obj.PosY].Status == PanelStatusCrack {
-			panels[obj.PosX][obj.PosY].ObjExists = true
+		panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ObjID
+		if panels[obj.Pos.X][obj.Pos.Y].Status == PanelStatusCrack {
+			panels[obj.Pos.X][obj.Pos.Y].ObjExists = true
 		}
 	}
 
@@ -188,12 +193,12 @@ func Update() {
 	}
 }
 
-func GetPanelInfo(x, y int) PanelInfo {
-	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+func GetPanelInfo(pos common.Point) PanelInfo {
+	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
 		return PanelInfo{}
 	}
 
-	return panels[x][y]
+	return panels[pos.X][pos.Y]
 }
 
 func SetBlackoutCount(cnt int) {
@@ -204,31 +209,31 @@ func IsBlackout() bool {
 	return blackoutCount > 0
 }
 
-func PanelBreak(x, y int) {
-	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+func PanelBreak(pos common.Point) {
+	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
 		return
 	}
 
-	if panels[x][y].Status == PanelStatusHole {
+	if panels[pos.X][pos.Y].Status == PanelStatusHole {
 		return
 	}
 
-	if panels[x][y].ObjectID != "" {
-		panels[x][y].Status = PanelStatusCrack
+	if panels[pos.X][pos.Y].ObjectID != "" {
+		panels[pos.X][pos.Y].Status = PanelStatusCrack
 	} else {
-		panels[x][y].Status = PanelStatusHole
-		panels[x][y].HoleCount = panelHoleCount
+		panels[pos.X][pos.Y].Status = PanelStatusHole
+		panels[pos.X][pos.Y].HoleCount = panelHoleCount
 	}
 }
 
-func PanelCrack(x, y int) {
-	if x < 0 || x >= FieldNumX || y < 0 || y >= FieldNumY {
+func PanelCrack(pos common.Point) {
+	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
 		return
 	}
 
-	if panels[x][y].Status == PanelStatusHole {
+	if panels[pos.X][pos.Y].Status == PanelStatusHole {
 		return
 	}
 
-	panels[x][y].Status = PanelStatusCrack
+	panels[pos.X][pos.Y].Status = PanelStatusCrack
 }

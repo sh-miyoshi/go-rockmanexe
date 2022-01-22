@@ -1,6 +1,7 @@
 package effect
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -12,7 +13,8 @@ var (
 
 func Draw() {
 	for _, eff := range effects {
-		draw.Effect(eff.Type, eff.Count, eff.X, eff.Y, eff.ViewOfsX, eff.ViewOfsY)
+		p := common.Point{X: int32(eff.X), Y: int32(eff.Y)}
+		draw.Effect(eff.Type, eff.Count, p, eff.ViewOfsX, eff.ViewOfsY)
 	}
 }
 

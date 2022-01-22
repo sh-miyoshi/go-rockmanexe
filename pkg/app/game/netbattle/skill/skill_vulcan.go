@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
@@ -77,8 +78,8 @@ func (p *vulcan) addDamage() {
 	dm := []damage.Damage{}
 	hit := false
 	eff := effect.Effect{}
-	for x := p.x + 1; x < appfield.FieldNumX; x++ {
-		pn := netfield.GetPanelInfo(x, p.y)
+	for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
+		pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
 		if pn.ObjectID != "" {
 			dm = append(dm, damage.Damage{
 				ID:            uuid.New().String(),
@@ -97,7 +98,7 @@ func (p *vulcan) addDamage() {
 				ViewOfsX: int32(rand.Intn(2*20) - 20),
 				ViewOfsY: int32(rand.Intn(2*20) - 20),
 			}
-			if p.hit && x < appfield.FieldNumX-1 {
+			if p.hit && x < int(appfield.FieldNum.X)-1 {
 				dm = append(dm, damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x + 1,

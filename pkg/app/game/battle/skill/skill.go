@@ -303,8 +303,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillLongSword:
 		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeLongSword, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillShockWave:
-		px, py := objanim.GetObjPos(arg.OwnerID)
-		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, x: px, y: py}
+		pos := objanim.GetObjPos(arg.OwnerID)
+		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, pos: pos}
 	case SkillRecover:
 		return &recover{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
 	case SkillSpreadGun:
@@ -312,26 +312,27 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillVulcan1:
 		return &vulcan{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
 	case SkillPlayerShockWave:
-		px, py := objanim.GetObjPos(arg.OwnerID)
-		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, x: px, y: py}
+		pos := objanim.GetObjPos(arg.OwnerID)
+		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, pos: pos}
 	case SkillThunderBall:
-		px, py := objanim.GetObjPos(arg.OwnerID)
-		x := px + 1
+		pos := objanim.GetObjPos(arg.OwnerID)
+		x := pos.X + 1
 		if arg.TargetType == damage.TargetPlayer {
-			x = px - 1
+			x = pos.X - 1
 		}
 
+		first := common.Point{X: x, Y: pos.Y}
 		max := 6 // debug
-		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, x: x, y: py, prevX: px, prevY: py, nextX: x, nextY: py}
+		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, pos: first, prev: pos, next: first}
 	case SkillWideShot:
-		px, py := objanim.GetObjPos(arg.OwnerID)
+		pos := objanim.GetObjPos(arg.OwnerID)
 		direct := common.DirectRight
 		nextStep := 8
 		if arg.TargetType == damage.TargetPlayer {
 			direct = common.DirectLeft
 			nextStep = 16
 		}
-		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, x: px, y: py, state: wideShotStateBegin}
+		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, pos: pos, state: wideShotStateBegin}
 	case SkillBoomerang:
 		return newBoomerang(objID, arg)
 	case SkillWaterBomb:
@@ -423,12 +424,12 @@ func newTmpSkill(objID string, arg Argument) *tmpskill {
 }
 
 func (p *tmpskill) Draw() {
-	px, py := objanim.GetObjPos(p.OwnerID)
-	x, y := battlecommon.ViewPos(px, py)
+	pos := objanim.GetObjPos(p.OwnerID)
+	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delay
 	if n < len(img) {
-		dxlib.DrawRotaGraph(x, y, 1, 0, img[n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img[n], dxlib.TRUE)
 	}
 }
 

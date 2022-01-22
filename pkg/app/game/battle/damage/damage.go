@@ -1,6 +1,9 @@
 package damage
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+)
 
 const (
 	TargetPlayer int = 1 << iota
@@ -9,8 +12,7 @@ const (
 
 type Damage struct {
 	ID            string
-	PosX          int
-	PosY          int
+	Pos           common.Point
 	Power         int
 	TTL           int
 	TargetType    int
@@ -39,9 +41,9 @@ func MgrProcess() {
 	}
 }
 
-func Get(x, y int) *Damage {
+func Get(pos common.Point) *Damage {
 	for _, d := range damages {
-		if d.PosX == x && d.PosY == y {
+		if d.Pos.X == pos.X && d.Pos.Y == pos.Y {
 			return d
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 )
 
 const (
@@ -15,8 +16,7 @@ const (
 
 type Param struct {
 	ObjID    string
-	PosX     int
-	PosY     int
+	Pos      common.Point
 	AnimType int
 }
 
@@ -94,7 +94,7 @@ func sortAnim() {
 		pm := anim.GetParam()
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.AnimType*100 + pm.PosY*6 + pm.PosX,
+			Index: pm.AnimType*100 + int(pm.Pos.Y*6+pm.Pos.X),
 		})
 	}
 

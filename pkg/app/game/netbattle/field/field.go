@@ -41,8 +41,8 @@ func Draw(playerID string) {
 
 	for x := 0; x < netconfig.FieldNumX; x++ {
 		for y := 0; y < netconfig.FieldNumY; y++ {
-			vx := int32(appfield.PanelSizeX * x)
-			vy := int32(appfield.DrawPanelTopY + appfield.PanelSizeY*y)
+			vx := appfield.PanelSize.X * int32(x)
+			vy := appfield.DrawPanelTopY + appfield.PanelSize.Y*int32(y)
 			pn := imgPanel[0]
 			if finfo.Panels[x][y].OwnerClientID != clientID {
 				pn = imgPanel[1]
@@ -53,8 +53,8 @@ func Draw(playerID string) {
 			if finfo.Panels[x][y].ShowHitArea {
 				x1 := vx
 				y1 := vy
-				x2 := vx + appfield.PanelSizeX
-				y2 := vy + appfield.PanelSizeY
+				x2 := vx + appfield.PanelSize.X
+				y2 := vy + appfield.PanelSize.Y
 				const s = 5
 				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, dxlib.TRUE)
 			}
@@ -63,8 +63,8 @@ func Draw(playerID string) {
 
 	objects := append([]object.Object{}, finfo.Objects...)
 	sort.Slice(objects, func(i, j int) bool {
-		ii := objects[i].Y*appfield.FieldNumX + objects[i].X
-		ij := objects[j].Y*appfield.FieldNumX + objects[j].X
+		ii := objects[i].Y*int(appfield.FieldNum.X) + objects[i].X
+		ij := objects[j].Y*int(appfield.FieldNum.X) + objects[j].X
 		return ii < ij
 	})
 	for _, obj := range objects {
@@ -90,20 +90,20 @@ func Draw(playerID string) {
 	effect.Draw()
 }
 
-func GetPanelInfo(x, y int) appfield.PanelInfo {
+func GetPanelInfo(pos common.Point) appfield.PanelInfo {
 	finfo := netconn.GetFieldInfo()
 	clientID := config.Get().Net.ClientID
 
 	id := ""
 	for _, obj := range finfo.Objects {
-		if obj.Hittable && obj.X == x && obj.Y == y {
+		if obj.Hittable && obj.X == int(pos.X) && obj.Y == int(pos.Y) {
 			id = obj.ID
 			break
 		}
 	}
 
 	pnType := appfield.PanelTypePlayer
-	if finfo.Panels[x][y].OwnerClientID != clientID {
+	if finfo.Panels[pos.X][pos.Y].OwnerClientID != clientID {
 		pnType = appfield.PanelTypeEnemy
 	}
 

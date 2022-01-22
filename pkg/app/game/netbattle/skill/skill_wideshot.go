@@ -72,7 +72,7 @@ func (p *wideShot) Process() (bool, error) {
 	if p.count > num*delay {
 		if p.count%p.nextStepCount == 0 {
 			p.x++
-			if p.x >= appfield.FieldNumX {
+			if p.x >= int(appfield.FieldNum.X) {
 				return true, nil
 			}
 

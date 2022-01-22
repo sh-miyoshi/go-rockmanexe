@@ -36,8 +36,8 @@ func (e *enemyTarget) End() {
 
 func (e *enemyTarget) Process() (bool, error) {
 	if e.pm.HP <= 0 {
-		battlecommon.NewDelete(e.image, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(e.image, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -45,12 +45,12 @@ func (e *enemyTarget) Process() (bool, error) {
 }
 
 func (e *enemyTarget) Draw() {
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
-	dxlib.DrawRotaGraph(x, y, 1, 0, e.image, dxlib.TRUE)
+	view := battlecommon.ViewPos(e.pm.Pos)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -64,7 +64,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) bool {
 	logger.Debug("Enemy Target damaged: %+v", *dm)
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 		return true
 	}
 	return false
@@ -73,8 +73,7 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) bool {
 func (e *enemyTarget) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

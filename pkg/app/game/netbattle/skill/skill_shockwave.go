@@ -54,7 +54,7 @@ func (p *shockWave) Process() (bool, error) {
 		n := waveNum * waveDelay
 		if p.count%(n) == 11 {
 			p.x++
-			if p.x >= appfield.FieldNumX {
+			if p.x >= int(appfield.FieldNum.X) {
 				return true, nil
 			}
 

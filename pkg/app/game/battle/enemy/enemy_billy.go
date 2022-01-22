@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -32,8 +33,7 @@ type billyAct struct {
 	count    int
 	typ      int
 	endCount int
-	pPosX    *int
-	pPosY    *int
+	pPos     *common.Point
 }
 
 type enemyBilly struct {
@@ -47,8 +47,7 @@ type enemyBilly struct {
 
 func (e *enemyBilly) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.act.pPosX = &e.pm.PosX
-	e.act.pPosY = &e.pm.PosY
+	e.act.pPos = &e.pm.Pos
 	e.act.typ = -1
 	e.act.ownerID = objID
 
@@ -85,8 +84,8 @@ func (e *enemyBilly) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -112,7 +111,7 @@ func (e *enemyBilly) Process() (bool, error) {
 			// try 20 times to move
 			for i := 0; i < 20; i++ {
 				e.act.MoveDirect = 1 << rand.Intn(4)
-				if battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, e.act.MoveDirect, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+				if battlecommon.MoveObject(&e.pm.Pos, e.act.MoveDirect, field.PanelTypeEnemy, false, field.GetPanelInfo) {
 					break
 				}
 			}
@@ -131,13 +130,13 @@ func (e *enemyBilly) Process() (bool, error) {
 }
 
 func (e *enemyBilly) Draw() {
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
-	dxlib.DrawRotaGraph(x, y, 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -150,7 +149,7 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 7))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 7))
 		return true
 	}
 	return false
@@ -159,8 +158,7 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
 func (e *enemyBilly) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }
@@ -209,7 +207,7 @@ func (a *billyAct) Process() bool {
 		}
 	case billyActMove:
 		if a.count == 4*delayBillyMove {
-			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypeEnemy, true, field.GetPanelInfo)
+			battlecommon.MoveObject(a.pPos, a.MoveDirect, field.PanelTypeEnemy, true, field.GetPanelInfo)
 		}
 	}
 

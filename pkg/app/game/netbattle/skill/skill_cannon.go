@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -81,7 +82,7 @@ func (p *cannon) StopByPlayer() {
 
 func (p *cannon) addDamage() {
 	dm := []damage.Damage{}
-	for x := p.x + 1; x < appfield.FieldNumX; x++ {
+	for x := p.x + 1; x < int(appfield.FieldNum.X); x++ {
 		dm = append(dm, damage.Damage{
 			ID:            uuid.New().String(),
 			PosX:          x,
@@ -96,7 +97,7 @@ func (p *cannon) addDamage() {
 		})
 
 		// break if object exists
-		pn := netfield.GetPanelInfo(x, p.y)
+		pn := netfield.GetPanelInfo(common.Point{X: int32(x), Y: int32(p.y)})
 		if pn.ObjectID != "" {
 			sound.On(sound.SECannonHit)
 			break

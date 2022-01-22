@@ -65,8 +65,8 @@ func (n *normal) Process() bool {
 func (n *normal) Draw() {
 	// Show animationed enemies
 	for i := 0; i < n.showCount; i++ {
-		x, y := battlecommon.ViewPos(n.enemies[i].PosX, n.enemies[i].PosY)
-		dxlib.DrawRotaGraph(x, y, 1, 0, n.images[n.enemies[i].CharID], dxlib.TRUE)
+		view := battlecommon.ViewPos(n.enemies[i].Pos)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, n.images[n.enemies[i].CharID], dxlib.TRUE)
 	}
 
 	// Show current enemy
@@ -77,8 +77,8 @@ func (n *normal) Draw() {
 		}
 
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, pm)
-		x, y := battlecommon.ViewPos(n.enemies[n.showCount].PosX, n.enemies[n.showCount].PosY)
-		dxlib.DrawRotaGraph(x, y, 1, 0, n.images[n.enemies[n.showCount].CharID], dxlib.TRUE)
+		view := battlecommon.ViewPos(n.enemies[n.showCount].Pos)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, n.images[n.enemies[n.showCount].CharID], dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 }

@@ -29,7 +29,7 @@ type aquaman struct {
 	state         int
 	imgCharStand  []int32
 	imgCharCreate []int32
-	x, y          int
+	pos           common.Point
 	atkID         string
 }
 
@@ -40,9 +40,8 @@ func newAquaman(objID string, arg Argument) (*aquaman, error) {
 		Power:      arg.Power,
 		TargetType: arg.TargetType,
 		state:      aquamanStateInit,
+		pos:        objanim.GetObjPos(arg.OwnerID),
 	}
-
-	res.x, res.y = objanim.GetObjPos(arg.OwnerID)
 
 	fname := common.ImagePath + "battle/character/アクアマン_stand.png"
 	res.imgCharStand = make([]int32, 9)
@@ -60,7 +59,7 @@ func newAquaman(objID string, arg Argument) (*aquaman, error) {
 }
 
 func (p *aquaman) Draw() {
-	px, py := battlecommon.ViewPos(p.x, p.y)
+	view := battlecommon.ViewPos(p.pos)
 	xflip := int32(dxlib.TRUE)
 
 	switch p.state {
@@ -69,16 +68,16 @@ func (p *aquaman) Draw() {
 		const delay = 8
 		if p.count > 20 {
 			imgNo := (p.count / delay) % len(p.imgCharStand)
-			dxlib.DrawRotaGraph(px+35, py, 1, 0, p.imgCharStand[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+			dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharStand[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 		}
 	case aquamanStateCreatePipe:
 		imgNo := p.count
 		if imgNo >= len(p.imgCharCreate) {
 			imgNo = len(p.imgCharCreate) - 1
 		}
-		dxlib.DrawRotaGraph(px+35, py, 1, 0, p.imgCharCreate[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[imgNo], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 	case aquamanStateAttack:
-		dxlib.DrawRotaGraph(px+35, py, 1, 0, p.imgCharCreate[len(p.imgCharCreate)-1], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[len(p.imgCharCreate)-1], dxlib.TRUE, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 	}
 }
 
@@ -97,8 +96,7 @@ func (p *aquaman) Process() (bool, error) {
 		if p.count == 10 {
 			obj := &object.WaterPipe{}
 			pm := object.ObjectParam{
-				PosX:          p.x + 1,
-				PosY:          p.y,
+				Pos:           common.Point{X: p.pos.X + 1, Y: p.pos.Y},
 				HP:            500,
 				OnwerCharType: objanim.ObjTypePlayer,
 				AttackNum:     1,

@@ -24,17 +24,15 @@ type thunderBall struct {
 	MaxMoveCount int
 
 	count     int
-	x, y      int
 	moveCount int
 	damageID  string
-	nextX     int
-	nextY     int
-	prevX     int
-	prevY     int
+	pos       common.Point
+	next      common.Point
+	prev      common.Point
 }
 
 func (p *thunderBall) Draw() {
-	x, y := battlecommon.ViewPos(p.x, p.y)
+	view := battlecommon.ViewPos(p.pos)
 	n := (p.count / delayThunderBall) % len(imgThunderBall)
 
 	cnt := p.count % thunderBallNextStepCount
@@ -43,10 +41,10 @@ func (p *thunderBall) Draw() {
 		return
 	}
 
-	ofsx := battlecommon.GetOffset(p.nextX, p.x, p.prevX, cnt, thunderBallNextStepCount, field.PanelSizeX)
-	ofsy := battlecommon.GetOffset(p.nextY, p.y, p.prevY, cnt, thunderBallNextStepCount, field.PanelSizeY)
+	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, thunderBallNextStepCount, field.PanelSize.X)
+	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, thunderBallNextStepCount, field.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(x+int32(ofsx), y+25+int32(ofsy), 1, 0, imgThunderBall[n], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], dxlib.TRUE)
 }
 
 func (p *thunderBall) Process() (bool, error) {
@@ -64,33 +62,29 @@ func (p *thunderBall) Process() (bool, error) {
 	}
 
 	if p.count%thunderBallNextStepCount == 0 {
-		tx := p.x
-		ty := p.y
+		t := p.pos
 		if p.count != 0 {
 			// Update current pos
-			p.prevX = p.x
-			p.prevY = p.y
-			p.x = p.nextX
-			p.y = p.nextY
+			p.prev = p.pos
+			p.pos = p.next
 
 			p.moveCount++
 			if p.moveCount > p.MaxMoveCount {
 				return true, nil
 			}
 
-			if p.x < 0 || p.x > field.FieldNumX || p.y < 0 || p.y > field.FieldNumY {
+			if p.pos.X < 0 || p.pos.X > field.FieldNum.X || p.pos.Y < 0 || p.pos.Y > field.FieldNum.Y {
 				return true, nil
 			}
 		}
 
-		pn := field.GetPanelInfo(p.x, p.y)
+		pn := field.GetPanelInfo(p.pos)
 		if pn.Status == field.PanelStatusHole {
 			return true, nil
 		}
 
 		p.damageID = damage.New(damage.Damage{
-			PosX:          p.x,
-			PosY:          p.y,
+			Pos:           p.pos,
 			Power:         int(p.Power),
 			TTL:           thunderBallNextStepCount + 1,
 			TargetType:    p.TargetType,
@@ -109,21 +103,21 @@ func (p *thunderBall) Process() (bool, error) {
 		if len(objs) == 0 {
 			// no target
 			if p.TargetType == damage.TargetPlayer {
-				p.nextX--
+				p.next.X--
 			} else {
-				p.nextX++
+				p.next.X++
 			}
 		} else {
-			xdif := objs[0].PosX - tx
-			ydif := objs[0].PosY - ty
+			xdif := objs[0].Pos.X - t.X
+			ydif := objs[0].Pos.Y - t.Y
 
 			if xdif != 0 || ydif != 0 {
-				if common.Abs(xdif) > common.Abs(ydif) {
+				if common.AbsInt32(xdif) > common.AbsInt32(ydif) {
 					// move to x
-					p.nextX += (xdif / common.Abs(xdif))
+					p.next.X += (xdif / common.AbsInt32(xdif))
 				} else {
 					// move to y
-					p.nextY += (ydif / common.Abs(ydif))
+					p.next.Y += (ydif / common.AbsInt32(ydif))
 				}
 			}
 		}

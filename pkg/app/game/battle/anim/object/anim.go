@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/stretchr/stew/slice"
@@ -62,7 +63,7 @@ func MgrProcess(enableDamage, blackout bool) error {
 		hit := []string{}
 		for _, anim := range anims {
 			pm := anim.GetParam()
-			if dm := damage.Get(pm.PosX, pm.PosY); dm != nil {
+			if dm := damage.Get(pm.Pos); dm != nil {
 				if anim.DamageProc(dm) {
 					hit = append(hit, dm.ID)
 				}
@@ -118,15 +119,15 @@ func Delete(animID string) {
 	}
 }
 
-func GetObjPos(objID string) (x, y int) {
+func GetObjPos(objID string) common.Point {
 	for _, anim := range anims {
 		pm := anim.GetParam()
 		if pm.ObjID == objID {
-			return pm.PosX, pm.PosY
+			return pm.Pos
 		}
 	}
 
-	return -1, -1
+	return common.Point{X: -1, Y: -1}
 }
 
 func GetObjs(filter Filter) []anim.Param {
@@ -161,14 +162,14 @@ func sortAnim() {
 	sortAnims := []sortParam{}
 	for id, anim := range anims {
 		pm := anim.GetParam()
-		index := pm.PosY*6 + pm.PosX
+		index := pm.Pos.Y*6 + pm.Pos.X
 		if slice.Contains(activeAnimIDs, id) {
 			index += 100
 		}
 
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: index,
+			Index: int(index),
 		})
 	}
 

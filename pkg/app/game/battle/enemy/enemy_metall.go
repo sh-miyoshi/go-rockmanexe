@@ -76,8 +76,8 @@ func (e *enemyMetall) Process() (bool, error) {
 		if e.atkID != "" {
 			img = &e.atk.images[e.atk.GetImageNo()]
 		}
-		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
@@ -119,8 +119,8 @@ func (e *enemyMetall) Process() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		_, py := objanim.GetObjPos(e.pm.PlayerID)
-		if py == e.pm.PosY || e.moveFailedCount >= forceAttackCount {
+		pos := objanim.GetObjPos(e.pm.PlayerID)
+		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
@@ -129,10 +129,10 @@ func (e *enemyMetall) Process() (bool, error) {
 		} else {
 			// Move
 			moved := false
-			if py > e.pm.PosY {
-				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectDown, field.PanelTypeEnemy, true, field.GetPanelInfo)
+			if pos.Y > e.pm.Pos.Y {
+				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectDown, field.PanelTypeEnemy, true, field.GetPanelInfo)
 			} else {
-				moved = battlecommon.MoveObject(&e.pm.PosX, &e.pm.PosY, common.DirectUp, field.PanelTypeEnemy, true, field.GetPanelInfo)
+				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectUp, field.PanelTypeEnemy, true, field.GetPanelInfo)
 			}
 			if moved {
 				e.moveFailedCount = 0
@@ -146,16 +146,16 @@ func (e *enemyMetall) Process() (bool, error) {
 }
 
 func (e *enemyMetall) Draw() {
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.imgMove[0]
 	if e.atkID != "" {
 		img = e.atk.images[e.atk.GetImageNo()]
 	}
-	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -168,7 +168,7 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 		return true
 	}
 	return false
@@ -177,8 +177,7 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) bool {
 func (e *enemyMetall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

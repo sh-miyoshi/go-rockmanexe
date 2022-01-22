@@ -29,12 +29,12 @@ type sword struct {
 }
 
 func (p *sword) Draw() {
-	px, py := objanim.GetObjPos(p.OwnerID)
-	x, y := battlecommon.ViewPos(px, py)
+	pos := objanim.GetObjPos(p.OwnerID)
+	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
 	if n >= 0 && n < len(imgSword[p.Type]) {
-		dxlib.DrawRotaGraph(x+100, y, 1, 0, imgSword[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgSword[p.Type][n], dxlib.TRUE)
 	}
 }
 
@@ -52,22 +52,22 @@ func (p *sword) Process() (bool, error) {
 			BigDamage:     true,
 		}
 
-		px, py := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.OwnerID)
 
-		dm.PosX = px + 1
-		dm.PosY = py
+		dm.Pos.X = pos.X + 1
+		dm.Pos.Y = pos.Y
 		damage.New(dm)
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
-			dm.PosY = py - 1
+			dm.Pos.Y = pos.Y - 1
 			damage.New(dm)
-			dm.PosY = py + 1
+			dm.Pos.Y = pos.Y + 1
 			damage.New(dm)
 		case TypeLongSword:
-			dm.PosX = px + 2
+			dm.Pos.X = pos.X + 2
 			damage.New(dm)
 		}
 	}

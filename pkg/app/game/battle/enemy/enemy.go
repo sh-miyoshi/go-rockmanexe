@@ -29,8 +29,7 @@ type EnemyParam struct {
 	CharID   int
 	ObjectID string
 	PlayerID string
-	PosX     int
-	PosY     int
+	Pos      common.Point
 	HP       int
 	ActNo    int
 }
@@ -197,7 +196,7 @@ func (e *enemy) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 		return true
 	}
 	return false
@@ -206,8 +205,7 @@ func (e *enemy) DamageProc(dm *damage.Damage) bool {
 func (e *enemy) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

@@ -38,15 +38,13 @@ type act struct {
 	typ       int
 	count     int
 	keepCount int
-	pPosX     *int
-	pPosY     *int
+	pPos      *common.Point
 }
 
 // BattlePlayer ...
 type BattlePlayer struct {
 	ID            string
-	PosX          int
-	PosY          int
+	Pos           common.Point
 	HP            uint
 	HPMax         uint
 	ChargeCount   uint
@@ -80,14 +78,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		ID:        uuid.New().String(),
 		HP:        plyr.HP,
 		HPMax:     plyr.HP, // TODO HPは引き継がない
-		PosX:      1,
-		PosY:      1,
+		Pos:       common.Point{X: 1, Y: 1},
 		ShotPower: plyr.ShotPower,
 		EnableAct: true,
 	}
 	res.act.typ = -1
-	res.act.pPosX = &res.PosX
-	res.act.pPosY = &res.PosY
+	res.act.pPos = &res.Pos
 
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
@@ -228,9 +224,9 @@ func (p *BattlePlayer) Draw() {
 		return
 	}
 
-	x, y := battlecommon.ViewPos(p.PosX, p.PosY)
+	view := battlecommon.ViewPos(p.Pos)
 	img := p.act.GetImage()
-	dxlib.DrawRotaGraph(x, y, 1, 0, img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, dxlib.TRUE)
 
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -240,7 +236,7 @@ func (p *BattlePlayer) Draw() {
 		}
 		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(x, y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 
@@ -252,11 +248,11 @@ func (p *BattlePlayer) Draw() {
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := field.PanelSizeX*p.PosX + field.PanelSizeX/2 - 2 + (i * px) - max
-			y := field.DrawPanelTopY + field.PanelSizeY*p.PosY - 10 - 81 + (i * px) - max
-			dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
+			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + int32((i*px)-max)
+			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + int32((i*px)-max)
+			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, dxlib.FALSE)
 			// draw from the end
-			dxlib.DrawGraph(int32(x), int32(y), chip.GetIcon(p.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), dxlib.TRUE)
 		}
 	}
 }
@@ -296,7 +292,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if p.HP <= 0 {
 		// Player deleted
 		img := &imgPlayers[battlecommon.PlayerActDamage][1]
-		battlecommon.NewDelete(*img, p.PosX, p.PosY, true)
+		battlecommon.NewDelete(*img, p.Pos, true)
 		*img = -1 // DeleteGraph at delete animation
 		p.NextAction = NextActLose
 		p.EnableAct = false
@@ -343,7 +339,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&p.PosX, &p.PosY, moveDirect, field.PanelTypePlayer, false, field.GetPanelInfo) {
+		if battlecommon.MoveObject(&p.Pos, moveDirect, field.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
 			p.act.SetAnim(battlecommon.PlayerActMove, 0)
 			p.MoveNum++
@@ -414,7 +410,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		} else {
 			p.HP = uint(hp)
 		}
-		anim.New(effect.Get(dm.HitEffectType, p.PosX, p.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		if dm.Power <= 0 {
 			// Not damage, maybe recover or special anim
@@ -445,8 +441,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 func (p *BattlePlayer) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		PosX:     p.PosX,
-		PosY:     p.PosY,
+		Pos:      p.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }
@@ -482,13 +477,13 @@ func (a *act) Process() bool {
 				eff = effect.TypeHitBig
 			}
 
-			y := *a.pPosY
-			for x := *a.pPosX + 1; x < field.FieldNumX; x++ {
+			y := a.pPos.Y
+			for x := a.pPos.X + 1; x < field.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, *a.pPosY)
-				if field.GetPanelInfo(x, y).ObjectID != "" {
+				pos := common.Point{X: x, Y: y}
+				if field.GetPanelInfo(pos).ObjectID != "" {
 					damage.New(damage.Damage{
-						PosX:          x,
-						PosY:          y,
+						Pos:           pos,
 						Power:         int(s),
 						TTL:           1,
 						TargetType:    damage.TargetEnemy,
@@ -500,7 +495,7 @@ func (a *act) Process() bool {
 		}
 	case battlecommon.PlayerActMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(a.pPosX, a.pPosY, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
+			battlecommon.MoveObject(a.pPos, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action

@@ -74,7 +74,7 @@ func (o *WaterPipe) Process() (bool, error) {
 	if o.count == 1 {
 		sound.On(sound.SEObjectCreate)
 
-		pn := field.GetPanelInfo(o.pm.PosX, o.pm.PosY)
+		pn := field.GetPanelInfo(o.pm.Pos)
 		if pn.Status == field.PanelStatusHole {
 			return true, nil
 		}
@@ -93,10 +93,10 @@ func (o *WaterPipe) Process() (bool, error) {
 }
 
 func (o *WaterPipe) Draw() {
-	x, y := battlecommon.ViewPos(o.pm.PosX, o.pm.PosY)
+	view := battlecommon.ViewPos(o.pm.Pos)
 
 	if o.atk.IsAttacking() {
-		o.atk.Draw(x, y)
+		o.atk.Draw(view)
 		return
 	}
 
@@ -112,7 +112,7 @@ func (o *WaterPipe) Draw() {
 	if n > len(o.imgSet)-1 {
 		n = len(o.imgSet) - 1
 	}
-	dxlib.DrawRotaGraph(x+ofsx, y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16, 1, 0, o.imgSet[n], dxlib.TRUE, opt)
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
@@ -127,7 +127,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&target != 0 {
 		o.pm.HP--
-		anim.New(effect.Get(effect.TypeBlock, o.pm.PosX, o.pm.PosY, 5))
+		anim.New(effect.Get(effect.TypeBlock, o.pm.Pos, 5))
 	}
 
 	return false
@@ -136,8 +136,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 func (o *WaterPipe) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    o.pm.objectID,
-		PosX:     o.pm.PosX,
-		PosY:     o.pm.PosY,
+		Pos:      o.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }
@@ -172,7 +171,7 @@ func (a *WaterPipeAtk) IsAttacking() bool {
 	return a.isAttacking
 }
 
-func (a *WaterPipeAtk) Draw(x, y int32) {
+func (a *WaterPipeAtk) Draw(pos common.Point) {
 	n := 0
 	if a.isAttacking {
 		c := (a.count / delayWaterPipeAttack) % (len(a.images) * 2)
@@ -188,7 +187,7 @@ func (a *WaterPipeAtk) Draw(x, y int32) {
 		ofsx *= -1
 	}
 
-	dxlib.DrawRotaGraph(x+ofsx, y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
+	dxlib.DrawRotaGraph(pos.X+ofsx, pos.Y+13, 1, 0, a.images[n], dxlib.TRUE, opt)
 }
 
 func (a *WaterPipeAtk) Process() {
@@ -205,7 +204,7 @@ func (a *WaterPipeAtk) Process() {
 		}
 
 		dm := damage.Damage{
-			PosY:          a.pm.PosY,
+			Pos:           a.pm.Pos,
 			Power:         a.pm.Power,
 			TTL:           6 * delayWaterPipeAttack,
 			TargetType:    target,
@@ -214,14 +213,14 @@ func (a *WaterPipeAtk) Process() {
 		}
 
 		if a.pm.xFlip {
-			dm.PosX = a.pm.PosX + 1
+			dm.Pos.X = a.pm.Pos.X + 1
 			damage.New(dm)
-			dm.PosX = a.pm.PosX + 2
+			dm.Pos.X = a.pm.Pos.X + 2
 			damage.New(dm)
 		} else {
-			dm.PosX = a.pm.PosX - 1
+			dm.Pos.X = a.pm.Pos.X - 1
 			damage.New(dm)
-			dm.PosX = a.pm.PosX - 2
+			dm.Pos.X = a.pm.Pos.X - 2
 			damage.New(dm)
 		}
 	}

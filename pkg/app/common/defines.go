@@ -1,11 +1,6 @@
 package common
 
 const (
-	// ScreenX is x size of screen
-	ScreenX = 480
-	// ScreenY is y size of screen
-	ScreenY = 320
-
 	SaveFilePath      = "data/save.dat"
 	DefaultLogFile    = "application.log"
 	DefaultConfigFile = "data/config.yaml"
@@ -30,6 +25,8 @@ const (
 )
 
 var (
+	ScreenSize = Point{X: 480, Y: 320}
+
 	ImagePath = "data/images/"
 	SoundPath = "data/sounds/"
 

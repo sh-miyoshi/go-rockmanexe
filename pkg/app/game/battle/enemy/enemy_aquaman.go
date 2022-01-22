@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -43,8 +44,7 @@ type enemyAquaman struct {
 	actID           string
 	waterPipeObjIDs []string
 	moveNum         int
-	targetPosX      int
-	targetPosY      int
+	targetPos       common.Point
 	beforeAction    int
 }
 
@@ -55,8 +55,7 @@ func (e *enemyAquaman) Init(objID string) error {
 	e.nextState = aquamanActTypeMove
 	e.waterPipeObjIDs = []string{}
 	e.moveNum = rand.Intn(2) + 2
-	e.targetPosX = -1
-	e.targetPosY = -1
+	e.targetPos = common.Point{X: -1, Y: -1}
 	e.beforeAction = -1
 
 	// Load Images
@@ -120,8 +119,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -144,18 +143,15 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeMove:
 		if e.count == 5*aquamanDelays[aquamanActTypeMove] {
-			if e.targetPosX != -1 && e.targetPosY != -1 {
+			if e.targetPos.X != -1 && e.targetPos.Y != -1 {
 				if battlecommon.MoveObjectDirect(
-					&e.pm.PosX,
-					&e.pm.PosY,
-					e.targetPosX,
-					e.targetPosY,
+					&e.pm.Pos,
+					e.targetPos,
 					field.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
 				) {
-					e.targetPosX = -1
-					e.targetPosY = -1
+					e.targetPos = common.Point{X: -1, Y: -1}
 					e.count = 0
 					e.waitCount = 20
 					e.state = aquamanActTypeStand
@@ -164,11 +160,13 @@ func (e *enemyAquaman) Process() (bool, error) {
 			}
 
 			for i := 0; i < 10; i++ {
+				next := common.Point{
+					X: rand.Int31n(field.FieldNum.X/2) + field.FieldNum.X/2,
+					Y: rand.Int31n(field.FieldNum.Y),
+				}
 				if battlecommon.MoveObjectDirect(
-					&e.pm.PosX,
-					&e.pm.PosY,
-					rand.Intn(field.FieldNumX/2)+field.FieldNumX/2,
-					rand.Intn(field.FieldNumY),
+					&e.pm.Pos,
+					next,
 					field.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
@@ -204,15 +202,13 @@ func (e *enemyAquaman) Process() (bool, error) {
 		if e.count == 0 {
 			// Move to attack position
 			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
-			tx := 1
-			ty := 1
+			t := common.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
-				tx = objs[0].PosX
-				ty = objs[0].PosY
+				t = objs[0].Pos
 			}
-			if e.pm.PosX != tx+3 || e.pm.PosY != ty {
-				e.targetPosX = tx + 3
-				e.targetPosY = ty
+			if e.pm.Pos.X != t.X+3 || e.pm.Pos.Y != t.Y {
+				e.targetPos.X = t.X + 3
+				e.targetPos.Y = t.Y
 				e.state = aquamanActTypeMove
 				e.count = 0
 				logger.Debug("%+v", e)
@@ -262,9 +258,9 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeCreate:
 		if e.count == 0 {
-			if e.pm.PosX == 3 && (e.pm.PosY == 0 || e.pm.PosY == 2) {
-				e.targetPosX = 5
-				e.targetPosY = 1
+			if e.pm.Pos.X == 3 && (e.pm.Pos.Y == 0 || e.pm.Pos.Y == 2) {
+				e.targetPos.X = 5
+				e.targetPos.Y = 1
 				e.state = aquamanActTypeMove
 				e.count = 0
 				return false, nil
@@ -274,20 +270,20 @@ func (e *enemyAquaman) Process() (bool, error) {
 		if e.count == 5 {
 			obj := &object.WaterPipe{}
 			pm := object.ObjectParam{
-				PosX:          3,
 				HP:            500,
 				OnwerCharType: objanim.ObjTypeEnemy,
 				AttackNum:     5,
 				Interval:      150,
 				Power:         20,
 			}
-			pm.PosY = 0
+			pm.Pos.X = 3
+			pm.Pos.Y = 0
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 			obj = &object.WaterPipe{}
-			pm.PosY = 2
+			pm.Pos.Y = 2
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
@@ -317,7 +313,7 @@ func (e *enemyAquaman) Draw() {
 	}
 
 	// Show Enemy Images
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
 	ofs := [aquamanActTypeMax][]int32{
@@ -329,11 +325,11 @@ func (e *enemyAquaman) Draw() {
 		{0, 0},    // create
 	}
 
-	dxlib.DrawRotaGraph(x+ofs[e.state][0], y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X+ofs[e.state][0], view.Y+ofs[e.state][1], 1, 0, *img, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40, int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -351,7 +347,7 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 
 		if !dm.BigDamage {
 			return true
@@ -368,8 +364,7 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 func (e *enemyAquaman) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

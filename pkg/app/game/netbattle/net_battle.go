@@ -216,7 +216,7 @@ func Draw() {
 	switch battleState {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
@@ -226,7 +226,7 @@ func Draw() {
 		chipsel.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:

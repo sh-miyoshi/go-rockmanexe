@@ -6,35 +6,34 @@ import (
 )
 
 // MoveObject ...
-func MoveObject(x, y *int, direct int, objPanelType int, isMove bool, GetPanelInfo func(x, y int) field.PanelInfo) bool {
-	nx := *x
-	ny := *y
+func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+	next := *pos
 
 	// Check field out
 	switch direct {
 	case common.DirectUp:
-		if ny <= 0 {
+		if next.Y <= 0 {
 			return false
 		}
-		ny--
+		next.Y--
 	case common.DirectDown:
-		if ny >= field.FieldNumY-1 {
+		if next.Y >= field.FieldNum.Y-1 {
 			return false
 		}
-		ny++
+		next.Y++
 	case common.DirectLeft:
-		if nx <= 0 {
+		if next.X <= 0 {
 			return false
 		}
-		nx--
+		next.X--
 	case common.DirectRight:
-		if nx >= field.FieldNumX-1 {
+		if next.X >= field.FieldNum.X-1 {
 			return false
 		}
-		nx++
+		next.X++
 	}
 
-	pn := GetPanelInfo(nx, ny)
+	pn := GetPanelInfo(next)
 	// Object exists?
 	if pn.ObjectID != "" {
 		return false
@@ -49,15 +48,14 @@ func MoveObject(x, y *int, direct int, objPanelType int, isMove bool, GetPanelIn
 	}
 
 	if isMove {
-		*x = nx
-		*y = ny
+		*pos = next
 	}
 
 	return true
 }
 
-func MoveObjectDirect(x, y *int, targetX, targetY int, objPanelType int, isMove bool, GetPanelInfo func(x, y int) field.PanelInfo) bool {
-	pn := GetPanelInfo(targetX, targetY)
+func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+	pn := GetPanelInfo(target)
 	if pn.ObjectID != "" {
 		return false
 	}
@@ -67,30 +65,30 @@ func MoveObjectDirect(x, y *int, targetX, targetY int, objPanelType int, isMove 
 	}
 
 	if isMove {
-		*x = targetX
-		*y = targetY
+		*pos = target
 	}
 
 	return true
 }
 
-func ViewPos(x, y int) (viewX, viewY int32) {
-	viewX = int32(field.PanelSizeX*x + field.PanelSizeX/2)
-	viewY = int32(field.DrawPanelTopY + field.PanelSizeY*y - 10)
-	return viewX, viewY
+func ViewPos(pos common.Point) common.Point {
+	return common.Point{
+		X: field.PanelSize.X*pos.X + field.PanelSize.X/2,
+		Y: field.DrawPanelTopY + field.PanelSize.Y*pos.Y - 10,
+	}
 }
 
-func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int {
+func GetOffset(nextPos, nowPos, beforePos int32, cnt, totalCnt int, size int32) int32 {
 	// if cnt < total_count/2
 	//   init_offset = (before - now) * size / 2
 	//   offset = init_offset - (before - now)*(count*size/total_count))
 
-	var res int
+	var res int32
 	if cnt < totalCnt/2 {
 		res = (beforePos - nowPos)
 	} else {
 		res = (nowPos - nextPos)
 	}
 
-	return res * size * (totalCnt - 2*cnt) / (totalCnt * 2)
+	return res * size * int32(totalCnt-2*cnt) / int32(totalCnt*2)
 }

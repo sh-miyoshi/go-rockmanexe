@@ -41,19 +41,19 @@ type enemyBoomer struct {
 	count     int
 	atk       boomerAtk
 	direct    int
-	nextY     int
-	prevY     int
+	nextY     int32
+	prevY     int32
 	state     int
 	nextState int
 	waitCount int
-	prevOfsY  int
+	prevOfsY  int32
 }
 
 func (e *enemyBoomer) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.atk.ownerID = objID
-	e.nextY = e.pm.PosY
-	e.prevY = e.pm.PosY
+	e.nextY = e.pm.Pos.Y
+	e.prevY = e.pm.Pos.Y
 	e.direct = common.DirectUp
 	e.waitCount = 20
 	e.state = boomerStateWait
@@ -93,8 +93,8 @@ func (e *enemyBoomer) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.PosX, e.pm.PosY, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.PosX, e.pm.PosY, 0))
+		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -115,13 +115,13 @@ func (e *enemyBoomer) Process() (bool, error) {
 		cnt := e.count % boomerActNextStepCount
 		if cnt == 0 {
 			// Update current pos
-			e.prevY = e.pm.PosY
-			e.pm.PosY = e.nextY
+			e.prevY = e.pm.Pos.Y
+			e.pm.Pos.Y = e.nextY
 		}
 
 		if cnt == boomerActNextStepCount/2 {
 			// 次の行動を決定
-			if e.pm.PosY == 0 || e.pm.PosY == field.FieldNumY-1 {
+			if e.pm.Pos.Y == 0 || e.pm.Pos.Y == field.FieldNum.Y-1 {
 				e.state = boomerStateWait
 				e.nextState = boomerStateAtk
 				e.waitCount = 60
@@ -137,11 +137,11 @@ func (e *enemyBoomer) Process() (bool, error) {
 					e.direct = common.DirectDown
 				}
 			} else { // Down
-				if e.nextY < field.FieldNumY-1 {
+				if e.nextY < field.FieldNum.Y-1 {
 					e.nextY++
 				}
 
-				if e.nextY == field.FieldNumY-1 {
+				if e.nextY == field.FieldNum.Y-1 {
 					e.direct = common.DirectUp
 				}
 			}
@@ -161,24 +161,24 @@ func (e *enemyBoomer) Process() (bool, error) {
 
 func (e *enemyBoomer) Draw() {
 	// Show Enemy Images
-	x, y := battlecommon.ViewPos(e.pm.PosX, e.pm.PosY)
+	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofsy := 0
+	var ofsy int32
 	if e.state == boomerStateMove {
 		c := e.count % boomerActNextStepCount
 		if c == 0 || c == boomerActNextStepCount/2 {
 			ofsy = e.prevOfsY
 		} else {
-			ofsy = battlecommon.GetOffset(e.nextY, e.pm.PosY, e.prevY, c, boomerActNextStepCount, field.PanelSizeY)
+			ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, boomerActNextStepCount, field.PanelSize.Y)
 			e.prevOfsY = ofsy
 		}
 	}
-	dxlib.DrawRotaGraph(x, y+int32(ofsy), 1, 0, *img, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, dxlib.TRUE)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(x, y+40+int32(ofsy), int32(e.pm.HP), draw.NumberOption{
+		draw.Number(view.X, view.Y+40+ofsy, int32(e.pm.HP), draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
@@ -191,7 +191,7 @@ func (e *enemyBoomer) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
 		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.PosX, e.pm.PosY, 5))
+		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 		return true
 	}
 	return false
@@ -200,8 +200,7 @@ func (e *enemyBoomer) DamageProc(dm *damage.Damage) bool {
 func (e *enemyBoomer) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.pm.ObjectID,
-		PosX:     e.pm.PosX,
-		PosY:     e.pm.PosY,
+		Pos:      e.pm.Pos,
 		AnimType: anim.AnimTypeObject,
 	}
 }

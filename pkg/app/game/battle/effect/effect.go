@@ -39,15 +39,13 @@ var (
 
 type effect struct {
 	ID   string
-	X    int
-	Y    int
+	Pos  common.Point
 	Type int
 
 	count  int
 	images []int32
 	delay  int
-	ofsX   int32
-	ofsY   int32
+	ofs    common.Point
 }
 
 type noEffect struct{}
@@ -123,22 +121,19 @@ func End() {
 	}
 }
 
-func Get(typ int, x, y int, randRange int) anim.Anim {
-	ofsX := 0
-	ofsY := 0
+func Get(typ int, pos common.Point, randRange int) anim.Anim {
+	ofs := common.Point{}
 	if randRange > 0 {
-		ofsX = rand.Intn(2*randRange) - randRange
-		ofsY = rand.Intn(2*randRange) - randRange
+		ofs.X = int32(rand.Intn(2*randRange) - randRange)
+		ofs.Y = int32(rand.Intn(2*randRange) - randRange)
 	}
 
 	res := &effect{
 		ID:     uuid.New().String(),
 		Type:   typ,
-		X:      x,
-		Y:      y,
+		Pos:    pos,
 		delay:  1,
-		ofsX:   int32(ofsX),
-		ofsY:   int32(ofsY),
+		ofs:    ofs,
 		images: images[typ],
 	}
 
@@ -148,9 +143,9 @@ func Get(typ int, x, y int, randRange int) anim.Anim {
 	case TypeExplode:
 		res.delay = explodeDelay
 	case TypeVulcanHit1:
-		res.ofsY -= 30
+		res.ofs.Y -= 30
 	case TypeVulcanHit2:
-		res.ofsY -= 10
+		res.ofs.Y -= 10
 	case TypeWaterBomb:
 		res.delay = waterBombDelay
 	}
@@ -176,15 +171,14 @@ func (e *effect) Draw() {
 		imgNo = e.count / e.delay
 	}
 
-	x, y := battlecommon.ViewPos(e.X, e.Y)
-	dxlib.DrawRotaGraph(x+e.ofsX, y+e.ofsY+15, 1, 0, e.images[imgNo], dxlib.TRUE)
+	view := battlecommon.ViewPos(e.Pos)
+	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], dxlib.TRUE)
 }
 
 func (e *effect) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.ID,
-		PosX:     e.X,
-		PosY:     e.Y,
+		Pos:      e.Pos,
 		AnimType: anim.AnimTypeEffect,
 	}
 }

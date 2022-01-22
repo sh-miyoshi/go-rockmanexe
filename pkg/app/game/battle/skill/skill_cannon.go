@@ -2,6 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -30,21 +31,21 @@ type cannon struct {
 }
 
 func (p *cannon) Draw() {
-	px, py := objanim.GetObjPos(p.OwnerID)
-	x, y := battlecommon.ViewPos(px, py)
+	pos := objanim.GetObjPos(p.OwnerID)
+	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delayCannonBody
 	if n < len(imgCannonBody[p.Type]) {
 		if n >= 3 {
-			x -= 15
+			view.X -= 15
 		}
 
-		dxlib.DrawRotaGraph(x+48, y-12, 1, 0, imgCannonBody[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+48, view.Y-12, 1, 0, imgCannonBody[p.Type][n], dxlib.TRUE)
 	}
 
 	n = (p.count - 15) / delayCannonAtk
 	if n >= 0 && n < len(imgCannonAtk[p.Type]) {
-		dxlib.DrawRotaGraph(x+90, y-10, 1, 0, imgCannonAtk[p.Type][n], dxlib.TRUE)
+		dxlib.DrawRotaGraph(view.X+90, view.Y-10, 1, 0, imgCannonAtk[p.Type][n], dxlib.TRUE)
 	}
 }
 
@@ -53,9 +54,9 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
-		px, py := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.OwnerID)
 		dm := damage.Damage{
-			PosY:          py,
+			Pos:           pos,
 			Power:         int(p.Power),
 			TTL:           1,
 			TargetType:    p.TargetType,
@@ -64,17 +65,17 @@ func (p *cannon) Process() (bool, error) {
 		}
 
 		if p.TargetType == damage.TargetEnemy {
-			for x := px + 1; x < field.FieldNumX; x++ {
-				dm.PosX = x
-				if field.GetPanelInfo(x, dm.PosY).ObjectID != "" {
+			for x := pos.X + 1; x < field.FieldNum.X; x++ {
+				dm.Pos.X = x
+				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					damage.New(dm)
 					break
 				}
 			}
 		} else {
-			for x := px - 1; x >= 0; x-- {
-				dm.PosX = x
-				if field.GetPanelInfo(x, dm.PosY).ObjectID != "" {
+			for x := pos.X - 1; x >= 0; x-- {
+				dm.Pos.X = x
+				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					damage.New(dm)
 					break
 				}

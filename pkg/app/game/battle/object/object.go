@@ -1,8 +1,9 @@
 package object
 
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+
 type ObjectParam struct {
-	PosX          int
-	PosY          int
+	Pos           common.Point
 	HP            int
 	OnwerCharType int
 	AttackNum     int

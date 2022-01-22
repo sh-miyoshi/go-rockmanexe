@@ -67,15 +67,15 @@ func End() {
 }
 
 func Draw() {
-	x := int32(-count % common.ScreenX)
+	x := int32(-count) % common.ScreenSize.X
 	dxlib.DrawGraph(x, 0, imgBack, dxlib.FALSE)
-	dxlib.DrawGraph(x+common.ScreenX, 0, imgBack, dxlib.FALSE)
+	dxlib.DrawGraph(x+common.ScreenSize.X, 0, imgBack, dxlib.FALSE)
 	dxlib.DrawGraph(0, 0, imgLogo, dxlib.TRUE)
 
 	switch state {
 	case stateSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenX, common.ScreenY, 0x000000, dxlib.TRUE)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, dxlib.TRUE)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 
 		msgs := []string{"はじめから", "つづきから"}

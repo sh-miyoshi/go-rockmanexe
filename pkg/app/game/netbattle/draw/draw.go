@@ -51,7 +51,7 @@ func End() {
 }
 
 func Object(obj object.Object, opt Option) {
-	vx, vy := battlecommon.ViewPos(obj.X, obj.Y)
+	view := battlecommon.ViewPos(common.Point{X: int32(obj.X), Y: int32(obj.Y)})
 	imgNo := obj.Count / object.ImageDelays[obj.Type]
 	dxopts := dxlib.DrawRotaGraphOption{}
 
@@ -61,19 +61,19 @@ func Object(obj object.Object, opt Option) {
 		obj.ViewOfsX *= -1
 	}
 
-	vx += obj.ViewOfsX
-	vy += obj.ViewOfsY
+	view.X += obj.ViewOfsX
+	view.Y += obj.ViewOfsY
 
 	// Special object draw
 	switch obj.Type {
 	case object.TypeVulcan:
-		objectVulcan(vx, vy, imgNo, dxopts)
+		objectVulcan(view, imgNo, dxopts)
 	case object.TypeWideShotMove:
-		objectWideShotMove(vx, vy, obj, dxopts)
+		objectWideShotMove(view, obj, dxopts)
 	case object.TypeThunderBall:
-		objectThunderBall(vx, vy, obj, dxopts)
+		objectThunderBall(view, obj, dxopts)
 	case object.TypeMiniBomb:
-		objectMiniBomb(vx, vy, obj, dxopts)
+		objectMiniBomb(view, obj, dxopts)
 	default:
 		if obj.Invincible {
 			if cnt := obj.Count / 5 % 2; cnt == 0 {
@@ -84,35 +84,35 @@ func Object(obj object.Object, opt Option) {
 		if imgNo >= len(imgObjs[obj.Type]) {
 			imgNo = len(imgObjs[obj.Type]) - 1
 		}
-		dxlib.DrawRotaGraph(vx, vy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 	}
 
 	// Show HP
 	if opt.ViewHP > 0 {
-		appdraw.Number(vx, vy+40, int32(opt.ViewHP), appdraw.NumberOption{
+		appdraw.Number(view.X, view.Y+40, int32(opt.ViewHP), appdraw.NumberOption{
 			Color:    appdraw.NumberColorWhiteSmall,
 			Centered: true,
 		})
 	}
 
 	if len(obj.Chips) > 0 && opt.ViewChip {
-		x := field.PanelSizeX*obj.X + field.PanelSizeX/2 - 18
-		y := field.DrawPanelTopY + field.PanelSizeY*obj.Y - 83
-		dxlib.DrawBox(int32(x-1), int32(y-1), int32(x+29), int32(y+29), 0x000000, dxlib.FALSE)
-		dxlib.DrawGraph(int32(x), int32(y), imgUnknownIcon, dxlib.TRUE)
+		x := field.PanelSize.X*int32(obj.X) + field.PanelSize.X/2 - 18
+		y := field.DrawPanelTopY + field.PanelSize.Y*int32(obj.Y) - 83
+		dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, dxlib.FALSE)
+		dxlib.DrawGraph(x, y, imgUnknownIcon, dxlib.TRUE)
 	}
 }
 
-func Effect(effType int, imgNo int, x, y int, ofsX, ofsY int32) {
+func Effect(effType int, imgNo int, pos common.Point, ofsX, ofsY int32) {
 	if imgNo >= len(imgEffs[effType]) {
 		imgNo = len(imgEffs[effType]) - 1
 	}
 
-	vx, vy := battlecommon.ViewPos(x, y)
-	vx += ofsX
-	vy += ofsY
+	view := battlecommon.ViewPos(pos)
+	view.X += ofsX
+	view.Y += ofsY
 
-	dxlib.DrawRotaGraph(vx, vy, 1, 0, imgEffs[effType][imgNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgEffs[effType][imgNo], dxlib.TRUE)
 }
 
 func GetImageInfo(objType int) (imageNum, delay int) {
@@ -344,7 +344,7 @@ func loadEffects() error {
 	return nil
 }
 
-func objectVulcan(vx, vy int32, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
+func objectVulcan(viewPos common.Point, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
 	if imgNo > 2 {
 		imgNo /= 5 // slow down animation
 	}
@@ -362,32 +362,32 @@ func objectVulcan(vx, vy int32, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
 		no = no % 2
 	}
 
-	dxlib.DrawRotaGraph(vx+ofsBody, vy-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE, dxopts)
+	dxlib.DrawRotaGraph(viewPos.X+ofsBody, viewPos.Y-18, 1, 0, imgObjs[object.TypeVulcan][no], dxlib.TRUE, dxopts)
 	// Show attack
 	if imgNo != 0 {
 		if imgNo%2 == 0 {
-			dxlib.DrawRotaGraph(vx+ofsAtk, vy-10, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+			dxlib.DrawRotaGraph(viewPos.X+ofsAtk, viewPos.Y-10, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
 		} else {
-			dxlib.DrawRotaGraph(vx+ofsAtk, vy-15, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
+			dxlib.DrawRotaGraph(viewPos.X+ofsAtk, viewPos.Y-15, 1, 0, imgObjs[object.TypeVulcan][3], dxlib.TRUE, dxopts)
 		}
 	}
 }
 
-func objectWideShotMove(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+func objectWideShotMove(viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	if obj.Speed == 0 {
 		panic("ワイドショット描画のためのSpeedが0です")
 	}
 
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
-	ofsx := int32(field.PanelSizeX * obj.Count / obj.Speed)
+	ofsx := field.PanelSize.X * int32(obj.Count) / int32(obj.Speed)
 	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
 		ofsx *= -1
 	}
 
-	dxlib.DrawRotaGraph(vx+ofsx, vy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
+	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 }
 
-func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+func objectThunderBall(viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
 
 	if obj.Count >= obj.Speed {
@@ -396,25 +396,25 @@ func objectThunderBall(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGra
 	}
 
 	cnt := obj.Count % obj.Speed
-	ofsx := battlecommon.GetOffset(obj.TargetX, obj.X, obj.PrevX, cnt, obj.Speed, field.PanelSizeX)
-	ofsy := battlecommon.GetOffset(obj.TargetY, obj.Y, obj.PrevY, cnt, obj.Speed, field.PanelSizeY)
+	ofsx := battlecommon.GetOffset(int32(obj.TargetX), int32(obj.X), int32(obj.PrevX), cnt, obj.Speed, field.PanelSize.X)
+	ofsy := battlecommon.GetOffset(int32(obj.TargetY), int32(obj.Y), int32(obj.PrevY), cnt, obj.Speed, field.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+25+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
+	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+25+ofsy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE)
 }
 
-func objectMiniBomb(vx, vy int32, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
+func objectMiniBomb(viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(imgObjs[obj.Type])
 
 	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
-	size := field.PanelSizeX * 3
-	ofsx := size * obj.Count / obj.Speed
-	ymax := 100
+	size := field.PanelSize.X * 3
+	ofsx := size * int32(obj.Count) / int32(obj.Speed)
+	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
 		ofsx *= -1
 	}
 
-	dxlib.DrawRotaGraph(vx+int32(ofsx), vy+int32(ofsy), 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
+	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1, 0, imgObjs[obj.Type][imgNo], dxlib.TRUE, dxopts)
 }

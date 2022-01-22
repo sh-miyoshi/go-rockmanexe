@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
@@ -10,11 +11,11 @@ import (
 type deleteAction struct {
 	id    string
 	image int32
-	x, y  int
+	pos   common.Point
 	count int
 }
 
-func NewDelete(image int32, x, y int, isPlayer bool) {
+func NewDelete(image int32, pos common.Point, isPlayer bool) {
 	if isPlayer {
 		sound.On(sound.SEPlayerDeleted)
 	} else {
@@ -24,8 +25,7 @@ func NewDelete(image int32, x, y int, isPlayer bool) {
 	anim.New(&deleteAction{
 		id:    uuid.New().String(),
 		image: image,
-		x:     x,
-		y:     y,
+		pos:   pos,
 	})
 }
 
@@ -39,20 +39,19 @@ func (p *deleteAction) Process() (bool, error) {
 }
 
 func (p *deleteAction) Draw() {
-	x, y := ViewPos(p.x, p.y)
+	view := ViewPos(p.pos)
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.image, dxlib.TRUE)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-	dxlib.DrawRotaGraph(x, y, 1, 0, p.image, dxlib.TRUE)
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.image, dxlib.TRUE)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 }
 
 func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.id,
-		PosX:     p.x,
-		PosY:     p.y,
+		Pos:      p.pos,
 		AnimType: anim.AnimTypeEffect,
 	}
 }
