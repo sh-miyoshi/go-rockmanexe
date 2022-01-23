@@ -128,3 +128,14 @@ func GetDrawStringWidth(str string, strLen int) int {
 func GetHitKeyStateAll(keyStateBuf []byte) {
 	dxlib.GetHitKeyStateAll(keyStateBuf)
 }
+
+func GetGraphSize(grHandle int, sizeX, sizeY *int) {
+	var tx, ty int32
+	dxlib.GetGraphSize(int32(grHandle), &tx, &ty)
+	*sizeX = int(tx)
+	*sizeY = int(ty)
+}
+
+func DrawRectGraph(destX, destY, srcX, srcY int, width, height int, grHandle int, transFlag bool) {
+	dxlib.DrawRectGraph(int32(destX), int32(destY), int32(srcX), int32(srcY), int32(width), int32(height), int32(grHandle), makeFlag(transFlag))
+}
