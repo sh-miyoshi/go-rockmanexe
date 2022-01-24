@@ -12,13 +12,14 @@ import (
 
 // Chip ...
 type Chip struct {
-	ID        int    `yaml:"id"`
-	Name      string `yaml:"name"`
-	Power     uint   `yaml:"power"`
-	Type      int    `yaml:"type"`
-	PlayerAct int    `yaml:"player_act"`
-	ForMe     bool   `yaml:"for_me"`
-	KeepCount int    `yaml:"keep_cnt"`
+	ID          int    `yaml:"id"`
+	Name        string `yaml:"name"`
+	Power       uint   `yaml:"power"`
+	Type        int    `yaml:"type"`
+	PlayerAct   int    `yaml:"player_act"`
+	ForMe       bool   `yaml:"for_me"`
+	KeepCount   int    `yaml:"keep_cnt"`
+	Description string `yaml:"description"`
 
 	Image int
 }

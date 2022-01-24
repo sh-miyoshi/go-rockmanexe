@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -312,6 +313,8 @@ func (f *menuFolder) drawChipDetail(index int) {
 			Length:       4,
 		})
 	}
+
+	f.drawDescription(info.Description)
 }
 
 func (f *menuFolder) exchange(sel1, sel2 int) error {
@@ -360,4 +363,28 @@ func (f *menuFolder) exchange(sel1, sel2 int) error {
 
 	*target1, *target2 = *target2, *target1
 	return nil
+}
+
+func (f *menuFolder) drawDescription(desc string) {
+	splited := []string{}
+	for len(desc) > 0 {
+		res := ""
+		for i := 0; i < 9 && len(desc) > 0; i++ {
+			r, size := utf8.DecodeRuneInString(desc)
+			res += string(r)
+			desc = desc[size:]
+		}
+		splited = append(splited, res)
+	}
+
+	switch f.currentWindow {
+	case folderWindowTypeFolder:
+		for i, d := range splited {
+			draw.String(50, 205+i*25, 0x000000, d)
+		}
+	case folderWindowTypeBackPack:
+		for i, d := range splited {
+			draw.String(300, 205+i*25, 0x000000, d)
+		}
+	}
 }

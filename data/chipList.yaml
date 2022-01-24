@@ -5,96 +5,115 @@
   power: 40
   type: 0
   player_act: 3
+  description: "前方の敵１体を攻撃できるキャノン砲"
 - id: 2
   name: "ハイキャノン"
   power: 80
   type: 0
   player_act: 3
+  description: "前方の敵１体を攻撃できるキャノン砲"
 - id: 3
   name: "メガキャノン"
   power: 120
   type: 0
   player_act: 3
+  description: "前方の敵１体を攻撃できるキャノン砲"
 - id: 44
   name: "ミニボム"
   power: 50
   type: 0
   player_act: 5
+  description: "３マス前に落ちるボムを投げつける"
 - id: 54
   name: "ソード"
   power: 80
   type: 3
   player_act: 4
+  description: "目の前の敵を切りつける！攻撃範囲は１マス"
 - id: 55
   name: "ワイドソード"
   power: 80
   type: 3
   player_act: 4
+  description: "目の前の敵を切りつける！範囲は縦３マス"
 - id: 56
   name: "ロングソード"
   power: 80
   type: 3
   player_act: 4
+  description: "目の前の敵を切りつける！範囲は横２マス"
 - id: 109
   name: "リカバリー10"
   power: 10
   type: 6
   player_act: -1
   for_me: true
+  description: "ＨＰを１０回復"
 - id: 110
   name: "リカバリー30"
   power: 30
   type: 6
   player_act: -1
   for_me: true
+  description: "ＨＰを３０回復"
 - id: 8
   name: "スプレッドガン"
   power: 30
   type: 0
   player_act: 2
+  description: "ヒットするとまわりの１マスに誘爆"
 - id: 5
   name: "バルカン1"
   power: 10
   type: 0
   player_act: 2
   keep_cnt: 5
+  description: "３連射バルカン　ヒットすると１マス奥にも貫通！"
 - id: 229
   name: "ショックウェーブ"
   power: 40
   type: 0
   player_act: 7
+  description: "地面に沿って衝撃波を放つ"
 - id: 15
   name: "サンダーボール1"
   power: 40
   type: 11
   player_act: -1
+  description: "ゆっくりと進む追尾電気攻撃　当たるとマヒする！"
 - id: 18
   name: "ワイドショット1"
   power: 60
   type: 10
   player_act: 2
+  description: "横３マスのワイドショットを前方へ発射！"
 - id: 69
   name: "ブーメラン1"
   power: 60
   type: 0
   player_act: -1
+  description: "バトルフィールドの端にそって飛ぶ貫通ブーメラン"
 - id: 211
   name: "アクアマン"
   power: 70
   type: 10
   player_act: -1
+  description: "スイドウカンを置きその２マス前方まで放水攻撃"
 - id: 106
   name: "クラックアウト"
   power: 0
   type: 4
   player_act: 8
+  description: "パネル破壊攻撃！目の前の１マスを消し去ってしまう"
 - id: 107
   name: "ダブルクラック"
   power: 0
   type: 4
   player_act: 8
+  description: "パネル破壊攻撃！前の横２マスをを消し去ってしまう"
 - id: 108
   name: "トリプルクラック"
   power: 0
   type: 4
   player_act: 8
+  description: "パネル破壊攻撃！前の縦３マスをを消し去ってしまう"
