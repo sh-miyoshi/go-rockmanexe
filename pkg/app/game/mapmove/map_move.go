@@ -51,7 +51,9 @@ func Draw() {
 		const color = 0xff0000
 		dxlib.DrawCircle(playerPos.X, playerPos.Y, common.MapPlayerHitRange, color, true)
 		for _, w := range mapInfo.CollisionWalls {
-			dxlib.DrawLine(w.X1, w.Y1, w.X2, w.Y2, color)
+			cx := currentWindow.X
+			cy := currentWindow.Y
+			dxlib.DrawLine(w.X1-cx, w.Y1-cy, w.X2-cx, w.Y2-cy, color)
 		}
 	}
 }
@@ -71,16 +73,18 @@ func Process() error {
 		goVec.Y -= 4
 	}
 
-	w := collision.NextPos(currentWindow, goVec)
-	p := collision.NextPos(playerPos, goVec)
+	next := collision.NextPos(playerPos, goVec)
+	playerPos = next
 
-	if (goVec.X > 0 && p.X <= common.ScreenSize.X/2) || (goVec.X < 0 && p.X >= common.ScreenSize.X/2) {
-		playerPos.X = p.X
-	} else if w.X >= 0 && w.X <= mapInfo.Size.X {
-		currentWindow.X = w.X
-	} else if p.X >= 0 && p.X <= common.ScreenSize.X {
-		playerPos.X = p.X
-	}
+	// TODO
+	//current := playerPos.Add(currentWindow)
+	// if (goVec.X > 0 && p.X <= common.ScreenSize.X/2) || (goVec.X < 0 && p.X >= common.ScreenSize.X/2) {
+	// 	playerPos.X = p.X
+	// } else if w.X >= 0 && w.X <= mapInfo.Size.X {
+	// 	currentWindow.X = w.X
+	// } else if p.X >= 0 && p.X <= common.ScreenSize.X {
+	// 	playerPos.X = p.X
+	// }
 
 	return nil
 }
