@@ -2,7 +2,7 @@ log:
   file: ""
   debug_enabled: true
 debug:
-  show_fps: true
+  show_debug_data: true
   skip_title: true
   skip_menu: false
   skip_battle_opening: true

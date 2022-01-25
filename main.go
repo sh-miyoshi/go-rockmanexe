@@ -112,7 +112,7 @@ MAIN:
 		count++
 
 		fpsMgr.Wait()
-		if config.Get().Debug.ShowFPS {
+		if config.Get().Debug.ShowDebugData {
 			dxlib.DrawFormatString(int32(common.ScreenSize.X-60), 10, 0xff0000, "[%.1f]", fpsMgr.Get())
 		}
 	}

@@ -13,7 +13,7 @@ type Config struct {
 		DebugEnabled bool   `yaml:"debug_enabled"`
 	} `yaml:"log"`
 	Debug struct {
-		ShowFPS            bool `yaml:"show_fps"`
+		ShowDebugData      bool `yaml:"show_debug_data"`
 		SkipTitle          bool `yaml:"skip_title"`
 		SkipMenu           bool `yaml:"skip_menu"`
 		SkipBattleOpening  bool `yaml:"skip_battle_opening"`
