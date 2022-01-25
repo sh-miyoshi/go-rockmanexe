@@ -139,3 +139,7 @@ func GetGraphSize(grHandle int, sizeX, sizeY *int) {
 func DrawRectGraph(destX, destY, srcX, srcY int, width, height int, grHandle int, transFlag bool) {
 	dxlib.DrawRectGraph(int32(destX), int32(destY), int32(srcX), int32(srcY), int32(width), int32(height), int32(grHandle), makeFlag(transFlag))
 }
+
+func DrawCircle(x, y int, r int, color uint, fillFlag bool) {
+	dxlib.DrawCircle(int32(x), int32(y), int32(r), uint32(color), makeFlag(fillFlag))
+}
