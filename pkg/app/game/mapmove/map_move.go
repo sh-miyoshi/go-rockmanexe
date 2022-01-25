@@ -6,9 +6,9 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/vector"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -34,6 +34,8 @@ func Init() error {
 	playerPos.X = common.ScreenSize.X / 2
 	playerPos.Y = common.ScreenSize.Y / 2
 
+	collision.SetWalls(mapInfo.CollisionWalls)
+
 	return nil
 }
 
@@ -46,7 +48,11 @@ func Draw() {
 
 	if config.Get().Debug.ShowDebugData {
 		// show debug data
-		dxlib.DrawCircle(playerPos.X, playerPos.Y, common.MapPlayerHitRange, 0xffffff, true)
+		const color = 0xff0000
+		dxlib.DrawCircle(playerPos.X, playerPos.Y, common.MapPlayerHitRange, color, true)
+		for _, w := range mapInfo.CollisionWalls {
+			dxlib.DrawLine(w.X1, w.Y1, w.X2, w.Y2, color)
+		}
 	}
 }
 

@@ -4,22 +4,16 @@ import (
 	"math"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/vector"
 )
 
-type Wall struct {
-	X1 int
-	Y1 int
-	X2 int
-	Y2 int
-}
-
 var (
-	walls = []Wall{}
+	walls = []mapinfo.Wall{}
 )
 
-func SetWalls(w []Wall) {
-	walls = append([]Wall{}, w...)
+func SetWalls(w []mapinfo.Wall) {
+	walls = append([]mapinfo.Wall{}, w...)
 }
 
 func NextPos(current common.Point, goVec vector.Vector) common.Point {
@@ -36,13 +30,13 @@ func NextPos(current common.Point, goVec vector.Vector) common.Point {
 	return common.Point{X: int(nextX), Y: int(nextY)}
 }
 
-func getWallVec(goVec vector.Vector, wall Wall) vector.Vector {
+func getWallVec(goVec vector.Vector, wall mapinfo.Wall) vector.Vector {
 	n := vector.New(-float64(wall.Y2-wall.Y1), float64(wall.X2-wall.X1))
 	n = vector.Normalize(n)
 	return vector.Sub(goVec, vector.Scale(n, vector.Dot(goVec, n)))
 }
 
-func isCollision(x, y float64, wall Wall) bool {
+func isCollision(x, y float64, wall mapinfo.Wall) bool {
 	s := vector.New(float64(wall.X2-wall.X1), float64(wall.Y2-wall.Y1))
 	a := vector.New(x-float64(wall.X1), y-float64(wall.Y1))
 	b := vector.Sub(a, s)

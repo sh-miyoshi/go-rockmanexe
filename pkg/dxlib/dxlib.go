@@ -143,3 +143,7 @@ func DrawRectGraph(destX, destY, srcX, srcY int, width, height int, grHandle int
 func DrawCircle(x, y int, r int, color uint, fillFlag bool) {
 	dxlib.DrawCircle(int32(x), int32(y), int32(r), uint32(color), makeFlag(fillFlag))
 }
+
+func DrawLine(x1, y1, x2, y2 int, color uint) {
+	dxlib.DrawLine(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color))
+}
