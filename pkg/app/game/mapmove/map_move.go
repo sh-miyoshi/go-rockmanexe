@@ -18,8 +18,8 @@ var (
 	ErrGoMenu   = errors.New("go to menu")
 
 	mapInfo       *mapinfo.MapInfo
-	currentWindow common.Point
-	playerPos     common.Point
+	absPlayerPosX float64
+	absPlayerPosY float64
 )
 
 func Init() error {
@@ -29,10 +29,8 @@ func Init() error {
 	if err != nil {
 		return fmt.Errorf("failed to load map info: %w", err)
 	}
-	currentWindow.X = 100
-	currentWindow.Y = 100
-	playerPos.X = common.ScreenSize.X / 2
-	playerPos.Y = common.ScreenSize.Y / 2
+	absPlayerPosX = 300
+	absPlayerPosY = 200
 
 	collision.SetWalls(mapInfo.CollisionWalls)
 
@@ -44,15 +42,18 @@ func End() {
 }
 
 func Draw() {
-	dxlib.DrawRectGraph(0, 0, currentWindow.X, currentWindow.Y, mapInfo.Size.X, mapInfo.Size.Y, mapInfo.Image, true)
+	var player, window common.Point
+	getViewPos(&player, &window)
+
+	dxlib.DrawRectGraph(0, 0, window.X, window.Y, mapInfo.Size.X, mapInfo.Size.Y, mapInfo.Image, true)
 
 	if config.Get().Debug.ShowDebugData {
 		// show debug data
 		const color = 0xff0000
-		dxlib.DrawCircle(playerPos.X, playerPos.Y, common.MapPlayerHitRange, color, true)
+		dxlib.DrawCircle(player.X, player.Y, common.MapPlayerHitRange, color, true)
 		for _, w := range mapInfo.CollisionWalls {
-			cx := currentWindow.X
-			cy := currentWindow.Y
+			cx := window.X
+			cy := window.Y
 			dxlib.DrawLine(w.X1-cx, w.Y1-cy, w.X2-cx, w.Y2-cy, color)
 		}
 	}
@@ -73,18 +74,31 @@ func Process() error {
 		goVec.Y -= 4
 	}
 
-	next := collision.NextPos(playerPos, goVec)
-	playerPos = next
-
-	// TODO
-	//current := playerPos.Add(currentWindow)
-	// if (goVec.X > 0 && p.X <= common.ScreenSize.X/2) || (goVec.X < 0 && p.X >= common.ScreenSize.X/2) {
-	// 	playerPos.X = p.X
-	// } else if w.X >= 0 && w.X <= mapInfo.Size.X {
-	// 	currentWindow.X = w.X
-	// } else if p.X >= 0 && p.X <= common.ScreenSize.X {
-	// 	playerPos.X = p.X
-	// }
+	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
+	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
+		absPlayerPosX = nextX
+		absPlayerPosY = nextY
+	}
 
 	return nil
+}
+
+func getViewPos(player, window *common.Point) {
+	if absPlayerPosX < float64(common.ScreenSize.X/2) {
+		player.X = int(absPlayerPosX)
+		window.X = 0
+	} else {
+		// TODO 逆端
+		player.X = common.ScreenSize.X / 2
+		window.X = int(absPlayerPosX) - common.ScreenSize.X/2
+	}
+
+	if absPlayerPosY < float64(common.ScreenSize.Y/2) {
+		player.Y = int(absPlayerPosY)
+		window.Y = 0
+	} else {
+		// TODO 逆端
+		player.Y = common.ScreenSize.Y / 2
+		window.Y = int(absPlayerPosY) - common.ScreenSize.Y/2
+	}
 }

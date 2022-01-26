@@ -16,18 +16,25 @@ func SetWalls(w []mapinfo.Wall) {
 	walls = append([]mapinfo.Wall{}, w...)
 }
 
-func NextPos(current common.Point, goVec vector.Vector) common.Point {
-	nextX := float64(current.X) + goVec.X
-	nextY := float64(current.Y) + goVec.Y
+func NextPos(currentX, currentY float64, goVec vector.Vector) (float64, float64) {
+	nextX := currentX + goVec.X
+	nextY := currentY + goVec.Y
+	hitNum := 0
 	for _, w := range walls {
 		if isCollision(nextX, nextY, w) {
 			v := getWallVec(goVec, w)
-			nextX = float64(current.X) + v.X
-			nextY = float64(current.X) + v.Y
+			nextX = currentX + v.X
+			nextY = currentY + v.Y
+			hitNum++
 		}
 	}
 
-	return common.Point{X: int(nextX), Y: int(nextY)}
+	// 2つ以上にヒットするなら動かさない
+	if hitNum >= 2 {
+		return currentX, currentY
+	}
+
+	return nextX, nextY
 }
 
 func getWallVec(goVec vector.Vector, wall mapinfo.Wall) vector.Vector {
