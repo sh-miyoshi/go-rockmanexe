@@ -30,6 +30,16 @@ type cannon struct {
 	count int
 }
 
+func newCannon(objID string, cannonType int, arg Argument) *cannon {
+	return &cannon{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Type:       cannonType,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+	}
+}
+
 func (p *cannon) Draw() {
 	pos := objanim.GetObjPos(p.OwnerID)
 	view := battlecommon.ViewPos(pos)

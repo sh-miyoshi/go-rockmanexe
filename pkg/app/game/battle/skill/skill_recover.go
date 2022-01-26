@@ -19,6 +19,15 @@ type recover struct {
 	count int
 }
 
+func newRecover(objID string, arg Argument) *recover {
+	return &recover{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+	}
+}
+
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {

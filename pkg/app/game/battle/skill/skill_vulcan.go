@@ -25,6 +25,16 @@ type vulcan struct {
 	hit      bool
 }
 
+func newVulcan(objID string, arg Argument) *vulcan {
+	return &vulcan{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+		Times:      3,
+	}
+}
+
 func (p *vulcan) Draw() {
 	pos := objanim.GetObjPos(p.OwnerID)
 	view := battlecommon.ViewPos(pos)

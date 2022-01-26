@@ -28,6 +28,16 @@ type sword struct {
 	count int
 }
 
+func newSword(objID string, swordType int, arg Argument) *sword {
+	return &sword{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Type:       swordType,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+	}
+}
+
 func (p *sword) Draw() {
 	pos := objanim.GetObjPos(p.OwnerID)
 	view := battlecommon.ViewPos(pos)

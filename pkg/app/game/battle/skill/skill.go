@@ -7,8 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -289,50 +287,33 @@ func Get(skillID int, arg Argument) anim.Anim {
 
 	switch skillID {
 	case SkillCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeNormalCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return newCannon(objID, TypeNormalCannon, arg)
 	case SkillHighCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeHighCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return newCannon(objID, TypeHighCannon, arg)
 	case SkillMegaCannon:
-		return &cannon{ID: objID, OwnerID: arg.OwnerID, Type: TypeMegaCannon, Power: arg.Power, TargetType: arg.TargetType}
+		return newCannon(objID, TypeMegaCannon, arg)
 	case SkillMiniBomb:
 		return newMiniBomb(objID, arg)
 	case SkillSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeSword, Power: arg.Power, TargetType: arg.TargetType}
+		return newSword(objID, TypeSword, arg)
 	case SkillWideSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeWideSword, Power: arg.Power, TargetType: arg.TargetType}
+		return newSword(objID, TypeWideSword, arg)
 	case SkillLongSword:
-		return &sword{ID: objID, OwnerID: arg.OwnerID, Type: TypeLongSword, Power: arg.Power, TargetType: arg.TargetType}
+		return newSword(objID, TypeLongSword, arg)
 	case SkillShockWave:
-		pos := objanim.GetObjPos(arg.OwnerID)
-		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectLeft, Speed: 5, pos: pos}
+		return newShockWave(objID, false, arg)
 	case SkillRecover:
-		return &recover{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+		return newRecover(objID, arg)
 	case SkillSpreadGun:
-		return &spreadGun{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType}
+		return newSpreadGun(objID, arg)
 	case SkillVulcan1:
-		return &vulcan{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Times: 3}
+		return newVulcan(objID, arg)
 	case SkillPlayerShockWave:
-		pos := objanim.GetObjPos(arg.OwnerID)
-		return &shockWave{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: common.DirectRight, ShowPick: true, Speed: 3, InitWait: 9, pos: pos}
+		return newShockWave(objID, true, arg)
 	case SkillThunderBall:
-		pos := objanim.GetObjPos(arg.OwnerID)
-		x := pos.X + 1
-		if arg.TargetType == damage.TargetPlayer {
-			x = pos.X - 1
-		}
-
-		first := common.Point{X: x, Y: pos.Y}
-		max := 6 // debug
-		return &thunderBall{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, MaxMoveCount: max, pos: first, prev: pos, next: first}
+		return newThunderBall(objID, arg)
 	case SkillWideShot:
-		pos := objanim.GetObjPos(arg.OwnerID)
-		direct := common.DirectRight
-		nextStep := 8
-		if arg.TargetType == damage.TargetPlayer {
-			direct = common.DirectLeft
-			nextStep = 16
-		}
-		return &wideShot{ID: objID, OwnerID: arg.OwnerID, Power: arg.Power, TargetType: arg.TargetType, Direct: direct, NextStepCount: nextStep, pos: pos, state: wideShotStateBegin}
+		return newWideShot(objID, arg)
 	case SkillBoomerang:
 		return newBoomerang(objID, arg)
 	case SkillWaterBomb:

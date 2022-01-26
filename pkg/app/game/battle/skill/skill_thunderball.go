@@ -31,6 +31,27 @@ type thunderBall struct {
 	prev      common.Point
 }
 
+func newThunderBall(objID string, arg Argument) *thunderBall {
+	pos := objanim.GetObjPos(arg.OwnerID)
+	x := pos.X + 1
+	if arg.TargetType == damage.TargetPlayer {
+		x = pos.X - 1
+	}
+
+	first := common.Point{X: x, Y: pos.Y}
+	max := 6 // debug
+	return &thunderBall{
+		ID:           objID,
+		OwnerID:      arg.OwnerID,
+		Power:        arg.Power,
+		TargetType:   arg.TargetType,
+		MaxMoveCount: max,
+		pos:          first,
+		prev:         pos,
+		next:         first,
+	}
+}
+
 func (p *thunderBall) Draw() {
 	view := battlecommon.ViewPos(p.pos)
 	n := (p.count / delayThunderBall) % len(imgThunderBall)

@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -28,6 +29,27 @@ type wideShot struct {
 	count    int
 	pos      common.Point
 	damageID [3]string
+}
+
+func newWideShot(objID string, arg Argument) *wideShot {
+	pos := objanim.GetObjPos(arg.OwnerID)
+	direct := common.DirectRight
+	nextStep := 8
+	if arg.TargetType == damage.TargetPlayer {
+		direct = common.DirectLeft
+		nextStep = 16
+	}
+
+	return &wideShot{
+		ID:            objID,
+		OwnerID:       arg.OwnerID,
+		Power:         arg.Power,
+		TargetType:    arg.TargetType,
+		Direct:        direct,
+		NextStepCount: nextStep,
+		pos:           pos,
+		state:         wideShotStateBegin,
+	}
 }
 
 func (p *wideShot) Draw() {

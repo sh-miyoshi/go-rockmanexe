@@ -30,6 +30,15 @@ type spreadHit struct {
 	pos   common.Point
 }
 
+func newSpreadGun(objID string, arg Argument) *spreadGun {
+	return &spreadGun{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+	}
+}
+
 func (p *spreadGun) Draw() {
 	n := p.count / delaySpreadGun
 

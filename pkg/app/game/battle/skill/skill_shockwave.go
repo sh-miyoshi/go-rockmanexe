@@ -27,6 +27,28 @@ type shockWave struct {
 	showWave bool
 }
 
+func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
+	pos := objanim.GetObjPos(arg.OwnerID)
+	res := &shockWave{
+		ID:         objID,
+		OwnerID:    arg.OwnerID,
+		Power:      arg.Power,
+		TargetType: arg.TargetType,
+		Direct:     common.DirectLeft,
+		Speed:      5,
+		pos:        pos,
+	}
+
+	if isPlayer {
+		res.Direct = common.DirectRight
+		res.Speed = 3
+		res.ShowPick = true
+		res.InitWait = 9
+	}
+
+	return res
+}
+
 func (p *shockWave) Draw() {
 	n := (p.count / p.Speed) % len(imgShockWave)
 	if p.showWave && n >= 0 {
