@@ -54,12 +54,13 @@ func (p *bambooLance) Process() (bool, error) {
 	p.count++
 
 	if p.count == 5 {
+		// TODO 相手を押し出す
 		dm := damage.Damage{
 			Pos:           common.Point{X: 5},
 			Power:         int(p.Power),
 			TTL:           5,
 			TargetType:    p.TargetType,
-			HitEffectType: effect.TypeNone, // TODO
+			HitEffectType: effect.TypeBambooHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 		}
