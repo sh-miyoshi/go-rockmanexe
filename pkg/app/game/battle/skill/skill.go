@@ -32,6 +32,7 @@ const (
 	SkillCrackout
 	SkillDoubleCrack
 	SkillTripleCrack
+	SkillBambooLance
 )
 
 const (
@@ -46,6 +47,7 @@ const (
 	delayThunderBall = 6
 	delayWideShot    = 4
 	delayBoomerang   = 8
+	delayBambooLance = 4
 )
 
 type Argument struct {
@@ -71,6 +73,7 @@ var (
 	imgWideShotMove  []int
 	imgBoomerang     []int
 	imgAquamanShot   []int
+	imgBambooLance   []int
 )
 
 func Init() error {
@@ -206,6 +209,11 @@ func Init() error {
 	if imgAquamanShot[0] = dxlib.LoadGraph(fname); imgAquamanShot[0] == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	fname = path + "バンブーランス.png"
+	imgBambooLance = make([]int, 1)
+	if imgBambooLance[0] = dxlib.LoadGraph(fname); imgBambooLance[0] == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	return nil
 }
@@ -279,6 +287,10 @@ func End() {
 		dxlib.DeleteGraph(imgAquamanShot[i])
 	}
 	imgAquamanShot = []int{}
+	for i := 0; i < len(imgBambooLance); i++ {
+		dxlib.DeleteGraph(imgBambooLance[i])
+	}
+	imgBambooLance = []int{}
 }
 
 // Get ...
@@ -332,6 +344,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return newCrack(objID, crackType2, arg)
 	case SkillTripleCrack:
 		return newCrack(objID, crackType3, arg)
+	case SkillBambooLance:
+		return newBambooLance(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -377,6 +391,8 @@ func GetSkillID(chipID int) int {
 		return SkillDoubleCrack
 	case chip.IDTripleCrack:
 		return SkillTripleCrack
+	case chip.IDBambooLance:
+		return SkillBambooLance
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

@@ -117,3 +117,9 @@
   type: 4
   player_act: 8
   description: "パネル破壊攻撃！前の縦３マスをを消し去ってしまう"
+- id: 75
+  name: "バンブーランス"
+  power: 100
+  type: 12
+  player_act: -1
+  description: エリアの右端縦の３マスに竹やりで攻撃　ヒットした敵を前に押し出す
