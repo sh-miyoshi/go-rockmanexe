@@ -84,21 +84,34 @@ func Process() error {
 }
 
 func getViewPos(player, window *common.Point) {
-	if absPlayerPosX < float64(common.ScreenSize.X/2) {
+	hsX := common.ScreenSize.X / 2
+	hsY := common.ScreenSize.Y / 2
+
+	if absPlayerPosX < float64(hsX) {
 		player.X = int(absPlayerPosX)
 		window.X = 0
 	} else {
-		// TODO 逆端
-		player.X = common.ScreenSize.X / 2
-		window.X = int(absPlayerPosX) - common.ScreenSize.X/2
+		s := mapInfo.Size.X - hsX
+		if absPlayerPosX > float64(s) {
+			window.X = mapInfo.Size.X - common.ScreenSize.X
+			player.X = hsX + int(absPlayerPosX) - s
+		} else {
+			player.X = hsX
+			window.X = int(absPlayerPosX) - hsX
+		}
 	}
 
-	if absPlayerPosY < float64(common.ScreenSize.Y/2) {
+	if absPlayerPosY < float64(hsY) {
 		player.Y = int(absPlayerPosY)
 		window.Y = 0
 	} else {
-		// TODO 逆端
-		player.Y = common.ScreenSize.Y / 2
-		window.Y = int(absPlayerPosY) - common.ScreenSize.Y/2
+		s := mapInfo.Size.Y - hsY
+		if absPlayerPosY > float64(s) {
+			window.Y = mapInfo.Size.Y - common.ScreenSize.Y
+			player.Y = hsY + int(absPlayerPosY) - s
+		} else {
+			player.Y = hsY
+			window.Y = int(absPlayerPosY) - hsY
+		}
 	}
 }
