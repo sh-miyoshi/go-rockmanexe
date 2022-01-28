@@ -412,6 +412,17 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		}
 		anim.New(effect.Get(dm.HitEffectType, p.Pos, 5))
 
+		for i := 0; i < dm.PushLeft; i++ {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, field.PanelTypePlayer, true, field.GetPanelInfo) {
+				break
+			}
+		}
+		for i := 0; i < dm.PushRight; i++ {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectRight, field.PanelTypePlayer, true, field.GetPanelInfo) {
+				break
+			}
+		}
+
 		if dm.Power <= 0 {
 			// Not damage, maybe recover or special anim
 			return true

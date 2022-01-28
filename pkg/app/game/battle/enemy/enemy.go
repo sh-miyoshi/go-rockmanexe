@@ -5,7 +5,12 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -151,6 +156,30 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyAquaman{pm: initParam}
 	}
 	return nil
+}
+
+func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
+	if dm == nil {
+		return false
+	}
+	if dm.TargetType&damage.TargetEnemy != 0 {
+		pm.HP -= dm.Power
+
+		for i := 0; i < dm.PushLeft; i++ {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+				break
+			}
+		}
+		for i := 0; i < dm.PushRight; i++ {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+				break
+			}
+		}
+
+		anim.New(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		return true
+	}
+	return false
 }
 
 /*

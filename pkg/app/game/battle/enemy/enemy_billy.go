@@ -144,15 +144,7 @@ func (e *enemyBilly) Draw() {
 }
 
 func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
-	if dm == nil {
-		return false
-	}
-	if dm.TargetType&damage.TargetEnemy != 0 {
-		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 7))
-		return true
-	}
-	return false
+	return damageProc(dm, &e.pm)
 }
 
 func (e *enemyBilly) GetParam() anim.Param {

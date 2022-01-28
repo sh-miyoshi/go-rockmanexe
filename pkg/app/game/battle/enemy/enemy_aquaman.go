@@ -349,6 +349,17 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		e.pm.HP -= dm.Power
 		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
 
+		for i := 0; i < dm.PushLeft; i++ {
+			if !battlecommon.MoveObject(&e.pm.Pos, common.DirectLeft, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+				break
+			}
+		}
+		for i := 0; i < dm.PushRight; i++ {
+			if !battlecommon.MoveObject(&e.pm.Pos, common.DirectRight, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+				break
+			}
+		}
+
 		if !dm.BigDamage {
 			return true
 		}

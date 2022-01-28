@@ -163,15 +163,7 @@ func (e *enemyMetall) Draw() {
 }
 
 func (e *enemyMetall) DamageProc(dm *damage.Damage) bool {
-	if dm == nil {
-		return false
-	}
-	if dm.TargetType&damage.TargetEnemy != 0 {
-		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
-		return true
-	}
-	return false
+	return damageProc(dm, &e.pm)
 }
 
 func (e *enemyMetall) GetParam() anim.Param {

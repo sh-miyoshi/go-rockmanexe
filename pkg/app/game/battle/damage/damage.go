@@ -19,6 +19,8 @@ type Damage struct {
 	HitEffectType int
 	ShowHitArea   bool
 	BigDamage     bool
+	PushRight     int
+	PushLeft      int
 	// TODO: のけぞり(単体), インビジ貫通
 }
 
