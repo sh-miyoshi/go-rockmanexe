@@ -25,7 +25,7 @@ const (
 )
 
 func Load(id int) (*MapInfo, error) {
-	basePath := common.ImagePath + "map/"
+	basePath := common.ImagePath + "map/field/"
 	var fname string
 	collisionWalls := []Wall{}
 
