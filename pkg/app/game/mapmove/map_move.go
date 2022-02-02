@@ -40,7 +40,6 @@ func Init() error {
 	collision.SetWalls(mapInfo.CollisionWalls)
 
 	// Load player image
-	// TODO: load rockman_overworld_stand.png
 	tmp := make([]int, 30)
 	fname := common.ImagePath + "map/rockman_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 6, 5, 64, 64, tmp); res == -1 {
