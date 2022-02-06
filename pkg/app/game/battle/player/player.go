@@ -278,7 +278,7 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), true)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), true)
 		} else {
-			i := (p.GaugeCount / 20) % 4
+			i := (p.GaugeCount / 40) % 4
 			dxlib.DrawGraph(96, 5, imgGaugeMax[i], true)
 		}
 	}
