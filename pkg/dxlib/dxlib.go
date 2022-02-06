@@ -73,8 +73,8 @@ func DrawRotaGraph(x, y int, extRate, angle float64, grHandle int, transFlag boo
 	}
 }
 
-func DrawBox(x1, y1, x2, y2 int, color uint, transFlag bool) {
-	dxlib.DrawBox(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color), makeFlag(transFlag))
+func DrawBox(x1, y1, x2, y2 int, color uint, fillFlag bool) {
+	dxlib.DrawBox(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color), makeFlag(fillFlag))
 }
 
 func GetColor(red, green, blue int) uint {

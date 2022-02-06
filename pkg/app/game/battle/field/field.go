@@ -49,6 +49,7 @@ var (
 	imgPanel      [panelStatusMax][panelTypeMax]int
 	blackoutCount = 0
 	panels        [][]PanelInfo
+	bgInst        background
 )
 
 // Init ...
@@ -93,6 +94,11 @@ func Init() error {
 		}
 	}
 
+	// TODO: Map情報から取得する
+	if err := bgInst.Init(bgType秋原町); err != nil {
+		return fmt.Errorf("failed to load background: %w", err)
+	}
+
 	logger.Info("Successfully initialized battle field data")
 	return nil
 }
@@ -106,11 +112,16 @@ func End() {
 			imgPanel[i][j] = -1
 		}
 	}
+
+	bgInst.End()
+
 	logger.Info("Successfully cleanuped battle field data")
 }
 
 // Draw ...
 func Draw() {
+	bgInst.Draw()
+
 	for x := 0; x < FieldNum.X; x++ {
 		for y := 0; y < FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
@@ -149,6 +160,8 @@ func DrawBlackout() {
 }
 
 func Update() {
+	bgInst.Process()
+
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
