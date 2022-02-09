@@ -2,48 +2,63 @@ package mapinfo
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"gopkg.in/yaml.v2"
 )
 
 type Wall struct {
-	X1 int
-	Y1 int
-	X2 int
-	Y2 int
+	X1 int `yaml:"x1"`
+	Y1 int `yaml:"y1"`
+	X2 int `yaml:"x2"`
+	Y2 int `yaml:"y2"`
 }
 
 type MapInfo struct {
-	Image          int
-	Size           common.Point
-	CollisionWalls []Wall
+	ID             int    `yaml:"id"`
+	Name           string `yaml:"name"`
+	CollisionWalls []Wall `yaml:"walls"`
+
+	Image int
+	Size  common.Point
 }
 
 const (
-	IDTest int = iota
+	// 順番をmapInfo.yamlと合わせる
+
+	ID_犬小屋 int = iota
+
+	idMax
 )
 
-func Load(id int) (*MapInfo, error) {
-	basePath := common.ImagePath + "map/field/"
-	var fname string
-	collisionWalls := []Wall{}
+var (
+	mapInfo []MapInfo
+)
 
-	switch id {
-	case IDTest:
-		fname = basePath + "test.png"
-		collisionWalls = []Wall{
-			{X1: 15, Y1: 327, X2: 649, Y2: 9},
-			{X1: 649, Y1: 9, X2: 1285, Y2: 326},
-			{X1: 1285, Y1: 326, X2: 652, Y2: 644},
-			{X1: 652, Y1: 644, X2: 15, Y2: 327},
-		}
-	default:
-		return nil, fmt.Errorf("no such map: %d", id)
+func Init(fname string) error {
+	buf, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return err
 	}
+	if err := yaml.Unmarshal(buf, &mapInfo); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Load(id int) (*MapInfo, error) {
+	if id < 0 || id >= idMax {
+		return nil, fmt.Errorf("no such as map %d", id)
+	}
+
+	m := mapInfo[id]
+	fname := fmt.Sprintf("%smap/field/%d_%s.png", common.ImagePath, m.ID, m.Name)
 	res := &MapInfo{
 		Image:          dxlib.LoadGraph(fname),
-		CollisionWalls: collisionWalls,
+		CollisionWalls: m.CollisionWalls,
 	}
 	if res.Image == -1 {
 		return nil, fmt.Errorf("failed to load image: %s", fname)

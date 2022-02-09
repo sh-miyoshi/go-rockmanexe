@@ -7,6 +7,7 @@ const (
 	DxlibDLLFilePath  = "data/Dxlib.dll"
 	FontFilePath      = "data/font.ttf"
 	ChipFilePath      = "data/chipList.yaml"
+	MapInfoFilePath   = "data/mapInfo.yaml"
 
 	MaxUint    = ^uint(0)
 	MaxZenny   = 9999999

@@ -30,7 +30,7 @@ var (
 func Init() error {
 	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
 	var err error
-	mapInfo, err = mapinfo.Load(mapinfo.IDTest)
+	mapInfo, err = mapinfo.Load(mapinfo.ID_犬小屋)
 	if err != nil {
 		return fmt.Errorf("failed to load map info: %w", err)
 	}

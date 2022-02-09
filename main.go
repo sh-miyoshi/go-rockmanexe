@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -139,6 +140,9 @@ func appInit() error {
 	}
 	if err := sound.Init(); err != nil {
 		return fmt.Errorf("sound init failed: %w", err)
+	}
+	if err := mapinfo.Init(common.MapInfoFilePath); err != nil {
+		return fmt.Errorf("map info init failed: %w", err)
 	}
 
 	return nil
