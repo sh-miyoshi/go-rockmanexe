@@ -12,6 +12,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/stretchr/stew/slice"
 )
@@ -190,72 +191,75 @@ func (p *Player) AddChip(id int, code string) error {
 }
 
 func (p *Player) setChipFolder() {
-	// For debug
-	// p.ChipFolder = [FolderSize]ChipInfo{
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// 	{ID: chip.IDShockWave, Code: "*"},
-	// }
+	if config.Get().Debug.UseDebugFolder {
+		// For debug
+		p.ChipFolder = [FolderSize]ChipInfo{
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+			{ID: chip.IDShockWave, Code: "*"},
+		}
+	} else {
+		// For production
+		p.ChipFolder = [FolderSize]ChipInfo{
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "b"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDCannon, Code: "c"},
+			{ID: chip.IDHighCannon, Code: "d"},
+			{ID: chip.IDHighCannon, Code: "d"},
+			{ID: chip.IDMiniBomb, Code: "l"},
+			{ID: chip.IDMiniBomb, Code: "l"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDRecover10, Code: "l"},
+			{ID: chip.IDRecover10, Code: "l"},
+			{ID: chip.IDRecover10, Code: "*"},
+			{ID: chip.IDRecover10, Code: "*"},
+			{ID: chip.IDRecover30, Code: "l"},
+			{ID: chip.IDRecover30, Code: "l"},
+			{ID: chip.IDVulcan1, Code: "b"},
+			{ID: chip.IDVulcan1, Code: "b"},
+			{ID: chip.IDVulcan1, Code: "d"},
+			{ID: chip.IDVulcan1, Code: "d"},
+			{ID: chip.IDSpreadGun, Code: "n"},
+			{ID: chip.IDSpreadGun, Code: "n"},
+			{ID: chip.IDSpreadGun, Code: "m"},
+			{ID: chip.IDSpreadGun, Code: "m"},
+		}
 
-	// For production
-	p.ChipFolder = [FolderSize]ChipInfo{
-		{ID: chip.IDCannon, Code: "b"},
-		{ID: chip.IDCannon, Code: "b"},
-		{ID: chip.IDCannon, Code: "c"},
-		{ID: chip.IDCannon, Code: "c"},
-		{ID: chip.IDHighCannon, Code: "d"},
-		{ID: chip.IDHighCannon, Code: "d"},
-		{ID: chip.IDMiniBomb, Code: "l"},
-		{ID: chip.IDMiniBomb, Code: "l"},
-		{ID: chip.IDMiniBomb, Code: "*"},
-		{ID: chip.IDMiniBomb, Code: "*"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDSword, Code: "s"},
-		{ID: chip.IDWideSword, Code: "s"},
-		{ID: chip.IDWideSword, Code: "s"},
-		{ID: chip.IDRecover10, Code: "l"},
-		{ID: chip.IDRecover10, Code: "l"},
-		{ID: chip.IDRecover10, Code: "*"},
-		{ID: chip.IDRecover10, Code: "*"},
-		{ID: chip.IDRecover30, Code: "l"},
-		{ID: chip.IDRecover30, Code: "l"},
-		{ID: chip.IDVulcan1, Code: "b"},
-		{ID: chip.IDVulcan1, Code: "b"},
-		{ID: chip.IDVulcan1, Code: "d"},
-		{ID: chip.IDVulcan1, Code: "d"},
-		{ID: chip.IDSpreadGun, Code: "n"},
-		{ID: chip.IDSpreadGun, Code: "n"},
-		{ID: chip.IDSpreadGun, Code: "m"},
-		{ID: chip.IDSpreadGun, Code: "m"},
 	}
 }
 

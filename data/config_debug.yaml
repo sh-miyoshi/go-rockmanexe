@@ -11,6 +11,7 @@ debug:
   run_always: true
   enable_dev_feature: true
   use_private_res: true
+  use_debug_folder: true
 bgm:
   disabled: true
 net:

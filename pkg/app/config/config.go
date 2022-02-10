@@ -22,6 +22,7 @@ type Config struct {
 		RunAlways          bool `yaml:"run_always"`
 		EnableDevFeature   bool `yaml:"enable_dev_feature"`
 		UsePrivateResource bool `yaml:"use_private_res"`
+		UseDebugFolder     bool `yaml:"use_debug_folder"`
 	} `yaml:"debug"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`

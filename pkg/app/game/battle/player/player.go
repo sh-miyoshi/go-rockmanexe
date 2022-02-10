@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -88,11 +89,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
 	}
-	// Shuffle folder
-	for i := 0; i < 10; i++ {
-		for j := 0; j < len(res.ChipFolder); j++ {
-			n := rand.Intn(len(res.ChipFolder))
-			res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
+	if !config.Get().Debug.UseDebugFolder {
+		// Shuffle folder
+		for i := 0; i < 10; i++ {
+			for j := 0; j < len(res.ChipFolder); j++ {
+				n := rand.Intn(len(res.ChipFolder))
+				res.ChipFolder[j], res.ChipFolder[n] = res.ChipFolder[n], res.ChipFolder[j]
+			}
 		}
 	}
 
