@@ -243,7 +243,13 @@ func (p *BattlePlayer) Draw() {
 	// Show selected chip icons
 	n := len(p.SelectedChips)
 	if n > 0 {
-		// TODO Show chip info
+		// Show current chip info
+		c := chip.Get(p.SelectedChips[0].ID)
+		powTxt := ""
+		if c.Power > 0 && !c.ForMe {
+			powTxt = fmt.Sprintf("%d", c.Power)
+		}
+		draw.String(5, common.ScreenSize.Y-20, 0xffffff, "%s %s", c.Name, powTxt)
 
 		const px = 3
 		max := n * px
