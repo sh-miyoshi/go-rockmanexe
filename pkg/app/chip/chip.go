@@ -21,7 +21,8 @@ type Chip struct {
 	KeepCount   int    `yaml:"keep_cnt"`
 	Description string `yaml:"description"`
 
-	Image int
+	Image            int
+	IsProgramAdvance bool
 }
 
 type SelectParam struct {
@@ -52,6 +53,10 @@ const (
 	IDRecover30   = 110
 	IDAquaman     = 211
 	IDShockWave   = 229
+
+	// Program Advance
+	idPAIndex    = 1000
+	IDDreamSword = idPAIndex + 1
 )
 
 const (
@@ -135,6 +140,11 @@ func Init(fname string) error {
 		imgMonoIcons[c.ID] = tmp2[c.ID-1]
 		used = append(used, c.ID-1)
 	}
+	fname = common.ImagePath + "chipInfo/pa_icon.png"
+	imgIcons[idPAIndex] = dxlib.LoadGraph(fname)
+	if imgIcons[idPAIndex] == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	// Release unused images
 	for i := 0; i < 240; i++ {
@@ -143,6 +153,9 @@ func Init(fname string) error {
 			dxlib.DeleteGraph(tmp2[i])
 		}
 	}
+
+	// Load Program Advance chips
+	setPAData()
 
 	return nil
 }
@@ -170,6 +183,10 @@ func GetByName(name string) Chip {
 
 // GetIcon ...
 func GetIcon(id int, colored bool) int {
+	if id > idPAIndex {
+		return imgIcons[idPAIndex]
+	}
+
 	if colored {
 		return imgIcons[id]
 	}
