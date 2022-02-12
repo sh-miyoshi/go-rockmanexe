@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -41,7 +42,7 @@ var (
 	playerInst     *battleplayer.BattlePlayer
 	enemyList      []enemy.EnemyParam
 	gameCount      int
-	b4mainInst     *titlemsg.TitleMsg
+	b4mainInst     *b4main.BeforeMain
 	loseInst       *titlemsg.TitleMsg
 	basePlayerInst *player.Player
 
@@ -140,9 +141,8 @@ func Process() error {
 		}
 	case stateBeforeMain:
 		if battleCount == 0 {
-			fname := common.ImagePath + "battle/msg_start.png"
 			var err error
-			b4mainInst, err = titlemsg.New(fname, 0)
+			b4mainInst, err = b4main.New(playerInst.SelectedChipIDs)
 			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
