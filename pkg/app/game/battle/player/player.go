@@ -44,19 +44,19 @@ type act struct {
 
 // BattlePlayer ...
 type BattlePlayer struct {
-	ID              string
-	Pos             common.Point
-	HP              uint
-	HPMax           uint
-	ChargeCount     uint
-	GaugeCount      uint
-	ShotPower       uint
-	ChipFolder      []player.ChipInfo
-	SelectedChipIDs []int
-	NextAction      int
-	EnableAct       bool
-	MoveNum         int
-	DamageNum       int
+	ID            string
+	Pos           common.Point
+	HP            uint
+	HPMax         uint
+	ChargeCount   uint
+	GaugeCount    uint
+	ShotPower     uint
+	ChipFolder    []player.ChipInfo
+	SelectedChips []player.ChipInfo
+	NextAction    int
+	EnableAct     bool
+	MoveNum       int
+	DamageNum     int
 
 	act             act
 	invincibleCount int
@@ -244,10 +244,10 @@ func (p *BattlePlayer) Draw() {
 	}
 
 	// Show selected chip icons
-	n := len(p.SelectedChipIDs)
+	n := len(p.SelectedChips)
 	if n > 0 {
 		// Show current chip info
-		c := chip.Get(p.SelectedChipIDs[0])
+		c := chip.Get(p.SelectedChips[0].ID)
 		powTxt := ""
 		if c.Power > 0 && !c.ForMe {
 			powTxt = fmt.Sprintf("%d", c.Power)
@@ -261,7 +261,7 @@ func (p *BattlePlayer) Draw() {
 			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + (i * px) - max
 			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
-			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChipIDs[n-1-i], true), true)
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
 		}
 	}
 }
@@ -358,8 +358,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		if len(p.SelectedChipIDs) > 0 {
-			c := chip.Get(p.SelectedChipIDs[0])
+		if len(p.SelectedChips) > 0 {
+			c := chip.Get(p.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
 				p.act.SetAnim(c.PlayerAct, c.KeepCount)
 			}
@@ -375,7 +375,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 				TargetType: target,
 			}))
 
-			p.SelectedChipIDs = p.SelectedChipIDs[1:]
+			p.SelectedChips = p.SelectedChips[1:]
 			return false, nil
 		}
 	}
@@ -471,25 +471,33 @@ func (p *BattlePlayer) GetObjectType() int {
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.SelectedChipIDs = []int{}
+	p.SelectedChips = []player.ChipInfo{}
 	for _, s := range selected {
-		p.SelectedChipIDs = append(p.SelectedChipIDs, p.ChipFolder[s].ID)
+		p.SelectedChips = append(p.SelectedChips, p.ChipFolder[s])
 	}
-	// Check program advance
-	start, end, paID := chip.GetPAinList(p.SelectedChipIDs)
-	if paID != -1 {
-		before := append([]int{}, p.SelectedChipIDs[:start]...)
-		after := append([]int{}, p.SelectedChipIDs[end:]...)
-		p.SelectedChipIDs = append(before, paID)
-		p.SelectedChipIDs = append(p.SelectedChipIDs, after...)
-	}
-	logger.Info("selected player chips: %+v", p.SelectedChipIDs)
 
 	// Remove selected chips from folder
 	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
 	for _, s := range selected {
 		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
 	}
+}
+
+func (p *BattlePlayer) UpdatePA() {
+	// Check program advance
+	list := []chip.SelectParam{}
+	for _, c := range p.SelectedChips {
+		list = append(list, chip.SelectParam{ID: c.ID, Code: c.Code})
+	}
+
+	start, end, paID := chip.GetPAinList(list)
+	if paID != -1 {
+		before := append([]player.ChipInfo{}, p.SelectedChips[:start]...)
+		after := append([]player.ChipInfo{}, p.SelectedChips[end:]...)
+		p.SelectedChips = append(before, player.ChipInfo{ID: paID})
+		p.SelectedChips = append(p.SelectedChips, after...)
+	}
+	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 
 // Process method returns true if processing now

@@ -142,10 +142,11 @@ func Process() error {
 	case stateBeforeMain:
 		if battleCount == 0 {
 			var err error
-			b4mainInst, err = b4main.New(playerInst.SelectedChipIDs)
+			b4mainInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
+			playerInst.UpdatePA()
 		}
 
 		if b4mainInst.Process() {

@@ -4,37 +4,71 @@ import "testing"
 
 func TestGetPAinList(t *testing.T) {
 	tt := []struct {
-		ChipIDs    []int
+		ChipList   []SelectParam
 		ExpectPAID int
 	}{
 		{
-			ChipIDs:    []int{IDSword, IDWideSword, IDLongSword},
+			ChipList: []SelectParam{
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+				{ID: IDLongSword, Code: ""},
+			},
 			ExpectPAID: IDDreamSword,
 		},
 		{
-			ChipIDs:    []int{IDCannon, IDSword, IDWideSword, IDLongSword},
+			ChipList: []SelectParam{
+				{ID: IDCannon, Code: ""},
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+				{ID: IDLongSword, Code: ""},
+			},
 			ExpectPAID: IDDreamSword,
 		},
 		{
-			ChipIDs:    []int{IDSword, IDWideSword, IDLongSword, IDCannon},
+			ChipList: []SelectParam{
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+				{ID: IDLongSword, Code: ""},
+				{ID: IDCannon, Code: ""},
+			},
 			ExpectPAID: IDDreamSword,
 		},
 		{
-			ChipIDs:    []int{IDSword, IDWideSword, IDCannon},
+			ChipList: []SelectParam{
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+				{ID: IDCannon, Code: ""},
+			},
 			ExpectPAID: -1,
 		},
 		{
-			ChipIDs:    []int{IDCannon, IDSword, IDWideSword},
+			ChipList: []SelectParam{
+				{ID: IDCannon, Code: ""},
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+			},
 			ExpectPAID: -1,
 		},
 		{
-			ChipIDs:    []int{IDLongSword, IDSword, IDWideSword},
+			ChipList: []SelectParam{
+				{ID: IDLongSword, Code: ""},
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+			},
 			ExpectPAID: -1,
+		},
+		{
+			ChipList: []SelectParam{
+				{ID: IDSword, Code: "s"},
+				{ID: IDWideSword, Code: "s"},
+				{ID: IDLongSword, Code: "s"},
+			},
+			ExpectPAID: IDDreamSword,
 		},
 	}
 
 	for i, tc := range tt {
-		_, _, resID := GetPAinList(tc.ChipIDs)
+		_, _, resID := GetPAinList(tc.ChipList)
 		if resID != tc.ExpectPAID {
 			t.Errorf("GetPAinList %d test failed. expect %v, but got %v", i, tc.ExpectPAID, resID)
 		}

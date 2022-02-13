@@ -1,23 +1,19 @@
 package chip
 
-/*
-やること
-chipListを入手
-n~m番目がどのチップになるか返す
-
-プログラムアドバンス一覧を管理
-*/
-
 type paInfo struct {
-	inputIDs []int
-	paID     int
+	inputs []SelectParam
+	paID   int
 }
 
 var (
 	paList = []paInfo{
 		{
-			inputIDs: []int{IDSword, IDWideSword, IDLongSword},
-			paID:     IDDreamSword,
+			inputs: []SelectParam{
+				{ID: IDSword, Code: ""},
+				{ID: IDWideSword, Code: ""},
+				{ID: IDLongSword, Code: ""},
+			},
+			paID: IDDreamSword,
 		},
 	}
 )
@@ -34,20 +30,20 @@ func setPAData() {
 	})
 }
 
-func GetPAinList(chipIDs []int) (start, end int, paID int) {
-	for i, cid := range chipIDs {
+func GetPAinList(chipList []SelectParam) (start, end int, paID int) {
+	for i, c := range chipList {
 		for _, pa := range paList {
-			if pa.inputIDs[0] == cid {
+			if expectChip(c, pa.inputs[0]) {
 				ok := true
-				for j := 1; j < len(pa.inputIDs); j++ {
-					if i+j >= len(chipIDs) || pa.inputIDs[j] != chipIDs[i+j] {
+				for j := 1; j < len(pa.inputs); j++ {
+					if i+j >= len(chipList) || !expectChip(chipList[i+j], pa.inputs[j]) {
 						ok = false
 						break
 					}
 				}
 				if ok {
 					start = i
-					end = i + len(pa.inputIDs)
+					end = i + len(pa.inputs)
 					paID = pa.paID
 					return
 				}
@@ -55,4 +51,8 @@ func GetPAinList(chipIDs []int) (start, end int, paID int) {
 		}
 	}
 	return -1, -1, -1
+}
+
+func expectChip(target, data SelectParam) bool {
+	return target.ID == data.ID && (data.Code == "" || data.Code == target.Code)
 }

@@ -26,6 +26,7 @@ type Chip struct {
 }
 
 type SelectParam struct {
+	ID   int
 	Name string
 	Code string
 }
