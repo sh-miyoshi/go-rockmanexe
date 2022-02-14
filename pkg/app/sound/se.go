@@ -50,6 +50,7 @@ const (
 	SEPanelBreak
 	SEPAPrepare
 	SEPACreated
+	SEDreamSword
 
 	seMax
 )
@@ -101,6 +102,7 @@ func Init() error {
 	soundEffects[SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
 	soundEffects[SEPAPrepare] = dxlib.LoadSoundMem(basePath + "pa_prepare.mp3")
 	soundEffects[SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
+	soundEffects[SEDreamSword] = dxlib.LoadSoundMem(basePath + "dream_sword.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
