@@ -8,7 +8,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+)
+
+const (
+	initShowDelay = 18
+	showChipDelay = 10
 )
 
 type BeforeMain struct {
@@ -18,6 +24,8 @@ type BeforeMain struct {
 	paStartIndex int
 	paEndIndex   int
 	paID         int
+	paShowTime   int
+	waitTime     int
 }
 
 func New(selectChips []player.ChipInfo) (*BeforeMain, error) {
@@ -34,20 +42,13 @@ func New(selectChips []player.ChipInfo) (*BeforeMain, error) {
 	}
 	start, end, paID := chip.GetPAinList(list)
 
-	/*
-		ある時モード
-			PA以外は描画しておく(白)
-			PAは元チップをタイミングに合わせて描画(レインボー&SEあり)
-			全部描画終わったらPAを描画(レインボー&SEあり)
-		title msgに移る
-	*/
-
 	return &BeforeMain{
 		msgInst:      inst,
 		chipList:     list,
 		paStartIndex: start,
 		paEndIndex:   end,
 		paID:         paID,
+		paShowTime:   (end-start)*showChipDelay + initShowDelay + 20,
 	}, nil
 }
 
@@ -63,11 +64,29 @@ func (b *BeforeMain) Draw() {
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 
+		draw.PAText(30, 50)
+
 		for i, c := range b.chipList {
-			draw.String(20, 100+i*40, 0xffffff, "%s", c.Name)
-			draw.String(160, 105+i*40, 0xffffff, "%s", c.Code)
+			if i < b.paStartIndex || i >= b.paEndIndex {
+				draw.String(20, 100+i*40, 0xffffff, "%s", c.Name)
+				draw.String(160, 105+i*40, 0xffffff, "%s", c.Code)
+			} else {
+				// Show PA data
+				colors := []uint{
+					dxlib.GetColor(248, 248, 176),
+					dxlib.GetColor(248, 152, 0),
+					dxlib.GetColor(56, 248, 144),
+				}
+				col := colors[(b.count/15)%len(colors)]
+				if b.count > b.paShowTime {
+					pa := chip.Get(b.paID)
+					draw.String(20, 100+b.paStartIndex*40, col, "%s", pa.Name)
+				} else if b.count > (i-b.paStartIndex)*showChipDelay+initShowDelay {
+					draw.String(20, 100+i*40, col, "%s", c.Name)
+					draw.String(160, 105+i*40, col, "%s", c.Code)
+				}
+			}
 		}
-		// TODO
 
 		return
 	}
@@ -81,7 +100,23 @@ func (b *BeforeMain) Process() bool {
 	b.count++
 
 	if b.paID != -1 {
-		// TODO
+		if b.waitTime > 0 {
+			b.waitTime--
+			if b.waitTime == 0 {
+				b.paID = -1
+			}
+
+			return false
+		}
+
+		if b.count == b.paShowTime {
+			sound.On(sound.SEPACreated)
+			b.waitTime = 60
+		}
+		if b.count < b.paShowTime-20 && b.count > initShowDelay && b.count%showChipDelay == 0 {
+			sound.On(sound.SEPAPrepare)
+		}
+
 		return false
 	}
 

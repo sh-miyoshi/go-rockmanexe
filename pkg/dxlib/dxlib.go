@@ -57,6 +57,10 @@ func DrawFormatStringToHandle(x, y int, color uint, fontHandle int, format strin
 	dxlib.DrawFormatStringToHandle(int32(x), int32(y), uint32(color), int32(fontHandle), format, a...)
 }
 
+func DrawStringToHandle(x, y int, color uint, fontHandle int, message string) {
+	dxlib.DrawStringToHandle(int32(x), int32(y), message, uint32(color), int32(fontHandle))
+}
+
 func SetDrawBlendMode(blendMode int, pal int) {
 	dxlib.SetDrawBlendMode(int32(blendMode), int32(pal))
 }

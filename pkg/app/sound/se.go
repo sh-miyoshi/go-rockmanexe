@@ -48,6 +48,8 @@ const (
 	SEObjectCreate
 	SEWaterpipeAttack
 	SEPanelBreak
+	SEPAPrepare
+	SEPACreated
 
 	seMax
 )
@@ -97,6 +99,8 @@ func Init() error {
 	soundEffects[SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
 	soundEffects[SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
 	soundEffects[SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
+	soundEffects[SEPAPrepare] = dxlib.LoadSoundMem(basePath + "pa_prepare.mp3")
+	soundEffects[SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

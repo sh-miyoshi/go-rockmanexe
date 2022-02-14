@@ -33,6 +33,7 @@ const (
 var (
 	defaultFont int = -1
 	msgFont     int = -1
+	paTitleFont int = -1
 	imgCode     []int
 	imgNumber   [numberColorMax][]int
 )
@@ -55,6 +56,18 @@ func Init() error {
 	})
 	if msgFont == -1 {
 		return fmt.Errorf("failed to create message font")
+	}
+
+	paTitleFont = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
+		FontName: dxlib.StringPtr("k8x12"),
+		Size:     dxlib.Int32Ptr(28),
+		Thick:    dxlib.Int32Ptr(9),
+		EdgeSize: dxlib.Int32Ptr(4),
+		Italic:   dxlib.Int32Ptr(dxlib.TRUE),
+		FontType: dxlib.Int32Ptr(dxlib.DX_FONTTYPE_EDGE),
+	})
+	if paTitleFont == -1 {
+		return fmt.Errorf("failed to create program advance title font")
 	}
 
 	// Load chip code
@@ -98,6 +111,10 @@ func String(x int, y int, color uint, format string, a ...interface{}) {
 
 func MessageText(x int, y int, color uint, format string, a ...interface{}) {
 	dxlib.DrawFormatStringToHandle(x, y, color, msgFont, format, a...)
+}
+
+func PAText(x int, y int) {
+	dxlib.DrawStringToHandle(x, y, 0xffffff, paTitleFont, "プログラムアドバンス")
 }
 
 func ChipCode(x int, y int, code string, percent int) {
