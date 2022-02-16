@@ -33,8 +33,8 @@ const (
 	SkillDoubleCrack
 	SkillTripleCrack
 	SkillBambooLance
-
 	SkillDreamSword
+	SkillInvisible
 )
 
 const (
@@ -360,6 +360,8 @@ func Get(skillID int, arg Argument) anim.Anim {
 		return newBambooLance(objID, arg)
 	case SkillDreamSword:
 		return newDreamSword(objID, arg)
+	case SkillInvisible:
+		// TODO
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -409,6 +411,8 @@ func GetSkillID(chipID int) int {
 		return SkillBambooLance
 	case chip.IDDreamSword:
 		return SkillDreamSword
+	case chip.IDInvisible:
+		return SkillInvisible
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

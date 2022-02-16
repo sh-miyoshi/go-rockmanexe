@@ -52,6 +52,7 @@ const (
 	IDTripleCrack = 108
 	IDRecover10   = 109
 	IDRecover30   = 110
+	IDInvisible   = 133
 	IDAquaman     = 211
 	IDShockWave   = 229
 

@@ -123,3 +123,9 @@
   type: 12
   player_act: -1
   description: エリアの右端に竹やり攻撃　ヒットした敵を前に押し出す
+- id: 133
+  name: "インビジブル"
+  power: 0
+  type: 7
+  player_act: -1
+  description: 少しの間透明になり、殆どの攻撃に当たらなくなる
