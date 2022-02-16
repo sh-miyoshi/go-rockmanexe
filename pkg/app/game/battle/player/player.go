@@ -60,6 +60,7 @@ type BattlePlayer struct {
 
 	act             act
 	invincibleCount int
+	visible         bool
 }
 
 var (
@@ -82,6 +83,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		Pos:       common.Point{X: 1, Y: 1},
 		ShotPower: plyr.ShotPower,
 		EnableAct: true,
+		visible:   true,
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
@@ -223,7 +225,7 @@ func (p *BattlePlayer) End() {
 
 // Draw ...
 func (p *BattlePlayer) Draw() {
-	if p.invincibleCount/5%2 != 0 {
+	if !p.visible || p.invincibleCount/5%2 != 0 {
 		return
 	}
 
@@ -305,15 +307,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 		*img = -1 // DeleteGraph at delete animation
 		p.NextAction = NextActLose
 		p.EnableAct = false
-		p.invincibleCount = 15 // do not show player image
+		p.visible = false
 		return false, nil
 	}
 
 	if p.invincibleCount > 0 {
-		p.invincibleCount++
-		if p.invincibleCount > battlecommon.PlayerDefaultInvincibleTime {
-			p.invincibleCount = 0
-		}
+		p.invincibleCount--
 	}
 
 	p.GaugeCount += 4 // TODO GaugeSpeed
@@ -450,7 +449,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		}
 
 		p.act.SetAnim(battlecommon.PlayerActDamage, 0)
-		p.invincibleCount = 1
+		p.invincibleCount = battlecommon.PlayerDefaultInvincibleTime
 		p.DamageNum++
 		logger.Debug("Player damaged: %+v", *dm)
 		return true
