@@ -130,6 +130,10 @@ func (e *enemyBilly) Process() (bool, error) {
 }
 
 func (e *enemyBilly) Draw() {
+	if e.pm.InvincibleCount/5%2 != 0 {
+		return
+	}
+
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true)
@@ -157,6 +161,10 @@ func (e *enemyBilly) GetParam() anim.Param {
 
 func (e *enemyBilly) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemyBilly) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 func (e *enemyBilly) getCurrentImagePointer() *int {

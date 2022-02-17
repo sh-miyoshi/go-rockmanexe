@@ -146,6 +146,10 @@ func (e *enemyMetall) Process() (bool, error) {
 }
 
 func (e *enemyMetall) Draw() {
+	if e.pm.InvincibleCount/5%2 != 0 {
+		return
+	}
+
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.imgMove[0]
 	if e.atkID != "" {
@@ -176,6 +180,10 @@ func (e *enemyMetall) GetParam() anim.Param {
 
 func (e *enemyMetall) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemyMetall) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 func (a *metallAtk) Draw() {

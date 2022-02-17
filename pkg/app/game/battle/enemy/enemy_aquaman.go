@@ -40,7 +40,6 @@ type enemyAquaman struct {
 	state           int
 	nextState       int
 	waitCount       int
-	invincibleCount int
 	actID           string
 	waterPipeObjIDs []string
 	moveNum         int
@@ -126,11 +125,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 	}
 
 	// Enemy Logic
-	if e.invincibleCount > 0 {
-		e.invincibleCount++
-		if e.invincibleCount > battlecommon.PlayerDefaultInvincibleTime {
-			e.invincibleCount = 0
-		}
+	if e.pm.InvincibleCount > 0 {
+		e.pm.InvincibleCount--
 	}
 
 	switch e.state {
@@ -303,7 +299,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 }
 
 func (e *enemyAquaman) Draw() {
-	if e.invincibleCount/5%2 != 0 {
+	if e.pm.InvincibleCount/5%2 != 0 {
 		return
 	}
 
@@ -341,7 +337,7 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	if e.invincibleCount > 0 {
+	if e.pm.InvincibleCount > 0 {
 		return false
 	}
 
@@ -365,7 +361,7 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		}
 
 		e.state = aquamanActTypeDamage
-		e.invincibleCount = 1
+		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
 		e.count = 0
 		return true
 	}
@@ -382,6 +378,10 @@ func (e *enemyAquaman) GetParam() anim.Param {
 
 func (e *enemyAquaman) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemyAquaman) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 func (e *enemyAquaman) getCurrentImagePointer() *int {

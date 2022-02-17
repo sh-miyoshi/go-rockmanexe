@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -33,6 +34,7 @@ type Anim interface {
 	DamageProc(dm *damage.Damage) bool
 	GetParam() anim.Param
 	GetObjectType() int
+	MakeInvisible(count int)
 }
 
 var (
@@ -91,7 +93,11 @@ func MgrDraw() {
 
 // New ...
 func New(anim Anim) string {
-	id := uuid.New().String()
+	id := anim.GetParam().ObjID
+	if id == "" {
+		id = uuid.New().String()
+	}
+
 	anims[id] = anim
 	sortAnim()
 	return id
@@ -152,6 +158,13 @@ func GetObjs(filter Filter) []anim.Param {
 
 func AddActiveAnim(id string) {
 	activeAnimIDs = append(activeAnimIDs, id)
+}
+
+func MakeInvisible(id string, count int) {
+	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, anims)
+	if _, ok := anims[id]; ok {
+		anims[id].MakeInvisible(count)
+	}
 }
 
 func sortAnim() {

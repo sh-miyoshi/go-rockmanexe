@@ -223,26 +223,9 @@ func (p *BattlePlayer) End() {
 	logger.Info("Successfully cleanuped battle player data")
 }
 
-// Draw ...
 func (p *BattlePlayer) Draw() {
-	if !p.visible || p.invincibleCount/5%2 != 0 {
+	if !p.visible {
 		return
-	}
-
-	view := battlecommon.ViewPos(p.Pos)
-	img := p.act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-
-	// Show charge image
-	if p.ChargeCount > battlecommon.ChargeViewDelay {
-		n := 0
-		if p.ChargeCount > battlecommon.ChargeTime {
-			n = 1
-		}
-		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 
 	// Show selected chip icons
@@ -265,6 +248,26 @@ func (p *BattlePlayer) Draw() {
 			// draw from the end
 			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
 		}
+	}
+
+	if p.invincibleCount/5%2 != 0 {
+		return
+	}
+
+	view := battlecommon.ViewPos(p.Pos)
+	img := p.act.GetImage()
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+
+	// Show charge image
+	if p.ChargeCount > battlecommon.ChargeViewDelay {
+		n := 0
+		if p.ChargeCount > battlecommon.ChargeTime {
+			n = 1
+		}
+		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 }
 
@@ -373,6 +376,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 				Power:      c.Power,
 				TargetType: target,
 			}))
+			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
 			return false, nil
@@ -467,6 +471,10 @@ func (p *BattlePlayer) GetParam() anim.Param {
 
 func (p *BattlePlayer) GetObjectType() int {
 	return objanim.ObjTypePlayer
+}
+
+func (p *BattlePlayer) MakeInvisible(count int) {
+	p.invincibleCount = count
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {

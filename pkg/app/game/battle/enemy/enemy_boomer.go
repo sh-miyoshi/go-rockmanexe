@@ -160,6 +160,10 @@ func (e *enemyBoomer) Process() (bool, error) {
 }
 
 func (e *enemyBoomer) Draw() {
+	if e.pm.InvincibleCount/5%2 != 0 {
+		return
+	}
+
 	// Show Enemy Images
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
@@ -199,6 +203,10 @@ func (e *enemyBoomer) GetParam() anim.Param {
 
 func (e *enemyBoomer) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemyBoomer) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 func (e *enemyBoomer) getCurrentImagePointer() *int {

@@ -145,6 +145,8 @@ func (o *WaterPipe) GetObjectType() int {
 	return objanim.ObjTypeNone
 }
 
+func (o *WaterPipe) MakeInvisible(count int) {}
+
 func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.count = 0
 	a.isAttacking = false

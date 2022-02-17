@@ -157,6 +157,10 @@ func (e *enemyLark) Process() (bool, error) {
 }
 
 func (e *enemyLark) Draw() {
+	if e.pm.InvincibleCount/5%2 != 0 {
+		return
+	}
+
 	view := battlecommon.ViewPos(e.pm.Pos)
 	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
@@ -195,6 +199,10 @@ func (e *enemyLark) GetParam() anim.Param {
 
 func (e *enemyLark) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemyLark) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 func (a *larkAtk) SetAttack() {

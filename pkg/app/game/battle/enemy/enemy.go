@@ -31,12 +31,13 @@ type EnemyChipInfo struct {
 }
 
 type EnemyParam struct {
-	CharID   int
-	ObjectID string
-	PlayerID string
-	Pos      common.Point
-	HP       int
-	ActNo    int
+	CharID          int
+	ObjectID        string
+	PlayerID        string
+	Pos             common.Point
+	HP              int
+	ActNo           int
+	InvincibleCount int
 }
 
 type enemyObject interface {
@@ -163,6 +164,10 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		return false
 	}
 	if dm.TargetType&damage.TargetEnemy != 0 {
+		if pm.InvincibleCount > 0 && dm.Power > 0 {
+			return false
+		}
+
 		pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {

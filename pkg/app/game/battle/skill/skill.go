@@ -361,7 +361,7 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillDreamSword:
 		return newDreamSword(objID, arg)
 	case SkillInvisible:
-		// TODO
+		return newSkillInvisible(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
