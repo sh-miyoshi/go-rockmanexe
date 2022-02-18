@@ -117,6 +117,10 @@ func PAText(x int, y int) {
 	dxlib.DrawStringToHandle(x, y, 0xffffff, paTitleFont, "プログラムアドバンス")
 }
 
+func ExtendString(x int, y int, exRateY float64, color uint, format string, a ...interface{}) {
+	dxlib.DrawExtendFormatStringToHandle(x, y, 1, exRateY, color, defaultFont, format, a...)
+}
+
 func ChipCode(x int, y int, code string, percent int) {
 	index := -1
 	if len(code) != 1 {

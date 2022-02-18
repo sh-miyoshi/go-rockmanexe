@@ -10,6 +10,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -111,6 +112,8 @@ func End() {
 
 // Process ...
 func Process() error {
+	battlecommon.SystemProcess()
+
 	switch battleState {
 	case stateOpening:
 		if battleCount == 0 {
@@ -233,6 +236,7 @@ func Draw() {
 	anim.MgrDraw()
 
 	drawEnemyNames()
+	field.DrawBlackout()
 
 	switch battleState {
 	case stateOpening:
@@ -257,7 +261,7 @@ func Draw() {
 		}
 	}
 
-	field.DrawBlackout()
+	battlecommon.SystemDraw()
 }
 
 func stateChange(nextState int) {

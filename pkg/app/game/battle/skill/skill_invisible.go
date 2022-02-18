@@ -34,6 +34,7 @@ func (p *skillInvisible) Process() (bool, error) {
 	if p.count == 1 {
 		field.SetBlackoutCount(showTm)
 		objanim.MakeInvisible(p.OwnerID, 6*60)
+		setChipNameDraw("インビジブル")
 	}
 
 	return p.count > showTm, nil
