@@ -85,6 +85,7 @@ func (p *aquaman) Process() (bool, error) {
 	switch p.state {
 	case aquamanStateInit:
 		field.SetBlackoutCount(300)
+		setChipNameDraw("アクアマン")
 		p.setState(aquamanStateAppear)
 		return false, nil
 	case aquamanStateAppear:
