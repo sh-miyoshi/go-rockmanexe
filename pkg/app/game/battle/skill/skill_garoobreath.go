@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	garooBreathNextStepCount = 20
+	garooBreathNextStepCount = 10
 )
 
 type garooBreath struct {
@@ -58,10 +58,9 @@ func (p *garooBreath) Draw() {
 	}
 
 	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, garooBreathNextStepCount, field.PanelSize.X)
+	ofsy := -15
 	xflip := int32(dxlib.TRUE)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y, 1, 0, imgGarooBreath[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-
-	dxlib.DrawFormatString(0, 50, 0xff0000, "(%d, %d, %d)", cnt, p.pos.X, p.prev.X)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 }
 
 func (p *garooBreath) Process() (bool, error) {
