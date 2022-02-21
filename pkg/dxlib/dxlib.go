@@ -53,6 +53,10 @@ func CreateFontToHandle(opt ...CreateFontToHandleOption) int {
 	return int(dxlib.CreateFontToHandle())
 }
 
+func DrawFormatString(x, y int, color uint, format string, a ...interface{}) {
+	dxlib.DrawFormatString(int32(x), int32(y), uint32(color), format, a...)
+}
+
 func DrawFormatStringToHandle(x, y int, color uint, fontHandle int, format string, a ...interface{}) {
 	dxlib.DrawFormatStringToHandle(int32(x), int32(y), uint32(color), int32(fontHandle), format, a...)
 }

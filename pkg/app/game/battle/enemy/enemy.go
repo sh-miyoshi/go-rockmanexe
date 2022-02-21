@@ -21,6 +21,7 @@ const (
 	IDLark
 	IDBoomer
 	IDAquaman
+	IDGaroo
 )
 
 type EnemyChipInfo struct {
@@ -132,6 +133,8 @@ func GetName(id int) string {
 		return "ラウンダ"
 	case IDAquaman:
 		return "アクアマン"
+	case IDGaroo:
+		return "ガルー"
 	}
 	return ""
 }
@@ -155,6 +158,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyBoomer{pm: initParam}
 	case IDAquaman:
 		return &enemyAquaman{pm: initParam}
+	case IDGaroo:
+		return &enemyGaroo{pm: initParam}
 	}
 	return nil
 }
@@ -196,7 +201,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 )
 
 type enemy struct {
@@ -225,15 +229,7 @@ func (e *enemy) Draw() {
 }
 
 func (e *enemy) DamageProc(dm *damage.Damage) bool {
-	if dm == nil {
-		return false
-	}
-	if dm.TargetType&damage.TargetEnemy != 0 {
-		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
-		return true
-	}
-	return false
+	return damageProc(dm, &e.pm)
 }
 
 func (e *enemy) GetParam() anim.Param {
@@ -246,6 +242,10 @@ func (e *enemy) GetParam() anim.Param {
 
 func (e *enemy) GetObjectType() int {
 	return objanim.ObjTypeEnemy
+}
+
+func (e *enemy) MakeInvisible(count int) {
+	e.pm.InvincibleCount = count
 }
 
 */

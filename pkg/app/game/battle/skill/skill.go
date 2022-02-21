@@ -37,6 +37,7 @@ const (
 	SkillBambooLance
 	SkillDreamSword
 	SkillInvisible
+	SkillGarooBreath
 )
 
 const (
@@ -52,6 +53,7 @@ const (
 	delayWideShot    = 4
 	delayBoomerang   = 8
 	delayBambooLance = 4
+	delayGarooBreath = 4
 )
 
 type Argument struct {
@@ -79,6 +81,7 @@ var (
 	imgAquamanShot   []int
 	imgBambooLance   []int
 	imgDreamSword    []int
+	imgGarooBreath   []int
 )
 
 func Init() error {
@@ -224,6 +227,11 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 200, 188, imgDreamSword); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	fname = path + "ガルー_atk.png"
+	imgGarooBreath = make([]int, 3)
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 108, 62, imgGarooBreath); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	return nil
 }
@@ -305,6 +313,10 @@ func End() {
 		dxlib.DeleteGraph(imgDreamSword[i])
 	}
 	imgDreamSword = []int{}
+	for i := 0; i < len(imgGarooBreath); i++ {
+		dxlib.DeleteGraph(imgGarooBreath[i])
+	}
+	imgGarooBreath = []int{}
 }
 
 // Get ...
@@ -363,7 +375,9 @@ func Get(skillID int, arg Argument) anim.Anim {
 	case SkillDreamSword:
 		return newDreamSword(objID, arg)
 	case SkillInvisible:
-		return newSkillInvisible(objID, arg)
+		return newInvisible(objID, arg)
+	case SkillGarooBreath:
+		return newGarooBreath(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))

@@ -6,7 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
-type skillInvisible struct {
+type invisible struct {
 	ID         string
 	OwnerID    string
 	Power      uint
@@ -15,8 +15,8 @@ type skillInvisible struct {
 	count int
 }
 
-func newSkillInvisible(objID string, arg Argument) *skillInvisible {
-	return &skillInvisible{
+func newInvisible(objID string, arg Argument) *invisible {
+	return &invisible{
 		ID:         objID,
 		OwnerID:    arg.OwnerID,
 		Power:      arg.Power,
@@ -24,10 +24,10 @@ func newSkillInvisible(objID string, arg Argument) *skillInvisible {
 	}
 }
 
-func (p *skillInvisible) Draw() {
+func (p *invisible) Draw() {
 }
 
-func (p *skillInvisible) Process() (bool, error) {
+func (p *invisible) Process() (bool, error) {
 	p.count++
 
 	showTm := 60
@@ -40,7 +40,7 @@ func (p *skillInvisible) Process() (bool, error) {
 	return p.count > showTm, nil
 }
 
-func (p *skillInvisible) GetParam() anim.Param {
+func (p *invisible) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
