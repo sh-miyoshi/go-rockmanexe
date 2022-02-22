@@ -6,6 +6,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -25,6 +26,7 @@ type garooBreath struct {
 	next     common.Point
 	prev     common.Point
 	moveVecX int
+	damageID string
 }
 
 func newGarooBreath(objID string, arg Argument) *garooBreath {
@@ -64,20 +66,27 @@ func (p *garooBreath) Draw() {
 }
 
 func (p *garooBreath) Process() (bool, error) {
+	if p.count%garooBreathNextStepCount/2 == 0 {
+		// Finish if hit
+		if p.damageID != "" && !damage.Exists(p.damageID) {
+			return true, nil
+		}
+	}
+
 	if p.count%garooBreathNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
 
-		// TODO
-		// damage.New(damage.Damage{
-		// 	Pos:           p.pos,
-		// 	Power:         int(p.Power),
-		// 	TTL:           garooBreathNextStepCount + 1,
-		// 	TargetType:    p.TargetType,
-		// 	HitEffectType: effect.TypeCannonHit,
-		// 	ShowHitArea:   false,
-		// })
+		p.damageID = damage.New(damage.Damage{
+			Pos:           p.pos,
+			Power:         int(p.Power),
+			TTL:           garooBreathNextStepCount + 1,
+			TargetType:    p.TargetType,
+			HitEffectType: effect.TypeHeatHit,
+			ShowHitArea:   false,
+			BigDamage:     true,
+		})
 
 		// Set next pos
 		p.next.X += p.moveVecX

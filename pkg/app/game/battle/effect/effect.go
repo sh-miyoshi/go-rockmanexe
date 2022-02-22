@@ -24,6 +24,7 @@ const (
 	TypeWaterBomb
 	TypeBlock
 	TypeBambooHit
+	TypeHeatHit
 
 	typeMax
 )
@@ -73,7 +74,7 @@ func Init() error {
 		return fmt.Errorf("failed to load cannon hit effect image %s", fname)
 	}
 	images[TypeSpreadHit] = make([]int, 6)
-	fname = common.ImagePath + "battle/effect/spread_hit.png"
+	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[TypeSpreadHit]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -102,11 +103,9 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[TypeBlock]); res == -1 {
 		return fmt.Errorf("failed to load block effect image %s", fname)
 	}
-	images[TypeBambooHit] = make([]int, 6)
-	fname = common.ImagePath + "battle/effect/bamboo_hit.png"
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[TypeBambooHit]); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
+
+	images[TypeBambooHit] = append([]int{}, images[TypeSpreadHit]...)
+	images[TypeHeatHit] = append([]int{}, images[TypeCannonHit]...)
 
 	for i := 0; i < typeMax; i++ {
 		sounds[i] = -1
@@ -115,6 +114,7 @@ func Init() error {
 	sounds[TypeHitSmall] = sound.SEBusterHit
 	sounds[TypeHitBig] = sound.SEBusterHit
 	sounds[TypeBlock] = sound.SEBlock
+	sounds[TypeHeatHit] = sound.SEExplode
 
 	return nil
 }
