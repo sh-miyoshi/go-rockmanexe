@@ -148,6 +148,35 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "火玉に注意！",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDGaroo,
+						Pos:    common.Point{X: 5, Y: 0},
+						HP:     60,
+					},
+					View: common.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 20},
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDGaroo,
+						Pos:    common.Point{X: 5, Y: 2},
+						HP:     60,
+					},
+					View: common.Point{X: viewCenter.X - 25, Y: viewCenter.Y + 10},
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDMetall,
+						Pos:    common.Point{X: 3, Y: 0},
+						HP:     40,
+					},
+					View: common.Point{X: viewCenter.X + 25, Y: viewCenter.Y + 10},
+				},
+			},
+		},
+		{
 			Name: "水を操りし者",
 			Enemies: []selectEnemyData{
 				{
