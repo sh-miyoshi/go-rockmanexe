@@ -45,7 +45,7 @@ type enemyGaroo struct {
 
 func (e *enemyGaroo) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.moveNum = 0 // debug(3)
+	e.moveNum = 3
 	e.targetPos = common.Point{X: -1, Y: -1}
 	e.waitCount = garooInitWait
 
@@ -121,7 +121,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 				e.targetPos = common.Point{X: -1, Y: -1}
 
 				// Set attack
-				e.moveNum = 0 // debug(2 + rand.Intn(3))
+				e.moveNum = 2 + rand.Intn(3)
 				e.atk.count = 0
 				e.atkID = garooAtkStr
 				e.waitCount = 30
