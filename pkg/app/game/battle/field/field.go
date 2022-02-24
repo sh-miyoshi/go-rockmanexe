@@ -211,6 +211,9 @@ func GetPanelInfo(pos common.Point) PanelInfo {
 		return PanelInfo{}
 	}
 
+	// Update objectID to latest
+	panels[pos.X][pos.Y].ObjectID = objanim.ExistsObject(pos)
+
 	return panels[pos.X][pos.Y]
 }
 

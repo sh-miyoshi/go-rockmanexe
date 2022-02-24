@@ -33,7 +33,11 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 		next.X++
 	}
 
-	pn := GetPanelInfo(next)
+	return MoveObjectDirect(pos, next, objPanelType, isMove, GetPanelInfo)
+}
+
+func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+	pn := GetPanelInfo(target)
 	// Object exists?
 	if pn.ObjectID != "" {
 		return false
@@ -44,23 +48,6 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 	}
 	// Panel Status
 	if pn.Status == field.PanelStatusHole {
-		return false
-	}
-
-	if isMove {
-		*pos = next
-	}
-
-	return true
-}
-
-func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
-	pn := GetPanelInfo(target)
-	if pn.ObjectID != "" {
-		return false
-	}
-	// Check panel type
-	if objPanelType != pn.Type {
 		return false
 	}
 

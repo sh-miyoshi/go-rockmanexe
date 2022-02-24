@@ -167,6 +167,16 @@ func MakeInvisible(id string, count int) {
 	}
 }
 
+func ExistsObject(pos common.Point) string {
+	for _, anim := range anims {
+		pm := anim.GetParam()
+		if pm.Pos == pos {
+			return pm.ObjID
+		}
+	}
+	return ""
+}
+
 func sortAnim() {
 	type sortParam struct {
 		Index int
