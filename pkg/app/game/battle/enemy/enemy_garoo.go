@@ -154,7 +154,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			// set attack pos to {X: random, Y: same as player}
 			rnd := rand.Intn(3)
 			for i := 0; i < 3; i++ {
-				pos = common.Point{X: (rnd+i)%3 + 3, Y: 1}
+				pos = common.Point{X: (rnd+i)%3 + 3, Y: pos.Y}
 				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, field.PanelTypeEnemy, false, field.GetPanelInfo) {
 					e.targetPos = pos
 				}
