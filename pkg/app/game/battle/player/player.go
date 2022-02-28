@@ -30,6 +30,27 @@ const (
 	NextActLose
 )
 
+const (
+	MindStatusFullSync int = iota
+	MindStatusAnger
+	MindStatusNormal
+	MindStatusFear
+	MindStatusDark
+	MindStatusRollSoul
+	MindStatusAquaSoul
+	MindStatusWoodSoul
+	MindStatusJunkSoul
+	MindStatusBluesSoul
+	MindStatusMetalSoul
+	MindStatusGutsSoul
+	MindStatusSearchSoul
+	MindStatusNumberSoul
+	MindStatusFireSoul
+	MindStatusWindSoul
+	MindStatusThunderSoul
+	mindStatusMax
+)
+
 type act struct {
 	ID         string
 	MoveDirect int
@@ -57,6 +78,7 @@ type BattlePlayer struct {
 	EnableAct     bool
 	MoveNum       int
 	DamageNum     int
+	MindStatus    int
 
 	act             act
 	invincibleCount int
@@ -70,6 +92,8 @@ var (
 	imgGaugeFrame int
 	imgGaugeMax   []int
 	imgCharge     [2][]int
+	imgMinds      []int
+	imgMindFrame  int
 )
 
 // New ...
@@ -77,13 +101,14 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:        uuid.New().String(),
-		HP:        plyr.HP,
-		HPMax:     plyr.HP, // TODO HPは引き継がない
-		Pos:       common.Point{X: 1, Y: 1},
-		ShotPower: plyr.ShotPower,
-		EnableAct: true,
-		visible:   true,
+		ID:         uuid.New().String(),
+		HP:         plyr.HP,
+		HPMax:      plyr.HP, // TODO HPは引き継がない
+		Pos:        common.Point{X: 1, Y: 1},
+		ShotPower:  plyr.ShotPower,
+		EnableAct:  true,
+		MindStatus: MindStatusNormal, // TODO playerにstatusを持つ
+		visible:    true,
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
@@ -192,6 +217,17 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		imgCharge[1] = append(imgCharge[1], tmp[i+8])
 	}
 
+	fname = common.ImagePath + "battle/mind_window_frame.png"
+	if imgMindFrame = dxlib.LoadGraph(fname); imgMindFrame == -1 {
+		return nil, fmt.Errorf("failed to read mind frame image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/mind_status.png"
+	imgMinds = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, mindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
+		return nil, fmt.Errorf("failed to load image %s", fname)
+	}
+
 	logger.Info("Successfully initialized battle player data")
 	return &res, nil
 }
@@ -219,6 +255,12 @@ func (p *BattlePlayer) End() {
 		}
 		imgCharge[i] = []int{}
 	}
+	dxlib.DeleteGraph(imgMindFrame)
+	imgMindFrame = -1
+	for _, img := range imgMinds {
+		dxlib.DeleteGraph(img)
+	}
+	imgMinds = []int{}
 
 	logger.Info("Successfully cleanuped battle player data")
 }
@@ -281,6 +323,10 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	// Show HP
 	dxlib.DrawGraph(x, y, imgHPFrame, true)
 	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
+
+	// Show Mind Status
+	dxlib.DrawGraph(x, 40, imgMindFrame, true)
+	dxlib.DrawGraph(x, 40, imgMinds[p.MindStatus], true)
 
 	// Show Custom Gauge
 	if showGauge {
