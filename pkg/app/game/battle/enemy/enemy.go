@@ -22,6 +22,7 @@ const (
 	IDBoomer
 	IDAquaman
 	IDGaroo
+	IDVolgear
 )
 
 type EnemyChipInfo struct {
@@ -135,6 +136,8 @@ func GetName(id int) string {
 		return "アクアマン"
 	case IDGaroo:
 		return "ガルー"
+	case IDVolgear:
+		return "ボルケギア"
 	}
 	return ""
 }
@@ -160,6 +163,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyAquaman{pm: initParam}
 	case IDGaroo:
 		return &enemyGaroo{pm: initParam}
+	case IDVolgear:
+		return &enemyVolgear{pm: initParam}
 	}
 	return nil
 }
