@@ -13,14 +13,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type volgearAtk struct {
-	id      string
-	ownerID string
-	count   int
-	images  []int
+	objID    string
+	ownerID  string
+	count    int
+	images   []int
+	atkID    string
+	endCount int
 }
 
 type enemyVolgear struct {
@@ -35,8 +38,9 @@ type enemyVolgear struct {
 
 const (
 	delayVolgearMove = 16
-	delayVolgearAtk  = 2
+	delayVolgearAtk  = 3
 	volgearInitWait  = 20
+	volgearAtkStr    = "set_attack"
 )
 
 func (e *enemyVolgear) Init(objID string) error {
@@ -46,7 +50,7 @@ func (e *enemyVolgear) Init(objID string) error {
 
 	// Load Images
 	name, ext := GetStandImageFile(IDVolgear)
-	e.atk.id = uuid.New().String()
+	e.atk.objID = uuid.New().String()
 	e.imgMove = make([]int, 4)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, e.imgMove); res == -1 {
@@ -87,6 +91,12 @@ func (e *enemyVolgear) Process() (bool, error) {
 	}
 
 	if e.atkID != "" {
+		if e.atkID == volgearAtkStr {
+			e.atk.ownerID = e.pm.ObjectID
+			e.atk.Init()
+			e.atkID = anim.New(&e.atk)
+		}
+
 		// Anim end
 		if !anim.IsProcessing(e.atkID) {
 			e.atkID = ""
@@ -119,7 +129,9 @@ func (e *enemyVolgear) Process() (bool, error) {
 		}
 		e.moveNum--
 		if e.moveNum <= 0 {
-			// TODO set attack
+			// Set attack
+			e.atkID = volgearAtkStr
+			e.waitCount = 30
 			e.moveNum = 4 + rand.Intn(2)
 		}
 	}
@@ -167,14 +179,71 @@ func (e *enemyVolgear) MakeInvisible(count int) {
 }
 
 func (e *enemyVolgear) getCurrentImagePointer() *int {
-	if e.atkID != "" {
-		n := (e.atk.count / delayVolgearAtk)
-		if n >= len(e.atk.images) {
-			n = len(e.atk.images) - 1
-		}
-		return &e.atk.images[n]
+	if e.atkID != "" && e.atkID != volgearAtkStr {
+		return &e.atk.images[e.atk.GetImageNo()]
 	}
 
 	n := (e.count / delayVolgearMove) % len(e.imgMove)
 	return &e.imgMove[n]
+}
+
+func (a *volgearAtk) Init() {
+	a.atkID = ""
+	a.count = 0
+	a.endCount = 0
+}
+
+func (a *volgearAtk) Draw() {
+	// Nothing to do
+}
+
+func (a *volgearAtk) GetImageNo() int {
+	// Attack end
+	if a.endCount > 0 {
+		n := a.endCount / delayVolgearAtk
+		return len(a.images) - (n + 1)
+	}
+
+	// Before attacking
+	if a.count < delayVolgearAtk*6 {
+		n := a.count / delayVolgearAtk
+		return n
+	}
+
+	// Attacking
+	n := (a.count / delayVolgearAtk / 3) % 2
+	return 5 + n
+}
+
+func (a *volgearAtk) Process() (bool, error) {
+	a.count++
+
+	if a.endCount > 0 {
+		a.endCount--
+		return a.endCount <= 1, nil
+	}
+
+	if a.atkID != "" {
+		if !anim.IsProcessing(a.atkID) {
+			a.endCount = delayVolgearAtk * 3
+			return false, nil
+		}
+	}
+
+	if a.count == delayVolgearAtk*6 {
+		a.atkID = anim.New(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+			OwnerID:    a.ownerID,
+			Power:      10,
+			TargetType: damage.TargetPlayer,
+		}))
+	}
+
+	return false, nil
+}
+
+func (a *volgearAtk) GetParam() anim.Param {
+	return anim.Param{
+		ObjID:    a.objID,
+		AnimType: anim.AnimTypeEffect,
+	}
 }
