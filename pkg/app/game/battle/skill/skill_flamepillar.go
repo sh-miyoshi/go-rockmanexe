@@ -54,7 +54,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 
 	switch skillType {
 	case flamePillarTypeRandom:
-		panic("not implemented yet")
+		panic("TODO: not implemented yet")
 	case flamePillarTypeTracking:
 		pos := objanim.GetObjPos(arg.OwnerID)
 		if res.isPlayer {
@@ -84,7 +84,7 @@ func (p *flamePillarManager) Draw() {
 func (p *flamePillarManager) Process() (bool, error) {
 	switch p.skillType {
 	case flamePillarTypeRandom:
-		panic("not implemented yet")
+		panic("TODO: not implemented yet")
 	case flamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {
@@ -150,10 +150,20 @@ func (p *flamePillar) Draw() {
 }
 
 func (p *flamePillar) Process() (bool, error) {
-	// TODO damage
-
 	switch p.state {
 	case flamePillarStateWakeup:
+		if p.count == 3*delayFlamePillar {
+			// Add damage
+			damage.New(damage.Damage{
+				Pos:         p.point,
+				Power:       int(p.Power),
+				TTL:         7 * delayFlamePillar,
+				TargetType:  p.TargetType,
+				ShowHitArea: true,
+				BigDamage:   true,
+			})
+		}
+
 		if p.count > len(imgFlamePillar)*delayFlamePillar {
 			p.count = 0
 			p.state = flamePillarStateDoing
