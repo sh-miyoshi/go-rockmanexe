@@ -177,6 +177,27 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "灼熱の息吹",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDVolgear,
+						Pos:    common.Point{X: 5, Y: 0},
+						HP:     80,
+					},
+					View: common.Point{X: viewCenter.X + 30, Y: viewCenter.Y - 5},
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDGaroo,
+						Pos:    common.Point{X: 3, Y: 2},
+						HP:     60,
+					},
+					View: common.Point{X: viewCenter.X - 20, Y: viewCenter.Y + 25},
+				},
+			},
+		},
+		{
 			Name: "水を操りし者",
 			Enemies: []selectEnemyData{
 				{
