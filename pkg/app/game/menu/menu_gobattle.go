@@ -306,7 +306,8 @@ func battleEnemies() []enemy.EnemyParam {
 	}
 
 	res := []enemy.EnemyParam{}
-	for _, e := range goBattleSelectData[goBattleCursor].Enemies {
+	c := goBattleCursor + goBattleScroll
+	for _, e := range goBattleSelectData[c].Enemies {
 		res = append(res, e.BattleParam)
 	}
 
