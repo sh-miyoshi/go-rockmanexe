@@ -2,6 +2,7 @@ package skill
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -103,8 +104,24 @@ func (p *flamePillarManager) Process() (bool, error) {
 					return true, nil
 				}
 			}
+
 			y := p.pillars[0].point.Y
-			// TODO
+			objType := objanim.ObjTypePlayer
+			if p.arg.TargetType == damage.TargetEnemy {
+				objType = objanim.ObjTypeEnemy
+			}
+			objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+			if len(objs) > 0 {
+				sort.Slice(objs, func(i, j int) bool {
+					return objs[i].Pos.X < objs[j].Pos.X
+				})
+
+				if objs[0].Pos.Y > y {
+					y++
+				} else if objs[0].Pos.Y < y {
+					y--
+				}
+			}
 
 			p.pillars = append([]flamePillar{}, flamePillar{
 				OwnerID:    p.arg.OwnerID,
