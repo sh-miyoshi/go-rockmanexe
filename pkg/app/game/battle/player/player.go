@@ -492,8 +492,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if objanim.IsProcessing(p.act.ID) {
-			objanim.Delete(p.act.ID)
+		if anim.IsProcessing(p.act.ID) {
+			anim.Delete(p.act.ID)
 			p.act.ID = ""
 		}
 
