@@ -41,7 +41,6 @@ func MgrProcess() error {
 		}
 
 		if end {
-			anim.AtDelete()
 			Delete(id)
 		}
 	}
@@ -77,6 +76,7 @@ func Cleanup() {
 }
 
 func Delete(animID string) {
+	anims[animID].AtDelete()
 	delete(anims, animID)
 	for i, sid := range sortedAnimIDs {
 		if sid == animID {
