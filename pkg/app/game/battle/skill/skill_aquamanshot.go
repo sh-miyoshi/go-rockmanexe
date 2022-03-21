@@ -89,7 +89,7 @@ func (p *aquamanShot) GetParam() anim.Param {
 }
 
 func (p *aquamanShot) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }

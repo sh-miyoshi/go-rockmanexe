@@ -152,7 +152,7 @@ func (p *thunderBall) GetParam() anim.Param {
 }
 
 func (p *thunderBall) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }

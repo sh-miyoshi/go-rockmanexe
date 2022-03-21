@@ -115,8 +115,8 @@ func (p *spreadGun) GetParam() anim.Param {
 }
 
 func (p *spreadGun) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }
 
@@ -148,7 +148,7 @@ func (p *spreadHit) GetParam() anim.Param {
 }
 
 func (p *spreadHit) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }

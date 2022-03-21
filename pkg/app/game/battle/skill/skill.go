@@ -64,7 +64,7 @@ type Argument struct {
 	Power      uint
 	TargetType int
 
-	AtDelete func()
+	RemoveObject func(id string)
 }
 
 var (
@@ -539,8 +539,8 @@ func (p *tmpskill) GetParam() anim.Param {
 }
 
 func (p *tmpskill) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }
 

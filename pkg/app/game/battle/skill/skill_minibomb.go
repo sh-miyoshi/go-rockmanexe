@@ -92,7 +92,7 @@ func (p *miniBomb) GetParam() anim.Param {
 }
 
 func (p *miniBomb) AtDelete() {
-	if p.Arg.AtDelete != nil {
-		p.Arg.AtDelete()
+	if p.Arg.RemoveObject != nil {
+		p.Arg.RemoveObject(p.ID)
 	}
 }
