@@ -20,10 +20,8 @@ const (
 )
 
 type aquaman struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count         int
 	state         int
@@ -35,12 +33,10 @@ type aquaman struct {
 
 func newAquaman(objID string, arg Argument) (*aquaman, error) {
 	res := &aquaman{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		state:      aquamanStateInit,
-		pos:        objanim.GetObjPos(arg.OwnerID),
+		ID:    objID,
+		Arg:   arg,
+		state: aquamanStateInit,
+		pos:   objanim.GetObjPos(arg.OwnerID),
 	}
 
 	fname := common.ImagePath + "battle/character/アクアマン_stand.png"
@@ -102,7 +98,7 @@ func (p *aquaman) Process() (bool, error) {
 				OnwerCharType: objanim.ObjTypePlayer,
 				AttackNum:     1,
 				Interval:      50,
-				Power:         int(p.Power),
+				Power:         int(p.Arg.Power),
 			}
 			if err := obj.Init(p.ID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
@@ -129,6 +125,12 @@ func (p *aquaman) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *aquaman) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }
 

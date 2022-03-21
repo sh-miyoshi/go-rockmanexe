@@ -21,27 +21,23 @@ const (
 )
 
 type cannon struct {
-	ID         string
-	Type       int
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID   string
+	Type int
+	Arg  Argument
 
 	count int
 }
 
 func newCannon(objID string, cannonType int, arg Argument) *cannon {
 	return &cannon{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Type:       cannonType,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:   objID,
+		Type: cannonType,
+		Arg:  arg,
 	}
 }
 
 func (p *cannon) Draw() {
-	pos := objanim.GetObjPos(p.OwnerID)
+	pos := objanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delayCannonBody
@@ -64,17 +60,17 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			Pos:           pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeCannonHit,
 			BigDamage:     true,
 		}
 
-		if p.TargetType == damage.TargetEnemy {
+		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < field.FieldNum.X; x++ {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
@@ -108,5 +104,11 @@ func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *cannon) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

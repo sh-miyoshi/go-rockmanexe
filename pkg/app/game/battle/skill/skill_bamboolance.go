@@ -11,10 +11,8 @@ import (
 )
 
 type bambooLance struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count    int
 	imgSizeX int
@@ -25,11 +23,9 @@ func newBambooLance(objID string, arg Argument) *bambooLance {
 	dxlib.GetGraphSize(imgBambooLance[0], &sx, &sy)
 
 	return &bambooLance{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		imgSizeX:   sx,
+		ID:       objID,
+		Arg:      arg,
+		imgSizeX: sx,
 	}
 }
 
@@ -56,9 +52,9 @@ func (p *bambooLance) Process() (bool, error) {
 	if p.count == 5 {
 		dm := damage.Damage{
 			Pos:           common.Point{X: 5},
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           5,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeBambooHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
@@ -81,5 +77,11 @@ func (p *bambooLance) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *bambooLance) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

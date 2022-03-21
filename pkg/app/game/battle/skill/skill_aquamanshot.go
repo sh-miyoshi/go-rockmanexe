@@ -13,10 +13,8 @@ import (
 )
 
 type aquamanShot struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	pos    common.Point
 	ofs    common.Point
@@ -29,12 +27,10 @@ func newAquamanShot(objID string, arg Argument) *aquamanShot {
 	view := battlecommon.ViewPos(pos)
 
 	return &aquamanShot{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		pos:        common.Point{X: view.X - 40, Y: view.Y + 10},
-		target:     common.Point{X: pos.X - 2, Y: pos.Y},
+		ID:     objID,
+		Arg:    arg,
+		pos:    common.Point{X: view.X - 40, Y: view.Y + 10},
+		target: common.Point{X: pos.X - 2, Y: pos.Y},
 	}
 }
 
@@ -63,9 +59,9 @@ func (p *aquamanShot) Process() (bool, error) {
 		anim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           20,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		})
@@ -73,9 +69,9 @@ func (p *aquamanShot) Process() (bool, error) {
 		anim.New(effect.Get(effect.TypeWaterBomb, target, 0))
 		damage.New(damage.Damage{
 			Pos:           target,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           20,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		})
@@ -89,5 +85,11 @@ func (p *aquamanShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *aquamanShot) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

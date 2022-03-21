@@ -11,27 +11,23 @@ import (
 )
 
 type recover struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 }
 
 func newRecover(objID string, arg Argument) *recover {
 	return &recover{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], true)
 	}
@@ -40,12 +36,12 @@ func (p *recover) Draw() {
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SERecover)
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		damage.New(damage.Damage{
 			Pos:           pos,
-			Power:         -int(p.Power),
+			Power:         -int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 		})
 	}
@@ -62,5 +58,11 @@ func (p *recover) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeEffect,
+	}
+}
+
+func (p *recover) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

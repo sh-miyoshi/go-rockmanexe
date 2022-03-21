@@ -25,6 +25,7 @@ type Anim interface {
 	Process() (bool, error)
 	Draw()
 	GetParam() Param
+	AtDelete()
 }
 
 var (
@@ -40,6 +41,7 @@ func MgrProcess() error {
 		}
 
 		if end {
+			anim.AtDelete()
 			Delete(id)
 		}
 	}

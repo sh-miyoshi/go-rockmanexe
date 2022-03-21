@@ -13,11 +13,9 @@ import (
 )
 
 type vulcan struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
-	Times      int
+	ID    string
+	Arg   Argument
+	Times int
 
 	count    int
 	imageNo  int
@@ -27,16 +25,14 @@ type vulcan struct {
 
 func newVulcan(objID string, arg Argument) *vulcan {
 	return &vulcan{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		Times:      3,
+		ID:    objID,
+		Arg:   arg,
+		Times: 3,
 	}
 }
 
 func (p *vulcan) Draw() {
-	pos := objanim.GetObjPos(p.OwnerID)
+	pos := objanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	// Show body
@@ -59,7 +55,7 @@ func (p *vulcan) Process() (bool, error) {
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			pos := objanim.GetObjPos(p.OwnerID)
+			pos := objanim.GetObjPos(p.Arg.OwnerID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
@@ -68,9 +64,9 @@ func (p *vulcan) Process() (bool, error) {
 				if field.GetPanelInfo(target).ObjectID != "" {
 					damage.New(damage.Damage{
 						Pos:           target,
-						Power:         int(p.Power),
+						Power:         int(p.Arg.Power),
 						TTL:           1,
-						TargetType:    p.TargetType,
+						TargetType:    p.Arg.TargetType,
 						HitEffectType: effect.TypeSpreadHit,
 						BigDamage:     lastAtk,
 					})
@@ -80,9 +76,9 @@ func (p *vulcan) Process() (bool, error) {
 						anim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
 						damage.New(damage.Damage{
 							Pos:           target,
-							Power:         int(p.Power),
+							Power:         int(p.Arg.Power),
 							TTL:           1,
-							TargetType:    p.TargetType,
+							TargetType:    p.Arg.TargetType,
 							HitEffectType: effect.TypeNone,
 							BigDamage:     lastAtk,
 						})
@@ -107,5 +103,11 @@ func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeEffect,
+	}
+}
+
+func (p *vulcan) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

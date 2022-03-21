@@ -16,10 +16,8 @@ const (
 )
 
 type garooBreath struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count    int
 	pos      common.Point
@@ -38,14 +36,12 @@ func newGarooBreath(objID string, arg Argument) *garooBreath {
 	first := common.Point{X: pos.X + vx, Y: pos.Y}
 
 	return &garooBreath{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		pos:        first,
-		prev:       pos,
-		next:       first,
-		moveVecX:   vx,
+		ID:       objID,
+		Arg:      arg,
+		pos:      first,
+		prev:     pos,
+		next:     first,
+		moveVecX: vx,
 	}
 }
 
@@ -80,9 +76,9 @@ func (p *garooBreath) Process() (bool, error) {
 
 		p.damageID = damage.New(damage.Damage{
 			Pos:           p.pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           garooBreathNextStepCount + 1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeHeatHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
@@ -104,5 +100,11 @@ func (p *garooBreath) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *garooBreath) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

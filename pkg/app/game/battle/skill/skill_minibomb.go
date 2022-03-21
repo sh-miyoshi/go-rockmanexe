@@ -17,10 +17,8 @@ const (
 )
 
 type miniBomb struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count  int
 	pos    common.Point
@@ -30,12 +28,10 @@ type miniBomb struct {
 func newMiniBomb(objID string, arg Argument) *miniBomb {
 	pos := objanim.GetObjPos(arg.OwnerID)
 	return &miniBomb{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		pos:        pos,
-		target:     common.Point{X: pos.X + 3, Y: pos.Y},
+		ID:     objID,
+		Arg:    arg,
+		pos:    pos,
+		target: common.Point{X: pos.X + 3, Y: pos.Y},
 	}
 }
 
@@ -77,9 +73,9 @@ func (p *miniBomb) Process() (bool, error) {
 		anim.New(effect.Get(effect.TypeExplode, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		})
@@ -92,5 +88,11 @@ func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *miniBomb) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

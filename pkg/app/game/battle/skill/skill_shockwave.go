@@ -13,14 +13,12 @@ import (
 )
 
 type shockWave struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
-	Direct     int
-	ShowPick   bool
-	Speed      int
-	InitWait   int
+	ID       string
+	Arg      Argument
+	Direct   int
+	ShowPick bool
+	Speed    int
+	InitWait int
 
 	count    int
 	pos      common.Point
@@ -30,13 +28,11 @@ type shockWave struct {
 func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
 	pos := objanim.GetObjPos(arg.OwnerID)
 	res := &shockWave{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		Direct:     common.DirectLeft,
-		Speed:      5,
-		pos:        pos,
+		ID:     objID,
+		Arg:    arg,
+		Direct: common.DirectLeft,
+		Speed:  5,
+		pos:    pos,
 	}
 
 	if isPlayer {
@@ -67,7 +63,7 @@ func (p *shockWave) Draw() {
 	if p.ShowPick {
 		n = (p.count / delayPick)
 		if n < len(imgPick) {
-			pos := objanim.GetObjPos(p.OwnerID)
+			pos := objanim.GetObjPos(p.Arg.OwnerID)
 			view := battlecommon.ViewPos(pos)
 			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], true)
 		}
@@ -97,9 +93,9 @@ func (p *shockWave) Process() (bool, error) {
 		sound.On(sound.SEShockWave)
 		damage.New(damage.Damage{
 			Pos:           p.pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
@@ -117,5 +113,11 @@ func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *shockWave) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

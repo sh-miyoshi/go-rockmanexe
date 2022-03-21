@@ -12,25 +12,21 @@ import (
 )
 
 type dreamSword struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 }
 
 func newDreamSword(objID string, arg Argument) *dreamSword {
 	return &dreamSword{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
 func (p *dreamSword) Draw() {
-	pos := objanim.GetObjPos(p.OwnerID)
+	pos := objanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
@@ -47,11 +43,11 @@ func (p *dreamSword) Process() (bool, error) {
 
 		for x := 1; x <= 2; x++ {
 			for y := -1; y <= 1; y++ {
-				pos := objanim.GetObjPos(p.OwnerID)
+				pos := objanim.GetObjPos(p.Arg.OwnerID)
 				dm := damage.Damage{
-					Power:         int(p.Power),
+					Power:         int(p.Arg.Power),
 					TTL:           1,
-					TargetType:    p.TargetType,
+					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeNone,
 					BigDamage:     true,
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
@@ -71,5 +67,11 @@ func (p *dreamSword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *dreamSword) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

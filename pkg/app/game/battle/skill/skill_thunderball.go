@@ -18,9 +18,7 @@ const (
 
 type thunderBall struct {
 	ID           string
-	OwnerID      string
-	Power        uint
-	TargetType   int
+	Arg          Argument
 	MaxMoveCount int
 
 	count     int
@@ -42,9 +40,7 @@ func newThunderBall(objID string, arg Argument) *thunderBall {
 	max := 6 // debug
 	return &thunderBall{
 		ID:           objID,
-		OwnerID:      arg.OwnerID,
-		Power:        arg.Power,
-		TargetType:   arg.TargetType,
+		Arg:          arg,
 		MaxMoveCount: max,
 		pos:          first,
 		prev:         pos,
@@ -106,9 +102,9 @@ func (p *thunderBall) Process() (bool, error) {
 
 		p.damageID = damage.New(damage.Damage{
 			Pos:           p.pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
@@ -116,14 +112,14 @@ func (p *thunderBall) Process() (bool, error) {
 
 		// Set next pos
 		objType := objanim.ObjTypePlayer
-		if p.TargetType == damage.TargetEnemy {
+		if p.Arg.TargetType == damage.TargetEnemy {
 			objType = objanim.ObjTypeEnemy
 		}
 
 		objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
-			if p.TargetType == damage.TargetPlayer {
+			if p.Arg.TargetType == damage.TargetPlayer {
 				p.next.X--
 			} else {
 				p.next.X++
@@ -152,5 +148,11 @@ func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *thunderBall) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

@@ -25,9 +25,7 @@ const (
 )
 
 type flamePillar struct {
-	OwnerID    string
-	Power      uint
-	TargetType int
+	Arg Argument
 
 	count int
 	state int
@@ -37,7 +35,7 @@ type flamePillar struct {
 type flamePillarManager struct {
 	ID string
 
-	arg       Argument
+	Arg       Argument
 	skillType int
 	isPlayer  bool
 	pillars   []flamePillar
@@ -47,7 +45,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 	res := &flamePillarManager{
 		ID: objID,
 
-		arg:       arg,
+		Arg:       arg,
 		skillType: skillType,
 		isPlayer:  arg.TargetType == damage.TargetEnemy,
 		pillars:   []flamePillar{},
@@ -65,11 +63,9 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 		}
 
 		res.pillars = append(res.pillars, flamePillar{
-			OwnerID:    arg.OwnerID,
-			Power:      arg.Power,
-			TargetType: arg.TargetType,
-			state:      flamePillarStateWakeup,
-			point:      pos,
+			Arg:   arg,
+			state: flamePillarStateWakeup,
+			point: pos,
 		})
 	}
 
@@ -107,7 +103,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 
 			y := p.pillars[0].point.Y
 			objType := objanim.ObjTypePlayer
-			if p.arg.TargetType == damage.TargetEnemy {
+			if p.Arg.TargetType == damage.TargetEnemy {
 				objType = objanim.ObjTypeEnemy
 			}
 			objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
@@ -124,11 +120,9 @@ func (p *flamePillarManager) Process() (bool, error) {
 			}
 
 			p.pillars = append([]flamePillar{}, flamePillar{
-				OwnerID:    p.arg.OwnerID,
-				Power:      p.arg.Power,
-				TargetType: p.arg.TargetType,
-				state:      flamePillarStateWakeup,
-				point:      common.Point{X: x, Y: y},
+				Arg:   p.Arg,
+				state: flamePillarStateWakeup,
+				point: common.Point{X: x, Y: y},
 			})
 		}
 	}
@@ -140,6 +134,12 @@ func (p *flamePillarManager) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *flamePillarManager) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }
 
@@ -173,9 +173,9 @@ func (p *flamePillar) Process() (bool, error) {
 			// Add damage
 			damage.New(damage.Damage{
 				Pos:         p.point,
-				Power:       int(p.Power),
+				Power:       int(p.Arg.Power),
 				TTL:         7 * delayFlamePillar,
-				TargetType:  p.TargetType,
+				TargetType:  p.Arg.TargetType,
 				ShowHitArea: true,
 				BigDamage:   true,
 			})

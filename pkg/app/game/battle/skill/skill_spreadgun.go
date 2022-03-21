@@ -13,18 +13,15 @@ import (
 )
 
 type spreadGun struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 }
 
 type spreadHit struct {
-	ID         string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 	pos   common.Point
@@ -32,10 +29,8 @@ type spreadHit struct {
 
 func newSpreadGun(objID string, arg Argument) *spreadGun {
 	return &spreadGun{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
@@ -44,7 +39,7 @@ func (p *spreadGun) Draw() {
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], true)
 	}
@@ -52,7 +47,7 @@ func (p *spreadGun) Draw() {
 	// Show atk
 	n = (p.count - 4) / delaySpreadGun
 	if n >= 0 && n < len(imgSpreadGunAtk) {
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], true)
 	}
@@ -62,7 +57,7 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < field.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
@@ -71,9 +66,9 @@ func (p *spreadGun) Process() (bool, error) {
 
 				damage.New(damage.Damage{
 					Pos:           target,
-					Power:         int(p.Power),
+					Power:         int(p.Arg.Power),
 					TTL:           1,
-					TargetType:    p.TargetType,
+					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeHitBig,
 				})
 				// Spreading
@@ -87,9 +82,8 @@ func (p *spreadGun) Process() (bool, error) {
 						}
 						if x+sx >= 0 && x+sx < field.FieldNum.X {
 							anim.New(&spreadHit{
-								Power:      p.Power,
-								TargetType: p.TargetType,
-								pos:        common.Point{X: x + sx, Y: pos.Y + sy},
+								Arg: p.Arg,
+								pos: common.Point{X: x + sx, Y: pos.Y + sy},
 							})
 						}
 					}
@@ -120,6 +114,12 @@ func (p *spreadGun) GetParam() anim.Param {
 	}
 }
 
+func (p *spreadGun) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
+	}
+}
+
 func (p *spreadHit) Draw() {
 }
 
@@ -129,9 +129,9 @@ func (p *spreadHit) Process() (bool, error) {
 		anim.New(effect.Get(effect.TypeSpreadHit, p.pos, 5))
 		damage.New(damage.Damage{
 			Pos:           p.pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 		})
 
@@ -144,5 +144,11 @@ func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeEffect,
+	}
+}
+
+func (p *spreadHit) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }

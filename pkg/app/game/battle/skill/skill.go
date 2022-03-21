@@ -63,6 +63,8 @@ type Argument struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
+
+	AtDelete func()
 }
 
 var (
@@ -510,7 +512,7 @@ func newTmpSkill(objID string, arg Argument) *tmpskill {
 }
 
 func (p *tmpskill) Draw() {
-	pos := objanim.GetObjPos(p.OwnerID)
+	pos := objanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delay
@@ -533,6 +535,12 @@ func (p *tmpskill) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *tmpskill) AtDelete() {
+	if p.Arg.AtDelete != nil {
+		p.Arg.AtDelete()
 	}
 }
 
