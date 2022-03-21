@@ -26,6 +26,7 @@ type boomerang struct {
 
 const (
 	boomerangNextStepCount = 6
+	delayBoomerang         = 8
 )
 
 const (

@@ -12,6 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delaySpreadGun = 2
+)
+
 type spreadGun struct {
 	ID  string
 	Arg Argument

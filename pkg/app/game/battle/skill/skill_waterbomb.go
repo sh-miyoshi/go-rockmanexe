@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	waterBombEndCount = 60
+	waterBombEndCount   = 60
+	delayWaterBombThrow = 4
 )
 
 type waterBomb struct {
@@ -47,7 +48,7 @@ func newWaterBomb(objID string, arg Argument) *waterBomb {
 }
 
 func (p *waterBomb) Draw() {
-	imgNo := (p.count / delayBombThrow) % len(imgBombThrow)
+	imgNo := (p.count / delayWaterBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(p.pos)
 
 	// y = ax^2 + bx + c

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	miniBombEndCount = 60
+	miniBombEndCount   = 60
+	delayMiniBombThrow = 4
 )
 
 type miniBomb struct {
@@ -36,7 +37,7 @@ func newMiniBomb(objID string, arg Argument) *miniBomb {
 }
 
 func (p *miniBomb) Draw() {
-	imgNo := (p.count / delayBombThrow) % len(imgBombThrow)
+	imgNo := (p.count / delayMiniBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(p.pos)
 
 	// y = ax^2 + bx + c

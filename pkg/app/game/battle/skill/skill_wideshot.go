@@ -17,6 +17,10 @@ const (
 	wideShotStateMove
 )
 
+const (
+	delayWideShot = 4
+)
+
 type wideShot struct {
 	ID            string
 	Arg           Argument

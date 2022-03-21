@@ -18,6 +18,10 @@ const (
 	TypeSwordMax
 )
 
+const (
+	delaySword = 3
+)
+
 type sword struct {
 	ID   string
 	Type int

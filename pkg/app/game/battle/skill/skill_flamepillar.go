@@ -24,6 +24,10 @@ const (
 	flamePillarTypeTracking
 )
 
+const (
+	delayFlamePillar = 4
+)
+
 type flamePillar struct {
 	Arg Argument
 

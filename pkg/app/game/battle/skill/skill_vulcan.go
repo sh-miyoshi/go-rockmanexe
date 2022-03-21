@@ -12,6 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayVulcan = 2
+)
+
 type vulcan struct {
 	ID    string
 	Arg   Argument

@@ -20,6 +20,11 @@ const (
 	TypeCannonMax
 )
 
+const (
+	delayCannonAtk  = 2
+	delayCannonBody = 6
+)
+
 type cannon struct {
 	ID   string
 	Type int

@@ -12,6 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayPick = 3
+)
+
 type shockWave struct {
 	ID       string
 	Arg      Argument

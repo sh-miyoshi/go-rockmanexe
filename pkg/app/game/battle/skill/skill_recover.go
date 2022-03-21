@@ -10,6 +10,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayRecover = 1
+)
+
 type recover struct {
 	ID  string
 	Arg Argument

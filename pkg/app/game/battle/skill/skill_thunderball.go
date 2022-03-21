@@ -14,6 +14,7 @@ import (
 
 const (
 	thunderBallNextStepCount = 80
+	delayThunderBall         = 6
 )
 
 type thunderBall struct {

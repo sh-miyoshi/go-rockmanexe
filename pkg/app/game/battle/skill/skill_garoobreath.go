@@ -13,6 +13,7 @@ import (
 
 const (
 	garooBreathNextStepCount = 10
+	delayGarooBreath         = 4
 )
 
 type garooBreath struct {
