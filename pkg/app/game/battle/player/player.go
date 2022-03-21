@@ -52,7 +52,6 @@ const (
 )
 
 type act struct {
-	ID         string
 	MoveDirect int
 	Charged    bool
 	ShotPower  uint
@@ -61,6 +60,8 @@ type act struct {
 	count     int
 	keepCount int
 	pPos      *common.Point
+	skillID   string
+	skillInst skill.SkillAnim
 }
 
 type BattlePlayer struct {
@@ -416,11 +417,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			p.act.ID = anim.New(skill.Get(sid, skill.Argument{
+			p.act.skillInst = skill.Get(sid, skill.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power,
 				TargetType: target,
-			}))
+			})
+			p.act.skillID = anim.New(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -492,10 +494,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if anim.IsProcessing(p.act.ID) {
-			anim.Delete(p.act.ID)
-			p.act.ID = ""
+		if anim.IsProcessing(p.act.skillID) {
+			p.act.skillInst.StopByOwner()
 		}
+		p.act.skillID = ""
 
 		p.act.SetAnim(battlecommon.PlayerActDamage, 0)
 		p.invincibleCount = battlecommon.PlayerDefaultInvincibleTime

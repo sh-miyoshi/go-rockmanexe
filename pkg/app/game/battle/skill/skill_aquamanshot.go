@@ -93,3 +93,7 @@ func (p *aquamanShot) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *aquamanShot) StopByOwner() {
+	// Nothing to do after throwing
+}

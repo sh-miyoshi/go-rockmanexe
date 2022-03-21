@@ -125,3 +125,9 @@ func (p *shockWave) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *shockWave) StopByOwner() {
+	if p.count <= p.InitWait {
+		anim.Delete(p.ID)
+	}
+}

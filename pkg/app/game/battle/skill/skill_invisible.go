@@ -48,3 +48,7 @@ func (p *invisible) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *invisible) StopByOwner() {
+	anim.Delete(p.ID)
+}

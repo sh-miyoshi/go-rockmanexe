@@ -135,6 +135,10 @@ func (p *aquaman) AtDelete() {
 	}
 }
 
+func (p *aquaman) StopByOwner() {
+	// Nothing to do after throwing
+}
+
 func (p *aquaman) setState(nextState int) {
 	p.count = 0
 	p.state = nextState

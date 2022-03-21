@@ -75,3 +75,7 @@ func (p *crack) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *crack) StopByOwner() {
+	anim.Delete(p.ID)
+}

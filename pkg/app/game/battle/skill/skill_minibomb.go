@@ -97,3 +97,9 @@ func (p *miniBomb) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *miniBomb) StopByOwner() {
+	if p.count < 5 {
+		anim.Delete(p.ID)
+	}
+}

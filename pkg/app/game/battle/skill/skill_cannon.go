@@ -117,3 +117,7 @@ func (p *cannon) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *cannon) StopByOwner() {
+	anim.Delete(p.ID)
+}

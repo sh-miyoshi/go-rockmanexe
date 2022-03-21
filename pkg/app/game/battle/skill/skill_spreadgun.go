@@ -124,6 +124,12 @@ func (p *spreadGun) AtDelete() {
 	}
 }
 
+func (p *spreadGun) StopByOwner() {
+	if p.count < 5 {
+		anim.Delete(p.ID)
+	}
+}
+
 func (p *spreadHit) Draw() {
 }
 
@@ -155,4 +161,8 @@ func (p *spreadHit) AtDelete() {
 	if p.Arg.RemoveObject != nil {
 		p.Arg.RemoveObject(p.ID)
 	}
+}
+
+func (p *spreadHit) StopByOwner() {
+	anim.Delete(p.ID)
 }

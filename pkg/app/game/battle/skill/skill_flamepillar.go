@@ -147,6 +147,10 @@ func (p *flamePillarManager) AtDelete() {
 	}
 }
 
+func (p *flamePillarManager) StopByOwner() {
+	anim.Delete(p.ID)
+}
+
 func (p *flamePillar) Draw() {
 	view := battlecommon.ViewPos(p.point)
 

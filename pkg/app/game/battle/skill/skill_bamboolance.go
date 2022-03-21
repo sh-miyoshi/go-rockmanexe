@@ -85,3 +85,7 @@ func (p *bambooLance) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *bambooLance) StopByOwner() {
+	// Nothing to do after throwing
+}

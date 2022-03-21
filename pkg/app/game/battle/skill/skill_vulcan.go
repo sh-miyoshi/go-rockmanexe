@@ -115,3 +115,7 @@ func (p *vulcan) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *vulcan) StopByOwner() {
+	anim.Delete(p.ID)
+}

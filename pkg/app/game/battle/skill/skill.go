@@ -38,6 +38,12 @@ const (
 	SkillFlamePillarTracking
 )
 
+type SkillAnim interface {
+	anim.Anim
+
+	StopByOwner()
+}
+
 type Argument struct {
 	OwnerID    string
 	Power      uint
@@ -82,7 +88,7 @@ func End() {
 }
 
 // Get ...
-func Get(skillID int, arg Argument) anim.Anim {
+func Get(skillID int, arg Argument) SkillAnim {
 	objID := uuid.New().String()
 
 	switch skillID {

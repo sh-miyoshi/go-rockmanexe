@@ -100,3 +100,7 @@ func (p *sword) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *sword) StopByOwner() {
+	anim.Delete(p.ID)
+}

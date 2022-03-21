@@ -109,3 +109,7 @@ func (p *garooBreath) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *garooBreath) StopByOwner() {
+	anim.Delete(p.ID)
+}

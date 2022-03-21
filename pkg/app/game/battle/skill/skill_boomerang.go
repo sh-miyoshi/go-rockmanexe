@@ -179,3 +179,7 @@ func (p *boomerang) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *boomerang) StopByOwner() {
+	// Nothing to do after throwing
+}

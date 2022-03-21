@@ -70,3 +70,7 @@ func (p *recover) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *recover) StopByOwner() {
+	// Nothing to do
+}

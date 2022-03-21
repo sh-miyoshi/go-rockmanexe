@@ -162,3 +162,9 @@ func (p *wideShot) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *wideShot) StopByOwner() {
+	if p.state != wideShotStateMove {
+		anim.Delete(p.ID)
+	}
+}

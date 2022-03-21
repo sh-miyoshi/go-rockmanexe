@@ -157,3 +157,7 @@ func (p *thunderBall) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *thunderBall) StopByOwner() {
+	// Nothing to do
+}

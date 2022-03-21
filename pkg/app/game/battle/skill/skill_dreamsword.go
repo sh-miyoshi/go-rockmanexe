@@ -75,3 +75,7 @@ func (p *dreamSword) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *dreamSword) StopByOwner() {
+	anim.Delete(p.ID)
+}

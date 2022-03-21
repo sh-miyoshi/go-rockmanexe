@@ -109,3 +109,9 @@ func (p *waterBomb) AtDelete() {
 		p.Arg.RemoveObject(p.ID)
 	}
 }
+
+func (p *waterBomb) StopByOwner() {
+	if p.count < 5 {
+		anim.Delete(p.ID)
+	}
+}
