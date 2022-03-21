@@ -63,7 +63,6 @@ type act struct {
 	pPos      *common.Point
 }
 
-// BattlePlayer ...
 type BattlePlayer struct {
 	ID            string
 	Pos           common.Point
