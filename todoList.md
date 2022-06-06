@@ -1,5 +1,18 @@
 # TODO List
 
+## リファクタリング
+
+netbattleのskillをbattleのやつを流用したい
+
+### TODO
+
+- 暗転系チップの暗転処理
+- パネル変化形のチップ
+- SEのon
+- netbattle/playerの理想
+  - battle/playerを中に持つ
+  - 必要に応じて拡張
+
 ## v0.9でやりたいこと
 
 - フレイムラインのSE

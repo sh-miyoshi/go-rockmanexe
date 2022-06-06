@@ -7,7 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -30,6 +30,15 @@ func netBattleNew() (*menuNetBattle, error) {
 		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
 	}
 
+	c := config.Get()
+	netconn.Init(netconn.Config{
+		StreamAddr:     c.Net.StreamAddr,
+		ClientID:       c.Net.ClientID,
+		ClientKey:      c.Net.ClientKey,
+		ProgramVersion: common.ProgramVersion,
+		Insecure:       c.Net.Insecure,
+	})
+
 	return res, nil
 }
 
@@ -40,34 +49,28 @@ func (m *menuNetBattle) End() {
 func (m *menuNetBattle) Process() bool {
 	if !m.isConnect {
 		m.isConnect = true
-		c := config.Get()
-		netconn.Connect(netconn.Config{
-			StreamAddr:     c.Net.StreamAddr,
-			ClientID:       c.Net.ClientID,
-			ClientKey:      c.Net.ClientKey,
-			ProgramVersion: common.ProgramVersion,
-			Insecure:       c.Net.Insecure,
-		})
+
+		netconn.GetInst().ConnectRequest()
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		// Data init for next access
-		netconn.Disconnect()
+		netconn.GetInst().Disconnect()
 		m.isConnect = false
 		m.messages = []string{"通信待機中です・・・"}
 
 		stateChange(stateTop)
 	}
 
-	if err := netconn.GetConnectStatus(); err != nil {
-		if err == netconn.ErrConnected {
-			return true
-		} else {
-			logger.Error("Failed to connect server: %v", err)
-			m.messages = []string{
-				"サーバーへの接続に失敗しました。",
-				"設定を見直してください。",
-			}
+	status := netconn.GetInst().GetConnStatus()
+	if status.Status == netconn.ConnStateOK {
+		return true
+	}
+	if status.Status == netconn.ConnStateError {
+		logger.Error("Failed to connect server: %v", status.Error)
+		m.messages = []string{
+			"サーバーへの接続に失敗しました。",
+			"設定を見直してください。",
 		}
 	}
 
