@@ -34,7 +34,7 @@ func NewWithBoss(enemyList []enemy.EnemyParam) (*Boss, error) {
 		res.enemyImages = append(res.enemyImages, dxlib.LoadGraph(fname))
 	}
 
-	res.playerImage = dxlib.LoadGraph(common.ImagePath + "battle/character/ロックマン.png")
+	res.playerImage = dxlib.LoadGraph(common.ImagePath + "battle/character/ロックマン_player_side.png")
 	if res.playerImage == -1 {
 		return nil, fmt.Errorf("failed to load player image")
 	}

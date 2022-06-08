@@ -6,6 +6,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -27,10 +29,11 @@ const (
 )
 
 type NetBattle struct {
-	conn       *netconn.NetConn
-	gameCount  int
-	state      int
-	stateCount int
+	conn        *netconn.NetConn
+	gameCount   int
+	state       int
+	stateCount  int
+	openingInst opening.Opening
 }
 
 var (
@@ -49,6 +52,13 @@ func Init(plyr *player.Player) error {
 		state:      stateWaiting,
 		stateCount: 0,
 	}
+	var err error
+	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
+		{CharID: enemy.IDRockman, Pos: common.Point{X: 4, Y: 1}},
+	})
+	if err != nil {
+		return err
+	}
 
 	sound.BGMStop()
 	return nil
@@ -56,6 +66,9 @@ func Init(plyr *player.Player) error {
 
 func End() {
 	inst.conn.Disconnect()
+	if inst.openingInst != nil {
+		inst.openingInst.End()
+	}
 }
 
 func Process() error {
@@ -73,9 +86,12 @@ func Process() error {
 			return nil
 		}
 	case stateOpening:
-		if inst.stateCount == 0 {
-
+		if inst.openingInst.Process() {
+			stateChange(stateChipSelect)
+			return nil
 		}
+	case stateChipSelect:
+		// TODO
 	}
 	// TODO
 
@@ -91,6 +107,9 @@ func Draw() {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
+		inst.openingInst.Draw()
+	case stateChipSelect:
+		// TODO
 	}
 }
 
