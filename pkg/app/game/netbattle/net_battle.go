@@ -27,9 +27,10 @@ const (
 )
 
 type NetBattle struct {
-	conn      *netconn.NetConn
-	gameCount int
-	state     int
+	conn       *netconn.NetConn
+	gameCount  int
+	state      int
+	stateCount int
 }
 
 var (
@@ -43,9 +44,10 @@ var (
 func Init(plyr *player.Player) error {
 	logger.Info("Init net battle data ...")
 	inst = NetBattle{
-		conn:      netconn.GetInst(),
-		gameCount: 0,
-		state:     stateWaiting,
+		conn:       netconn.GetInst(),
+		gameCount:  0,
+		state:      stateWaiting,
+		stateCount: 0,
 	}
 
 	sound.BGMStop()
@@ -71,10 +73,13 @@ func Process() error {
 			return nil
 		}
 	case stateOpening:
-		panic("test")
+		if inst.stateCount == 0 {
+
+		}
 	}
 	// TODO
 
+	inst.stateCount++
 	return nil
 }
 
@@ -85,6 +90,7 @@ func Draw() {
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
+	case stateOpening:
 	}
 }
 
@@ -94,4 +100,5 @@ func stateChange(nextState int) {
 		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	inst.state = nextState
+	inst.stateCount = 0
 }
