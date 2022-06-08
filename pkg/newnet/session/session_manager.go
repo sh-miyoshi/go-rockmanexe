@@ -21,6 +21,11 @@ const (
 	sessionExpireTime = 30 * time.Minute
 )
 
+type sessionError struct {
+	generatorClientID string
+	reason            error
+}
+
 type clientInfo struct {
 	clientID   string
 	dataStream pb.NetConn_TransDataServer
@@ -33,6 +38,7 @@ type session struct {
 	status    int
 	expiresAt time.Time
 	cancel    chan struct{}
+	exitErr   chan sessionError
 }
 
 type SessionManager struct {
@@ -55,7 +61,6 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 					clientID:   clientID,
 					dataStream: stream,
 				}
-				s.start()
 				logger.Info("set new client %s to session %s", clientID, sessionID)
 				return nil
 			}
@@ -74,7 +79,9 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 			info:    &GameInfo{},
 			status:  statusConnectWait,
 			cancel:  make(chan struct{}),
+			exitErr: make(chan sessionError),
 		}
+		inst.sessions[sessionID].start()
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}
 	return nil
@@ -90,10 +97,22 @@ func GetGameInfo(sessionID string) *GameInfo {
 }
 
 func (s *session) start() {
-	s.status = statusChipSelectWait
 	s.expiresAt = time.Now().Add(sessionExpireTime)
+	go s.errorHandler()
 	go s.frameProc()
 	go s.gameInfoPublish()
+}
+
+func (s *session) errorHandler() {
+	err := <-s.exitErr
+	// TODO publish to clients
+
+	close(s.cancel)
+	delete(inst.sessions, s.id)
+
+	if err.reason != nil {
+		logger.Error("Got error in session %s: %+v", s.id, err)
+	}
 }
 
 func (s *session) frameProc() {
@@ -121,8 +140,14 @@ func (s *session) gameInfoPublish() {
 
 			// check session expires
 			if s.expiresAt.Before(now) {
-				// TODO publish to clients
-				s.cancel <- struct{}{}
+				s.exitErr <- sessionError{
+					reason: fmt.Errorf("session expired"),
+				}
+				return
+			}
+
+			if err := s.updateGameStatus(); err != nil {
+				s.exitErr <- *err
 				return
 			}
 
@@ -132,4 +157,51 @@ func (s *session) gameInfoPublish() {
 			time.Sleep(publishInterval - time.Duration(after-before))
 		}
 	}
+}
+
+func (s *session) updateGameStatus() *sessionError {
+	switch s.status {
+	case statusConnectWait:
+		for _, c := range s.clients {
+			if c.clientID == "" {
+				return nil
+			}
+		}
+
+		if err := s.sendStatusToClients(pb.Data_CHIPSELECTWAIT); err != nil {
+			return err
+		}
+		s.changeStatus(statusChipSelectWait)
+	case statusChipSelectWait:
+		// TODO
+	case statusActing:
+		// TODO
+	case statusGameEnd:
+		// TODO
+	}
+
+	return nil
+}
+
+func (s *session) changeStatus(next int) {
+	logger.Info("Change state from %d to %d", s.status, next)
+	s.status = next
+}
+
+func (s *session) sendStatusToClients(st pb.Data_Status) *sessionError {
+	for _, c := range s.clients {
+		err := c.dataStream.Send(&pb.Data{
+			Type: pb.Data_UPDATESTATUS,
+			Data: &pb.Data_Status_{
+				Status: st,
+			},
+		})
+		if err != nil {
+			return &sessionError{
+				generatorClientID: c.clientID,
+				reason:            fmt.Errorf("failed to send status to client %s: %v", c.clientID, err),
+			}
+		}
+	}
+	return nil
 }

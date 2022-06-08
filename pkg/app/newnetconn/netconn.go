@@ -36,6 +36,8 @@ type NetConn struct {
 	conn          *grpc.ClientConn
 	dataStream    pb.NetConn_TransDataClient
 	connectStatus ConnectStatus
+
+	gameStatus pb.Data_Status
 }
 
 var (
@@ -86,6 +88,10 @@ func (n *NetConn) Disconnect() {
 	}
 }
 
+func (n *NetConn) GetGameStatus() pb.Data_Status {
+	return n.gameStatus
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -132,7 +138,7 @@ func (n *NetConn) dataRecv() {
 		switch data.Type {
 		case pb.Data_UPDATESTATUS:
 			logger.Debug("got status update data: %+v", data)
-			// TODO
+			n.gameStatus = data.GetStatus()
 		case pb.Data_DATA:
 			// TODO
 		default:
