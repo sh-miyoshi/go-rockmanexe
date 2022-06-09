@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -37,6 +38,7 @@ type NetBattle struct {
 	stateCount  int
 	openingInst opening.Opening
 	playerInst  *battleplayer.BattlePlayer
+	fieldInst   *field.Field
 }
 
 var (
@@ -66,6 +68,10 @@ func Init(plyr *player.Player) error {
 	if err != nil {
 		return err
 	}
+	inst.fieldInst, err = field.New()
+	if err != nil {
+		return err
+	}
 
 	sound.BGMStop()
 	return nil
@@ -76,10 +82,14 @@ func End() {
 	if inst.openingInst != nil {
 		inst.openingInst.End()
 	}
+	if inst.fieldInst != nil {
+		inst.fieldInst.End()
+	}
 }
 
 func Process() error {
 	inst.gameCount++
+	inst.fieldInst.Update()
 
 	switch inst.state {
 	case stateWaiting:
@@ -118,6 +128,8 @@ func Process() error {
 }
 
 func Draw() {
+	inst.fieldInst.Draw()
+
 	switch inst.state {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)

@@ -49,7 +49,7 @@ var (
 	imgPanel      [panelStatusMax][panelTypeMax]int
 	blackoutCount = 0
 	panels        [][]PanelInfo
-	bgInst        background
+	bgInst        Background
 )
 
 // Init ...
@@ -95,7 +95,7 @@ func Init() error {
 	}
 
 	// TODO: Map情報から取得する
-	if err := bgInst.Init(bgType秋原町); err != nil {
+	if err := bgInst.Init(BGType秋原町); err != nil {
 		return fmt.Errorf("failed to load background: %w", err)
 	}
 
