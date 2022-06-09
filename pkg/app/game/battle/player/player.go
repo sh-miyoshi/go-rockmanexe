@@ -30,27 +30,6 @@ const (
 	NextActLose
 )
 
-const (
-	MindStatusFullSync int = iota
-	MindStatusAnger
-	MindStatusNormal
-	MindStatusFear
-	MindStatusDark
-	MindStatusRollSoul
-	MindStatusAquaSoul
-	MindStatusWoodSoul
-	MindStatusJunkSoul
-	MindStatusBluesSoul
-	MindStatusMetalSoul
-	MindStatusGutsSoul
-	MindStatusSearchSoul
-	MindStatusNumberSoul
-	MindStatusFireSoul
-	MindStatusWindSoul
-	MindStatusThunderSoul
-	mindStatusMax
-)
-
 type act struct {
 	MoveDirect int
 	Charged    bool
@@ -107,7 +86,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		Pos:        common.Point{X: 1, Y: 1},
 		ShotPower:  plyr.ShotPower,
 		EnableAct:  true,
-		MindStatus: MindStatusNormal, // TODO playerにstatusを持つ
+		MindStatus: battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
 		visible:    true,
 	}
 	res.act.typ = -1
@@ -224,7 +203,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 
 	fname = common.ImagePath + "battle/mind_status.png"
 	imgMinds = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, mindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 

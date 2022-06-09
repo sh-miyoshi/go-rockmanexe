@@ -20,3 +20,25 @@ const (
 
 	PlayerActMax
 )
+
+const (
+	PlayerMindStatusFullSync int = iota
+	PlayerMindStatusAnger
+	PlayerMindStatusNormal
+	PlayerMindStatusFear
+	PlayerMindStatusDark
+	PlayerMindStatusRollSoul
+	PlayerMindStatusAquaSoul
+	PlayerMindStatusWoodSoul
+	PlayerMindStatusJunkSoul
+	PlayerMindStatusBluesSoul
+	PlayerMindStatusMetalSoul
+	PlayerMindStatusGutsSoul
+	PlayerMindStatusSearchSoul
+	PlayerMindStatusNumberSoul
+	PlayerMindStatusFireSoul
+	PlayerMindStatusWindSoul
+	PlayerMindStatusThunderSoul
+
+	PlayerMindStatusMax
+)

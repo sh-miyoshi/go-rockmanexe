@@ -6,8 +6,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
+	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -34,6 +36,7 @@ type NetBattle struct {
 	state       int
 	stateCount  int
 	openingInst opening.Opening
+	playerInst  *battleplayer.BattlePlayer
 }
 
 var (
@@ -56,6 +59,10 @@ func Init(plyr *player.Player) error {
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
 		{CharID: enemy.IDRockman, Pos: common.Point{X: 4, Y: 1}},
 	})
+	if err != nil {
+		return err
+	}
+	inst.playerInst, err = battleplayer.New(plyr)
 	if err != nil {
 		return err
 	}
@@ -91,7 +98,18 @@ func Process() error {
 			return nil
 		}
 	case stateChipSelect:
-		// TODO
+		if inst.stateCount == 0 {
+			if err := chipsel.Init(inst.playerInst.ChipFolder); err != nil {
+				return fmt.Errorf("failed to initialize chip select: %w", err)
+			}
+		}
+		if chipsel.Process() {
+			// set selected chips
+			// TODO
+			stateChange(stateWaitSelect)
+			return nil
+		}
+	case stateWaitSelect:
 	}
 	// TODO
 
@@ -109,7 +127,8 @@ func Draw() {
 	case stateOpening:
 		inst.openingInst.Draw()
 	case stateChipSelect:
-		// TODO
+		inst.playerInst.DrawFrame(true, false)
+		chipsel.Draw()
 	}
 }
 
