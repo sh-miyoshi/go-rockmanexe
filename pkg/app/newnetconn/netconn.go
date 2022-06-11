@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -38,6 +39,7 @@ type NetConn struct {
 	connectStatus ConnectStatus
 
 	gameStatus pb.Data_Status
+	gameInfo   session.GameInfo
 }
 
 var (
@@ -92,6 +94,10 @@ func (n *NetConn) GetGameStatus() pb.Data_Status {
 	return n.gameStatus
 }
 
+func (n *NetConn) GetGameInfo() session.GameInfo {
+	return n.gameInfo
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -140,7 +146,9 @@ func (n *NetConn) dataRecv() {
 			logger.Debug("got status update data: %+v", data)
 			n.gameStatus = data.GetStatus()
 		case pb.Data_DATA:
-			// TODO
+			// TODO lock
+			b := data.GetRawData()
+			n.gameInfo.Unmarshal(b)
 		default:
 			n.connectStatus = ConnectStatus{
 				Status: ConnStateError,

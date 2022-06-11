@@ -34,7 +34,7 @@ const (
 	PanelStatusCrack
 	PanelStatusHole
 
-	panelStatusMax
+	PanelStatusMax
 )
 
 type PanelInfo struct {
@@ -46,7 +46,7 @@ type PanelInfo struct {
 }
 
 var (
-	imgPanel      [panelStatusMax][panelTypeMax]int
+	imgPanel      [PanelStatusMax][panelTypeMax]int
 	blackoutCount = 0
 	panels        [][]PanelInfo
 	bgInst        Background
@@ -62,15 +62,15 @@ func Init() error {
 	}
 
 	// Initialize images
-	files := [panelStatusMax]string{"normal", "crack", "hole"}
-	for i := 0; i < panelStatusMax; i++ {
+	files := [PanelStatusMax]string{"normal", "crack", "hole"}
+	for i := 0; i < PanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
 		imgPanel[i][PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][PanelTypePlayer] < 0 {
 			return fmt.Errorf("failed to read player panel image %s", fname)
 		}
 	}
-	for i := 0; i < panelStatusMax; i++ {
+	for i := 0; i < PanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
 		imgPanel[i][PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][PanelTypeEnemy] < 0 {
@@ -106,7 +106,7 @@ func Init() error {
 // End ...
 func End() {
 	logger.Info("Cleanup battle field data")
-	for i := 0; i < panelStatusMax; i++ {
+	for i := 0; i < PanelStatusMax; i++ {
 		for j := 0; j < panelTypeMax; j++ {
 			dxlib.DeleteGraph(imgPanel[i][j])
 			imgPanel[i][j] = -1

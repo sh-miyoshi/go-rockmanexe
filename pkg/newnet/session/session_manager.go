@@ -76,11 +76,12 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		inst.sessions[sessionID] = &session{
 			id:      sessionID,
 			clients: [2]clientInfo{c},
-			info:    &GameInfo{},
+			info:    NewGameInfo(),
 			status:  statusConnectWait,
 			cancel:  make(chan struct{}),
 			exitErr: make(chan sessionError),
 		}
+
 		inst.sessions[sessionID].start()
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}
@@ -151,7 +152,27 @@ func (s *session) gameInfoPublish() {
 				return
 			}
 
-			// TODO publish to clients
+			// publish game info to clients
+			gameInfoBin := s.info.Marshal()
+			for _, c := range s.clients {
+				if c.dataStream == nil {
+					continue
+				}
+
+				err := c.dataStream.Send(&pb.Data{
+					Type: pb.Data_DATA,
+					Data: &pb.Data_RawData{
+						RawData: gameInfoBin,
+					},
+				})
+				if err != nil {
+					s.exitErr <- sessionError{
+						generatorClientID: c.clientID,
+						reason:            fmt.Errorf("failed to send game info: %v", err),
+					}
+					return
+				}
+			}
 
 			after := time.Now().UnixNano() / (1000 * 1000)
 			time.Sleep(publishInterval - time.Duration(after-before))
@@ -190,6 +211,10 @@ func (s *session) changeStatus(next int) {
 
 func (s *session) sendStatusToClients(st pb.Data_Status) *sessionError {
 	for _, c := range s.clients {
+		if c.dataStream == nil {
+			continue
+		}
+
 		err := c.dataStream.Send(&pb.Data{
 			Type: pb.Data_UPDATESTATUS,
 			Data: &pb.Data_Status_{
