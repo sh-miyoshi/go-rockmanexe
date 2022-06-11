@@ -27,6 +27,7 @@ type sessionError struct {
 }
 
 type clientInfo struct {
+	chipSent   bool
 	clientID   string
 	dataStream pb.NetConn_TransDataServer
 }
@@ -58,6 +59,7 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		for i, c := range s.clients {
 			if c.clientID == "" {
 				s.clients[i] = clientInfo{
+					chipSent:   false,
 					clientID:   clientID,
 					dataStream: stream,
 				}
@@ -70,6 +72,7 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		}
 	} else {
 		c := clientInfo{
+			chipSent:   false,
 			clientID:   clientID,
 			dataStream: stream,
 		}
@@ -95,6 +98,29 @@ func GetGameInfo(sessionID string) *GameInfo {
 	}
 
 	return s.info
+}
+
+func SendSignal(sessionID string, clientID string, signal pb.Action_SignalType) error {
+	s, ok := inst.sessions[sessionID]
+	if !ok {
+		return fmt.Errorf("no such session %s", sessionID)
+	}
+
+	for i, c := range s.clients {
+		if c.clientID == clientID {
+			switch signal {
+			case pb.Action_CHIPSEND:
+				s.clients[i].chipSent = true
+			case pb.Action_GOCHIPSELECT:
+				// TODO
+			case pb.Action_PLAYERDEAD:
+				// TODO
+			}
+			return nil
+		}
+	}
+
+	return fmt.Errorf("no such client %s in session %s", clientID, sessionID)
 }
 
 func (s *session) start() {
@@ -194,7 +220,19 @@ func (s *session) updateGameStatus() *sessionError {
 		}
 		s.changeStatus(statusChipSelectWait)
 	case statusChipSelectWait:
-		// TODO
+		for _, c := range s.clients {
+			if !c.chipSent {
+				return nil
+			}
+		}
+
+		if err := s.sendStatusToClients(pb.Data_ACTING); err != nil {
+			return err
+		}
+		for i := range s.clients {
+			s.clients[i].chipSent = false
+		}
+		s.changeStatus(statusActing)
 	case statusActing:
 		// TODO
 	case statusGameEnd:

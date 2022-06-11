@@ -4,6 +4,10 @@
 
 netbattleのskillをbattleのやつを流用したい
 
+フルシンクロになってる
+パネルが全部自分色
+opening飛ばしたい
+
 ### TODO
 
 - 暗転系チップの暗転処理

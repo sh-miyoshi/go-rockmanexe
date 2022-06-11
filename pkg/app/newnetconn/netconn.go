@@ -37,6 +37,7 @@ type NetConn struct {
 	conn          *grpc.ClientConn
 	dataStream    pb.NetConn_TransDataClient
 	connectStatus ConnectStatus
+	sessionID     string
 
 	gameStatus pb.Data_Status
 	gameInfo   session.GameInfo
@@ -98,6 +99,15 @@ func (n *NetConn) GetGameInfo() session.GameInfo {
 	return n.gameInfo
 }
 
+func (n *NetConn) SendSignal(signal pb.Action_SignalType) error {
+	return n.dataStream.Send(&pb.Action{
+		SessionID: n.sessionID,
+		ClientID:  n.config.ClientID,
+		Type:      pb.Action_SENDSIGNAL,
+		Data:      &pb.Action_Signal{Signal: signal},
+	})
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -125,6 +135,7 @@ func (n *NetConn) connect() error {
 	if !authRes.Success {
 		return fmt.Errorf("failed to authenticate client: %s", authRes.ErrMsg)
 	}
+	n.sessionID = authRes.SessionID
 
 	return nil
 }

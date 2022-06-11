@@ -115,7 +115,12 @@ func Process() error {
 		}
 		if chipsel.Process() {
 			// set selected chips
+			inst.playerInst.SetChipSelectResult(chipsel.GetSelected())
 			// TODO
+			// inst.conn.SendObject(playerInst.Object)
+			if err := inst.conn.SendSignal(pb.Action_CHIPSEND); err != nil {
+				return fmt.Errorf("failed to send Action_CHIPSEND signal: %v", err)
+			}
 			stateChange(stateWaitSelect)
 			return nil
 		}

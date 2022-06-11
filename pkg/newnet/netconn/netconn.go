@@ -57,12 +57,7 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		case pb.Action_ADDEFFECT:
 			g.AddEffect()
 		case pb.Action_SENDSIGNAL:
-			// TODO
-			switch action.GetSignal() {
-			case pb.Action_CHIPSEND:
-			case pb.Action_GOCHIPSELECT:
-			case pb.Action_PLAYERDEAD:
-			}
+			session.SendSignal(sessionID, action.GetClientID(), action.GetSignal())
 		default:
 			return fmt.Errorf("invalid action type: %v", action.GetType())
 		}
