@@ -73,6 +73,7 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
+	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
 	return nil
 }
@@ -116,8 +117,7 @@ func Process() error {
 		if chipsel.Process() {
 			// set selected chips
 			inst.playerInst.SetChipSelectResult(chipsel.GetSelected())
-			// TODO
-			// inst.conn.SendObject(playerInst.Object)
+			inst.conn.SendObject(inst.playerInst.Object)
 			if err := inst.conn.SendSignal(pb.Action_CHIPSEND); err != nil {
 				return fmt.Errorf("failed to send Action_CHIPSEND signal: %v", err)
 			}
@@ -135,6 +135,10 @@ func Process() error {
 	case stateResult:
 	}
 	// TODO
+
+	if err := inst.conn.BulkSendData(); err != nil {
+		return fmt.Errorf("failed to bulk send data: %w", err)
+	}
 
 	inst.stateCount++
 	return nil

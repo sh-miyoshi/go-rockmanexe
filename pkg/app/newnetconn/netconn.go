@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -32,6 +33,10 @@ type ConnectStatus struct {
 	Error  error
 }
 
+type sendObject struct {
+	objects map[string]object.Object
+}
+
 type NetConn struct {
 	config        Config
 	conn          *grpc.ClientConn
@@ -41,6 +46,7 @@ type NetConn struct {
 
 	gameStatus pb.Data_Status
 	gameInfo   session.GameInfo
+	sendInfo   sendObject
 }
 
 var (
@@ -53,7 +59,9 @@ func Init(conf Config) {
 		Status: ConnStateWaiting,
 		Error:  nil,
 	}
-	// TODO init conn, dataStream
+	inst.sendInfo = sendObject{
+		objects: make(map[string]object.Object),
+	}
 }
 
 func GetInst() *NetConn {
@@ -106,6 +114,34 @@ func (n *NetConn) SendSignal(signal pb.Action_SignalType) error {
 		Type:      pb.Action_SENDSIGNAL,
 		Data:      &pb.Action_Signal{Signal: signal},
 	})
+}
+
+func (n *NetConn) SendObject(obj object.Object) {
+	obj.ClientID = n.config.ClientID
+	n.sendInfo.objects[obj.ID] = obj
+}
+
+func (n *NetConn) BulkSendData() error {
+	// TODO 一度の通信で送る
+
+	// Send objects
+	for _, obj := range n.sendInfo.objects {
+		req := &pb.Action{
+			SessionID: n.sessionID,
+			ClientID:  n.config.ClientID,
+			Type:      pb.Action_UPDATEOBJECT,
+			Data: &pb.Action_ObjectInfo{
+				ObjectInfo: object.Marshal(obj),
+			},
+		}
+
+		if err := n.dataStream.Send(req); err != nil {
+			return fmt.Errorf("send object failed: %w", err)
+		}
+	}
+
+	n.sendInfo.Init()
+	return nil
 }
 
 func (n *NetConn) connect() error {
@@ -195,4 +231,8 @@ func makeAuthReq(id, key, version string) *pb.Action {
 			},
 		},
 	}
+}
+
+func (o *sendObject) Init() {
+	o.objects = make(map[string]object.Object)
 }

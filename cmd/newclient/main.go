@@ -28,6 +28,7 @@ func main() {
 	}
 
 	logger.InitLogger(true, logfile)
+	app.Init(clientID)
 
 	clientKey := "testtest"
 	netconn.Init(netconn.Config{

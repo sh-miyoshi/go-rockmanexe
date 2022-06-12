@@ -1,6 +1,7 @@
 package app
 
 import (
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -23,6 +24,8 @@ func Init(clientID string) {
 }
 
 func Process() error {
+	// set init data to router
+	netconn.GetInst().SendObject(playerInst.Object)
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
@@ -42,6 +45,10 @@ func Process() error {
 		case statusActing:
 		case statusGameEnd:
 			// TODO
+		}
+
+		if err := netconn.GetInst().BulkSendData(); err != nil {
+			return err
 		}
 
 		fpsMgr.Wait()

@@ -40,7 +40,7 @@ func (p *player) ChipSelect() error {
 	p.Object.Chips = []int{1, 3} // debug
 
 	// Finished chip select, so send action
-	// netconn.SendObject(p.Object) // TODO
+	netconn.GetInst().SendObject(p.Object)
 
 	if err := netconn.GetInst().SendSignal(pb.Action_CHIPSEND); err != nil {
 		return fmt.Errorf("failed to get data stream: %w", err)
