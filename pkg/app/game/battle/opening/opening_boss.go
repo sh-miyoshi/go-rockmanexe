@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -50,6 +51,10 @@ func (b *Boss) End() {
 }
 
 func (b *Boss) Process() bool {
+	if config.Get().Debug.SkipBattleOpening {
+		return true
+	}
+
 	b.count++
 
 	return b.count > 70
