@@ -55,5 +55,7 @@ func main() {
 
 	logger.Info("Success to connect router")
 
-	app.Process()
+	if err := app.Process(); err != nil {
+		logger.Error("Failed to run app: %v", err)
+	}
 }

@@ -14,10 +14,15 @@ const (
 )
 
 var (
-	appStatus = statusWaiting
+	appStatus  = statusWaiting
+	playerInst *player
 )
 
-func Process() {
+func Init(clientID string) {
+	playerInst = newPlayer(clientID)
+}
+
+func Process() error {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
@@ -27,7 +32,9 @@ func Process() {
 			// nothing to do
 		case statusChipSelect:
 			// Select using chip
-			// todo
+			if err := playerInst.ChipSelect(); err != nil {
+				return err
+			}
 
 			statusChange(statusWaitActing)
 		case statusWaitActing:

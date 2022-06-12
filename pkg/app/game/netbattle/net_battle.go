@@ -125,6 +125,14 @@ func Process() error {
 			return nil
 		}
 	case stateWaitSelect:
+		status := inst.conn.GetGameStatus()
+		if status == pb.Data_ACTING {
+			stateChange(stateBeforeMain)
+			return nil
+		}
+	case stateBeforeMain:
+	case stateMain:
+	case stateResult:
 	}
 	// TODO
 
