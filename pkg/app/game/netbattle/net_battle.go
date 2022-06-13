@@ -5,10 +5,11 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
@@ -39,6 +40,7 @@ type NetBattle struct {
 	openingInst opening.Opening
 	playerInst  *battleplayer.BattlePlayer
 	fieldInst   *field.Field
+	drawMgr     *draw.DrawManager
 }
 
 var (
@@ -73,6 +75,11 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
+	inst.drawMgr, err = draw.New(inst.playerInst.Object.ID)
+	if err != nil {
+		return err
+	}
+
 	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
 	return nil
@@ -85,6 +92,9 @@ func End() {
 	}
 	if inst.fieldInst != nil {
 		inst.fieldInst.End()
+	}
+	if inst.drawMgr != nil {
+		inst.drawMgr.End()
 	}
 }
 
@@ -146,13 +156,14 @@ func Process() error {
 
 func Draw() {
 	inst.fieldInst.Draw()
+	inst.drawMgr.DrawObjects()
 
 	switch inst.state {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
+		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
 		inst.openingInst.Draw()
 	case stateChipSelect:
