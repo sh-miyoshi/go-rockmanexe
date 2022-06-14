@@ -63,6 +63,9 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 					clientID:   clientID,
 					dataStream: stream,
 				}
+				if err := s.info.SetClient(clientID); err != nil {
+					return err
+				}
 				logger.Info("set new client %s to session %s", clientID, sessionID)
 				return nil
 			}
@@ -86,6 +89,9 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		}
 
 		inst.sessions[sessionID].start()
+		if err := inst.sessions[sessionID].info.SetClient(clientID); err != nil {
+			return err
+		}
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}
 	return nil

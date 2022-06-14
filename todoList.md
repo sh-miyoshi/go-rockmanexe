@@ -4,7 +4,6 @@
 
 netbattleのskillをbattleのやつを流用したい
 
-フルシンクロになってる
 パネルが全部自分色
 
 ### TODO
