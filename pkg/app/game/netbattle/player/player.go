@@ -21,7 +21,6 @@ type BattlePlayer struct {
 	Object     object.Object
 	ChipFolder []player.ChipInfo
 	GaugeCount uint
-	MindStatus int
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -112,7 +111,7 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show Mind Status
 	dxlib.DrawGraph(x, 40, p.imgMindFrame, true)
-	dxlib.DrawGraph(x, 40, p.imgMinds[p.MindStatus], true)
+	dxlib.DrawGraph(x, 40, p.imgMinds[battlecommon.PlayerMindStatusNormal], true) // TODO set mind status
 
 	// Show Custom Gauge
 	if showGauge {
