@@ -3,6 +3,7 @@ package session
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
@@ -35,6 +36,21 @@ func NewGameInfo() *GameInfo {
 	}
 
 	return res
+}
+
+func (g *GameInfo) SetClient(clientID string) error {
+	for i := 0; i < config.FieldNumX; i += 3 {
+		if g.Panels[i][0].OwnerClientID == "" {
+			for x := 0; x < 3; x++ {
+				for y := 0; y < config.FieldNumY; y++ {
+					g.Panels[i+x][y].OwnerClientID = clientID
+				}
+			}
+			return nil
+		}
+	}
+
+	return fmt.Errorf("all panels are already initialized")
 }
 
 func (g *GameInfo) UpdateObject(obj object.Object) {
