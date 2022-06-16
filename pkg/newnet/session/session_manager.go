@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 const (
@@ -29,13 +30,13 @@ type sessionError struct {
 type clientInfo struct {
 	chipSent   bool
 	clientID   string
+	gameInfo   *GameInfo
 	dataStream pb.NetConn_TransDataServer
 }
 
-type session struct {
+type Session struct {
 	id        string
 	clients   [2]clientInfo
-	info      *GameInfo
 	status    int
 	expiresAt time.Time
 	cancel    chan struct{}
@@ -43,12 +44,12 @@ type session struct {
 }
 
 type SessionManager struct {
-	sessions map[string]*session
+	sessions map[string]*Session
 }
 
 var (
 	inst = &SessionManager{
-		sessions: make(map[string]*session),
+		sessions: make(map[string]*Session),
 	}
 )
 
@@ -58,14 +59,8 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		// check exists
 		for i, c := range s.clients {
 			if c.clientID == "" {
-				s.clients[i] = clientInfo{
-					chipSent:   false,
-					clientID:   clientID,
-					dataStream: stream,
-				}
-				if err := s.info.SetClient(clientID); err != nil {
-					return err
-				}
+				s.clients[i].clientID = clientID
+				s.clients[i].dataStream = stream
 				logger.Info("set new client %s to session %s", clientID, sessionID)
 				return nil
 			}
@@ -74,44 +69,73 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 			}
 		}
 	} else {
-		c := clientInfo{
-			chipSent:   false,
-			clientID:   clientID,
-			dataStream: stream,
-		}
-		inst.sessions[sessionID] = &session{
-			id:      sessionID,
-			clients: [2]clientInfo{c},
-			info:    NewGameInfo(),
+		inst.sessions[sessionID] = &Session{
+			id: sessionID,
+			clients: [2]clientInfo{
+				{
+					chipSent:   false,
+					clientID:   clientID,
+					gameInfo:   NewGameInfo(),
+					dataStream: stream,
+				},
+				{
+					chipSent:   false,
+					clientID:   "",
+					gameInfo:   NewGameInfo(),
+					dataStream: nil,
+				},
+			},
 			status:  statusConnectWait,
 			cancel:  make(chan struct{}),
 			exitErr: make(chan sessionError),
 		}
 
 		inst.sessions[sessionID].start()
-		if err := inst.sessions[sessionID].info.SetClient(clientID); err != nil {
-			return err
-		}
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}
 	return nil
 }
 
-func GetGameInfo(sessionID string) *GameInfo {
+func GetSession(sessionID string) *Session {
 	s, ok := inst.sessions[sessionID]
 	if !ok {
 		return nil
 	}
-
-	return s.info
+	return s
 }
 
-func SendSignal(sessionID string, clientID string, signal pb.Action_SignalType) error {
-	s, ok := inst.sessions[sessionID]
-	if !ok {
-		return fmt.Errorf("no such session %s", sessionID)
+func (s *Session) UpdateObject(obj object.Object) {
+	for i, c := range s.clients {
+		isMyObj := c.clientID == obj.ClientID
+		s.clients[i].gameInfo.UpdateObject(obj, isMyObj)
 	}
+}
 
+func (s *Session) RemoveObject(id string) {
+	for i := range s.clients {
+		s.clients[i].gameInfo.RemoveObject(id)
+	}
+}
+
+func (s *Session) AddSkill() {
+	for i := range s.clients {
+		s.clients[i].gameInfo.AddSkill()
+	}
+}
+
+func (s *Session) AddDamage() {
+	for i := range s.clients {
+		s.clients[i].gameInfo.AddDamage()
+	}
+}
+
+func (s *Session) AddEffect() {
+	for i := range s.clients {
+		s.clients[i].gameInfo.AddEffect()
+	}
+}
+
+func (s *Session) SendSignal(clientID string, signal pb.Action_SignalType) error {
 	for i, c := range s.clients {
 		if c.clientID == clientID {
 			switch signal {
@@ -126,17 +150,17 @@ func SendSignal(sessionID string, clientID string, signal pb.Action_SignalType) 
 		}
 	}
 
-	return fmt.Errorf("no such client %s in session %s", clientID, sessionID)
+	return fmt.Errorf("no such client %s", clientID)
 }
 
-func (s *session) start() {
+func (s *Session) start() {
 	s.expiresAt = time.Now().Add(sessionExpireTime)
 	go s.errorHandler()
 	go s.frameProc()
 	go s.gameInfoPublish()
 }
 
-func (s *session) errorHandler() {
+func (s *Session) errorHandler() {
 	err := <-s.exitErr
 	// TODO publish to clients
 
@@ -148,7 +172,7 @@ func (s *session) errorHandler() {
 	}
 }
 
-func (s *session) frameProc() {
+func (s *Session) frameProc() {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 	for {
 		select {
@@ -162,7 +186,7 @@ func (s *session) frameProc() {
 	}
 }
 
-func (s *session) gameInfoPublish() {
+func (s *Session) gameInfoPublish() {
 	for {
 		select {
 		case <-s.cancel:
@@ -185,12 +209,11 @@ func (s *session) gameInfoPublish() {
 			}
 
 			// publish game info to clients
-			gameInfoBin := s.info.Marshal()
 			for _, c := range s.clients {
 				if c.dataStream == nil {
 					continue
 				}
-
+				gameInfoBin := c.gameInfo.Marshal()
 				err := c.dataStream.Send(&pb.Data{
 					Type: pb.Data_DATA,
 					Data: &pb.Data_RawData{
@@ -212,7 +235,7 @@ func (s *session) gameInfoPublish() {
 	}
 }
 
-func (s *session) updateGameStatus() *sessionError {
+func (s *Session) updateGameStatus() *sessionError {
 	switch s.status {
 	case statusConnectWait:
 		for _, c := range s.clients {
@@ -220,6 +243,10 @@ func (s *session) updateGameStatus() *sessionError {
 				return nil
 			}
 		}
+
+		// Initialize panel info
+		s.clients[0].gameInfo.InitPanel(s.clients[0].clientID, s.clients[1].clientID)
+		s.clients[1].gameInfo.InitPanel(s.clients[1].clientID, s.clients[0].clientID)
 
 		if err := s.sendStatusToClients(pb.Data_CHIPSELECTWAIT); err != nil {
 			return err
@@ -248,12 +275,12 @@ func (s *session) updateGameStatus() *sessionError {
 	return nil
 }
 
-func (s *session) changeStatus(next int) {
+func (s *Session) changeStatus(next int) {
 	logger.Info("Change state from %d to %d", s.status, next)
 	s.status = next
 }
 
-func (s *session) sendStatusToClients(st pb.Data_Status) *sessionError {
+func (s *Session) sendStatusToClients(st pb.Data_Status) *sessionError {
 	for _, c := range s.clients {
 		if c.dataStream == nil {
 			continue

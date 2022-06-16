@@ -3,9 +3,9 @@ package session
 import (
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"time"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
@@ -38,22 +38,26 @@ func NewGameInfo() *GameInfo {
 	return res
 }
 
-func (g *GameInfo) SetClient(clientID string) error {
-	for i := 0; i < config.FieldNumX; i += 3 {
-		if g.Panels[i][0].OwnerClientID == "" {
-			for x := 0; x < 3; x++ {
-				for y := 0; y < config.FieldNumY; y++ {
-					g.Panels[i+x][y].OwnerClientID = clientID
-				}
-			}
-			return nil
+func (g *GameInfo) InitPanel(myClientID, enemyClientID string) {
+	for x := 0; x < config.FieldNumX; x++ {
+		id := myClientID
+		if x > 2 {
+			id = enemyClientID
+		}
+		for y := 0; y < config.FieldNumY; y++ {
+			g.Panels[x][y].OwnerClientID = id
 		}
 	}
-
-	return fmt.Errorf("all panels are already initialized")
 }
 
-func (g *GameInfo) UpdateObject(obj object.Object) {
+func (g *GameInfo) UpdateObject(obj object.Object, isMyObj bool) {
+	if !isMyObj {
+		obj.X = config.FieldNumX - obj.X - 1
+		obj.PrevX = config.FieldNumX - obj.PrevX - 1
+		obj.TargetX = config.FieldNumX - obj.TargetX - 1
+	}
+
+	logger.Debug("Updated Object: %+v", obj)
 	g.Objects[obj.ID] = obj
 }
 

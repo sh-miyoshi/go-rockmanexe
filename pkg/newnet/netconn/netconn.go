@@ -35,8 +35,8 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		}
 
 		sessionID := action.GetSessionID()
-		g := session.GetGameInfo(sessionID)
-		if g == nil {
+		s := session.GetSession(sessionID)
+		if s == nil {
 			logger.Info("No such session: %s", sessionID)
 			return fmt.Errorf("failed to get session info for %s", sessionID)
 		}
@@ -45,19 +45,19 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		case pb.Action_UPDATEOBJECT:
 			var obj object.Object
 			object.Unmarshal(&obj, action.GetObjectInfo())
-			g.UpdateObject(obj)
+			s.UpdateObject(obj)
 		case pb.Action_REMOVEOBJECT:
 			var obj object.Object
 			object.Unmarshal(&obj, action.GetObjectInfo())
-			g.RemoveObject(obj.ID)
+			s.RemoveObject(obj.ID)
 		case pb.Action_ADDSKILL:
-			g.AddSkill()
+			s.AddSkill()
 		case pb.Action_ADDDAMAGE:
-			g.AddDamage()
+			s.AddDamage()
 		case pb.Action_ADDEFFECT:
-			g.AddEffect()
+			s.AddEffect()
 		case pb.Action_SENDSIGNAL:
-			session.SendSignal(sessionID, action.GetClientID(), action.GetSignal())
+			s.SendSignal(action.GetClientID(), action.GetSignal())
 		default:
 			return fmt.Errorf("invalid action type: %v", action.GetType())
 		}
