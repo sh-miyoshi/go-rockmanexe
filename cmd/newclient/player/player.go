@@ -16,7 +16,7 @@ type Player struct {
 	Object             object.Object
 	currentActNo       int
 	currentActInterval int
-	actTable           []act
+	actTable           []Act
 }
 
 func New(clientID string) *Player {
@@ -83,8 +83,9 @@ func (p *Player) Action() bool {
 func (p *Player) initActTable() {
 	logger.Info("initialize player act table")
 
-	p.actTable = []act{
-		newActMove(),
+	p.actTable = []Act{
+		NewActWait(150),
+		NewActMove(&p.Object, 0, 1),
 	}
 	p.currentActNo = 0
 	p.currentActInterval = p.actTable[0].Interval()
