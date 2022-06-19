@@ -1,4 +1,4 @@
-package app
+package player
 
 import (
 	"fmt"
@@ -7,17 +7,20 @@ import (
 
 	"github.com/google/uuid"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
-type player struct {
-	Object object.Object
-	Count  int
+type Player struct {
+	Object             object.Object
+	currentActNo       int
+	currentActInterval int
+	actTable           []act
 }
 
-func newPlayer(clientID string) *player {
-	res := &player{
+func New(clientID string) *Player {
+	res := &Player{
 		Object: object.Object{
 			ID:             uuid.New().String(),
 			ClientID:       clientID,
@@ -28,13 +31,15 @@ func newPlayer(clientID string) *player {
 			Hittable:       true,
 			UpdateBaseTime: true,
 		},
-		Count: 0,
+		currentActNo:       0,
+		currentActInterval: 0,
 	}
+	res.initActTable()
 
 	return res
 }
 
-func (p *player) ChipSelect() error {
+func (p *Player) ChipSelect() error {
 	n := rand.Intn(2) + 1
 	time.Sleep(time.Duration(n) * time.Second)
 	p.Object.Chips = []object.ChipInfo{
@@ -52,12 +57,35 @@ func (p *player) ChipSelect() error {
 	return nil
 }
 
-func (p *player) Action() bool {
+func (p *Player) Action() bool {
 	if p.Object.HP <= 0 {
 		// Player deleted
 		return true
 	}
 
-	p.Count++
+	if p.currentActInterval > 0 {
+		p.currentActInterval--
+		return false
+	}
+
+	if p.actTable[p.currentActNo].Process() {
+		p.currentActNo++
+		if p.currentActNo >= len(p.actTable) {
+			p.initActTable()
+			return false
+		}
+		p.currentActInterval = p.actTable[p.currentActNo].Interval()
+	}
+
 	return false
+}
+
+func (p *Player) initActTable() {
+	logger.Info("initialize player act table")
+
+	p.actTable = []act{
+		newActMove(),
+	}
+	p.currentActNo = 0
+	p.currentActInterval = p.actTable[0].Interval()
 }

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/newclient/player"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -19,12 +20,12 @@ const (
 
 var (
 	appStatus  = stateWaiting
-	playerInst *player
+	playerInst *player.Player
 	connInst   *netconn.NetConn
 )
 
 func Init(clientID string) {
-	playerInst = newPlayer(clientID)
+	playerInst = player.New(clientID)
 	connInst = netconn.GetInst()
 }
 
@@ -58,7 +59,9 @@ func Process() error {
 		case stateBeforeMain:
 			statusChange(stateMain)
 		case stateMain:
-			panic("not implemented yet")
+			if playerInst.Action() {
+				statusChange(stateResult)
+			}
 		case stateResult:
 			panic("not implemented yet")
 		}
