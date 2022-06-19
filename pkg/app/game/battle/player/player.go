@@ -202,7 +202,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 
 	fname = common.ImagePath + "battle/mind_status.png"
-	imgMinds = make([]int, 4)
+	imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
 	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}

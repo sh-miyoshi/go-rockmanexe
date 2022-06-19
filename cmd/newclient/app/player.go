@@ -37,7 +37,10 @@ func newPlayer(clientID string) *player {
 func (p *player) ChipSelect() error {
 	n := rand.Intn(2) + 1
 	time.Sleep(time.Duration(n) * time.Second)
-	p.Object.Chips = []int{1, 3} // debug
+	p.Object.Chips = []object.ChipInfo{
+		{ID: 1, Code: "*"},
+		{ID: 3, Code: "a"},
+	}
 
 	// Finished chip select, so send action
 	netconn.GetInst().SendObject(p.Object)

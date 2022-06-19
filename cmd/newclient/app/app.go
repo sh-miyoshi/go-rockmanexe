@@ -4,50 +4,66 @@ import (
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
 const (
-	statusWaiting int = iota
-	statusChipSelect
-	statusWaitActing
-	statusActing
-	statusGameEnd
+	stateWaiting int = iota
+	stateOpening
+	stateChipSelect
+	stateWaitSelect
+	stateBeforeMain
+	stateMain
+	stateResult
 )
 
 var (
-	appStatus  = statusWaiting
+	appStatus  = stateWaiting
 	playerInst *player
+	connInst   *netconn.NetConn
 )
 
 func Init(clientID string) {
 	playerInst = newPlayer(clientID)
+	connInst = netconn.GetInst()
 }
 
 func Process() error {
 	// set init data to router
-	netconn.GetInst().SendObject(playerInst.Object)
+	connInst.SendObject(playerInst.Object)
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
 	for {
 		switch appStatus {
-		case statusWaiting:
-			// nothing to do
-		case statusChipSelect:
+		case stateWaiting:
+			status := connInst.GetGameStatus()
+			if status == pb.Data_CHIPSELECTWAIT {
+				statusChange(stateOpening)
+			}
+		case stateOpening:
+			statusChange(stateChipSelect)
+		case stateChipSelect:
 			// Select using chip
 			if err := playerInst.ChipSelect(); err != nil {
 				return err
 			}
 
-			statusChange(statusWaitActing)
-		case statusWaitActing:
-			// 相手がselect完了になるのを待つ
-		case statusActing:
-		case statusGameEnd:
-			// TODO
+			statusChange(stateWaitSelect)
+		case stateWaitSelect:
+			status := connInst.GetGameStatus()
+			if status == pb.Data_ACTING {
+				statusChange(stateBeforeMain)
+			}
+		case stateBeforeMain:
+			statusChange(stateMain)
+		case stateMain:
+			panic("not implemented yet")
+		case stateResult:
+			panic("not implemented yet")
 		}
 
-		if err := netconn.GetInst().BulkSendData(); err != nil {
+		if err := connInst.BulkSendData(); err != nil {
 			return err
 		}
 

@@ -24,6 +24,7 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 			logger.Info("Failed to recv from client: %w", err)
 			return nil
 		}
+		logger.Debug("Got action: %+v", action)
 
 		if action.GetType() == pb.Action_AUTHENTICATE {
 			res := authClient(action.GetReq(), stream)

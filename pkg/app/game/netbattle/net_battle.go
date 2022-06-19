@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
@@ -40,6 +41,7 @@ type NetBattle struct {
 	openingInst opening.Opening
 	playerInst  *battleplayer.BattlePlayer
 	fieldInst   *field.Field
+	b4mainInst  *b4main.BeforeMain
 	drawMgr     *draw.DrawManager
 }
 
@@ -141,6 +143,20 @@ func Process() error {
 			return nil
 		}
 	case stateBeforeMain:
+		if inst.stateCount == 0 {
+			var err error
+			inst.b4mainInst, err = b4main.New(inst.playerInst.GetSelectedChips())
+			if err != nil {
+				return fmt.Errorf("failed to initialize before main: %w", err)
+			}
+			inst.playerInst.UpdatePA()
+		}
+
+		if inst.b4mainInst.Process() {
+			inst.b4mainInst.End()
+			stateChange(stateMain)
+			return nil
+		}
 	case stateMain:
 	case stateResult:
 	}

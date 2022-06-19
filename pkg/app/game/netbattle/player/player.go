@@ -83,7 +83,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 
 	fname = common.ImagePath + "battle/mind_status.png"
-	res.imgMinds = make([]int, 4)
+	res.imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
 	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, res.imgMinds); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
@@ -93,6 +93,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 }
 
 func (p *BattlePlayer) End() {
+	// TODO imageの解放
 }
 
 func (p *BattlePlayer) Draw() {
@@ -130,6 +131,12 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
+	p.GaugeCount += 4 // TODO GaugeSpeed
+
+	if p.Object.HP <= 0 {
+		return true, nil
+	}
+
 	return false, nil
 }
 
@@ -138,9 +145,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.Object.Chips = []int{}
+	p.Object.Chips = []object.ChipInfo{}
 	for _, s := range selected {
-		p.Object.Chips = append(p.Object.Chips, p.ChipFolder[s].ID)
+		p.Object.Chips = append(p.Object.Chips, object.ChipInfo{ID: p.ChipFolder[s].ID, Code: p.ChipFolder[s].Code})
 	}
 
 	// Remove selected chips from folder
@@ -148,4 +155,17 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	for _, s := range selected {
 		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
 	}
+}
+
+func (p *BattlePlayer) GetSelectedChips() []player.ChipInfo {
+	res := []player.ChipInfo{}
+	for _, c := range p.Object.Chips {
+		res = append(res, player.ChipInfo{ID: c.ID, Code: c.Code})
+	}
+	return res
+}
+
+func (p *BattlePlayer) UpdatePA() {
+	// Check program advance
+	// TODO
 }
