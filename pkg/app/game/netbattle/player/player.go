@@ -96,9 +96,6 @@ func (p *BattlePlayer) End() {
 	// TODO imageの解放
 }
 
-func (p *BattlePlayer) Draw() {
-}
-
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	x := 7
 	y := 5

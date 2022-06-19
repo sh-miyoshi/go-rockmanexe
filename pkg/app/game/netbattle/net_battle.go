@@ -158,7 +158,9 @@ func Process() error {
 			return nil
 		}
 	case stateMain:
+		dxlib.DrawFormatString(0, 0, 0, "main")
 	case stateResult:
+		panic("未実装")
 	}
 	// TODO
 
@@ -185,6 +187,20 @@ func Draw() {
 	case stateChipSelect:
 		inst.playerInst.DrawFrame(true, false)
 		chipsel.Draw()
+	case stateWaitSelect:
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
+		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
+	case stateBeforeMain:
+		inst.playerInst.DrawFrame(false, true)
+		if inst.b4mainInst != nil {
+			inst.b4mainInst.Draw()
+		}
+	case stateMain:
+		inst.playerInst.DrawFrame(false, true)
+	case stateResult:
+		panic("未実装")
 	}
 }
 
