@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
@@ -46,6 +48,7 @@ type NetConn struct {
 
 	gameStatus pb.Data_Status
 	gameInfo   session.GameInfo
+	gameInfoMu sync.Mutex
 	sendInfo   sendObject
 }
 
@@ -144,6 +147,20 @@ func (n *NetConn) BulkSendData() error {
 	return nil
 }
 
+func (n *NetConn) UpdateObjectsCount() {
+	n.gameInfoMu.Lock()
+	defer n.gameInfoMu.Unlock()
+	for i, obj := range n.gameInfo.Objects {
+		if obj.Count == 0 {
+			tm := n.gameInfo.CurrentTime.Sub(obj.BaseTime)
+			obj.Count = int(tm * 60 / time.Second)
+		} else {
+			obj.Count++
+		}
+		n.gameInfo.Objects[i] = obj
+	}
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -193,9 +210,10 @@ func (n *NetConn) dataRecv() {
 			logger.Debug("got status update data: %+v", data)
 			n.gameStatus = data.GetStatus()
 		case pb.Data_DATA:
-			// TODO lock
 			b := data.GetRawData()
+			n.gameInfoMu.Lock()
 			n.gameInfo.Unmarshal(b)
+			n.gameInfoMu.Unlock()
 		default:
 			n.connectStatus = ConnectStatus{
 				Status: ConnStateError,

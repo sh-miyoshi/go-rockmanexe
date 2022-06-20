@@ -76,11 +76,11 @@ func Init(plyr *player.Player) error {
 	if err != nil {
 		return err
 	}
-
 	inst.drawMgr, err = draw.New(inst.playerInst.Object.ID)
 	if err != nil {
 		return err
 	}
+	inst.playerInst.InitAct(inst.drawMgr)
 
 	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
@@ -152,13 +152,22 @@ func Process() error {
 			inst.playerInst.UpdatePA()
 		}
 
+		inst.conn.UpdateObjectsCount()
 		if inst.b4mainInst.Process() {
 			inst.b4mainInst.End()
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
-		dxlib.DrawFormatString(0, 0, 0, "main")
+		inst.conn.UpdateObjectsCount()
+		done, err := inst.playerInst.Process()
+		if err != nil {
+			return fmt.Errorf("player process failed: %w", err)
+		}
+		if done {
+			stateChange(stateResult)
+			return nil
+		}
 	case stateResult:
 		panic("未実装")
 	}

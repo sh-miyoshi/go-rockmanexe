@@ -86,6 +86,10 @@ func (m *DrawManager) DrawObjects() {
 	}
 }
 
+func (m *DrawManager) GetImageInfo(objType int) (imageNum, delay int) {
+	return len(m.imgObjs[objType]), object.ImageDelays[objType]
+}
+
 func (m *DrawManager) loadObjs() error {
 	fname := common.ImagePath + "battle/character/player_move.png"
 	m.imgObjs[object.TypeRockmanMove] = make([]int, 4)

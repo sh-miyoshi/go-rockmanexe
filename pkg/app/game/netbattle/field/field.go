@@ -82,3 +82,31 @@ func (f *Field) Draw() {
 func (f *Field) Update() {
 	f.bgInst.Process()
 }
+
+func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
+	ginfo := netconn.GetInst().GetGameInfo()
+	clientID := config.Get().Net.ClientID
+
+	id := ""
+	for _, obj := range ginfo.Objects {
+		if obj.Hittable && obj.X == pos.X && obj.Y == pos.Y {
+			id = obj.ID
+			break
+		}
+	}
+
+	pnType := battlefield.PanelTypePlayer
+	if ginfo.Panels[pos.X][pos.Y].OwnerClientID != clientID {
+		pnType = battlefield.PanelTypeEnemy
+	}
+
+	return battlefield.PanelInfo{
+		Type:      pnType,
+		ObjectID:  id,
+		ObjExists: id != "",
+
+		// TODO 未実装
+		// Status    int
+		// HoleCount int
+	}
+}

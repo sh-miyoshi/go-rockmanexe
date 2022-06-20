@@ -51,6 +51,10 @@ func (g *GameInfo) InitPanel(myClientID, enemyClientID string) {
 }
 
 func (g *GameInfo) UpdateObject(obj object.Object, isMyObj bool) {
+	if obj.UpdateBaseTime {
+		obj.BaseTime = time.Now()
+	}
+
 	if !isMyObj {
 		obj.X = config.FieldNumX - obj.X - 1
 		obj.PrevX = config.FieldNumX - obj.PrevX - 1

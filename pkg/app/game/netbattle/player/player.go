@@ -11,6 +11,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
+	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -21,6 +25,7 @@ type BattlePlayer struct {
 	Object     object.Object
 	ChipFolder []player.ChipInfo
 	GaugeCount uint
+	Act        *Act
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -92,6 +97,10 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	return &res, nil
 }
 
+func (p *BattlePlayer) InitAct(drawMgr *netdraw.DrawManager) {
+	p.Act = NewAct(drawMgr, &p.Object)
+}
+
 func (p *BattlePlayer) End() {
 	// TODO imageの解放
 }
@@ -132,6 +141,31 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.Object.HP <= 0 {
 		return true, nil
+	}
+
+	if p.Act.Process() {
+		return false, nil
+	}
+
+	// Move
+	moveDirect := -1
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		moveDirect = common.DirectUp
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		moveDirect = common.DirectDown
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		moveDirect = common.DirectRight
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		moveDirect = common.DirectLeft
+	}
+
+	if moveDirect >= 0 {
+		t := common.Point{X: p.Object.X, Y: p.Object.Y}
+		if battlecommon.MoveObject(&t, moveDirect, appfield.PanelTypePlayer, false, netfield.GetPanelInfo) {
+			p.Act.Set(battlecommon.PlayerActMove, &ActOption{
+				MoveDirect: moveDirect,
+			})
+		}
 	}
 
 	return false, nil

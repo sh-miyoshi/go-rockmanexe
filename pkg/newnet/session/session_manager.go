@@ -213,6 +213,8 @@ func (s *Session) gameInfoPublish() {
 				if c.dataStream == nil {
 					continue
 				}
+				c.gameInfo.CurrentTime = time.Now()
+
 				gameInfoBin := c.gameInfo.Marshal()
 				err := c.dataStream.Send(&pb.Data{
 					Type: pb.Data_DATA,
