@@ -54,3 +54,34 @@ func (a *ActMove) Process() bool {
 func (a *ActMove) Interval() int {
 	return 30
 }
+
+type ActBuster struct {
+	count int
+	obj   *object.Object
+}
+
+func NewActBuster(obj *object.Object) *ActBuster {
+	return &ActBuster{
+		count: 0,
+		obj:   obj,
+	}
+}
+
+func (a *ActBuster) Process() bool {
+	if a.count == 0 {
+		a.obj.UpdateBaseTime = true
+		a.obj.Type = object.TypeRockmanBuster
+		netconn.GetInst().SendObject(*a.obj)
+	}
+
+	// TODO damage
+
+	a.count++
+	delay := object.ImageDelays[a.obj.Type]
+	num := 6
+	return a.count > delay*num
+}
+
+func (a *ActBuster) Interval() int {
+	return 30
+}

@@ -69,6 +69,11 @@ func (p *Player) Action() bool {
 	}
 
 	if p.actTable[p.currentActNo].Process() {
+		logger.Info("finished process %d", p.currentActNo)
+		p.Object.UpdateBaseTime = true
+		p.Object.Type = object.TypeRockmanStand
+		netconn.GetInst().SendObject(p.Object)
+
 		p.currentActNo++
 		if p.currentActNo >= len(p.actTable) {
 			p.initActTable()
@@ -86,6 +91,7 @@ func (p *Player) initActTable() {
 	p.actTable = []Act{
 		NewActWait(150),
 		NewActMove(&p.Object, 0, 1),
+		NewActBuster(&p.Object),
 	}
 	p.currentActNo = 0
 	p.currentActInterval = p.actTable[0].Interval()
