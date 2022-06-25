@@ -57,6 +57,8 @@ func (a *Act) Process() bool {
 			a.Object.Y = pos.Y
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
+	case battlecommon.PlayerActBuster:
+		// TODO damages
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}

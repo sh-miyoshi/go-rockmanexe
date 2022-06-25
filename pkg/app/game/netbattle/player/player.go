@@ -16,22 +16,26 @@ import (
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 type BattlePlayer struct {
-	Object     object.Object
-	ChipFolder []player.ChipInfo
-	GaugeCount uint
-	Act        *Act
+	Object      object.Object
+	ChipFolder  []player.ChipInfo
+	GaugeCount  uint
+	ChargeCount uint
+	ShotPower   uint
+	Act         *Act
 
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
 	imgMinds      []int
 	imgMindFrame  int
+	imgCharge     [2][]int
 }
 
 func New(plyr *player.Player) (*BattlePlayer, error) {
@@ -47,9 +51,9 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			ClientID: cfg.Net.ClientID,
 			Hittable: true,
 		},
+		ShotPower: plyr.ShotPower,
 		// TODO
 		// HPMax:      plyr.HP,
-		// ShotPower:  plyr.ShotPower,
 		// HitDamages: make(map[string]bool),
 	}
 
@@ -93,6 +97,16 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 
+	fname = common.ImagePath + "battle/skill/charge.png"
+	tmp := make([]int, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
+		return nil, fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 8; i++ {
+		res.imgCharge[0] = append(res.imgCharge[0], tmp[i])
+		res.imgCharge[1] = append(res.imgCharge[1], tmp[i+8])
+	}
+
 	logger.Info("Successfully initialized net battle player data")
 	return &res, nil
 }
@@ -103,6 +117,13 @@ func (p *BattlePlayer) InitAct(drawMgr *netdraw.DrawManager) {
 
 func (p *BattlePlayer) End() {
 	// TODO imageの解放
+
+	for i := 0; i < 2; i++ {
+		for _, img := range p.imgCharge[i] {
+			dxlib.DeleteGraph(img)
+		}
+		p.imgCharge[i] = []int{}
+	}
 }
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
@@ -136,6 +157,25 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	}
 }
 
+func (p *BattlePlayer) LocalDraw() {
+	view := battlecommon.ViewPos(common.Point{
+		X: p.Object.X,
+		Y: p.Object.Y,
+	})
+
+	// Show charge image
+	if p.ChargeCount > battlecommon.ChargeViewDelay {
+		n := 0
+		if p.ChargeCount > battlecommon.ChargeTime {
+			n = 1
+		}
+		imgNo := int(p.ChargeCount/4) % len(p.imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.imgCharge[n][imgNo], true)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
+}
+
 func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
@@ -166,6 +206,24 @@ func (p *BattlePlayer) Process() (bool, error) {
 				MoveDirect: moveDirect,
 			})
 		}
+	}
+
+	// Rock buster
+	if inputs.CheckKey(inputs.KeyCancel) > 0 {
+		p.ChargeCount++
+		if p.ChargeCount == battlecommon.ChargeViewDelay {
+			sound.On(sound.SEBusterCharging)
+		}
+		if p.ChargeCount == battlecommon.ChargeTime {
+			sound.On(sound.SEBusterCharged)
+		}
+	} else if p.ChargeCount > 0 {
+		sound.On(sound.SEBusterShot)
+		p.Act.Set(battlecommon.PlayerActBuster, &ActOption{
+			Charged:   p.ChargeCount > battlecommon.ChargeTime,
+			ShotPower: int(p.ShotPower),
+		})
+		p.ChargeCount = 0
 	}
 
 	return false, nil

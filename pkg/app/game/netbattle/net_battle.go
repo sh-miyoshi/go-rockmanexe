@@ -184,6 +184,7 @@ func Process() error {
 func Draw() {
 	inst.fieldInst.Draw()
 	inst.drawMgr.DrawObjects()
+	inst.playerInst.LocalDraw()
 
 	switch inst.state {
 	case stateWaiting:
