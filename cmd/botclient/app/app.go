@@ -1,11 +1,11 @@
 package app
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/newclient/player"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 )
 
 const (

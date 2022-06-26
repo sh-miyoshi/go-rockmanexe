@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	api "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/apiclient"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
+	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 )
 
 type NetConn struct {

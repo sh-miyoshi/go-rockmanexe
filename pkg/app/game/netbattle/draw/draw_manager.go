@@ -6,10 +6,10 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type Option struct {

@@ -19,7 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type BattlePlayer struct {

@@ -34,7 +34,7 @@ func main() {
 	go build(&wg, ".")
 	go build(&wg, "cmd/fakeserver")
 	go build(&wg, "cmd/router")
-	go build(&wg, "cmd/newclient")
+	go build(&wg, "cmd/botclient")
 	wg.Wait()
 	fmt.Println("done")
 
@@ -63,13 +63,13 @@ func main() {
 	// Waiting router wakeup
 	time.Sleep(1 * time.Second)
 
-	fmt.Println("Run newclient")
+	fmt.Println("Run botclient")
 	var clientStderr bytes.Buffer
-	clientCmd := exec.Command("./newclient.exe", "-c", "tester2", "-log", "newclient.log")
-	clientCmd.Dir = "cmd/newclient"
+	clientCmd := exec.Command("./botclient.exe", "-c", "tester2", "-log", "botclient.log")
+	clientCmd.Dir = "cmd/botclient"
 	clientCmd.Stderr = &clientStderr
 	if err := clientCmd.Start(); err != nil {
-		fmt.Printf("Failed to run newclient: %v\n", err)
+		fmt.Printf("Failed to run botclient: %v\n", err)
 		return
 	}
 	defer clientCmd.Process.Kill()

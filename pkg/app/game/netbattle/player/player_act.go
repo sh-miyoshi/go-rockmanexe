@@ -8,9 +8,9 @@ import (
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type ActOption struct {
@@ -59,6 +59,8 @@ func (a *Act) Process() bool {
 		}
 	case battlecommon.PlayerActBuster:
 		// TODO damages
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
+		// No special action
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
 	}

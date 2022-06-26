@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"

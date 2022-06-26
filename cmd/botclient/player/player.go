@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type Player struct {

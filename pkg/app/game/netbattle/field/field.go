@@ -6,10 +6,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
 
 type Field struct {

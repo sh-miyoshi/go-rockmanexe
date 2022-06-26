@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 type PanelInfo struct {

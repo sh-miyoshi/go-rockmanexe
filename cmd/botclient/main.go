@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sh-miyoshi/go-rockmanexe/cmd/newclient/app"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/app"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -35,7 +35,7 @@ func main() {
 		StreamAddr:     streamAddr,
 		ClientID:       clientID,
 		ClientKey:      clientKey,
-		ProgramVersion: "testclient",
+		ProgramVersion: "botclient",
 		Insecure:       true,
 	})
 	netconn.GetInst().ConnectRequest()
