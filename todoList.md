@@ -2,9 +2,66 @@
 
 ## リファクタリング
 
-netbattleのskillをbattleのやつを流用したい
+### 足りない機能
 
-パネルが全部自分色
+#### botclient
+
+- skill
+  - 全体？
+  - minibomb
+  - sword
+  - thunderball
+  - vulcan
+- app
+  - stateResult
+- damage処理
+  - 与える
+  - 受ける
+
+#### oldnet
+
+- damage
+- effect
+- field
+- session
+
+#### netconn
+
+- RemoveObject
+- SendDamages
+- SendEffect
+- AddSound
+- GetOpponentUserID
+- RemoveEffects
+- RemoveDamage
+- RemoveSounds
+
+#### netbattle
+
+- draw
+  - effect
+- effect
+  - 全部
+- player
+  - chip use
+- skill
+  - cannon
+  - minibomb
+  - recover
+  - shockwave
+  - spreadgun
+  - sword
+  - thunderball
+  - vulcan
+  - wideshot
+- stateResult
+
+#### その他
+
+パッケージ名の修正
+
+- メモ
+  - netbattleのskillをbattleのやつを流用したい
 
 ### TODO
 
