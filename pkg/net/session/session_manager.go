@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -39,6 +40,7 @@ type Session struct {
 	clients   [2]clientInfo
 	status    int
 	expiresAt time.Time
+	dmMgr     *damage.Manager
 	cancel    chan struct{}
 	exitErr   chan sessionError
 }
@@ -88,6 +90,7 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 			status:  statusConnectWait,
 			cancel:  make(chan struct{}),
 			exitErr: make(chan sessionError),
+			dmMgr:   &damage.Manager{},
 		}
 
 		inst.sessions[sessionID].start()
@@ -123,10 +126,8 @@ func (s *Session) AddSkill() {
 	}
 }
 
-func (s *Session) AddDamage() {
-	for i := range s.clients {
-		s.clients[i].gameInfo.AddDamage()
-	}
+func (s *Session) AddDamage(dm []damage.Damage) error {
+	return s.dmMgr.Add(dm)
 }
 
 func (s *Session) AddEffect() {
@@ -179,7 +180,24 @@ func (s *Session) frameProc() {
 		case <-s.cancel:
 			return
 		default:
-			// TODO
+			if s.status == statusActing {
+				// damage process
+				for i, c := range s.clients {
+					for _, obj := range c.gameInfo.Objects {
+						if !obj.Hittable {
+							continue
+						}
+
+						dmList := []damage.Damage{}
+						if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
+							dmList = append(dmList, *dm)
+							logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+						}
+						s.clients[i].gameInfo.AddDamages(dmList)
+					}
+				}
+				s.dmMgr.Update()
+			}
 
 			fpsMgr.Wait()
 		}

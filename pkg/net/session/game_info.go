@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -21,6 +22,7 @@ type GameInfo struct {
 	Objects     map[string]object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
 	Sounds      []int
+	HitDamages  []damage.Damage
 }
 
 func NewGameInfo() *GameInfo {
@@ -73,8 +75,12 @@ func (g *GameInfo) AddSkill() {
 	// TODO
 }
 
-func (g *GameInfo) AddDamage() {
-	// TODO
+func (g *GameInfo) AddDamages(dm []damage.Damage) {
+	if len(dm) == 0 {
+		return
+	}
+
+	g.HitDamages = append(g.HitDamages, dm...)
 }
 
 func (g *GameInfo) AddEffect() {

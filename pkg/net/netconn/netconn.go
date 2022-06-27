@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
@@ -54,11 +55,19 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		case pb.Action_ADDSKILL:
 			s.AddSkill()
 		case pb.Action_ADDDAMAGE:
-			s.AddDamage()
+			var dm []damage.Damage
+			damage.Unmarshal(&dm, action.GetDamageInfo())
+			if err := s.AddDamage(dm); err != nil {
+				logger.Error("Failed to add damage data %+v: %+v", dm, err)
+				return fmt.Errorf("failed to add damage: %v", err)
+			}
 		case pb.Action_ADDEFFECT:
 			s.AddEffect()
 		case pb.Action_SENDSIGNAL:
-			s.SendSignal(action.GetClientID(), action.GetSignal())
+			if err := s.SendSignal(action.GetClientID(), action.GetSignal()); err != nil {
+				logger.Error("Failed to send signal %v: %+v", action.GetSignal(), err)
+				return fmt.Errorf("failed to send signal: %v", err)
+			}
 		default:
 			return fmt.Errorf("invalid action type: %v", action.GetType())
 		}

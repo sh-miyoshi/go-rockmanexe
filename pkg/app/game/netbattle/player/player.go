@@ -10,11 +10,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -29,6 +29,7 @@ type BattlePlayer struct {
 	ChargeCount uint
 	ShotPower   uint
 	Act         *Act
+	HPMax       uint
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -52,8 +53,8 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			Hittable: true,
 		},
 		ShotPower: plyr.ShotPower,
+		HPMax:     plyr.HP,
 		// TODO
-		// HPMax:      plyr.HP,
 		// HitDamages: make(map[string]bool),
 	}
 
@@ -183,6 +184,10 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return true, nil
 	}
 
+	if p.damageProc() {
+		return false, nil
+	}
+
 	if p.Act.Process() {
 		return false, nil
 	}
@@ -229,8 +234,15 @@ func (p *BattlePlayer) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
-	return false
+func (p *BattlePlayer) damageProc() bool {
+	ginfo := netconn.GetInst().GetGameInfo()
+	if len(ginfo.HitDamages) == 0 {
+		return false
+	}
+
+	dm := ginfo.HitDamages[0]
+	// TODO
+	panic(fmt.Sprintf("Hit damage: %+v", dm))
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {

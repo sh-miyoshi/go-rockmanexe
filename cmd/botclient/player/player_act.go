@@ -1,12 +1,13 @@
 package player
 
 import (
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -86,23 +87,27 @@ func (a *ActBuster) Process() bool {
 
 	if a.count == 1 {
 		s := a.shotPower
-		eff := effect.TypeHitSmall
+		// TODO effect
 		if a.charged {
 			s *= 10
-			eff = effect.TypeHitBig
 		}
 
 		y := a.obj.Y
-		for x := a.obj.X + 1; x < field.FieldNum.X; x++ {
-			// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, *a.pPosY)
+		for x := a.obj.X + 1; x < config.FieldNumX; x++ {
 			pos := common.Point{X: x, Y: y}
 			if field.GetPanelInfo(pos).ObjectID != "" {
-				damage.New(damage.Damage{
-					Pos:           pos,
-					Power:         int(s),
-					TTL:           1,
-					TargetType:    damage.TargetEnemy,
-					HitEffectType: eff,
+				netconn.GetInst().AddDamage(damage.Damage{
+					ID:          uuid.New().String(),
+					PosX:        pos.X,
+					PosY:        pos.Y,
+					Power:       int(s),
+					TTL:         1,
+					TargetType:  damage.TargetOtherClient,
+					BigDamage:   a.charged,
+					ShowHitArea: false,
+
+					// TODO
+					// HitEffectType int
 				})
 				break
 			}

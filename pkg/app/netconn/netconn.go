@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
@@ -37,6 +38,7 @@ type ConnectStatus struct {
 
 type sendObject struct {
 	objects map[string]object.Object
+	damages []damage.Damage
 }
 
 type NetConn struct {
@@ -124,6 +126,11 @@ func (n *NetConn) SendObject(obj object.Object) {
 	n.sendInfo.objects[obj.ID] = obj
 }
 
+func (n *NetConn) AddDamage(dm damage.Damage) {
+	dm.ClientID = n.config.ClientID
+	n.sendInfo.damages = append(n.sendInfo.damages, dm)
+}
+
 func (n *NetConn) BulkSendData() error {
 	// TODO 一度の通信で送る
 
@@ -140,6 +147,22 @@ func (n *NetConn) BulkSendData() error {
 
 		if err := n.dataStream.Send(req); err != nil {
 			return fmt.Errorf("send object failed: %w", err)
+		}
+	}
+
+	// Send damages
+	if len(n.sendInfo.damages) > 0 {
+		req := &pb.Action{
+			SessionID: n.sessionID,
+			ClientID:  n.config.ClientID,
+			Type:      pb.Action_ADDDAMAGE,
+			Data: &pb.Action_DamageInfo{
+				DamageInfo: damage.Marshal(n.sendInfo.damages),
+			},
+		}
+
+		if err := n.dataStream.Send(req); err != nil {
+			return fmt.Errorf("send damage failed: %w", err)
 		}
 	}
 
@@ -253,4 +276,5 @@ func makeAuthReq(id, key, version string) *pb.Action {
 
 func (o *sendObject) Init() {
 	o.objects = make(map[string]object.Object)
+	o.damages = []damage.Damage{}
 }
