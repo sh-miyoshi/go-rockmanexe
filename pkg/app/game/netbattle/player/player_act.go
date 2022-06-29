@@ -2,14 +2,18 @@ package player
 
 import (
 	"fmt"
+	"math/rand"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -58,7 +62,36 @@ func (a *Act) Process() bool {
 			logger.Debug("Moved to (%d, %d)", a.Object.X, a.Object.Y)
 		}
 	case battlecommon.PlayerActBuster:
-		// TODO damages
+		// Add buster damage
+		if a.Count == 1 {
+			y := a.Object.Y
+			power := a.Opts.ShotPower
+			if a.Opts.Charged {
+				power *= 10
+			}
+
+			for x := a.Object.X + 1; x < appfield.FieldNum.X; x++ {
+				dm := damage.Damage{
+					ID:         uuid.New().String(),
+					PosX:       x,
+					PosY:       y,
+					Power:      power,
+					TTL:        1,
+					TargetType: damage.TargetOtherClient,
+					// HitEffectType: effect.TypeHitSmallEffect, // TODO effect
+					ViewOfsX: rand.Intn(2*5) - 5,
+					ViewOfsY: rand.Intn(2*5) - 5,
+				}
+				netconn.GetInst().AddDamage(dm)
+
+				// break if object exists
+				pn := netfield.GetPanelInfo(common.Point{X: x, Y: y})
+				if pn.ObjectID != "" {
+					sound.On(sound.SEBusterHit)
+					break
+				}
+			}
+		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
 		// No special action
 	default:

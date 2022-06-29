@@ -14,6 +14,7 @@ import (
 
 type Player struct {
 	Object             object.Object
+	HitDamages         map[string]bool
 	currentActNo       int
 	currentActInterval int
 	actTable           []Act
@@ -33,6 +34,7 @@ func New(clientID string) *Player {
 		},
 		currentActNo:       0,
 		currentActInterval: 0,
+		HitDamages:         make(map[string]bool),
 	}
 	res.initActTable()
 
@@ -61,6 +63,10 @@ func (p *Player) Action() bool {
 	if p.Object.HP <= 0 {
 		// Player deleted
 		return true
+	}
+
+	if p.damageProc() {
+		return false
 	}
 
 	if p.currentActInterval > 0 {
@@ -95,4 +101,59 @@ func (p *Player) initActTable() {
 	}
 	p.currentActNo = 0
 	p.currentActInterval = p.actTable[0].Interval()
+}
+
+func (p *Player) damageProc() bool {
+	ginfo := netconn.GetInst().GetGameInfo()
+	if len(ginfo.HitDamages) == 0 {
+		return false
+	}
+
+	dm := ginfo.HitDamages[0]
+	defer netconn.GetInst().RemoveDamage(dm.ID)
+
+	if _, exists := p.HitDamages[dm.ID]; exists {
+		return false
+	} else {
+		p.HitDamages[dm.ID] = true
+	}
+
+	// Recover系は使えるようにする
+	if p.Object.Invincible && dm.Power >= 0 {
+		return false
+	}
+
+	logger.Debug("Got damage: %+v", dm)
+
+	p.Object.HP -= dm.Power
+	if p.Object.HP < 0 {
+		p.Object.HP = 0
+	}
+	// debug(回復は考慮しない)
+
+	if dm.BigDamage {
+		p.Object.Invincible = true
+		// TODO Skill関係
+		// for _, sid := range p.ManagedSkills {
+		// 	netskill.StopByPlayer(sid)
+		// }
+		// p.ManagedSkills = []string{}
+		// netconn.GetInst().AddSound(sound.SEDamaged)
+	} else {
+		netconn.GetInst().SendObject(p.Object)
+	}
+
+	// TODO Effect関係
+	// if dm.HitEffectType > 0 {
+	// 	netconn.GetInst().SendEffect(effect.Effect{
+	// 		ID:       uuid.New().String(),
+	// 		Type:     dm.HitEffectType,
+	// 		X:        p.Object.X,
+	// 		Y:        p.Object.Y,
+	// 		ViewOfsX: dm.ViewOfsX,
+	// 		ViewOfsY: dm.ViewOfsY,
+	// 	})
+	// }
+
+	return true
 }
