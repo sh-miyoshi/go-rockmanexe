@@ -131,6 +131,18 @@ func (n *NetConn) AddDamage(dm damage.Damage) {
 	n.sendInfo.damages = append(n.sendInfo.damages, dm)
 }
 
+func (n *NetConn) RemoveDamage(id string) {
+	n.gameInfoMu.Lock()
+	defer n.gameInfoMu.Unlock()
+
+	for i, dm := range n.gameInfo.HitDamages {
+		if dm.ID == id {
+			n.gameInfo.HitDamages = append(n.gameInfo.HitDamages[:i], n.gameInfo.HitDamages[i+1:]...)
+			return
+		}
+	}
+}
+
 func (n *NetConn) BulkSendData() error {
 	// TODO 一度の通信で送る
 

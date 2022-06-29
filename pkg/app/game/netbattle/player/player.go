@@ -30,6 +30,7 @@ type BattlePlayer struct {
 	ShotPower   uint
 	Act         *Act
 	HPMax       uint
+	HitDamages  map[string]bool
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -52,10 +53,9 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			ClientID: cfg.Net.ClientID,
 			Hittable: true,
 		},
-		ShotPower: plyr.ShotPower,
-		HPMax:     plyr.HP,
-		// TODO
-		// HitDamages: make(map[string]bool),
+		ShotPower:  plyr.ShotPower,
+		HPMax:      plyr.HP,
+		HitDamages: make(map[string]bool),
 	}
 
 	for _, c := range plyr.ChipFolder {
@@ -241,8 +241,55 @@ func (p *BattlePlayer) damageProc() bool {
 	}
 
 	dm := ginfo.HitDamages[0]
-	// TODO
-	panic(fmt.Sprintf("Hit damage: %+v", dm))
+	defer netconn.GetInst().RemoveDamage(dm.ID)
+
+	if _, exists := p.HitDamages[dm.ID]; exists {
+		return false
+	} else {
+		p.HitDamages[dm.ID] = true
+	}
+
+	// Recover系は使えるようにする
+	if p.Object.Invincible && dm.Power >= 0 {
+		return false
+	}
+
+	logger.Debug("Got damage: %+v", dm)
+
+	p.Object.HP -= dm.Power
+	if p.Object.HP < 0 {
+		p.Object.HP = 0
+	}
+	if p.Object.HP > int(p.HPMax) {
+		p.Object.HP = int(p.HPMax)
+	}
+
+	if dm.BigDamage {
+		p.Object.Invincible = true
+		// TODO Skill関係
+		// for _, sid := range p.ManagedSkills {
+		// 	netskill.StopByPlayer(sid)
+		// }
+		// p.ManagedSkills = []string{}
+		// netconn.GetInst().AddSound(sound.SEDamaged)
+		p.Act.Set(battlecommon.PlayerActDamage, nil)
+	} else {
+		netconn.GetInst().SendObject(p.Object)
+	}
+
+	// TODO Effect関係
+	// if dm.HitEffectType > 0 {
+	// 	netconn.GetInst().SendEffect(effect.Effect{
+	// 		ID:       uuid.New().String(),
+	// 		Type:     dm.HitEffectType,
+	// 		X:        p.Object.X,
+	// 		Y:        p.Object.Y,
+	// 		ViewOfsX: dm.ViewOfsX,
+	// 		ViewOfsY: dm.ViewOfsY,
+	// 	})
+	// }
+
+	return true
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
