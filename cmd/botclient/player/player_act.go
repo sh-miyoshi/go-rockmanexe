@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -87,9 +88,10 @@ func (a *ActBuster) Process() bool {
 
 	if a.count == 1 {
 		s := a.shotPower
-		// TODO effect
+		eff := effect.TypeHitSmallEffect
 		if a.charged {
 			s *= 10
+			eff = effect.TypeHitBigEffect
 		}
 
 		y := a.obj.Y
@@ -97,17 +99,15 @@ func (a *ActBuster) Process() bool {
 			pos := common.Point{X: x, Y: y}
 			if field.GetPanelInfo(pos).ObjectID != "" {
 				netconn.GetInst().AddDamage(damage.Damage{
-					ID:          uuid.New().String(),
-					PosX:        pos.X,
-					PosY:        pos.Y,
-					Power:       int(s),
-					TTL:         1,
-					TargetType:  damage.TargetOtherClient,
-					BigDamage:   a.charged,
-					ShowHitArea: false,
-
-					// TODO
-					// HitEffectType int
+					ID:            uuid.New().String(),
+					PosX:          pos.X,
+					PosY:          pos.Y,
+					Power:         int(s),
+					TTL:           1,
+					TargetType:    damage.TargetOtherClient,
+					BigDamage:     a.charged,
+					ShowHitArea:   false,
+					HitEffectType: eff,
 				})
 				break
 			}

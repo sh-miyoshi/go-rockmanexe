@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -277,17 +278,16 @@ func (p *BattlePlayer) damageProc() bool {
 		netconn.GetInst().SendObject(p.Object)
 	}
 
-	// TODO Effect関係
-	// if dm.HitEffectType > 0 {
-	// 	netconn.GetInst().SendEffect(effect.Effect{
-	// 		ID:       uuid.New().String(),
-	// 		Type:     dm.HitEffectType,
-	// 		X:        p.Object.X,
-	// 		Y:        p.Object.Y,
-	// 		ViewOfsX: dm.ViewOfsX,
-	// 		ViewOfsY: dm.ViewOfsY,
-	// 	})
-	// }
+	if dm.HitEffectType > 0 {
+		netconn.GetInst().SendEffect(effect.Effect{
+			ID:       uuid.New().String(),
+			Type:     dm.HitEffectType,
+			X:        p.Object.X,
+			Y:        p.Object.Y,
+			ViewOfsX: dm.ViewOfsX,
+			ViewOfsY: dm.ViewOfsY,
+		})
+	}
 
 	return true
 }

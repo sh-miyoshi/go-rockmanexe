@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -130,9 +131,9 @@ func (s *Session) AddDamage(dm []damage.Damage) error {
 	return s.dmMgr.Add(dm)
 }
 
-func (s *Session) AddEffect() {
+func (s *Session) AddEffect(eff effect.Effect) {
 	for i := range s.clients {
-		s.clients[i].gameInfo.AddEffect()
+		s.clients[i].gameInfo.AddEffect(eff)
 	}
 }
 

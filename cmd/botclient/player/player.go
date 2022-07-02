@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -143,17 +144,16 @@ func (p *Player) damageProc() bool {
 		netconn.GetInst().SendObject(p.Object)
 	}
 
-	// TODO Effect関係
-	// if dm.HitEffectType > 0 {
-	// 	netconn.GetInst().SendEffect(effect.Effect{
-	// 		ID:       uuid.New().String(),
-	// 		Type:     dm.HitEffectType,
-	// 		X:        p.Object.X,
-	// 		Y:        p.Object.Y,
-	// 		ViewOfsX: dm.ViewOfsX,
-	// 		ViewOfsY: dm.ViewOfsY,
-	// 	})
-	// }
+	if dm.HitEffectType > 0 {
+		netconn.GetInst().SendEffect(effect.Effect{
+			ID:       uuid.New().String(),
+			Type:     dm.HitEffectType,
+			X:        p.Object.X,
+			Y:        p.Object.Y,
+			ViewOfsX: dm.ViewOfsX,
+			ViewOfsY: dm.ViewOfsY,
+		})
+	}
 
 	return true
 }

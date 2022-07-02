@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
@@ -62,7 +63,9 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 				return fmt.Errorf("failed to add damage: %v", err)
 			}
 		case pb.Action_ADDEFFECT:
-			s.AddEffect()
+			var eff effect.Effect
+			effect.Unmarshal(&eff, action.GetEffect())
+			s.AddEffect(eff)
 		case pb.Action_SENDSIGNAL:
 			if err := s.SendSignal(action.GetClientID(), action.GetSignal()); err != nil {
 				logger.Error("Failed to send signal %v: %+v", action.GetSignal(), err)

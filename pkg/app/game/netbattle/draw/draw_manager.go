@@ -9,6 +9,7 @@ import (
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -21,6 +22,7 @@ type Option struct {
 
 type DrawManager struct {
 	imgObjs        [object.TypeMax][]int
+	imgEffects     [effect.TypeMax][]int
 	imgUnknownIcon int
 	playerObjID    string
 }
@@ -34,6 +36,10 @@ func New(playerObjID string) (*DrawManager, error) {
 		return nil, fmt.Errorf("load objects failed: %w", err)
 	}
 
+	if err := res.loadEffects(); err != nil {
+		return nil, fmt.Errorf("load effects failed: %w", err)
+	}
+
 	fname := common.ImagePath + "chipInfo/unknown_icon.png"
 	res.imgUnknownIcon = dxlib.LoadGraph(fname)
 	if res.imgUnknownIcon == -1 {
@@ -45,6 +51,11 @@ func New(playerObjID string) (*DrawManager, error) {
 
 func (m *DrawManager) End() {
 	for _, image := range m.imgObjs {
+		for _, img := range image {
+			dxlib.DeleteGraph(img)
+		}
+	}
+	for _, image := range m.imgEffects {
 		for _, img := range image {
 			dxlib.DeleteGraph(img)
 		}
@@ -83,6 +94,13 @@ func (m *DrawManager) DrawObjects() {
 			ViewChip:       obj.ID != m.playerObjID,
 			ImgUnknownIcon: m.imgUnknownIcon,
 		})
+	}
+}
+
+func (m *DrawManager) DrawEffects() {
+	ginfo := netconn.GetInst().GetGameInfo()
+	for _, eff := range ginfo.Effects {
+		drawEffect(m.imgEffects, eff)
 	}
 }
 
@@ -260,6 +278,52 @@ func (m *DrawManager) loadObjs() error {
 	m.imgObjs[object.TypeShockWave] = make([]int, 7)
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, m.imgObjs[object.TypeShockWave]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	return nil
+}
+
+func (m *DrawManager) loadEffects() error {
+	fname := common.ImagePath + "battle/effect/hit_small.png"
+	m.imgEffects[effect.TypeHitSmallEffect] = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, m.imgEffects[effect.TypeHitSmallEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/hit_big.png"
+	m.imgEffects[effect.TypeHitBigEffect] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, m.imgEffects[effect.TypeHitBigEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/explode.png"
+	m.imgEffects[effect.TypeExplodeEffect] = make([]int, 16)
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, m.imgEffects[effect.TypeExplodeEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/cannon_hit.png"
+	m.imgEffects[effect.TypeCannonHitEffect] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, m.imgEffects[effect.TypeCannonHitEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/effect/spread_hit.png"
+	m.imgEffects[effect.TypeSpreadHitEffect] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, m.imgEffects[effect.TypeSpreadHitEffect]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	tmp := make([]int, 8)
+	fname = common.ImagePath + "battle/effect/vulcan_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	m.imgEffects[effect.TypeVulcanHit1Effect] = []int{}
+	m.imgEffects[effect.TypeVulcanHit2Effect] = []int{}
+	for i := 0; i < 4; i++ {
+		m.imgEffects[effect.TypeVulcanHit1Effect] = append(m.imgEffects[effect.TypeVulcanHit1Effect], tmp[i])
+		m.imgEffects[effect.TypeVulcanHit2Effect] = append(m.imgEffects[effect.TypeVulcanHit2Effect], tmp[i+4])
 	}
 
 	return nil

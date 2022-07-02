@@ -9,6 +9,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
@@ -39,6 +40,7 @@ type ConnectStatus struct {
 type sendObject struct {
 	objects map[string]object.Object
 	damages []damage.Damage
+	effects []effect.Effect
 }
 
 type NetConn struct {
@@ -143,6 +145,11 @@ func (n *NetConn) RemoveDamage(id string) {
 	}
 }
 
+func (n *NetConn) SendEffect(eff effect.Effect) {
+	eff.ClientID = n.config.ClientID
+	n.sendInfo.effects = append(n.sendInfo.effects, eff)
+}
+
 func (n *NetConn) BulkSendData() error {
 	// TODO 一度の通信で送る
 
@@ -175,6 +182,22 @@ func (n *NetConn) BulkSendData() error {
 
 		if err := n.dataStream.Send(req); err != nil {
 			return fmt.Errorf("send damage failed: %w", err)
+		}
+	}
+
+	// Send effects
+	for _, eff := range n.sendInfo.effects {
+		req := &pb.Action{
+			SessionID: n.sessionID,
+			ClientID:  n.config.ClientID,
+			Type:      pb.Action_ADDEFFECT,
+			Data: &pb.Action_Effect{
+				Effect: effect.Marshal(eff),
+			},
+		}
+
+		if err := n.dataStream.Send(req); err != nil {
+			return fmt.Errorf("add effect failed: %w", err)
 		}
 	}
 
@@ -289,4 +312,5 @@ func makeAuthReq(id, key, version string) *pb.Action {
 func (o *sendObject) Init() {
 	o.objects = make(map[string]object.Object)
 	o.damages = []damage.Damage{}
+	o.effects = []effect.Effect{}
 }

@@ -185,6 +185,7 @@ func Draw() {
 	inst.fieldInst.Draw()
 	inst.drawMgr.DrawObjects()
 	inst.playerInst.LocalDraw()
+	inst.drawMgr.DrawEffects()
 
 	switch inst.state {
 	case stateWaiting:
