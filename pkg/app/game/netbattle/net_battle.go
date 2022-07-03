@@ -152,14 +152,14 @@ func Process() error {
 			inst.playerInst.UpdatePA()
 		}
 
-		inst.conn.UpdateObjectsCount()
+		inst.conn.UpdateDataCount()
 		if inst.b4mainInst.Process() {
 			inst.b4mainInst.End()
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
-		inst.conn.UpdateObjectsCount()
+		inst.conn.UpdateDataCount()
 		done, err := inst.playerInst.Process()
 		if err != nil {
 			return fmt.Errorf("player process failed: %w", err)

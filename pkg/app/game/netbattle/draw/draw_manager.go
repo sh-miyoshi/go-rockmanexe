@@ -308,7 +308,7 @@ func (m *DrawManager) loadEffects() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/effect/spread_hit.png"
+	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
 	m.imgEffects[effect.TypeSpreadHitEffect] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, m.imgEffects[effect.TypeSpreadHitEffect]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)

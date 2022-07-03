@@ -205,7 +205,7 @@ func (n *NetConn) BulkSendData() error {
 	return nil
 }
 
-func (n *NetConn) UpdateObjectsCount() {
+func (n *NetConn) UpdateDataCount() {
 	n.gameInfoMu.Lock()
 	defer n.gameInfoMu.Unlock()
 	for i, obj := range n.gameInfo.Objects {
@@ -216,6 +216,10 @@ func (n *NetConn) UpdateObjectsCount() {
 			obj.Count++
 		}
 		n.gameInfo.Objects[i] = obj
+	}
+	for i, eff := range n.gameInfo.Effects {
+		eff.Count++
+		n.gameInfo.Effects[i] = eff
 	}
 }
 
