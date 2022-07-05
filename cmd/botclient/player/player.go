@@ -133,7 +133,7 @@ func (p *Player) damageProc() bool {
 	// debug(回復は考慮しない)
 
 	if dm.BigDamage {
-		p.Object.Invincible = true
+		// p.Object.Invincible = true // インビジ未実装
 		// TODO Skill関係
 		// for _, sid := range p.ManagedSkills {
 		// 	netskill.StopByPlayer(sid)
@@ -145,6 +145,7 @@ func (p *Player) damageProc() bool {
 	}
 
 	if dm.HitEffectType > 0 {
+		logger.Info("Add hit effect %d", dm.HitEffectType)
 		netconn.GetInst().SendEffect(effect.Effect{
 			ID:       uuid.New().String(),
 			Type:     dm.HitEffectType,

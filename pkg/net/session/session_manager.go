@@ -132,8 +132,9 @@ func (s *Session) AddDamage(dm []damage.Damage) error {
 }
 
 func (s *Session) AddEffect(eff effect.Effect) {
-	for i := range s.clients {
-		s.clients[i].gameInfo.AddEffect(eff)
+	for i, c := range s.clients {
+		isMyEff := c.clientID == eff.ClientID
+		s.clients[i].gameInfo.AddEffect(eff, isMyEff)
 	}
 }
 
@@ -248,6 +249,8 @@ func (s *Session) gameInfoPublish() {
 					}
 					return
 				}
+
+				c.gameInfo.Cleanup()
 			}
 
 			after := time.Now().UnixNano() / (1000 * 1000)

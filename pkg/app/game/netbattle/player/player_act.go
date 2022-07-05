@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -72,15 +73,15 @@ func (a *Act) Process() bool {
 
 			for x := a.Object.X + 1; x < appfield.FieldNum.X; x++ {
 				dm := damage.Damage{
-					ID:         uuid.New().String(),
-					PosX:       x,
-					PosY:       y,
-					Power:      power,
-					TTL:        1,
-					TargetType: damage.TargetOtherClient,
-					// HitEffectType: effect.TypeHitSmallEffect, // TODO effect
-					ViewOfsX: rand.Intn(2*5) - 5,
-					ViewOfsY: rand.Intn(2*5) - 5,
+					ID:            uuid.New().String(),
+					PosX:          x,
+					PosY:          y,
+					Power:         power,
+					TTL:           1,
+					TargetType:    damage.TargetOtherClient,
+					HitEffectType: effect.TypeHitSmallEffect,
+					ViewOfsX:      rand.Intn(2*5) - 5,
+					ViewOfsY:      rand.Intn(2*5) - 5,
 				}
 				netconn.GetInst().AddDamage(dm)
 

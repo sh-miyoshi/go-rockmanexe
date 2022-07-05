@@ -54,6 +54,12 @@ func (g *GameInfo) InitPanel(myClientID, enemyClientID string) {
 	}
 }
 
+func (g *GameInfo) Cleanup() {
+	g.Sounds = []int{}
+	g.HitDamages = []damage.Damage{}
+	g.Effects = []effect.Effect{}
+}
+
 func (g *GameInfo) UpdateObject(obj object.Object, isMyObj bool) {
 	if obj.UpdateBaseTime {
 		obj.BaseTime = time.Now()
@@ -85,7 +91,12 @@ func (g *GameInfo) AddDamages(dm []damage.Damage) {
 	g.HitDamages = append(g.HitDamages, dm...)
 }
 
-func (g *GameInfo) AddEffect(eff effect.Effect) {
+func (g *GameInfo) AddEffect(eff effect.Effect, isMyEff bool) {
+	if !isMyEff {
+		eff.X = config.FieldNumX - eff.X - 1
+		eff.ViewOfsX = config.FieldNumX - eff.ViewOfsX - 1
+	}
+
 	g.Effects = append(g.Effects, eff)
 }
 

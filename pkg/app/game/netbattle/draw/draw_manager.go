@@ -100,6 +100,11 @@ func (m *DrawManager) DrawObjects() {
 func (m *DrawManager) DrawEffects() {
 	ginfo := netconn.GetInst().GetGameInfo()
 	for _, eff := range ginfo.Effects {
+		if eff.Count > len(m.imgEffects[eff.Type]) {
+			netconn.GetInst().RemoveEffect(eff.ID)
+			continue
+		}
+
 		drawEffect(m.imgEffects, eff)
 	}
 }

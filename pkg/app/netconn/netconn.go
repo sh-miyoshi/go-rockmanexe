@@ -150,6 +150,18 @@ func (n *NetConn) SendEffect(eff effect.Effect) {
 	n.sendInfo.effects = append(n.sendInfo.effects, eff)
 }
 
+func (n *NetConn) RemoveEffect(id string) {
+	n.gameInfoMu.Lock()
+	defer n.gameInfoMu.Unlock()
+
+	for i, eff := range n.gameInfo.Effects {
+		if eff.ID == id {
+			n.gameInfo.Effects = append(n.gameInfo.Effects[:i], n.gameInfo.Effects[i+1:]...)
+			return
+		}
+	}
+}
+
 func (n *NetConn) BulkSendData() error {
 	// TODO 一度の通信で送る
 
@@ -272,9 +284,16 @@ func (n *NetConn) dataRecv() {
 			logger.Debug("got status update data: %+v", data)
 			n.gameStatus = data.GetStatus()
 		case pb.Data_DATA:
+			var receivedInfo session.GameInfo
 			b := data.GetRawData()
+			receivedInfo.Unmarshal(b)
 			n.gameInfoMu.Lock()
-			n.gameInfo.Unmarshal(b)
+			n.gameInfo.CurrentTime = receivedInfo.CurrentTime
+			n.gameInfo.Objects = receivedInfo.Objects
+			n.gameInfo.Panels = receivedInfo.Panels
+			n.gameInfo.Effects = append(n.gameInfo.Effects, receivedInfo.Effects...)
+			n.gameInfo.HitDamages = append(n.gameInfo.HitDamages, receivedInfo.HitDamages...)
+			n.gameInfo.Sounds = append(n.gameInfo.Sounds, receivedInfo.Sounds...)
 			n.gameInfoMu.Unlock()
 		default:
 			n.connectStatus = ConnectStatus{
