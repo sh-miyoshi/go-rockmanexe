@@ -100,17 +100,22 @@ func (m *DrawManager) DrawObjects() {
 func (m *DrawManager) DrawEffects() {
 	ginfo := netconn.GetInst().GetGameInfo()
 	for _, eff := range ginfo.Effects {
-		if eff.Count > len(m.imgEffects[eff.Type]) {
+		num, delay := m.GetEffectImageInfo(eff.Type)
+		if eff.Count >= num*delay {
 			netconn.GetInst().RemoveEffect(eff.ID)
 			continue
 		}
-
-		drawEffect(m.imgEffects, eff)
+		imgNo := eff.Count / delay
+		drawEffect(m.imgEffects, imgNo, eff)
 	}
 }
 
-func (m *DrawManager) GetImageInfo(objType int) (imageNum, delay int) {
+func (m *DrawManager) GetObjectImageInfo(objType int) (imageNum, delay int) {
 	return len(m.imgObjs[objType]), object.ImageDelays[objType]
+}
+
+func (m *DrawManager) GetEffectImageInfo(effType int) (imageNum, delay int) {
+	return len(m.imgEffects[effType]), effect.Delays[effType]
 }
 
 func (m *DrawManager) loadObjs() error {

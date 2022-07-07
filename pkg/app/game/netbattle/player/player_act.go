@@ -100,7 +100,7 @@ func (a *Act) Process() bool {
 	}
 
 	a.Count++
-	num, delay := a.drawMgr.GetImageInfo(getObjType(a.Type))
+	num, delay := a.drawMgr.GetObjectImageInfo(getObjType(a.Type))
 	num += a.Opts.KeepCount
 	if a.Count > num*delay {
 		// Reset params

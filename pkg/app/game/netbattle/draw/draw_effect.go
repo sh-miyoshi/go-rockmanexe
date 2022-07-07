@@ -7,13 +7,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 )
 
-func drawEffect(images [effect.TypeMax][]int, eff effect.Effect) {
+func drawEffect(images [effect.TypeMax][]int, imgNo int, eff effect.Effect) {
 	view := battlecommon.ViewPos(common.Point{X: eff.X, Y: eff.Y})
-	imgNo := eff.Count
-
-	if imgNo >= len(images[eff.Type]) {
-		imgNo = len(images[eff.Type]) - 1
-	}
 	view.X += eff.ViewOfsX
 	view.Y += eff.ViewOfsY
 
