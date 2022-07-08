@@ -43,7 +43,6 @@ type NetBattle struct {
 	playerInst  *battleplayer.BattlePlayer
 	fieldInst   *field.Field
 	b4mainInst  *b4main.BeforeMain
-	drawMgr     *draw.DrawManager
 }
 
 var (
@@ -77,11 +76,9 @@ func Init(plyr *player.Player) error {
 	if err != nil {
 		return err
 	}
-	inst.drawMgr, err = draw.New(inst.playerInst.Object.ID)
-	if err != nil {
+	if err := draw.Init(inst.playerInst.Object.ID); err != nil {
 		return err
 	}
-	inst.playerInst.InitAct(inst.drawMgr)
 
 	skill.GetInst().Init()
 
@@ -98,9 +95,7 @@ func End() {
 	if inst.fieldInst != nil {
 		inst.fieldInst.End()
 	}
-	if inst.drawMgr != nil {
-		inst.drawMgr.End()
-	}
+	draw.GetInst().End()
 }
 
 func Process() error {
@@ -190,9 +185,9 @@ func Process() error {
 
 func Draw() {
 	inst.fieldInst.Draw()
-	inst.drawMgr.DrawObjects()
+	draw.GetInst().DrawObjects()
 	inst.playerInst.LocalDraw()
-	inst.drawMgr.DrawEffects()
+	draw.GetInst().DrawEffects()
 
 	switch inst.state {
 	case stateWaiting:

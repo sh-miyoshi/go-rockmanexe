@@ -27,26 +27,32 @@ type DrawManager struct {
 	playerObjID    string
 }
 
-func New(playerObjID string) (*DrawManager, error) {
-	res := &DrawManager{
-		playerObjID: playerObjID,
+var (
+	inst DrawManager
+)
+
+func GetInst() *DrawManager {
+	return &inst
+}
+
+func Init(playerObjID string) error {
+	inst.playerObjID = playerObjID
+
+	if err := inst.loadObjs(); err != nil {
+		return fmt.Errorf("load objects failed: %w", err)
 	}
 
-	if err := res.loadObjs(); err != nil {
-		return nil, fmt.Errorf("load objects failed: %w", err)
-	}
-
-	if err := res.loadEffects(); err != nil {
-		return nil, fmt.Errorf("load effects failed: %w", err)
+	if err := inst.loadEffects(); err != nil {
+		return fmt.Errorf("load effects failed: %w", err)
 	}
 
 	fname := common.ImagePath + "chipInfo/unknown_icon.png"
-	res.imgUnknownIcon = dxlib.LoadGraph(fname)
-	if res.imgUnknownIcon == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+	inst.imgUnknownIcon = dxlib.LoadGraph(fname)
+	if inst.imgUnknownIcon == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	return res, nil
+	return nil
 }
 
 func (m *DrawManager) End() {

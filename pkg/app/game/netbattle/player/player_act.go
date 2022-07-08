@@ -30,14 +30,11 @@ type Act struct {
 	Count  int
 	Opts   ActOption
 	Object *object.Object
-
-	drawMgr *draw.DrawManager
 }
 
-func NewAct(drawMgr *draw.DrawManager, obj *object.Object) *Act {
+func NewAct(obj *object.Object) *Act {
 	res := &Act{
-		Object:  obj,
-		drawMgr: drawMgr,
+		Object: obj,
 	}
 	res.Init()
 	return res
@@ -100,7 +97,7 @@ func (a *Act) Process() bool {
 	}
 
 	a.Count++
-	num, delay := a.drawMgr.GetObjectImageInfo(getObjType(a.Type))
+	num, delay := draw.GetInst().GetObjectImageInfo(getObjType(a.Type))
 	num += a.Opts.KeepCount
 	if a.Count > num*delay {
 		// Reset params

@@ -11,7 +11,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -58,6 +57,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		HPMax:      plyr.HP,
 		HitDamages: make(map[string]bool),
 	}
+	res.Act = NewAct(&res.Object)
 
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
@@ -111,10 +111,6 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 
 	logger.Info("Successfully initialized net battle player data")
 	return &res, nil
-}
-
-func (p *BattlePlayer) InitAct(drawMgr *netdraw.DrawManager) {
-	p.Act = NewAct(drawMgr, &p.Object)
 }
 
 func (p *BattlePlayer) End() {
