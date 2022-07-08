@@ -1,7 +1,10 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -27,6 +30,7 @@ var (
 func Init(clientID string) {
 	playerInst = player.New(clientID)
 	connInst = netconn.GetInst()
+	skill.GetInst().Init()
 }
 
 func Process() error {
@@ -61,6 +65,10 @@ func Process() error {
 		case stateMain:
 			if playerInst.Action() {
 				statusChange(stateResult)
+			}
+
+			if err := skill.GetInst().Process(); err != nil {
+				return fmt.Errorf("skill process failed: %w", err)
 			}
 		case stateResult:
 			panic("not implemented yet")

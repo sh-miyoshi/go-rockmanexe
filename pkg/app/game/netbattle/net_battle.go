@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -81,6 +82,8 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 	inst.playerInst.InitAct(inst.drawMgr)
+
+	skill.GetInst().Init()
 
 	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
@@ -167,6 +170,10 @@ func Process() error {
 		if done {
 			stateChange(stateResult)
 			return nil
+		}
+
+		if err := skill.GetInst().Process(); err != nil {
+			return fmt.Errorf("skill process failed: %w", err)
 		}
 	case stateResult:
 		panic("未実装")
