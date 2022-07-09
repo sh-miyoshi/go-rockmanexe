@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 )
 
 type Argument struct {
@@ -52,7 +53,12 @@ func (m *SkillManager) Process() error {
 func (m *SkillManager) Add(skillType int, args Argument) string {
 	id := uuid.New().String()
 
-	// TODO
+	switch skillType {
+	case skill.SkillCannon:
+		m.skills[id] = newCannon(args.X, args.Y, args.Power, skill.TypeNormalCannon)
+	default:
+		panic(fmt.Sprintf("skill %d is not implemented yet", skillType))
+	}
 
 	return id
 }

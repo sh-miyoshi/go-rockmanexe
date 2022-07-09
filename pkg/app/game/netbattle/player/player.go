@@ -6,12 +6,15 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -23,14 +26,15 @@ import (
 )
 
 type BattlePlayer struct {
-	Object      object.Object
-	ChipFolder  []player.ChipInfo
-	GaugeCount  uint
-	ChargeCount uint
-	ShotPower   uint
-	Act         *Act
-	HPMax       uint
-	HitDamages  map[string]bool
+	Object        object.Object
+	ChipFolder    []player.ChipInfo
+	GaugeCount    uint
+	ChargeCount   uint
+	ShotPower     uint
+	Act           *Act
+	HPMax         uint
+	HitDamages    map[string]bool
+	ManagedSkills []string
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -53,9 +57,10 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			ClientID: cfg.Net.ClientID,
 			Hittable: true,
 		},
-		ShotPower:  plyr.ShotPower,
-		HPMax:      plyr.HP,
-		HitDamages: make(map[string]bool),
+		ShotPower:     plyr.ShotPower,
+		HPMax:         plyr.HP,
+		HitDamages:    make(map[string]bool),
+		ManagedSkills: []string{},
 	}
 	res.Act = NewAct(&res.Object)
 
@@ -207,6 +212,29 @@ func (p *BattlePlayer) Process() (bool, error) {
 			p.Act.Set(battlecommon.PlayerActMove, &ActOption{
 				MoveDirect: moveDirect,
 			})
+		}
+	}
+
+	// Chip use
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if len(p.Object.Chips) > 0 {
+			c := chip.Get(p.Object.Chips[0].ID)
+			if c.PlayerAct != -1 {
+				p.Act.Set(c.PlayerAct, &ActOption{
+					KeepCount: c.KeepCount,
+				})
+			}
+
+			sid := skill.GetSkillID(c.ID)
+			id := netskill.GetInst().Add(sid, netskill.Argument{
+				X:     p.Object.X,
+				Y:     p.Object.Y,
+				Power: int(c.Power),
+			})
+			p.ManagedSkills = append(p.ManagedSkills, id)
+
+			p.Object.Chips = p.Object.Chips[1:]
+			return false, nil
 		}
 	}
 

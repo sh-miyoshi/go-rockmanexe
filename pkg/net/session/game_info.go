@@ -61,6 +61,7 @@ func (g *GameInfo) Cleanup() {
 }
 
 func (g *GameInfo) UpdateObject(obj object.Object, isMyObj bool) {
+	obj.Count = 0
 	if obj.UpdateBaseTime {
 		obj.BaseTime = time.Now()
 	}
@@ -71,7 +72,15 @@ func (g *GameInfo) UpdateObject(obj object.Object, isMyObj bool) {
 		obj.TargetX = config.FieldNumX - obj.TargetX - 1
 	}
 
-	logger.Debug("Updated Object: %+v", obj)
+	if o, ok := g.Objects[obj.ID]; ok {
+		if !obj.UpdateBaseTime {
+			obj.BaseTime = o.BaseTime
+		}
+		logger.Debug("Update Object: %+v", obj)
+	} else {
+		logger.Debug("New Object: %+v", obj)
+	}
+
 	g.Objects[obj.ID] = obj
 }
 
