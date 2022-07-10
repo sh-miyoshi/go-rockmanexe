@@ -119,7 +119,19 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 }
 
 func (p *BattlePlayer) End() {
-	// TODO imageの解放
+	dxlib.DeleteGraph(p.imgHPFrame)
+	dxlib.DeleteGraph(p.imgGaugeFrame)
+	dxlib.DeleteGraph(p.imgMindFrame)
+
+	for _, img := range p.imgGaugeMax {
+		dxlib.DeleteGraph(img)
+	}
+	p.imgGaugeMax = []int{}
+
+	for _, img := range p.imgMinds {
+		dxlib.DeleteGraph(img)
+	}
+	p.imgMinds = []int{}
 
 	for i := 0; i < 2; i++ {
 		for _, img := range p.imgCharge[i] {
