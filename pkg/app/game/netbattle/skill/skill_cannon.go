@@ -72,9 +72,8 @@ func (p *cannon) Process() (bool, error) {
 }
 
 func (p *cannon) RemoveObject() {
-	// TODO
-	// netconn.GetInst().RemoveObject(p.atkID)
-	// netconn.GetInst().RemoveObject(p.bodyID)
+	netconn.GetInst().RemoveObject(p.atkID)
+	netconn.GetInst().RemoveObject(p.bodyID)
 }
 
 func (p *cannon) StopByPlayer() {

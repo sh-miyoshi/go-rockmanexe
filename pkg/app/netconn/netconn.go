@@ -38,9 +38,10 @@ type ConnectStatus struct {
 }
 
 type sendObject struct {
-	objects map[string]object.Object
-	damages []damage.Damage
-	effects []effect.Effect
+	objects       map[string]object.Object
+	removeObjects []object.Object
+	damages       []damage.Damage
+	effects       []effect.Effect
 }
 
 type NetConn struct {
@@ -128,6 +129,13 @@ func (n *NetConn) SendObject(obj object.Object) {
 	n.sendInfo.objects[obj.ID] = obj
 }
 
+func (n *NetConn) RemoveObject(objID string) {
+	obj := object.Object{
+		ID: objID,
+	}
+	n.sendInfo.removeObjects = append(n.sendInfo.removeObjects, obj)
+}
+
 func (n *NetConn) AddDamage(dm damage.Damage) {
 	dm.ClientID = n.config.ClientID
 	n.sendInfo.damages = append(n.sendInfo.damages, dm)
@@ -178,6 +186,22 @@ func (n *NetConn) BulkSendData() error {
 
 		if err := n.dataStream.Send(req); err != nil {
 			return fmt.Errorf("send object failed: %w", err)
+		}
+	}
+
+	// Send remove objects
+	for _, obj := range n.sendInfo.removeObjects {
+		req := &pb.Action{
+			SessionID: n.sessionID,
+			ClientID:  n.config.ClientID,
+			Type:      pb.Action_REMOVEOBJECT,
+			Data: &pb.Action_ObjectInfo{
+				ObjectInfo: object.Marshal(obj),
+			},
+		}
+
+		if err := n.dataStream.Send(req); err != nil {
+			return fmt.Errorf("remove object failed: %w", err)
 		}
 	}
 
@@ -334,6 +358,7 @@ func makeAuthReq(id, key, version string) *pb.Action {
 
 func (o *sendObject) Init() {
 	o.objects = make(map[string]object.Object)
+	o.removeObjects = []object.Object{}
 	o.damages = []damage.Damage{}
 	o.effects = []effect.Effect{}
 }

@@ -89,7 +89,7 @@ func (g *GameInfo) RemoveObject(id string) {
 }
 
 func (g *GameInfo) AddSkill() {
-	// TODO
+	panic("TODO")
 }
 
 func (g *GameInfo) AddDamages(dm []damage.Damage) {
