@@ -56,6 +56,8 @@ func (m *SkillManager) Add(skillType int, args Argument) string {
 	switch skillType {
 	case skill.SkillCannon:
 		m.skills[id] = newCannon(args.X, args.Y, args.Power, skill.TypeNormalCannon)
+	case skill.SkillMiniBomb:
+		m.skills[id] = newMiniBomb(args.X, args.Y, args.Power)
 	default:
 		panic(fmt.Sprintf("skill %d is not implemented yet", skillType))
 	}
