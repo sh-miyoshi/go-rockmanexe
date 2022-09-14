@@ -23,7 +23,7 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 	for {
 		action, err := stream.Recv()
 		if err != nil {
-			logger.Info("Failed to recv from client: %w", err)
+			logger.Info("Failed to recv from client: %+v", err)
 			return nil
 		}
 		logger.Debug("Got action: %+v", action)
