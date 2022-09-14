@@ -4,6 +4,8 @@
 
 ### 足りない機能
 
+- インビジ状態
+
 #### botclient
 
 - skill
@@ -14,38 +16,23 @@
   - vulcan
 - app
   - stateResult
-- damage処理
-  - 与える
-  - 受ける
 
 #### oldnet
 
-- damage
-- effect
 - field
 - session
 
 #### netconn
 
-- RemoveObject
-- SendDamages
-- SendEffect
 - AddSound
 - GetOpponentUserID
-- RemoveEffects
-- RemoveDamage
 - RemoveSounds
 
 #### netbattle
 
-- draw
-  - effect
-- effect
-  - 全部
 - player
   - chip use
 - skill
-  - cannon
   - minibomb
   - recover
   - shockwave
