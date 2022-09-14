@@ -22,6 +22,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
@@ -204,6 +205,20 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.Act.Process() {
 		return false, nil
+	}
+
+	// Go to chip folder
+	if p.GaugeCount >= battlecommon.GaugeMaxCount {
+		if p.GaugeCount == battlecommon.GaugeMaxCount {
+			sound.On(sound.SEGaugeMax)
+		}
+
+		// State change to chip select
+		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
+			netconn.GetInst().SendSignal(pb.Action_GOCHIPSELECT)
+
+			return false, nil
+		}
 	}
 
 	// Move

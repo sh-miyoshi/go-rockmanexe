@@ -37,13 +37,14 @@ type clientInfo struct {
 }
 
 type Session struct {
-	id        string
-	clients   [2]clientInfo
-	status    int
-	expiresAt time.Time
-	dmMgr     *damage.Manager
-	cancel    chan struct{}
-	exitErr   chan sessionError
+	id         string
+	clients    [2]clientInfo
+	status     int
+	nextStatus int
+	expiresAt  time.Time
+	dmMgr      *damage.Manager
+	cancel     chan struct{}
+	exitErr    chan sessionError
 }
 
 type SessionManager struct {
@@ -145,9 +146,11 @@ func (s *Session) SendSignal(clientID string, signal pb.Action_SignalType) error
 			case pb.Action_CHIPSEND:
 				s.clients[i].chipSent = true
 			case pb.Action_GOCHIPSELECT:
-				// TODO
+				s.nextStatus = statusChipSelectWait
 			case pb.Action_PLAYERDEAD:
-				// TODO
+				s.nextStatus = statusGameEnd
+			default:
+				return fmt.Errorf("got unexpected signal type: %d", signal)
 			}
 			return nil
 		}
@@ -289,9 +292,18 @@ func (s *Session) updateGameStatus() *sessionError {
 		for i := range s.clients {
 			s.clients[i].chipSent = false
 		}
+		s.nextStatus = -1
 		s.changeStatus(statusActing)
 	case statusActing:
-		// TODO
+		switch s.nextStatus {
+		case statusChipSelectWait:
+			if err := s.sendStatusToClients(pb.Data_CHIPSELECTWAIT); err != nil {
+				return err
+			}
+			s.changeStatus(statusChipSelectWait)
+		case statusGameEnd:
+			panic("TODO")
+		}
 	case statusGameEnd:
 		// TODO
 	}

@@ -170,6 +170,8 @@ func Process() error {
 		if err := skill.GetInst().Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
+
+		// TODO
 	case stateResult:
 		panic("未実装")
 	}
