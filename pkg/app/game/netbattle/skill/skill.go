@@ -50,6 +50,11 @@ func (m *SkillManager) Process() error {
 	return nil
 }
 
+func (m *SkillManager) Exists(id string) bool {
+	_, ok := m.skills[id]
+	return ok
+}
+
 func (m *SkillManager) Add(skillType int, args Argument) string {
 	id := uuid.New().String()
 

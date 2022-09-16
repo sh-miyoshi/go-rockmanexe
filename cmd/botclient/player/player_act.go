@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
@@ -16,6 +17,25 @@ type Act interface {
 	Process() bool
 	Interval() int
 }
+
+/*
+
+type ActTemplate struct {
+}
+
+func NewActTemplate() *ActTemplate {
+	return &ActTemplate{}
+}
+
+func (a *ActTemplate) Process() bool {
+	return false
+}
+
+func (a *ActTemplate) Interval() int {
+	return 60
+}
+
+*/
 
 type ActWait struct {
 	waitFrame int
@@ -122,4 +142,35 @@ func (a *ActBuster) Process() bool {
 
 func (a *ActBuster) Interval() int {
 	return 30
+}
+
+type ActSkill struct {
+	id        string
+	skillType int
+	obj       *object.Object
+}
+
+func NewActSkill(skillType int, obj *object.Object) *ActSkill {
+	return &ActSkill{
+		skillType: skillType,
+		obj:       obj,
+	}
+}
+
+func (a *ActSkill) Process() bool {
+	// TODO ロックマンのActionが変えられてない
+
+	if a.id == "" {
+		a.id = skill.GetInst().Add(a.skillType, skill.Argument{
+			X:     a.obj.X,
+			Y:     a.obj.Y,
+			Power: 10, // debug(とりあえず全部10にする)
+		})
+	}
+
+	return skill.GetInst().Exists(a.id)
+}
+
+func (a *ActSkill) Interval() int {
+	return 60
 }

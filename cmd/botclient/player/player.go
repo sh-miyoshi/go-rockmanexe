@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -96,9 +97,11 @@ func (p *Player) initActTable() {
 	logger.Info("initialize player act table")
 
 	p.actTable = []Act{
-		NewActWait(150),
-		NewActMove(&p.Object, 0, 1),
-		NewActBuster(&p.Object),
+		NewActWait(30),
+		NewActSkill(skill.SkillCannon, &p.Object),
+		// NewActMove(&p.Object, 0, 1),
+		// NewActBuster(&p.Object),
+		// NewActSkill(skill.SkillRecover, &p.Object),
 	}
 	p.currentActNo = 0
 	p.currentActInterval = p.actTable[0].Interval()
