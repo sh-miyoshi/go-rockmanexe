@@ -3,8 +3,9 @@ package player
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
+	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
@@ -158,17 +159,23 @@ func NewActSkill(skillType int, obj *object.Object) *ActSkill {
 }
 
 func (a *ActSkill) Process() bool {
-	// TODO ロックマンのActionが変えられてない
-
 	if a.id == "" {
-		a.id = skill.GetInst().Add(a.skillType, skill.Argument{
+		a.id = netskill.GetInst().Add(a.skillType, netskill.Argument{
 			X:     a.obj.X,
 			Y:     a.obj.Y,
 			Power: 10, // debug(とりあえず全部10にする)
 		})
+
+		a.obj.UpdateBaseTime = true
+		switch a.skillType {
+		case skill.SkillCannon:
+			a.obj.Type = object.TypeRockmanCannon
+		}
+		netconn.GetInst().SendObject(*a.obj)
+		return false
 	}
 
-	return skill.GetInst().Exists(a.id)
+	return !netskill.GetInst().Exists(a.id)
 }
 
 func (a *ActSkill) Interval() int {
