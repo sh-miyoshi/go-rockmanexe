@@ -63,16 +63,24 @@ func Process() error {
 			status := connInst.GetGameStatus()
 			if status == pb.Data_ACTING {
 				statusChange(stateBeforeMain)
+				continue
 			}
 		case stateBeforeMain:
 			statusChange(stateMain)
 		case stateMain:
 			if playerInst.Action() {
 				statusChange(stateResult)
+				continue
 			}
 
 			if err := skill.GetInst().Process(); err != nil {
 				return fmt.Errorf("skill process failed: %w", err)
+			}
+
+			status := connInst.GetGameStatus()
+			if status == pb.Data_CHIPSELECTWAIT {
+				statusChange(stateChipSelect)
+				continue
 			}
 		case stateResult:
 			panic("not implemented yet")

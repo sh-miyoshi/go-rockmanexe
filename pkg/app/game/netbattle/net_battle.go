@@ -170,6 +170,12 @@ func Process() error {
 		if err := skill.GetInst().Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
+
+		status := inst.conn.GetGameStatus()
+		if status == pb.Data_CHIPSELECTWAIT {
+			stateChange(stateChipSelect)
+			return nil
+		}
 	case stateResult:
 		panic("未実装")
 	}
