@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -33,6 +34,7 @@ func Init(clientID string) {
 	skill.GetInst().Init()
 	playerInst = player.New(clientID)
 	connInst = netconn.GetInst()
+	draw.Init(playerInst.Object.ID)
 }
 
 func Process() error {
