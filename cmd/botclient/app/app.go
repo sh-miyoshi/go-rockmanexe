@@ -6,7 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -29,7 +29,7 @@ var (
 )
 
 func Init(clientID string) {
-	sound.DisableSE()
+	dxlib.Disable()
 	skill.GetInst().Init()
 	playerInst = player.New(clientID)
 	connInst = netconn.GetInst()

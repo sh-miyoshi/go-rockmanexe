@@ -56,7 +56,6 @@ const (
 )
 
 var (
-	disabled     = false
 	soundEffects = [seMax]int{}
 )
 
@@ -123,15 +122,7 @@ func Init() error {
 	return nil
 }
 
-func DisableSE() {
-	disabled = true
-}
-
 func On(typ SEType) {
-	if disabled {
-		return
-	}
-
 	if typ == SENone {
 		return
 	}
