@@ -98,7 +98,12 @@ func (p *Player) initActTable() {
 
 	p.actTable = []Act{
 		NewActWait(30),
-		NewActSkill(skill.SkillCannon, &p.Object),
+		NewActSkill(skill.SkillPlayerShockWave, &p.Object),
+		NewActSkill(skill.SkillSpreadGun, &p.Object),
+		NewActSkill(skill.SkillSword, &p.Object),
+		NewActSkill(skill.SkillThunderBall, &p.Object),
+		NewActSkill(skill.SkillVulcan1, &p.Object),
+		NewActSkill(skill.SkillWideShot, &p.Object),
 		// NewActMove(&p.Object, 0, 1),
 		// NewActBuster(&p.Object),
 		// NewActSkill(skill.SkillRecover, &p.Object),

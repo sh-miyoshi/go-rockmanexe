@@ -31,9 +31,9 @@ var (
 
 func Init(clientID string) {
 	dxlib.Disable()
-	skill.GetInst().Init()
 	playerInst = player.New(clientID)
 	connInst = netconn.GetInst()
+	skill.GetInst().Init(playerInst.Object.ID)
 	draw.Init(playerInst.Object.ID)
 }
 

@@ -80,7 +80,7 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
-	skill.GetInst().Init()
+	skill.GetInst().Init(inst.playerInst.Object.ID)
 
 	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
