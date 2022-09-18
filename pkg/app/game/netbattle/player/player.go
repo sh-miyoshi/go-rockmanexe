@@ -179,6 +179,27 @@ func (p *BattlePlayer) LocalDraw() {
 		Y: p.Object.Y,
 	})
 
+	// Show selected chip icons
+	if n := len(p.Object.Chips); n > 0 {
+		// Show current chip info
+		c := chip.Get(p.Object.Chips[0].ID)
+		powTxt := ""
+		if c.Power > 0 && !c.ForMe {
+			powTxt = fmt.Sprintf("%d", c.Power)
+		}
+		draw.String(5, common.ScreenSize.Y-20, 0xffffff, "%s %s", c.Name, powTxt)
+
+		const px = 3
+		max := n * px
+		for i := 0; i < n; i++ {
+			x := appfield.PanelSize.X*p.Object.X + appfield.PanelSize.X/2 - 2 + (i * px) - max
+			y := appfield.DrawPanelTopY + appfield.PanelSize.Y*p.Object.Y - 10 - 81 + (i * px) - max
+			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
+			// draw from the end
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.Object.Chips[n-1-i].ID, true), true)
+		}
+	}
+
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0
