@@ -43,6 +43,7 @@ func Process() error {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
+MAIN_LOOP:
 	for {
 		switch appStatus {
 		case stateWaiting:
@@ -78,12 +79,22 @@ func Process() error {
 			}
 
 			status := connInst.GetGameStatus()
-			if status == pb.Data_CHIPSELECTWAIT {
+			switch status {
+			case pb.Data_CHIPSELECTWAIT:
 				statusChange(stateChipSelect)
-				continue
+				continue MAIN_LOOP
+			case pb.Data_GAMEEND:
+				statusChange(stateResult)
+				continue MAIN_LOOP
 			}
 		case stateResult:
-			panic("not implemented yet")
+			logger.Info("Reached to state result")
+			if playerInst.Object.HP == 0 {
+				logger.Info("bot client lose")
+			} else {
+				logger.Info("bot client win")
+			}
+			return nil
 		}
 
 		if err := connInst.BulkSendData(); err != nil {

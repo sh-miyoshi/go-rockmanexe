@@ -59,4 +59,5 @@ func main() {
 	if err := app.Process(); err != nil {
 		logger.Error("Failed to run app: %v", err)
 	}
+	logger.Info("Successfully closed app")
 }

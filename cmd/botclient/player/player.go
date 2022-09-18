@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -28,7 +27,7 @@ func New(clientID string) *Player {
 			ID:             uuid.New().String(),
 			ClientID:       clientID,
 			Type:           object.TypeRockmanStand,
-			HP:             150,
+			HP:             10,
 			X:              1,
 			Y:              1,
 			Hittable:       true,
@@ -64,6 +63,7 @@ func (p *Player) ChipSelect() error {
 func (p *Player) Action() bool {
 	if p.Object.HP <= 0 {
 		// Player deleted
+		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true
 	}
 
@@ -98,12 +98,12 @@ func (p *Player) initActTable() {
 
 	p.actTable = []Act{
 		NewActWait(30),
-		NewActSkill(skill.SkillPlayerShockWave, &p.Object),
-		NewActSkill(skill.SkillSpreadGun, &p.Object),
-		NewActSkill(skill.SkillSword, &p.Object),
-		NewActSkill(skill.SkillThunderBall, &p.Object),
-		NewActSkill(skill.SkillVulcan1, &p.Object),
-		NewActSkill(skill.SkillWideShot, &p.Object),
+		// NewActSkill(skill.SkillPlayerShockWave, &p.Object),
+		// NewActSkill(skill.SkillSpreadGun, &p.Object),
+		// NewActSkill(skill.SkillSword, &p.Object),
+		// NewActSkill(skill.SkillThunderBall, &p.Object),
+		// NewActSkill(skill.SkillVulcan1, &p.Object),
+		// NewActSkill(skill.SkillWideShot, &p.Object),
 		// NewActMove(&p.Object, 0, 1),
 		// NewActBuster(&p.Object),
 		// NewActSkill(skill.SkillRecover, &p.Object),

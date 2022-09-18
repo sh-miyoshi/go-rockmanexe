@@ -217,6 +217,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
 	if p.Object.HP <= 0 {
+		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true, nil
 	}
 
