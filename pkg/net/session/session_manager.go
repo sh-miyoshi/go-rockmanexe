@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -55,6 +56,7 @@ var (
 	inst = &SessionManager{
 		sessions: make(map[string]*Session),
 	}
+	errSendFailed = errors.New("data send failed")
 )
 
 func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
@@ -168,14 +170,28 @@ func (s *Session) start() {
 
 func (s *Session) errorHandler() {
 	err := <-s.exitErr
-	// TODO publish to clients
+
+	if err.reason != nil {
+		if err.reason == errSendFailed {
+			for _, c := range s.clients {
+				if c.dataStream == nil || c.clientID == err.generatorClientID {
+					continue
+				}
+
+				// publish to alive clients
+				c.dataStream.Send(&pb.Data{
+					Type: pb.Data_UPDATESTATUS,
+					Data: &pb.Data_Status_{
+						Status: pb.Data_GAMEEND,
+					},
+				})
+			}
+		}
+		logger.Error("Got error in session %s: %+v", s.id, err.reason)
+	}
 
 	close(s.cancel)
 	delete(inst.sessions, s.id)
-
-	if err.reason != nil {
-		logger.Error("Got error in session %s: %+v", s.id, err)
-	}
 }
 
 func (s *Session) frameProc() {
@@ -246,9 +262,10 @@ func (s *Session) gameInfoPublish() {
 					},
 				})
 				if err != nil {
+					logger.Error("failed to send game info to client %s: %v", c.clientID, err)
 					s.exitErr <- sessionError{
 						generatorClientID: c.clientID,
-						reason:            fmt.Errorf("failed to send game info: %v", err),
+						reason:            errSendFailed,
 					}
 					return
 				}
@@ -302,7 +319,10 @@ func (s *Session) updateGameStatus() *sessionError {
 			}
 			s.changeStatus(statusChipSelectWait)
 		case statusGameEnd:
-			panic("TODO")
+			if err := s.sendStatusToClients(pb.Data_GAMEEND); err != nil {
+				return err
+			}
+			s.changeStatus(statusGameEnd)
 		}
 	case statusGameEnd:
 		// TODO
@@ -329,9 +349,10 @@ func (s *Session) sendStatusToClients(st pb.Data_Status) *sessionError {
 			},
 		})
 		if err != nil {
+			logger.Error("failed to send status to client %s: %v", c.clientID, err)
 			return &sessionError{
 				generatorClientID: c.clientID,
-				reason:            fmt.Errorf("failed to send status to client %s: %v", c.clientID, err),
+				reason:            errSendFailed,
 			}
 		}
 	}

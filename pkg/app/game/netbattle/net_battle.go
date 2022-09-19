@@ -172,8 +172,12 @@ func Process() error {
 		}
 
 		status := inst.conn.GetGameStatus()
-		if status == pb.Data_CHIPSELECTWAIT {
+		switch status {
+		case pb.Data_CHIPSELECTWAIT:
 			stateChange(stateChipSelect)
+			return nil
+		case pb.Data_GAMEEND:
+			stateChange(stateResult)
 			return nil
 		}
 	case stateResult:

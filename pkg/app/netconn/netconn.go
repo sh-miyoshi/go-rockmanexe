@@ -171,6 +171,10 @@ func (n *NetConn) RemoveEffect(id string) {
 }
 
 func (n *NetConn) BulkSendData() error {
+	if n.gameStatus == pb.Data_GAMEEND {
+		return nil
+	}
+
 	// TODO 一度の通信で送る
 
 	// Send objects
