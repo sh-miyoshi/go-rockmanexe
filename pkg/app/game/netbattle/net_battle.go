@@ -6,10 +6,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
@@ -43,6 +45,7 @@ type NetBattle struct {
 	playerInst  *battleplayer.BattlePlayer
 	fieldInst   *field.Field
 	b4mainInst  *b4main.BeforeMain
+	resultInst  *titlemsg.TitleMsg
 }
 
 var (
@@ -181,7 +184,28 @@ func Process() error {
 			return nil
 		}
 	case stateResult:
-		panic("未実装")
+		if inst.stateCount == 0 {
+			netconn.GetInst().Disconnect()
+
+			fname := common.ImagePath + "battle/msg_win.png"
+			if inst.playerInst.Object.HP <= 0 {
+				fname = common.ImagePath + "battle/msg_lose.png"
+			}
+
+			var err error
+			inst.resultInst, err = titlemsg.New(fname, 60)
+			if err != nil {
+				return fmt.Errorf("failed to initialize result: %w", err)
+			}
+		}
+
+		if inst.resultInst.Process() {
+			inst.resultInst.End()
+			if inst.playerInst.Object.HP <= 0 {
+				return battle.ErrLose
+			}
+			return battle.ErrWin
+		}
 	}
 	// TODO
 
@@ -223,7 +247,10 @@ func Draw() {
 	case stateMain:
 		inst.playerInst.DrawFrame(false, true)
 	case stateResult:
-		panic("未実装")
+		inst.playerInst.DrawFrame(false, true)
+		if inst.resultInst != nil {
+			inst.resultInst.Draw()
+		}
 	}
 }
 
