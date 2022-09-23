@@ -18,10 +18,10 @@ message Action {
         AUTHENTICATE = 0;
         UPDATEOBJECT = 1;
         REMOVEOBJECT = 2;
-        ADDSKILL = 3;
         ADDDAMAGE = 4;
         ADDEFFECT = 5;
         SENDSIGNAL = 6;
+        ADDSOUND = 7;
     }
 
     enum SignalType {
@@ -37,10 +37,10 @@ message Action {
     oneof data {
         AuthRequest req = 4;
         bytes objectInfo = 5;
-        bytes skillInfo = 6;
         bytes damageInfo = 7;
         bytes effect = 8;
         SignalType signal = 9;
+        bytes sound = 10;
     }
 }
 

@@ -10,6 +10,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
 )
 
 type NetConn struct {
@@ -53,8 +54,6 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 			var obj object.Object
 			object.Unmarshal(&obj, action.GetObjectInfo())
 			s.RemoveObject(obj.ID)
-		case pb.Action_ADDSKILL:
-			s.AddSkill()
 		case pb.Action_ADDDAMAGE:
 			var dm []damage.Damage
 			damage.Unmarshal(&dm, action.GetDamageInfo())
@@ -71,6 +70,10 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 				logger.Error("Failed to send signal %v: %+v", action.GetSignal(), err)
 				return fmt.Errorf("failed to send signal: %v", err)
 			}
+		case pb.Action_ADDSOUND:
+			var se sound.Sound
+			sound.Unmarshal(&se, action.GetSound())
+			s.AddSound(se)
 		default:
 			return fmt.Errorf("invalid action type: %v", action.GetType())
 		}

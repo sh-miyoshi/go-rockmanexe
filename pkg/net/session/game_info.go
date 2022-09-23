@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
 )
 
 type PanelInfo struct {
@@ -22,7 +23,7 @@ type GameInfo struct {
 	CurrentTime time.Time
 	Objects     map[string]object.Object
 	Panels      [config.FieldNumX][config.FieldNumY]PanelInfo
-	Sounds      []int
+	Sounds      []sound.Sound
 	HitDamages  []damage.Damage
 	Effects     []effect.Effect
 }
@@ -55,7 +56,7 @@ func (g *GameInfo) InitPanel(myClientID, enemyClientID string) {
 }
 
 func (g *GameInfo) Cleanup() {
-	g.Sounds = []int{}
+	g.Sounds = []sound.Sound{}
 	g.HitDamages = []damage.Damage{}
 	g.Effects = []effect.Effect{}
 }
@@ -88,10 +89,6 @@ func (g *GameInfo) RemoveObject(id string) {
 	delete(g.Objects, id)
 }
 
-func (g *GameInfo) AddSkill() {
-	panic("TODO")
-}
-
 func (g *GameInfo) AddDamages(dm []damage.Damage) {
 	if len(dm) == 0 {
 		return
@@ -107,6 +104,10 @@ func (g *GameInfo) AddEffect(eff effect.Effect, isMyEff bool) {
 	}
 
 	g.Effects = append(g.Effects, eff)
+}
+
+func (g *GameInfo) AddSound(se sound.Sound) {
+	g.Sounds = append(g.Sounds, se)
 }
 
 func (g *GameInfo) Marshal() []byte {

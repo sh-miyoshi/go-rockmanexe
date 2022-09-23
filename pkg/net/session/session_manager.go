@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
 )
 
 const (
@@ -124,12 +125,6 @@ func (s *Session) RemoveObject(id string) {
 	}
 }
 
-func (s *Session) AddSkill() {
-	for i := range s.clients {
-		s.clients[i].gameInfo.AddSkill()
-	}
-}
-
 func (s *Session) AddDamage(dm []damage.Damage) error {
 	return s.dmMgr.Add(dm)
 }
@@ -138,6 +133,15 @@ func (s *Session) AddEffect(eff effect.Effect) {
 	for i, c := range s.clients {
 		isMyEff := c.clientID == eff.ClientID
 		s.clients[i].gameInfo.AddEffect(eff, isMyEff)
+	}
+}
+
+func (s *Session) AddSound(se sound.Sound) {
+	for i, c := range s.clients {
+		// 自分のSEはローカルで流すので相手に流れてほしいSEのみを追加する
+		if c.clientID != se.ClientID {
+			s.clients[i].gameInfo.AddSound(se)
+		}
 	}
 }
 
