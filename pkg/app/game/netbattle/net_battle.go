@@ -105,6 +105,11 @@ func Process() error {
 	inst.gameCount++
 	inst.fieldInst.Update()
 
+	// Sound process
+	for _, s := range netconn.GetInst().GetGameInfo().Sounds {
+		sound.On(sound.SEType(s.SEType))
+	}
+
 	switch inst.state {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()

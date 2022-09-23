@@ -14,6 +14,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -43,6 +44,7 @@ type sendObject struct {
 	removeObjects []object.Object
 	damages       []damage.Damage
 	effects       []effect.Effect
+	sounds        []sound.Sound
 }
 
 type NetConn struct {
@@ -172,6 +174,14 @@ func (n *NetConn) RemoveEffect(id string) {
 	}
 }
 
+func (n *NetConn) AddSound(seType int) {
+	se := sound.Sound{
+		ClientID: n.config.ClientID,
+		SEType:   seType,
+	}
+	n.sendInfo.sounds = append(n.sendInfo.sounds, se)
+}
+
 func (n *NetConn) BulkSendData() error {
 	if n.gameStatus == pb.Data_GAMEEND {
 		return nil
@@ -240,6 +250,22 @@ func (n *NetConn) BulkSendData() error {
 
 		if err := n.dataStream.Send(req); err != nil {
 			return fmt.Errorf("add effect failed: %w", err)
+		}
+	}
+
+	// Send sounds
+	for _, s := range n.sendInfo.sounds {
+		req := &pb.Action{
+			SessionID: n.sessionID,
+			ClientID:  n.config.ClientID,
+			Type:      pb.Action_ADDSOUND,
+			Data: &pb.Action_Sound{
+				Sound: sound.Marshal(s),
+			},
+		}
+
+		if err := n.dataStream.Send(req); err != nil {
+			return fmt.Errorf("add sound failed: %w", err)
 		}
 	}
 
