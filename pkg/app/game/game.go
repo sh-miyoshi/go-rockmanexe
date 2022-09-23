@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
 
@@ -124,8 +125,8 @@ func Process() error {
 			netbattle.End()
 
 			history := player.History{
-				Date: time.Now(),
-				// OpponentID: netbattle.GetOpponentUserID(), // TODO
+				Date:       time.Now(),
+				OpponentID: netconn.GetInst().GetOpponentUserID(),
 			}
 
 			if errors.Is(err, battle.ErrWin) {
@@ -165,7 +166,6 @@ func Process() error {
 	return nil
 }
 
-// Draw ...
 func Draw() {
 	if count == 0 {
 		// skip if initialize phase

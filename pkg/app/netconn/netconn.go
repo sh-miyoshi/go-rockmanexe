@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -50,6 +51,7 @@ type NetConn struct {
 	dataStream    pb.NetConn_TransDataClient
 	connectStatus ConnectStatus
 	sessionID     string
+	allUserIDs    []string
 
 	gameStatus pb.Data_Status
 	gameInfo   session.GameInfo
@@ -263,6 +265,24 @@ func (n *NetConn) UpdateDataCount() {
 	}
 }
 
+func (n *NetConn) GetOpponentUserID() string {
+	for _, rawID := range n.allUserIDs {
+		t := strings.Split(rawID, ":")
+		if len(t) != 2 {
+			logger.Error("User ID data maybe broken: %v", n.allUserIDs)
+			continue
+		}
+		cid := t[0]
+		uid := t[1]
+		if cid == n.config.ClientID {
+			return uid
+		}
+	}
+
+	logger.Error("Failed to get opponent user id in %v", n.allUserIDs)
+	return ""
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -291,6 +311,7 @@ func (n *NetConn) connect() error {
 		return fmt.Errorf("failed to authenticate client: %s", authRes.ErrMsg)
 	}
 	n.sessionID = authRes.SessionID
+	n.allUserIDs = append([]string{}, authRes.AllUserIDs...)
 
 	return nil
 }
