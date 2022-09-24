@@ -47,8 +47,6 @@ func (m *Manager) Add(dm []Damage) error {
 }
 
 func (m *Manager) Update() {
-	// TODO remove hit damage data
-
 	newDamages := []Damage{}
 	for _, dm := range m.damages {
 		dm.TTL--

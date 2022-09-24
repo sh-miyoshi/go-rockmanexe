@@ -215,7 +215,6 @@ func Process() error {
 			return battle.ErrWin
 		}
 	}
-	// TODO
 
 	if err := inst.conn.BulkSendData(); err != nil {
 		return fmt.Errorf("failed to bulk send data: %w", err)

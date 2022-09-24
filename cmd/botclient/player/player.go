@@ -146,11 +146,6 @@ func (p *Player) damageProc() bool {
 
 	if dm.BigDamage {
 		// p.Object.Invincible = true // インビジ未実装
-		// TODO Skill関係
-		// for _, sid := range p.ManagedSkills {
-		// 	netskill.StopByPlayer(sid)
-		// }
-		// p.ManagedSkills = []string{}
 		netconn.GetInst().AddSound(int(sound.SEDamaged))
 	} else {
 		netconn.GetInst().SendObject(p.Object)

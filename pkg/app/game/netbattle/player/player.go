@@ -340,12 +340,12 @@ func (p *BattlePlayer) damageProc() bool {
 
 	if dm.BigDamage {
 		p.Object.Invincible = true
-		// TODO Skill関係
-		// for _, sid := range p.ManagedSkills {
-		// 	netskill.StopByPlayer(sid)
-		// }
-		// p.ManagedSkills = []string{}
-		// netconn.GetInst().AddSound(sound.SEDamaged)
+		// Skill関係
+		for _, sid := range p.ManagedSkills {
+			netskill.GetInst().StopByPlayer(sid)
+		}
+		p.ManagedSkills = []string{}
+		netconn.GetInst().AddSound(int(sound.SEDamaged))
 		p.Act.Set(battlecommon.PlayerActDamage, nil)
 	} else {
 		netconn.GetInst().SendObject(p.Object)
