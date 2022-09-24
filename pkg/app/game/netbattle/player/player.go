@@ -27,15 +27,16 @@ import (
 )
 
 type BattlePlayer struct {
-	Object        object.Object
-	ChipFolder    []player.ChipInfo
-	GaugeCount    uint
-	ChargeCount   uint
-	ShotPower     uint
-	Act           *Act
-	HPMax         uint
-	HitDamages    map[string]bool
-	ManagedSkills []string
+	Object          object.Object
+	ChipFolder      []player.ChipInfo
+	GaugeCount      uint
+	ChargeCount     uint
+	ShotPower       uint
+	Act             *Act
+	HPMax           uint
+	HitDamages      map[string]bool
+	ManagedSkills   []string
+	InvincibleCount int
 
 	imgHPFrame    int
 	imgGaugeFrame int
@@ -58,10 +59,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			ClientID: cfg.Net.ClientID,
 			Hittable: true,
 		},
-		ShotPower:     plyr.ShotPower,
-		HPMax:         plyr.HP,
-		HitDamages:    make(map[string]bool),
-		ManagedSkills: []string{},
+		ShotPower:       plyr.ShotPower,
+		HPMax:           plyr.HP,
+		HitDamages:      make(map[string]bool),
+		ManagedSkills:   []string{},
+		InvincibleCount: 0,
 	}
 	res.Act = NewAct(&res.Object)
 
@@ -219,6 +221,15 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if p.Object.HP <= 0 {
 		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true, nil
+	}
+
+	if p.Object.Invincible {
+		p.InvincibleCount++
+		if p.InvincibleCount > battlecommon.PlayerDefaultInvincibleTime {
+			p.InvincibleCount = 0
+			p.Object.Invincible = false
+			netconn.GetInst().SendObject(p.Object)
+		}
 	}
 
 	if p.damageProc() {
