@@ -5,10 +5,8 @@
 ### 機能
 
 - state result
-  - plaer win
-    - エフェクトは処理する
   - player lose
-    - 全般
+    - player dead motion
 
 ### バグ修正
 
@@ -17,3 +15,4 @@
 - インビジ状態
   - 終わらなさそう
 - ダメージパネルに色がついてない
+- HPが少なくても赤色にならない

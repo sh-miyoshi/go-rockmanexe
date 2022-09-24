@@ -190,6 +190,8 @@ func Process() error {
 			return nil
 		}
 	case stateResult:
+		inst.conn.UpdateDataCount()
+
 		if inst.stateCount == 0 {
 			netconn.GetInst().Disconnect()
 
