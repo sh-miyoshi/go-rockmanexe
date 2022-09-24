@@ -2,113 +2,111 @@ package field
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
-var (
-	imgPanel = [2]int{-1, -1}
-)
-
-func Init() error {
-	// Initialize images
-	fname := common.ImagePath + "battle/panel_player_normal.png"
-	imgPanel[appfield.PanelTypePlayer] = dxlib.LoadGraph(fname)
-	if imgPanel[appfield.PanelTypePlayer] < 0 {
-		return fmt.Errorf("failed to read player panel image %s", fname)
-	}
-	fname = common.ImagePath + "battle/panel_enemy_normal.png"
-	imgPanel[appfield.PanelTypeEnemy] = dxlib.LoadGraph(fname)
-	if imgPanel[appfield.PanelTypeEnemy] < 0 {
-		return fmt.Errorf("failed to read enemy panel image %s", fname)
-	}
-
-	return nil
+type Field struct {
+	bgInst   battlefield.Background
+	imgPanel [battlefield.PanelStatusMax][2]int
 }
 
-func Draw(playerID string) {
-	finfo := netconn.GetFieldInfo()
+func New() (*Field, error) {
+	logger.Info("Initialize battle field data")
+
+	res := &Field{}
+
+	// TODO: Serverから取得する
+	if err := res.bgInst.Init(battlefield.BGType秋原町); err != nil {
+		return nil, fmt.Errorf("failed to load background: %w", err)
+	}
+
+	// Initialize images
+	files := [battlefield.PanelStatusMax]string{"normal", "crack", "hole"}
+	for i := 0; i < battlefield.PanelStatusMax; i++ {
+		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
+		res.imgPanel[i][battlefield.PanelTypePlayer] = dxlib.LoadGraph(fname)
+		if res.imgPanel[i][battlefield.PanelTypePlayer] < 0 {
+			return nil, fmt.Errorf("failed to read player panel image %s", fname)
+		}
+	}
+	for i := 0; i < battlefield.PanelStatusMax; i++ {
+		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
+		res.imgPanel[i][battlefield.PanelTypeEnemy] = dxlib.LoadGraph(fname)
+		if res.imgPanel[i][battlefield.PanelTypeEnemy] < 0 {
+			return nil, fmt.Errorf("failed to read enemy panel image %s", fname)
+		}
+	}
+
+	logger.Info("Successfully initialized battle field data")
+	return res, nil
+}
+
+func (f *Field) End() {
+	f.bgInst.End()
+
+	for i := 0; i < battlefield.PanelStatusMax; i++ {
+		for j := 0; j < 2; j++ {
+			dxlib.DeleteGraph(f.imgPanel[i][j])
+			f.imgPanel[i][j] = -1
+		}
+	}
+}
+
+func (f *Field) Draw() {
+	f.bgInst.Draw()
 	clientID := config.Get().Net.ClientID
 
+	panels := netconn.GetInst().GetGameInfo().Panels
 	for x := 0; x < netconfig.FieldNumX; x++ {
 		for y := 0; y < netconfig.FieldNumY; y++ {
-			vx := appfield.PanelSize.X * x
-			vy := appfield.DrawPanelTopY + appfield.PanelSize.Y*y
-			pn := imgPanel[0]
-			if finfo.Panels[x][y].OwnerClientID != clientID {
-				pn = imgPanel[1]
+			typ := battlefield.PanelTypePlayer
+			if panels[x][y].OwnerClientID != clientID {
+				typ = battlefield.PanelTypeEnemy
 			}
+			img := f.imgPanel[panels[x][y].Status][typ]
+			vx := battlefield.PanelSize.X * x
+			vy := battlefield.DrawPanelTopY + battlefield.PanelSize.Y*y
 
-			dxlib.DrawGraph(vx, vy, pn, true)
-
-			if finfo.Panels[x][y].ShowHitArea {
-				x1 := vx
-				y1 := vy
-				x2 := vx + appfield.PanelSize.X
-				y2 := vy + appfield.PanelSize.Y
-				const s = 5
-				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
-			}
+			dxlib.DrawGraph(vx, vy, img, true)
 		}
 	}
-
-	objects := append([]object.Object{}, finfo.Objects...)
-	sort.Slice(objects, func(i, j int) bool {
-		ii := objects[i].Y*appfield.FieldNum.X + objects[i].X
-		ij := objects[j].Y*appfield.FieldNum.X + objects[j].X
-		return ii < ij
-	})
-	for _, obj := range objects {
-		reverse := false
-
-		if obj.ClientID != clientID {
-			// enemy object
-			reverse = true
-		}
-
-		viewHP := 0
-		if obj.ID != playerID {
-			viewHP = obj.HP
-		}
-
-		draw.Object(obj, draw.Option{
-			Reverse:  reverse,
-			ViewHP:   viewHP,
-			ViewChip: obj.ID != playerID,
-		})
-	}
-
-	effect.Draw()
 }
 
-func GetPanelInfo(pos common.Point) appfield.PanelInfo {
-	finfo := netconn.GetFieldInfo()
+func (f *Field) Update() {
+	f.bgInst.Process()
+}
+
+func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
+	ginfo := netconn.GetInst().GetGameInfo()
 	clientID := config.Get().Net.ClientID
 
 	id := ""
-	for _, obj := range finfo.Objects {
+	for _, obj := range ginfo.Objects {
 		if obj.Hittable && obj.X == pos.X && obj.Y == pos.Y {
 			id = obj.ID
 			break
 		}
 	}
 
-	pnType := appfield.PanelTypePlayer
-	if finfo.Panels[pos.X][pos.Y].OwnerClientID != clientID {
-		pnType = appfield.PanelTypeEnemy
+	pnType := battlefield.PanelTypePlayer
+	if ginfo.Panels[pos.X][pos.Y].OwnerClientID != clientID {
+		pnType = battlefield.PanelTypeEnemy
 	}
 
-	return appfield.PanelInfo{
-		Type:     pnType,
-		ObjectID: id,
+	return battlefield.PanelInfo{
+		Type:      pnType,
+		ObjectID:  id,
+		ObjExists: id != "",
+
+		// TODO 未実装
+		// Status    int
+		// HoleCount int
 	}
 }

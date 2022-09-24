@@ -45,7 +45,6 @@ func (p *spreadGun) Process() (bool, error) {
 		p.waitCount++
 		if p.waitCount >= spreadWaitCount {
 			// Spreading
-			damages := []damage.Damage{}
 			dm := p.spreadBaseInfo
 			dm.ID = uuid.New().String()
 			dm.HitEffectType = 0
@@ -61,7 +60,7 @@ func (p *spreadGun) Process() (bool, error) {
 					}
 					if x+sx >= 0 && x+sx < appfield.FieldNum.X {
 						// Send effect
-						netconn.SendEffect(effect.Effect{
+						netconn.GetInst().SendEffect(effect.Effect{
 							ID:   uuid.New().String(),
 							Type: effect.TypeSpreadHitEffect,
 							X:    x + sx,
@@ -71,18 +70,17 @@ func (p *spreadGun) Process() (bool, error) {
 						// Add damage
 						dm.PosX = x + sx
 						dm.PosY = y + sy
-						damages = append(damages, dm)
+						netconn.GetInst().AddDamage(dm)
 					}
 				}
 			}
-			netconn.SendDamages(damages)
 			p.waitCount = 0
 		}
 	}
 
 	if p.count == 1 {
 		// Add objects
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.atkID,
 			Type:           object.TypeSpreadGunAtk,
 			X:              p.x,
@@ -92,7 +90,7 @@ func (p *spreadGun) Process() (bool, error) {
 			ViewOfsY:       -20,
 		})
 
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.bodyID,
 			Type:           object.TypeSpreadGunBody,
 			X:              p.x,
@@ -126,14 +124,14 @@ func (p *spreadGun) Process() (bool, error) {
 				p.spreadBaseInfo = dm
 				p.waitCount = 1
 
-				netconn.SendDamages([]damage.Damage{dm})
+				netconn.GetInst().AddDamage(dm)
 				break
 			}
 		}
 	}
 
-	bodyNum, bodyDelay := draw.GetImageInfo(object.TypeSpreadGunBody)
-	atkNum, atkDelay := draw.GetImageInfo(object.TypeSpreadGunAtk)
+	bodyNum, bodyDelay := draw.GetInst().GetObjectImageInfo(object.TypeSpreadGunBody)
+	atkNum, atkDelay := draw.GetInst().GetObjectImageInfo(object.TypeSpreadGunAtk)
 	max := bodyNum * bodyDelay
 	if n := atkNum * atkDelay; max < n {
 		max = n
@@ -146,8 +144,8 @@ func (p *spreadGun) Process() (bool, error) {
 }
 
 func (p *spreadGun) RemoveObject() {
-	netconn.RemoveObject(p.atkID)
-	netconn.RemoveObject(p.bodyID)
+	netconn.GetInst().RemoveObject(p.atkID)
+	netconn.GetInst().RemoveObject(p.bodyID)
 }
 
 func (p *spreadGun) StopByPlayer() {

@@ -30,29 +30,7 @@ const (
 	NextActLose
 )
 
-const (
-	MindStatusFullSync int = iota
-	MindStatusAnger
-	MindStatusNormal
-	MindStatusFear
-	MindStatusDark
-	MindStatusRollSoul
-	MindStatusAquaSoul
-	MindStatusWoodSoul
-	MindStatusJunkSoul
-	MindStatusBluesSoul
-	MindStatusMetalSoul
-	MindStatusGutsSoul
-	MindStatusSearchSoul
-	MindStatusNumberSoul
-	MindStatusFireSoul
-	MindStatusWindSoul
-	MindStatusThunderSoul
-	mindStatusMax
-)
-
 type act struct {
-	ID         string
 	MoveDirect int
 	Charged    bool
 	ShotPower  uint
@@ -61,9 +39,10 @@ type act struct {
 	count     int
 	keepCount int
 	pPos      *common.Point
+	skillID   string
+	skillInst skill.SkillAnim
 }
 
-// BattlePlayer ...
 type BattlePlayer struct {
 	ID            string
 	Pos           common.Point
@@ -107,7 +86,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		Pos:        common.Point{X: 1, Y: 1},
 		ShotPower:  plyr.ShotPower,
 		EnableAct:  true,
-		MindStatus: MindStatusNormal, // TODO playerにstatusを持つ
+		MindStatus: battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
 		visible:    true,
 	}
 	res.act.typ = -1
@@ -223,8 +202,8 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 
 	fname = common.ImagePath + "battle/mind_status.png"
-	imgMinds = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, mindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
+	imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
+	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 
@@ -417,11 +396,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			p.act.ID = anim.New(skill.Get(sid, skill.Argument{
+			p.act.skillInst = skill.Get(sid, skill.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power,
 				TargetType: target,
-			}))
+			})
+			p.act.skillID = anim.New(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -493,10 +473,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if objanim.IsProcessing(p.act.ID) {
-			objanim.Delete(p.act.ID)
-			p.act.ID = ""
+		if anim.IsProcessing(p.act.skillID) {
+			p.act.skillInst.StopByOwner()
 		}
+		p.act.skillID = ""
 
 		p.act.SetAnim(battlecommon.PlayerActDamage, 0)
 		p.invincibleCount = battlecommon.PlayerDefaultInvincibleTime

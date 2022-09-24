@@ -7,20 +7,16 @@ import (
 )
 
 type invisible struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 }
 
 func newInvisible(objID string, arg Argument) *invisible {
 	return &invisible{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
@@ -33,7 +29,7 @@ func (p *invisible) Process() (bool, error) {
 	showTm := 60
 	if p.count == 1 {
 		field.SetBlackoutCount(showTm)
-		objanim.MakeInvisible(p.OwnerID, 6*60)
+		objanim.MakeInvisible(p.Arg.OwnerID, 6*60)
 		setChipNameDraw("インビジブル")
 	}
 
@@ -45,4 +41,8 @@ func (p *invisible) GetParam() anim.Param {
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
 	}
+}
+
+func (p *invisible) StopByOwner() {
+	anim.Delete(p.ID)
 }

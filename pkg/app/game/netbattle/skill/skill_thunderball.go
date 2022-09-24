@@ -92,20 +92,18 @@ func (p *thunderBall) Process() (bool, error) {
 			}
 		}
 
-		netconn.SendDamages([]damage.Damage{
-			{
-				ID:          uuid.New().String(),
-				PosX:        p.x,
-				PosY:        p.y,
-				Power:       p.power,
-				TTL:         nextStepCount,
-				TargetType:  damage.TargetOtherClient,
-				ShowHitArea: true,
-				BigDamage:   true, // TODO make paralysis
-			},
+		netconn.GetInst().AddDamage(damage.Damage{
+			ID:          uuid.New().String(),
+			PosX:        p.x,
+			PosY:        p.y,
+			Power:       p.power,
+			TTL:         nextStepCount,
+			TargetType:  damage.TargetOtherClient,
+			ShowHitArea: true,
+			BigDamage:   true, // TODO make paralysis
 		})
 
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeThunderBall,
 			X:              p.x,
@@ -124,7 +122,7 @@ func (p *thunderBall) Process() (bool, error) {
 }
 
 func (p *thunderBall) RemoveObject() {
-	netconn.RemoveObject(p.id)
+	netconn.GetInst().RemoveObject(p.id)
 }
 
 func (p *thunderBall) StopByPlayer() {

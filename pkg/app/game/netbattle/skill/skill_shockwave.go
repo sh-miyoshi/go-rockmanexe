@@ -31,12 +31,12 @@ func newShockWave(x, y int, power int) *shockWave {
 
 func (p *shockWave) Process() (bool, error) {
 	p.count++
-	waveNum, waveDelay := draw.GetImageInfo(object.TypeShockWave)
-	pickNum, pickDelay := draw.GetImageInfo(object.TypePick)
+	waveNum, waveDelay := draw.GetInst().GetObjectImageInfo(object.TypeShockWave)
+	pickNum, pickDelay := draw.GetInst().GetObjectImageInfo(object.TypePick)
 
 	if p.count == 1 {
 		// Add pick
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.pickID,
 			Type:           object.TypePick,
 			X:              p.x,
@@ -47,7 +47,7 @@ func (p *shockWave) Process() (bool, error) {
 	}
 
 	if p.count == pickNum*pickDelay+1 {
-		netconn.RemoveObject(p.pickID)
+		netconn.GetInst().RemoveObject(p.pickID)
 	}
 
 	if p.count > 10 {
@@ -60,7 +60,7 @@ func (p *shockWave) Process() (bool, error) {
 
 			sound.On(sound.SEShockWave)
 			// Add wave
-			netconn.SendObject(object.Object{
+			netconn.GetInst().SendObject(object.Object{
 				ID:             p.waveID,
 				Type:           object.TypeShockWave,
 				X:              p.x,
@@ -69,17 +69,15 @@ func (p *shockWave) Process() (bool, error) {
 			})
 
 			// Add damage
-			netconn.SendDamages([]damage.Damage{
-				{
-					ID:          uuid.New().String(),
-					PosX:        p.x,
-					PosY:        p.y,
-					Power:       p.power,
-					TTL:         n - 2,
-					TargetType:  damage.TargetOtherClient,
-					ShowHitArea: true,
-					BigDamage:   true,
-				},
+			netconn.GetInst().AddDamage(damage.Damage{
+				ID:          uuid.New().String(),
+				PosX:        p.x,
+				PosY:        p.y,
+				Power:       p.power,
+				TTL:         n - 2,
+				TargetType:  damage.TargetOtherClient,
+				ShowHitArea: true,
+				BigDamage:   true,
 			})
 		}
 	}
@@ -88,8 +86,8 @@ func (p *shockWave) Process() (bool, error) {
 }
 
 func (p *shockWave) RemoveObject() {
-	netconn.RemoveObject(p.pickID)
-	netconn.RemoveObject(p.waveID)
+	netconn.GetInst().RemoveObject(p.pickID)
+	netconn.GetInst().RemoveObject(p.waveID)
 }
 
 func (p *shockWave) StopByPlayer() {

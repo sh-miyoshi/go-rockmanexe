@@ -11,10 +11,14 @@ res:
 	move .\data\private\sounds.dxa ".\data\"
 	git add .\data\images.dxa .\data\sounds.dxa
 protoc:
-	cd pkg/net/routerpb && \
+	cd pkg/net/netconnpb && \
 	protoc --go_out=plugins=grpc:. *.proto && \
-	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\routerpb\router.pb.go . && \
+	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\netconnpb\netconn.pb.go . && \
 	rd /s /q github.com
 docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
 	docker build -t asia-northeast1-docker.pkg.dev/rockmanexe/router/router -f build/Dockerfile.router .
+localnet:
+	cd test/helpers/localnet-boot && \
+	go build -o localnet-boot.exe && \
+	localnet-boot.exe

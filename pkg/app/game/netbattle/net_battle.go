@@ -5,22 +5,23 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
-	netdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 )
 
 const (
@@ -35,140 +36,138 @@ const (
 	stateMax
 )
 
-var (
-	battleCount int
-	battleState int
+type NetBattle struct {
+	conn        *netconn.NetConn
 	gameCount   int
-	b4mainInst  *titlemsg.TitleMsg
-	resultInst  *titlemsg.TitleMsg
+	state       int
+	stateCount  int
+	openingInst opening.Opening
 	playerInst  *battleplayer.BattlePlayer
+	fieldInst   *field.Field
+	b4mainInst  *b4main.BeforeMain
+	resultInst  *titlemsg.TitleMsg
+}
 
+var (
 	InvalidChips = []int{
 		chip.IDBoomerang1,
 	}
+
+	inst NetBattle
 )
 
 func Init(plyr *player.Player) error {
 	logger.Info("Init net battle data ...")
-
-	gameCount = 0
-	battleCount = 0
-	battleState = stateWaiting
-	b4mainInst = nil
-	resultInst = nil
-
-	if err := field.Init(); err != nil {
-		return fmt.Errorf("net battle field init failed: %w", err)
+	inst = NetBattle{
+		conn:       netconn.GetInst(),
+		gameCount:  0,
+		state:      stateWaiting,
+		stateCount: 0,
 	}
-
 	var err error
-	playerInst, err = battleplayer.New(plyr)
+	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
+		{CharID: enemy.IDRockman, Pos: common.Point{X: 4, Y: 1}},
+	})
 	if err != nil {
-		return fmt.Errorf("net battle player init failed: %w", err)
+		return err
+	}
+	inst.playerInst, err = battleplayer.New(plyr)
+	if err != nil {
+		return err
+	}
+	inst.fieldInst, err = field.New()
+	if err != nil {
+		return err
+	}
+	if err := draw.Init(inst.playerInst.Object.ID); err != nil {
+		return err
 	}
 
-	if err := netdraw.Init(); err != nil {
-		return fmt.Errorf("failed to init battle draw info: %w", err)
-	}
+	skill.GetInst().Init(inst.playerInst.Object.ID)
 
-	netconn.SendObject(playerInst.Object)
-
+	inst.conn.SendObject(inst.playerInst.Object)
 	sound.BGMStop()
-	skill.Init(playerInst.Object.ID)
-
 	return nil
 }
 
 func End() {
-	netconn.Disconnect()
-	playerInst.End()
-	netdraw.End()
+	inst.conn.Disconnect()
+	if inst.openingInst != nil {
+		inst.openingInst.End()
+	}
+	if inst.fieldInst != nil {
+		inst.fieldInst.End()
+	}
+	draw.GetInst().End()
 }
 
 func Process() error {
-	effect.Process()
-	soundProc()
-	status := netconn.GetStatus()
+	inst.gameCount++
+	inst.fieldInst.Update()
 
-	switch battleState {
+	// Sound process
+	for _, s := range inst.conn.GetGameInfo().Sounds {
+		sound.On(sound.SEType(s.SEType))
+	}
+	inst.conn.ClearSounds()
+
+	switch inst.state {
 	case stateWaiting:
+		status := inst.conn.GetGameStatus()
 		if status == pb.Data_CHIPSELECTWAIT {
 			if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
 				return fmt.Errorf("failed to play bgm: %v", err)
-			}
-
-			// Delay udpate due to Cloud Run Rate Exceeded
-			if err := netconn.BulkSendFieldInfo(); err != nil {
-				return fmt.Errorf("failed to add init player object: %w", err)
 			}
 
 			stateChange(stateOpening)
 			return nil
 		}
 	case stateOpening:
-		if battleCount == 0 {
-			opening.Init()
-		}
-		if opening.Process() {
+		if inst.openingInst.Process() {
 			stateChange(stateChipSelect)
 			return nil
 		}
 	case stateChipSelect:
-		if battleCount == 0 {
-			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
+		if inst.stateCount == 0 {
+			if err := chipsel.Init(inst.playerInst.ChipFolder); err != nil {
 				return fmt.Errorf("failed to initialize chip select: %w", err)
 			}
 		}
 		if chipsel.Process() {
 			// set selected chips
-			playerInst.SetChipSelectResult(chipsel.GetSelected())
-			netconn.SendObject(playerInst.Object)
-			netconn.SendSignal(pb.Action_CHIPSEND)
+			inst.playerInst.SetChipSelectResult(chipsel.GetSelected())
+			inst.conn.SendObject(inst.playerInst.Object)
+			if err := inst.conn.SendSignal(pb.Action_CHIPSEND); err != nil {
+				return fmt.Errorf("failed to send Action_CHIPSEND signal: %v", err)
+			}
 			stateChange(stateWaitSelect)
 			return nil
 		}
 	case stateWaitSelect:
+		status := inst.conn.GetGameStatus()
 		if status == pb.Data_ACTING {
 			stateChange(stateBeforeMain)
 			return nil
 		}
 	case stateBeforeMain:
-		if battleCount == 0 {
-			playerInst.InitBattleFrame()
-			fname := common.ImagePath + "battle/msg_start.png"
+		if inst.stateCount == 0 {
 			var err error
-			b4mainInst, err = titlemsg.New(fname, 0)
+			inst.b4mainInst, err = b4main.New(inst.playerInst.GetSelectedChips())
 			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
+			inst.playerInst.UpdatePA()
 		}
 
-		netconn.UpdateObjectsCount()
-		if err := netconn.BulkSendFieldInfo(); err != nil {
-			return fmt.Errorf("send field info failed: %w", err)
-		}
-
-		if b4mainInst.Process() {
-			b4mainInst.End()
+		inst.conn.UpdateDataCount()
+		if inst.b4mainInst.Process() {
+			inst.b4mainInst.End()
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
-		gameCount++
-		netconn.UpdateObjectsCount()
-		if err := netconn.BulkSendFieldInfo(); err != nil {
-			return fmt.Errorf("send field info failed: %w", err)
-		}
-
-		if status == pb.Data_CHIPSELECTWAIT {
-			stateChange(stateChipSelect)
-			return nil
-		} else if status == pb.Data_GAMEEND {
-			stateChange(stateResult)
-			return nil
-		}
-
-		done, err := playerInst.Process()
+		inst.conn.UpdateDataCount()
+		done, err := inst.playerInst.Process()
 		if err != nil {
 			return fmt.Errorf("player process failed: %w", err)
 		}
@@ -177,85 +176,96 @@ func Process() error {
 			return nil
 		}
 
-		if err := skill.Process(); err != nil {
+		if err := skill.GetInst().Process(); err != nil {
 			return fmt.Errorf("skill process failed: %w", err)
 		}
+
+		status := inst.conn.GetGameStatus()
+		switch status {
+		case pb.Data_CHIPSELECTWAIT:
+			stateChange(stateChipSelect)
+			return nil
+		case pb.Data_GAMEEND:
+			stateChange(stateResult)
+			return nil
+		}
 	case stateResult:
-		if battleCount == 0 {
-			netconn.Disconnect()
+		inst.conn.UpdateDataCount()
+
+		if inst.stateCount == 0 {
+			netconn.GetInst().Disconnect()
 
 			fname := common.ImagePath + "battle/msg_win.png"
-			if playerInst.Object.HP <= 0 {
+			if inst.playerInst.Object.HP <= 0 {
 				fname = common.ImagePath + "battle/msg_lose.png"
 			}
 
 			var err error
-			resultInst, err = titlemsg.New(fname, 60)
+			inst.resultInst, err = titlemsg.New(fname, 60)
 			if err != nil {
 				return fmt.Errorf("failed to initialize result: %w", err)
 			}
 		}
 
-		if resultInst.Process() {
-			resultInst.End()
-			if playerInst.Object.HP <= 0 {
+		if inst.resultInst.Process() {
+			inst.resultInst.End()
+			if inst.playerInst.Object.HP <= 0 {
 				return battle.ErrLose
 			}
 			return battle.ErrWin
 		}
 	}
 
-	battleCount++
+	if err := inst.conn.BulkSendData(); err != nil {
+		return fmt.Errorf("failed to bulk send data: %w", err)
+	}
+
+	inst.stateCount++
 	return nil
 }
 
 func Draw() {
-	field.Draw(playerInst.Object.ID)
-	playerInst.DrawOptions()
+	inst.fieldInst.Draw()
+	draw.GetInst().DrawObjects()
+	inst.playerInst.LocalDraw()
+	draw.GetInst().DrawEffects()
 
-	switch battleState {
+	switch inst.state {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-		draw.String(140, 110, 0xffffff, "相手の接続を待っています")
+		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
-		opening.Draw()
+		inst.openingInst.Draw()
 	case stateChipSelect:
-		playerInst.DrawFrame(true, false)
+		inst.playerInst.DrawFrame(true, false)
 		chipsel.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-		draw.String(140, 110, 0xffffff, "相手の選択を待っています")
+		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:
-		playerInst.DrawFrame(false, true)
-		if b4mainInst != nil {
-			b4mainInst.Draw()
+		inst.playerInst.DrawFrame(false, true)
+		if inst.b4mainInst != nil {
+			inst.b4mainInst.Draw()
 		}
 	case stateMain:
-		playerInst.DrawFrame(false, true)
+		inst.playerInst.DrawFrame(false, true)
 	case stateResult:
-		if resultInst != nil {
-			resultInst.Draw()
+		inst.playerInst.DrawFrame(false, true)
+		if inst.resultInst != nil {
+			inst.resultInst.Draw()
 		}
 	}
 }
 
 func stateChange(nextState int) {
-	logger.Info("Change battle state from %d to %d", battleState, nextState)
+	logger.Info("Change battle state from %d to %d", inst.state, nextState)
 	if nextState < 0 || nextState >= stateMax {
 		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
-	battleState = nextState
-	battleCount = 0
-}
-
-func soundProc() {
-	finfo := netconn.GetFieldInfo()
-	for _, se := range finfo.Sounds {
-		sound.On(sound.SEType(se))
-	}
-	netconn.RemoveSounds()
+	inst.state = nextState
+	inst.stateCount = 0
 }

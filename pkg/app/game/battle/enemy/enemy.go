@@ -23,6 +23,7 @@ const (
 	IDAquaman
 	IDGaroo
 	IDVolgear
+	IDRockman
 )
 
 type EnemyChipInfo struct {
@@ -138,12 +139,14 @@ func GetName(id int) string {
 		return "ガルー"
 	case IDVolgear:
 		return "ボルケギア"
+	case IDRockman:
+		return "ロックマン"
 	}
 	return ""
 }
 
 func IsBoss(id int) bool {
-	bossList := []int{IDAquaman}
+	bossList := []int{IDAquaman, IDRockman}
 	return slice.Contains(bossList, id)
 }
 
@@ -165,6 +168,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyGaroo{pm: initParam}
 	case IDVolgear:
 		return &enemyVolgear{pm: initParam}
+	case IDRockman:
+		panic("enemy rockman is not implemented yet")
 	}
 	return nil
 }

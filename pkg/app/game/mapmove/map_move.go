@@ -9,8 +9,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/vector"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
 )
 
 var (

@@ -48,6 +48,11 @@ var (
 	}
 )
 
+type ChipInfo struct {
+	ID   int
+	Code string
+}
+
 type Object struct {
 	ClientID       string
 	ID             string
@@ -55,7 +60,7 @@ type Object struct {
 	HP             int
 	X              int
 	Y              int
-	Chips          []int
+	Chips          []ChipInfo
 	BaseTime       time.Time
 	UpdateBaseTime bool
 	ViewOfsX       int

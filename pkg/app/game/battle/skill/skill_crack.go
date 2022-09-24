@@ -15,10 +15,8 @@ const (
 )
 
 type crack struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count     int
 	attackPos []common.Point
@@ -26,10 +24,8 @@ type crack struct {
 
 func newCrack(objID string, crackType int, arg Argument) *crack {
 	res := crack{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 
 	pos := objanim.GetObjPos(arg.OwnerID)
@@ -72,4 +68,8 @@ func (p *crack) GetParam() anim.Param {
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
 	}
+}
+
+func (p *crack) StopByOwner() {
+	anim.Delete(p.ID)
 }

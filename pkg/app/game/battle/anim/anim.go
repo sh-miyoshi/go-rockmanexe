@@ -75,6 +75,10 @@ func Cleanup() {
 }
 
 func Delete(animID string) {
+	if _, ok := anims[animID]; !ok {
+		return
+	}
+
 	delete(anims, animID)
 	for i, sid := range sortedAnimIDs {
 		if sid == animID {

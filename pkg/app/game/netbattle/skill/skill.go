@@ -23,70 +23,83 @@ type Skill interface {
 	StopByPlayer()
 }
 
-var (
-	skills   = make(map[string]Skill)
-	playerID string
-)
-
-func Init(plyrID string) {
-	skills = make(map[string]Skill)
-	playerID = plyrID
+type SkillManager struct {
+	skills      map[string]Skill
+	playerObjID string
 }
 
-func Process() error {
-	for id, s := range skills {
+var (
+	inst SkillManager
+)
+
+func GetInst() *SkillManager {
+	return &inst
+}
+
+func (m *SkillManager) Init(playerObjID string) {
+	m.skills = make(map[string]Skill)
+	m.playerObjID = playerObjID
+}
+
+func (m *SkillManager) Process() error {
+	for id, s := range m.skills {
 		end, err := s.Process()
 		if err != nil {
 			return fmt.Errorf("skill %s process failed: %w", id, err)
 		}
 
 		if end {
-			skills[id].RemoveObject()
-			delete(skills, id)
+			m.skills[id].RemoveObject()
+			delete(m.skills, id)
 		}
 	}
 	return nil
 }
 
-func Add(skillID int, arg Argument) string {
+func (m *SkillManager) Exists(id string) bool {
+	_, ok := m.skills[id]
+	return ok
+}
+
+func (m *SkillManager) Add(skillType int, args Argument) string {
 	id := uuid.New().String()
 
-	switch skillID {
+	switch skillType {
 	case skill.SkillCannon:
-		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeNormalCannon)
+		m.skills[id] = newCannon(args.X, args.Y, args.Power, skill.TypeNormalCannon)
 	case skill.SkillHighCannon:
-		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeHighCannon)
+		m.skills[id] = newCannon(args.X, args.Y, args.Power, skill.TypeHighCannon)
 	case skill.SkillMegaCannon:
-		skills[id] = newCannon(arg.X, arg.Y, arg.Power, skill.TypeMegaCannon)
+		m.skills[id] = newCannon(args.X, args.Y, args.Power, skill.TypeMegaCannon)
 	case skill.SkillSword:
-		skills[id] = newSword(arg.X, arg.Y, arg.Power, skill.TypeSword)
+		m.skills[id] = newSword(args.X, args.Y, args.Power, skill.TypeSword)
 	case skill.SkillWideSword:
-		skills[id] = newSword(arg.X, arg.Y, arg.Power, skill.TypeWideSword)
+		m.skills[id] = newSword(args.X, args.Y, args.Power, skill.TypeWideSword)
 	case skill.SkillLongSword:
-		skills[id] = newSword(arg.X, arg.Y, arg.Power, skill.TypeLongSword)
+		m.skills[id] = newSword(args.X, args.Y, args.Power, skill.TypeLongSword)
 	case skill.SkillVulcan1:
-		skills[id] = newVulcan(arg.X, arg.Y, 3)
+		m.skills[id] = newVulcan(args.X, args.Y, 3)
 	case skill.SkillWideShot:
-		skills[id] = newWideShot(arg.X, arg.Y, arg.Power, 8)
+		m.skills[id] = newWideShot(args.X, args.Y, args.Power, 8)
 	case skill.SkillSpreadGun:
-		skills[id] = newSpreadGun(arg.X, arg.Y, arg.Power)
+		m.skills[id] = newSpreadGun(args.X, args.Y, args.Power)
 	case skill.SkillPlayerShockWave, skill.SkillShockWave:
-		skills[id] = newShockWave(arg.X, arg.Y, arg.Power)
+		m.skills[id] = newShockWave(args.X, args.Y, args.Power)
 	case skill.SkillThunderBall:
-		skills[id] = newThunderBall(arg.X, arg.Y, arg.Power)
+		m.skills[id] = newThunderBall(args.X, args.Y, args.Power)
 	case skill.SkillRecover:
-		skills[id] = newRecover(arg.X, arg.Y, arg.Power)
+		m.skills[id] = newRecover(args.X, args.Y, args.Power)
 	case skill.SkillMiniBomb:
-		skills[id] = newMiniBomb(arg.X, arg.Y, arg.Power)
+		m.skills[id] = newMiniBomb(args.X, args.Y, args.Power)
 	default:
-		panic(fmt.Sprintf("Invalid skill id: %d", skillID))
+		panic(fmt.Sprintf("skill %d is not implemented yet", skillType))
 	}
 
 	return id
 }
 
-func StopByPlayer(id string) {
-	if s, ok := skills[id]; ok {
+func (m *SkillManager) StopByPlayer(id string) {
+	if s, ok := m.skills[id]; ok {
 		s.StopByPlayer()
 	}
 }
@@ -106,8 +119,8 @@ func getEnemies() []object.Object {
 	}
 
 	myClientID := config.Get().Net.ClientID
-	finfo := netconn.GetFieldInfo()
-	for _, obj := range finfo.Objects {
+	ginfo := netconn.GetInst().GetGameInfo()
+	for _, obj := range ginfo.Objects {
 		if obj.ClientID != myClientID && slice.Contains(rockmanObj, obj.Type) {
 			res = append(res, obj)
 		}
@@ -117,9 +130,9 @@ func getEnemies() []object.Object {
 }
 
 func isObjectHit(x, y int) bool {
-	finfo := netconn.GetFieldInfo()
-	for _, obj := range finfo.Objects {
-		if obj.Hittable && obj.X == x && obj.Y == y && obj.ID != playerID {
+	ginfo := netconn.GetInst().GetGameInfo()
+	for _, obj := range ginfo.Objects {
+		if obj.Hittable && obj.X == x && obj.Y == y && obj.ID != inst.playerObjID {
 			return true
 		}
 	}

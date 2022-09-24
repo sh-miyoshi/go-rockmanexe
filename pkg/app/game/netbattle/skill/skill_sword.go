@@ -43,7 +43,7 @@ func (p *sword) Process() (bool, error) {
 		case skill.TypeLongSword:
 			objType = object.TypeLongSword
 		}
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           objType,
 			X:              p.x,
@@ -54,7 +54,7 @@ func (p *sword) Process() (bool, error) {
 	}
 
 	// num and delay are the same for normal, wide, and long sword
-	num, delay := draw.GetImageInfo(object.TypeSword)
+	num, delay := draw.GetInst().GetObjectImageInfo(object.TypeSword)
 
 	if p.count == 1*delay {
 		sound.On(sound.SESword)
@@ -68,12 +68,10 @@ func (p *sword) Process() (bool, error) {
 }
 
 func (p *sword) RemoveObject() {
-	netconn.RemoveObject(p.id)
+	netconn.GetInst().RemoveObject(p.id)
 }
 
 func (p *sword) addDamage() {
-	damages := []damage.Damage{}
-
 	dm := damage.Damage{
 		ID:         uuid.New().String(),
 		Power:      p.power,
@@ -84,22 +82,20 @@ func (p *sword) addDamage() {
 
 	dm.PosX = p.x + 1
 	dm.PosY = p.y
-	damages = append(damages, dm)
+	netconn.GetInst().AddDamage(dm)
 
 	switch p.typ {
 	case skill.TypeSword:
 		// No more damage area
 	case skill.TypeWideSword:
 		dm.PosY = p.y - 1
-		damages = append(damages, dm)
+		netconn.GetInst().AddDamage(dm)
 		dm.PosY = p.y + 1
-		damages = append(damages, dm)
+		netconn.GetInst().AddDamage(dm)
 	case skill.TypeLongSword:
 		dm.PosX = p.x + 2
-		damages = append(damages, dm)
+		netconn.GetInst().AddDamage(dm)
 	}
-
-	netconn.SendDamages(damages)
 }
 
 func (p *sword) StopByPlayer() {

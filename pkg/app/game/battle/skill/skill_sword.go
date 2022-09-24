@@ -18,28 +18,28 @@ const (
 	TypeSwordMax
 )
 
+const (
+	delaySword = 3
+)
+
 type sword struct {
-	ID         string
-	Type       int
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID   string
+	Type int
+	Arg  Argument
 
 	count int
 }
 
 func newSword(objID string, swordType int, arg Argument) *sword {
 	return &sword{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Type:       swordType,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:   objID,
+		Type: swordType,
+		Arg:  arg,
 	}
 }
 
 func (p *sword) Draw() {
-	pos := objanim.GetObjPos(p.OwnerID)
+	pos := objanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
@@ -55,14 +55,14 @@ func (p *sword) Process() (bool, error) {
 		sound.On(sound.SESword)
 
 		dm := damage.Damage{
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
 		}
 
-		pos := objanim.GetObjPos(p.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerID)
 
 		dm.Pos.X = pos.X + 1
 		dm.Pos.Y = pos.Y
@@ -93,4 +93,8 @@ func (p *sword) GetParam() anim.Param {
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
 	}
+}
+
+func (p *sword) StopByOwner() {
+	anim.Delete(p.ID)
 }

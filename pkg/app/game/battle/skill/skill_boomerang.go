@@ -13,11 +13,9 @@ import (
 )
 
 type boomerang struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
-	ActType    int
+	ID      string
+	Arg     Argument
+	ActType int
 
 	count   int
 	turnNum int
@@ -28,6 +26,7 @@ type boomerang struct {
 
 const (
 	boomerangNextStepCount = 6
+	delayBoomerang         = 8
 )
 
 const (
@@ -54,16 +53,14 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 	}
 
 	return &boomerang{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
-		ActType:    act,
-		count:      0,
-		turnNum:    0,
-		pos:        common.Point{X: sx, Y: sy},
-		next:       common.Point{X: sx, Y: sy},
-		prev:       common.Point{X: px, Y: sy},
+		ID:      objID,
+		Arg:     arg,
+		ActType: act,
+		count:   0,
+		turnNum: 0,
+		pos:     common.Point{X: sx, Y: sy},
+		next:    common.Point{X: sx, Y: sy},
+		prev:    common.Point{X: px, Y: sy},
 	}
 }
 
@@ -94,9 +91,9 @@ func (p *boomerang) Process() (bool, error) {
 
 		damage.New(damage.Damage{
 			Pos:           p.pos,
-			Power:         int(p.Power),
+			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,
-			TargetType:    p.TargetType,
+			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeSpreadHit,
 			ShowHitArea:   false,
 		})
@@ -175,4 +172,8 @@ func (p *boomerang) GetParam() anim.Param {
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
 	}
+}
+
+func (p *boomerang) StopByOwner() {
+	// Nothing to do after throwing
 }

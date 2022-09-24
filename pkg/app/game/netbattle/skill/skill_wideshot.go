@@ -39,7 +39,7 @@ func (p *wideShot) Process() (bool, error) {
 	if p.count == 1 {
 		sound.On(sound.SEWideShot)
 		// Add wide shot body
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.bodyID,
 			Type:           object.TypeWideShotBody,
 			X:              p.x,
@@ -50,7 +50,7 @@ func (p *wideShot) Process() (bool, error) {
 		})
 
 		// Add wide shot begin
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.beginID,
 			Type:           object.TypeWideShotBegin,
 			X:              p.x,
@@ -61,11 +61,11 @@ func (p *wideShot) Process() (bool, error) {
 		})
 	}
 
-	num, delay := draw.GetImageInfo(object.TypeWideShotBody)
+	num, delay := draw.GetInst().GetObjectImageInfo(object.TypeWideShotBody)
 
 	if p.count == num*delay {
-		netconn.RemoveObject(p.bodyID)
-		netconn.RemoveObject(p.beginID)
+		netconn.GetInst().RemoveObject(p.bodyID)
+		netconn.GetInst().RemoveObject(p.beginID)
 	}
 
 	// Wide Shot Move
@@ -77,7 +77,7 @@ func (p *wideShot) Process() (bool, error) {
 			}
 
 			// Add object
-			netconn.SendObject(object.Object{
+			netconn.GetInst().SendObject(object.Object{
 				ID:             p.moveID,
 				Type:           object.TypeWideShotMove,
 				X:              p.x,
@@ -99,13 +99,13 @@ func (p *wideShot) Process() (bool, error) {
 }
 
 func (p *wideShot) RemoveObject() {
-	netconn.RemoveObject(p.bodyID)
-	netconn.RemoveObject(p.beginID)
-	netconn.RemoveObject(p.moveID)
+	netconn.GetInst().RemoveObject(p.bodyID)
+	netconn.GetInst().RemoveObject(p.beginID)
+	netconn.GetInst().RemoveObject(p.moveID)
 }
 
 func (p *wideShot) StopByPlayer() {
-	num, delay := draw.GetImageInfo(object.TypeWideShotBody)
+	num, delay := draw.GetInst().GetObjectImageInfo(object.TypeWideShotBody)
 
 	if p.count < num*delay {
 		p.RemoveObject()
@@ -113,7 +113,6 @@ func (p *wideShot) StopByPlayer() {
 }
 
 func (p *wideShot) addDamages() {
-	damages := []damage.Damage{}
 	dm := damage.Damage{
 		ID:         uuid.New().String(),
 		PosX:       p.x,
@@ -125,11 +124,9 @@ func (p *wideShot) addDamages() {
 	}
 
 	// Add damages to 3 wide
-	damages = append(damages, dm)
+	netconn.GetInst().AddDamage(dm)
 	dm.PosY--
-	damages = append(damages, dm)
+	netconn.GetInst().AddDamage(dm)
 	dm.PosY += 2
-	damages = append(damages, dm)
-
-	netconn.SendDamages(damages)
+	netconn.GetInst().AddDamage(dm)
 }

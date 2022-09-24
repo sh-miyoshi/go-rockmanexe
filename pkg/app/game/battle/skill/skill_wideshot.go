@@ -17,11 +17,13 @@ const (
 	wideShotStateMove
 )
 
+const (
+	delayWideShot = 4
+)
+
 type wideShot struct {
 	ID            string
-	OwnerID       string
-	Power         uint
-	TargetType    int
+	Arg           Argument
 	Direct        int
 	NextStepCount int
 
@@ -42,9 +44,7 @@ func newWideShot(objID string, arg Argument) *wideShot {
 
 	return &wideShot{
 		ID:            objID,
-		OwnerID:       arg.OwnerID,
-		Power:         arg.Power,
-		TargetType:    arg.TargetType,
+		Arg:           arg,
 		Direct:        direct,
 		NextStepCount: nextStep,
 		pos:           pos,
@@ -66,7 +66,7 @@ func (p *wideShot) Draw() {
 		view := battlecommon.ViewPos(p.pos)
 		n := (p.count / delayWideShot)
 
-		if n < len(imgWideShotBody) && p.TargetType == damage.TargetEnemy {
+		if n < len(imgWideShotBody) && p.Arg.TargetType == damage.TargetEnemy {
 			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
 		}
 		if n >= len(imgWideShotBegin) {
@@ -136,9 +136,9 @@ func (p *wideShot) Process() (bool, error) {
 
 				p.damageID[i+1] = damage.New(damage.Damage{
 					Pos:           common.Point{X: p.pos.X, Y: y},
-					Power:         int(p.Power),
+					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,
-					TargetType:    p.TargetType,
+					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeNone,
 					BigDamage:     true,
 				})
@@ -154,5 +154,11 @@ func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *wideShot) StopByOwner() {
+	if p.state != wideShotStateMove {
+		anim.Delete(p.ID)
 	}
 }

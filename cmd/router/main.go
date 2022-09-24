@@ -8,8 +8,8 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/dstream"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconn"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"google.golang.org/grpc"
 )
 
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterRouterServer(s, dstream.New())
+	pb.RegisterNetConnServer(s, netconn.New())
 
 	if err = s.Serve(listen); err != nil {
 		logger.Error("Failed to start data stream: %v", err)

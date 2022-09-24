@@ -45,6 +45,7 @@ var (
 	gameCount      int
 	b4mainInst     *b4main.BeforeMain
 	loseInst       *titlemsg.TitleMsg
+	openingInst    opening.Opening
 	basePlayerInst *player.Player
 
 	ErrWin  = errors.New("player win")
@@ -117,13 +118,19 @@ func Process() error {
 	switch battleState {
 	case stateOpening:
 		if battleCount == 0 {
-			if err := opening.Init(enemyList); err != nil {
+			var err error
+			if enemy.IsBoss(enemyList[0].CharID) {
+				openingInst, err = opening.NewWithBoss(enemyList)
+			} else {
+				openingInst, err = opening.NewWithNormal(enemyList)
+			}
+			if err != nil {
 				return fmt.Errorf("opening init failed: %w", err)
 			}
 		}
 
-		if opening.Process() {
-			opening.End()
+		if openingInst.Process() {
+			openingInst.End()
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return fmt.Errorf("enemy init failed: %w", err)
 			}
@@ -240,7 +247,9 @@ func Draw() {
 
 	switch battleState {
 	case stateOpening:
-		opening.Draw()
+		if openingInst != nil {
+			openingInst.Draw()
+		}
 	case stateChipSelect:
 		playerInst.DrawFrame(true, false)
 		chipsel.Draw()

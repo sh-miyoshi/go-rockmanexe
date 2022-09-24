@@ -10,7 +10,7 @@ import (
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
@@ -26,10 +26,9 @@ type ActOption struct {
 }
 
 type Act struct {
-	Type  int
-	Count int
-	Opts  ActOption
-
+	Type   int
+	Count  int
+	Opts   ActOption
 	Object *object.Object
 }
 
@@ -63,7 +62,6 @@ func (a *Act) Process() bool {
 	case battlecommon.PlayerActBuster:
 		// Add buster damage
 		if a.Count == 1 {
-			dm := []damage.Damage{}
 			y := a.Object.Y
 			power := a.Opts.ShotPower
 			if a.Opts.Charged {
@@ -71,7 +69,7 @@ func (a *Act) Process() bool {
 			}
 
 			for x := a.Object.X + 1; x < appfield.FieldNum.X; x++ {
-				dm = append(dm, damage.Damage{
+				dm := damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,
 					PosY:          y,
@@ -81,7 +79,8 @@ func (a *Act) Process() bool {
 					HitEffectType: effect.TypeHitSmallEffect,
 					ViewOfsX:      rand.Intn(2*5) - 5,
 					ViewOfsY:      rand.Intn(2*5) - 5,
-				})
+				}
+				netconn.GetInst().AddDamage(dm)
 
 				// break if object exists
 				pn := netfield.GetPanelInfo(common.Point{X: x, Y: y})
@@ -90,7 +89,6 @@ func (a *Act) Process() bool {
 					break
 				}
 			}
-			netconn.SendDamages(dm)
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
 		// No special action
@@ -99,13 +97,13 @@ func (a *Act) Process() bool {
 	}
 
 	a.Count++
-	num, delay := draw.GetImageInfo(getObjType(a.Type))
+	num, delay := draw.GetInst().GetObjectImageInfo(getObjType(a.Type))
 	num += a.Opts.KeepCount
 	if a.Count > num*delay {
 		// Reset params
 		a.Init()
 		a.Object.Type = object.TypeRockmanStand
-		netconn.SendObject(*a.Object)
+		netconn.GetInst().SendObject(*a.Object)
 		return false // finished
 	}
 	return true // processing now
@@ -119,7 +117,7 @@ func (a *Act) Set(actType int, opts *ActOption) {
 
 	a.Object.UpdateBaseTime = true
 	a.Object.Type = getObjType(actType)
-	netconn.SendObject(*a.Object)
+	netconn.GetInst().SendObject(*a.Object)
 }
 
 func getObjType(actType int) int {

@@ -41,11 +41,11 @@ func (p *cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		netconn.SendObject(p.getObjectInfo(true, false, true)) // Body
+		netconn.GetInst().SendObject(p.getObjectInfo(true, false, true)) // Body
 	}
 
 	if p.count == 15 {
-		netconn.SendObject(p.getObjectInfo(false, false, true)) // Attack
+		netconn.GetInst().SendObject(p.getObjectInfo(false, false, true)) // Attack
 	}
 
 	if p.count == 20 {
@@ -54,15 +54,15 @@ func (p *cannon) Process() (bool, error) {
 	}
 
 	// num and delay are the same for normal, high, and mega
-	bodyNum, bodyDelay := draw.GetImageInfo(object.TypeNormalCannonBody)
-	atkNum, atkDelay := draw.GetImageInfo(object.TypeNormalCannonAtk)
+	bodyNum, bodyDelay := draw.GetInst().GetObjectImageInfo(object.TypeNormalCannonBody)
+	atkNum, atkDelay := draw.GetInst().GetObjectImageInfo(object.TypeNormalCannonAtk)
 	max := bodyNum * bodyDelay
 	if n := atkNum*atkDelay + 15; max < n {
 		max = n
 	}
 
 	if p.count == 2*bodyDelay {
-		netconn.SendObject(p.getObjectInfo(true, true, false)) // Shifted Body
+		netconn.GetInst().SendObject(p.getObjectInfo(true, true, false)) // Shifted Body
 	}
 
 	if p.count > max {
@@ -72,8 +72,8 @@ func (p *cannon) Process() (bool, error) {
 }
 
 func (p *cannon) RemoveObject() {
-	netconn.RemoveObject(p.atkID)
-	netconn.RemoveObject(p.bodyID)
+	netconn.GetInst().RemoveObject(p.atkID)
+	netconn.GetInst().RemoveObject(p.bodyID)
 }
 
 func (p *cannon) StopByPlayer() {
@@ -81,9 +81,8 @@ func (p *cannon) StopByPlayer() {
 }
 
 func (p *cannon) addDamage() {
-	dm := []damage.Damage{}
 	for x := p.x + 1; x < appfield.FieldNum.X; x++ {
-		dm = append(dm, damage.Damage{
+		dm := damage.Damage{
 			ID:            uuid.New().String(),
 			PosX:          x,
 			PosY:          p.y,
@@ -94,7 +93,8 @@ func (p *cannon) addDamage() {
 			ViewOfsX:      rand.Intn(2*5) - 5,
 			ViewOfsY:      rand.Intn(2*5) - 5,
 			BigDamage:     true,
-		})
+		}
+		netconn.GetInst().AddDamage(dm)
 
 		// break if object exists
 		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
@@ -103,7 +103,6 @@ func (p *cannon) addDamage() {
 			break
 		}
 	}
-	netconn.SendDamages(dm)
 }
 
 func (p *cannon) getObjectInfo(isBody bool, isShift bool, updateTime bool) object.Object {

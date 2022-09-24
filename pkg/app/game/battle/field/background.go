@@ -7,24 +7,24 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
-type background struct {
+type Background struct {
 	Images   []int
 	Count    int
 	LoadType int
 }
 
 const (
-	bgType秋原町 int = iota
+	BGType秋原町 int = iota
 )
 
-func (b *background) Init(typ int) error {
+func (b *Background) Init(typ int) error {
 	b.Count = 0
 	b.LoadType = typ
 
 	basePath := common.ImagePath + "battle/background/"
 
 	switch typ {
-	case bgType秋原町:
+	case BGType秋原町:
 		b.Images = make([]int, 8)
 		fname := basePath + "back_image_秋原町.png"
 		if res := dxlib.LoadDivGraph(fname, 8, 2, 4, 64, 64, b.Images); res == -1 {
@@ -36,19 +36,19 @@ func (b *background) Init(typ int) error {
 	return fmt.Errorf("invalid background type %d was specified", typ)
 }
 
-func (b *background) End() {
+func (b *Background) End() {
 	for _, img := range b.Images {
 		dxlib.DeleteGraph(img)
 	}
 }
 
-func (b *background) Draw() {
+func (b *Background) Draw() {
 	if len(b.Images) == 0 {
 		return
 	}
 
 	switch b.LoadType {
-	case bgType秋原町:
+	case BGType秋原町:
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, dxlib.GetColor(0, 0, 160), true)
 
 		n := (b.Count / 50) % len(b.Images)
@@ -70,6 +70,6 @@ func (b *background) Draw() {
 	}
 }
 
-func (b *background) Process() {
+func (b *Background) Process() {
 	b.Count++
 }

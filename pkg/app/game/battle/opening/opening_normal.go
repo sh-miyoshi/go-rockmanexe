@@ -13,37 +13,39 @@ const (
 	normalViewCount = 256 / normalViewDelay
 )
 
-type normal struct {
+type Normal struct {
 	count     int
 	showCount int
 	enemies   []enemy.EnemyParam
 	images    map[int]int
 }
 
-func (n *normal) Init(enemyList []enemy.EnemyParam) error {
-	n.count = 0
-	n.showCount = 0
-	n.enemies = enemyList
-	n.images = make(map[int]int)
+func NewWithNormal(enemyList []enemy.EnemyParam) (*Normal, error) {
+	res := &Normal{}
+
+	res.count = 0
+	res.showCount = 0
+	res.enemies = enemyList
+	res.images = make(map[int]int)
 
 	for _, e := range enemyList {
-		_, ok := n.images[e.CharID]
+		_, ok := res.images[e.CharID]
 		if !ok {
 			name, ext := enemy.GetStandImageFile(e.CharID)
 			fname := name + ext
-			n.images[e.CharID] = dxlib.LoadGraph(fname)
+			res.images[e.CharID] = dxlib.LoadGraph(fname)
 		}
 	}
 
-	return nil
+	return res, nil
 }
-func (n *normal) End() {
+func (n *Normal) End() {
 	for _, img := range n.images {
 		dxlib.DeleteGraph(img)
 	}
 	n.images = make(map[int]int)
 }
-func (n *normal) Process() bool {
+func (n *Normal) Process() bool {
 	if config.Get().Debug.SkipBattleOpening {
 		return true
 	}
@@ -62,7 +64,7 @@ func (n *normal) Process() bool {
 	}
 	return false
 }
-func (n *normal) Draw() {
+func (n *Normal) Draw() {
 	// Show animationed enemies
 	for i := 0; i < n.showCount; i++ {
 		view := battlecommon.ViewPos(n.enemies[i].Pos)

@@ -126,7 +126,7 @@ func Process() error {
 
 			history := player.History{
 				Date:       time.Now(),
-				OpponentID: netconn.GetOpponentUserID(),
+				OpponentID: netconn.GetInst().GetOpponentUserID(),
 			}
 
 			if errors.Is(err, battle.ErrWin) {
@@ -166,7 +166,6 @@ func Process() error {
 	return nil
 }
 
-// Draw ...
 func Draw() {
 	if count == 0 {
 		// skip if initialize phase

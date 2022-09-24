@@ -33,7 +33,7 @@ func (p *recover) Process() (bool, error) {
 		sound.On(sound.SERecover)
 
 		// Add object
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeRecover,
 			X:              p.x,
@@ -42,20 +42,17 @@ func (p *recover) Process() (bool, error) {
 		})
 
 		// Add damage
-		netconn.SendDamages([]damage.Damage{
-			{
-				ID:         uuid.New().String(),
-				PosX:       p.x,
-				PosY:       p.y,
-				Power:      -p.power,
-				TTL:        1,
-				TargetType: damage.TargetOwn,
-			},
+		netconn.GetInst().AddDamage(damage.Damage{
+			ID:         uuid.New().String(),
+			PosX:       p.x,
+			PosY:       p.y,
+			Power:      -p.power,
+			TTL:        1,
+			TargetType: damage.TargetOwn,
 		})
 	}
 
-	num, delay := draw.GetImageInfo(object.TypeRecover)
-
+	num, delay := draw.GetInst().GetObjectImageInfo(object.TypeRecover)
 	if p.count > num*delay {
 		return true, nil
 	}
@@ -63,7 +60,7 @@ func (p *recover) Process() (bool, error) {
 }
 
 func (p *recover) RemoveObject() {
-	netconn.RemoveObject(p.id)
+	netconn.GetInst().RemoveObject(p.id)
 }
 
 func (p *recover) StopByPlayer() {

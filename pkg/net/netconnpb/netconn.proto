@@ -1,21 +1,27 @@
 syntax = "proto3";
 
-package router;
-option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb";
+package netconn;
+option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb";
 
-service Router {
-    rpc SendAction(Action) returns (Result) {}
-    rpc PublishData(AuthRequest) returns (stream Data) {}
+service NetConn {
+    rpc TransData(stream Action) returns (stream Data) {}
 }
 
 message Action {
+    message AuthRequest {
+        string id = 1;
+        string key = 2;
+        string version = 3;
+    }
+
     enum ActionType {
-        UPDATEOBJECT = 0;
-        SENDSIGNAL = 1;
+        AUTHENTICATE = 0;
+        UPDATEOBJECT = 1;
         REMOVEOBJECT = 2;
-        NEWDAMAGE = 3;
-        NEWEFFECT = 4;
-        ADDSOUND = 5;
+        ADDDAMAGE = 4;
+        ADDEFFECT = 5;
+        SENDSIGNAL = 6;
+        ADDSOUND = 7;
     }
 
     enum SignalType {
@@ -29,27 +35,23 @@ message Action {
     ActionType type = 3;
 
     oneof data {
-        SignalType signal = 4;
+        AuthRequest req = 4;
         bytes objectInfo = 5;
-        string objectID = 6;
         bytes damageInfo = 7;
         bytes effect = 8;
-        int64 seType = 9;
+        SignalType signal = 9;
+        bytes sound = 10;
     }
 }
 
-message Result {
-    bool success = 1;
-    string errMsg = 2;
-}
-
-message AuthRequest {
-    string id = 1;
-    string key = 2;
-    string version = 3;
-}
-
 message Data {
+    message AuthResponse {
+        bool success = 1;
+        string errMsg = 2;
+        string sessionID = 3;
+        repeated string allUserIDs = 4;
+    }
+
     enum MsgType {
         AUTHRESPONSE = 0;
         UPDATESTATUS = 1;
@@ -69,11 +71,4 @@ message Data {
         Status status = 3;
         bytes rawData = 4;
     }
-}
-
-message AuthResponse {
-    bool success = 1;
-    string errMsg = 2;
-    string sessionID = 3;
-    repeated string allUserIDs = 4;
 }

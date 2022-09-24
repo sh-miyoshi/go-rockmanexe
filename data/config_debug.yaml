@@ -1,10 +1,10 @@
 log:
-  file: ""
+  file: "application.log"
   debug_enabled: true
 debug:
   show_debug_data: true
   skip_title: true
-  skip_menu: true
+  skip_menu: false
   skip_battle_opening: true
   start_continue: false
   init_sleep_sec: 0

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -15,45 +16,51 @@ const (
 	vertical
 )
 
-type boss struct {
+type Boss struct {
 	enemyImages []int
 	enemies     []enemy.EnemyParam
 	playerImage int
 	count       int
 }
 
-func (b *boss) Init(enemyList []enemy.EnemyParam) error {
-	b.enemies = enemyList
-	b.count = 0
+func NewWithBoss(enemyList []enemy.EnemyParam) (*Boss, error) {
+	res := &Boss{}
+
+	res.enemies = enemyList
+	res.count = 0
 
 	for _, e := range enemyList {
 		name, ext := enemy.GetStandImageFile(e.CharID)
 		fname := name + ext
-		b.enemyImages = append(b.enemyImages, dxlib.LoadGraph(fname))
+		res.enemyImages = append(res.enemyImages, dxlib.LoadGraph(fname))
 	}
 
-	b.playerImage = dxlib.LoadGraph(common.ImagePath + "battle/character/ロックマン.png")
-	if b.playerImage == -1 {
-		return fmt.Errorf("failed to load player image")
+	res.playerImage = dxlib.LoadGraph(common.ImagePath + "battle/character/ロックマン_player_side.png")
+	if res.playerImage == -1 {
+		return nil, fmt.Errorf("failed to load player image")
 	}
 
-	return nil
+	return res, nil
 }
 
-func (b *boss) End() {
+func (b *Boss) End() {
 	for _, img := range b.enemyImages {
 		dxlib.DeleteGraph(img)
 	}
 	b.enemyImages = []int{}
 }
 
-func (b *boss) Process() bool {
+func (b *Boss) Process() bool {
+	if config.Get().Debug.SkipBattleOpening {
+		return true
+	}
+
 	b.count++
 
 	return b.count > 70
 }
 
-func (b *boss) Draw() {
+func (b *Boss) Draw() {
 	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 
 	// debug(初期位置)

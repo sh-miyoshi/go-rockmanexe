@@ -22,31 +22,30 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/routerpb"
 )
 
 type BattlePlayer struct {
 	Object          object.Object
-	HPMax           uint
-	ChargeCount     uint
-	GaugeCount      uint
-	ShotPower       uint
 	ChipFolder      []player.ChipInfo
+	GaugeCount      uint
+	ChargeCount     uint
+	ShotPower       uint
 	Act             *Act
+	HPMax           uint
 	HitDamages      map[string]bool
 	ManagedSkills   []string
-	InvincibleCount uint
-}
+	InvincibleCount int
 
-var (
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
+	imgMinds      []int
+	imgMindFrame  int
 	imgCharge     [2][]int
-)
+}
 
-// New ...
 func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize net battle player data")
 	cfg := config.Get()
@@ -60,9 +59,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 			ClientID: cfg.Net.ClientID,
 			Hittable: true,
 		},
-		HPMax:      plyr.HP,
-		ShotPower:  plyr.ShotPower,
-		HitDamages: make(map[string]bool),
+		ShotPower:       plyr.ShotPower,
+		HPMax:           plyr.HP,
+		HitDamages:      make(map[string]bool),
+		ManagedSkills:   []string{},
+		InvincibleCount: 0,
 	}
 	res.Act = NewAct(&res.Object)
 
@@ -80,19 +81,30 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Debug("Player info: %+v", res)
 
 	fname := common.ImagePath + "battle/hp_frame.png"
-	imgHPFrame = dxlib.LoadGraph(fname)
-	if imgHPFrame < 0 {
+	res.imgHPFrame = dxlib.LoadGraph(fname)
+	if res.imgHPFrame < 0 {
 		return nil, fmt.Errorf("failed to read hp frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge.png"
-	imgGaugeFrame = dxlib.LoadGraph(fname)
-	if imgGaugeFrame < 0 {
+	res.imgGaugeFrame = dxlib.LoadGraph(fname)
+	if res.imgGaugeFrame < 0 {
 		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
 	}
 	fname = common.ImagePath + "battle/gauge_max.png"
-	imgGaugeMax = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
+	res.imgGaugeMax = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, res.imgGaugeMax); res == -1 {
 		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/mind_window_frame.png"
+	if res.imgMindFrame = dxlib.LoadGraph(fname); res.imgMindFrame == -1 {
+		return nil, fmt.Errorf("failed to read mind frame image %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/mind_status.png"
+	res.imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
+	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, res.imgMinds); res == -1 {
+		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 
 	fname = common.ImagePath + "battle/skill/charge.png"
@@ -101,8 +113,8 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
-		imgCharge[0] = append(imgCharge[0], tmp[i])
-		imgCharge[1] = append(imgCharge[1], tmp[i+8])
+		res.imgCharge[0] = append(res.imgCharge[0], tmp[i])
+		res.imgCharge[1] = append(res.imgCharge[1], tmp[i+8])
 	}
 
 	logger.Info("Successfully initialized net battle player data")
@@ -110,53 +122,25 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 }
 
 func (p *BattlePlayer) End() {
-	dxlib.DeleteGraph(imgHPFrame)
-	imgHPFrame = -1
-	dxlib.DeleteGraph(imgGaugeFrame)
-	imgGaugeFrame = -1
-	for _, img := range imgGaugeMax {
+	dxlib.DeleteGraph(p.imgHPFrame)
+	dxlib.DeleteGraph(p.imgGaugeFrame)
+	dxlib.DeleteGraph(p.imgMindFrame)
+
+	for _, img := range p.imgGaugeMax {
 		dxlib.DeleteGraph(img)
 	}
+	p.imgGaugeMax = []int{}
+
+	for _, img := range p.imgMinds {
+		dxlib.DeleteGraph(img)
+	}
+	p.imgMinds = []int{}
+
 	for i := 0; i < 2; i++ {
-		for _, img := range imgCharge[i] {
+		for _, img := range p.imgCharge[i] {
 			dxlib.DeleteGraph(img)
 		}
-		imgCharge[i] = []int{}
-	}
-}
-
-func (p *BattlePlayer) InitBattleFrame() {
-	p.GaugeCount = 0
-}
-
-func (p *BattlePlayer) DrawOptions() {
-	// Show Charge Shot
-	if p.ChargeCount > battlecommon.ChargeViewDelay {
-		n := 0
-		if p.ChargeCount > battlecommon.ChargeTime {
-			n = 1
-		}
-		view := battlecommon.ViewPos(common.Point{X: p.Object.X, Y: p.Object.Y})
-		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-	}
-
-	// Show selected chip icons
-	n := len(p.Object.Chips)
-	if n > 0 {
-		// TODO Show chip info
-
-		const px = 3
-		max := n * px
-		for i := 0; i < n; i++ {
-			x := appfield.PanelSize.X*p.Object.X + appfield.PanelSize.X/2 - 2 + i*px - max
-			y := appfield.DrawPanelTopY + appfield.PanelSize.Y*p.Object.Y - 10 - 81 + (i * px) - max
-			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
-			// draw from the end
-			dxlib.DrawGraph(x, y, chip.GetIcon(p.Object.Chips[n-1-i], true), true)
-		}
+		p.imgCharge[i] = []int{}
 	}
 }
 
@@ -168,22 +152,66 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	}
 
 	// Show HP
-	dxlib.DrawGraph(x, y, imgHPFrame, true)
+	dxlib.DrawGraph(x, y, p.imgHPFrame, true)
 	draw.Number(x+2, y+2, p.Object.HP, draw.NumberOption{RightAligned: true, Length: 4})
+
+	// Show Mind Status
+	dxlib.DrawGraph(x, 40, p.imgMindFrame, true)
+	dxlib.DrawGraph(x, 40, p.imgMinds[battlecommon.PlayerMindStatusNormal], true) // TODO set mind status
 
 	// Show Custom Gauge
 	if showGauge {
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
-			dxlib.DrawGraph(96, 5, imgGaugeFrame, true)
+			dxlib.DrawGraph(96, 5, p.imgGaugeFrame, true)
 			const gaugeMaxSize = 256
-			size := gaugeMaxSize * int(p.GaugeCount) / battlecommon.GaugeMaxCount
+			size := int(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
 			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), true)
 			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), true)
 			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), true)
 		} else {
 			i := (p.GaugeCount / 40) % 4
-			dxlib.DrawGraph(96, 5, imgGaugeMax[i], true)
+			dxlib.DrawGraph(96, 5, p.imgGaugeMax[i], true)
 		}
+	}
+}
+
+func (p *BattlePlayer) LocalDraw() {
+	view := battlecommon.ViewPos(common.Point{
+		X: p.Object.X,
+		Y: p.Object.Y,
+	})
+
+	// Show selected chip icons
+	if n := len(p.Object.Chips); n > 0 {
+		// Show current chip info
+		c := chip.Get(p.Object.Chips[0].ID)
+		powTxt := ""
+		if c.Power > 0 && !c.ForMe {
+			powTxt = fmt.Sprintf("%d", c.Power)
+		}
+		draw.String(5, common.ScreenSize.Y-20, 0xffffff, "%s %s", c.Name, powTxt)
+
+		const px = 3
+		max := n * px
+		for i := 0; i < n; i++ {
+			x := appfield.PanelSize.X*p.Object.X + appfield.PanelSize.X/2 - 2 + (i * px) - max
+			y := appfield.DrawPanelTopY + appfield.PanelSize.Y*p.Object.Y - 10 - 81 + (i * px) - max
+			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
+			// draw from the end
+			dxlib.DrawGraph(x, y, chip.GetIcon(p.Object.Chips[n-1-i].ID, true), true)
+		}
+	}
+
+	// Show charge image
+	if p.ChargeCount > battlecommon.ChargeViewDelay {
+		n := 0
+		if p.ChargeCount > battlecommon.ChargeTime {
+			n = 1
+		}
+		imgNo := int(p.ChargeCount/4) % len(p.imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.imgCharge[n][imgNo], true)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
 }
 
@@ -191,7 +219,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
 	if p.Object.HP <= 0 {
-		netconn.SendSignal(pb.Action_PLAYERDEAD)
+		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true, nil
 	}
 
@@ -200,7 +228,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if p.InvincibleCount > battlecommon.PlayerDefaultInvincibleTime {
 			p.InvincibleCount = 0
 			p.Object.Invincible = false
-			netconn.SendObject(p.Object)
+			netconn.GetInst().SendObject(p.Object)
 		}
 	}
 
@@ -212,6 +240,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
+	// Go to chip folder
 	if p.GaugeCount >= battlecommon.GaugeMaxCount {
 		if p.GaugeCount == battlecommon.GaugeMaxCount {
 			sound.On(sound.SEGaugeMax)
@@ -219,7 +248,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
-			netconn.SendSignal(pb.Action_GOCHIPSELECT)
+			netconn.GetInst().SendSignal(pb.Action_GOCHIPSELECT)
 
 			return false, nil
 		}
@@ -244,13 +273,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 				MoveDirect: moveDirect,
 			})
 		}
-		return false, nil
 	}
 
 	// Chip use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		if len(p.Object.Chips) > 0 {
-			c := chip.Get(p.Object.Chips[0])
+			c := chip.Get(p.Object.Chips[0].ID)
 			if c.PlayerAct != -1 {
 				p.Act.Set(c.PlayerAct, &ActOption{
 					KeepCount: c.KeepCount,
@@ -258,7 +286,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			id := netskill.Add(sid, netskill.Argument{
+			id := netskill.GetInst().Add(sid, netskill.Argument{
 				X:     p.Object.X,
 				Y:     p.Object.Y,
 				Power: int(c.Power),
@@ -291,27 +319,14 @@ func (p *BattlePlayer) Process() (bool, error) {
 	return false, nil
 }
 
-func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.Object.Chips = []int{}
-	for _, s := range selected {
-		p.Object.Chips = append(p.Object.Chips, p.ChipFolder[s].ID)
-	}
-
-	// Remove selected chips from folder
-	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
-	for _, s := range selected {
-		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
-	}
-}
-
 func (p *BattlePlayer) damageProc() bool {
-	finfo := netconn.GetFieldInfo()
-	if len(finfo.HitDamages) == 0 {
+	ginfo := netconn.GetInst().GetGameInfo()
+	if len(ginfo.HitDamages) == 0 {
 		return false
 	}
 
-	dm := finfo.HitDamages[0]
-	defer netconn.RemoveDamage(dm.ID)
+	dm := ginfo.HitDamages[0]
+	defer netconn.GetInst().RemoveDamage(dm.ID)
 
 	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
@@ -336,18 +351,19 @@ func (p *BattlePlayer) damageProc() bool {
 
 	if dm.BigDamage {
 		p.Object.Invincible = true
+		// Skill関係
 		for _, sid := range p.ManagedSkills {
-			netskill.StopByPlayer(sid)
+			netskill.GetInst().StopByPlayer(sid)
 		}
 		p.ManagedSkills = []string{}
+		netconn.GetInst().AddSound(int(sound.SEDamaged))
 		p.Act.Set(battlecommon.PlayerActDamage, nil)
-		netconn.AddSound(sound.SEDamaged)
 	} else {
-		netconn.SendObject(p.Object)
+		netconn.GetInst().SendObject(p.Object)
 	}
 
 	if dm.HitEffectType > 0 {
-		netconn.SendEffect(effect.Effect{
+		netconn.GetInst().SendEffect(effect.Effect{
 			ID:       uuid.New().String(),
 			Type:     dm.HitEffectType,
 			X:        p.Object.X,
@@ -358,4 +374,30 @@ func (p *BattlePlayer) damageProc() bool {
 	}
 
 	return true
+}
+
+func (p *BattlePlayer) SetChipSelectResult(selected []int) {
+	p.Object.Chips = []object.ChipInfo{}
+	for _, s := range selected {
+		p.Object.Chips = append(p.Object.Chips, object.ChipInfo{ID: p.ChipFolder[s].ID, Code: p.ChipFolder[s].Code})
+	}
+
+	// Remove selected chips from folder
+	sort.Sort(sort.Reverse(sort.IntSlice(selected)))
+	for _, s := range selected {
+		p.ChipFolder = append(p.ChipFolder[:s], p.ChipFolder[s+1:]...)
+	}
+}
+
+func (p *BattlePlayer) GetSelectedChips() []player.ChipInfo {
+	res := []player.ChipInfo{}
+	for _, c := range p.Object.Chips {
+		res = append(res, player.ChipInfo{ID: c.ID, Code: c.Code})
+	}
+	return res
+}
+
+func (p *BattlePlayer) UpdatePA() {
+	// Check program advance
+	// TODO
 }

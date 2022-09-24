@@ -41,7 +41,7 @@ func (p *vulcan) Process() (bool, error) {
 
 	if p.count == 1 {
 		// Body
-		netconn.SendObject(object.Object{
+		netconn.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeVulcan,
 			X:              p.x,
@@ -50,7 +50,7 @@ func (p *vulcan) Process() (bool, error) {
 		})
 	}
 
-	_, delay := draw.GetImageInfo(object.TypeVulcan)
+	_, delay := draw.GetInst().GetObjectImageInfo(object.TypeVulcan)
 	if p.count >= delay*1 {
 		if p.count%(delay*5) == delay*1 {
 			sound.On(sound.SEGun)
@@ -67,7 +67,7 @@ func (p *vulcan) Process() (bool, error) {
 }
 
 func (p *vulcan) RemoveObject() {
-	netconn.RemoveObject(p.id)
+	netconn.GetInst().RemoveObject(p.id)
 }
 
 func (p *vulcan) StopByPlayer() {
@@ -75,13 +75,12 @@ func (p *vulcan) StopByPlayer() {
 }
 
 func (p *vulcan) addDamage() {
-	dm := []damage.Damage{}
 	hit := false
 	eff := effect.Effect{}
 	for x := p.x + 1; x < appfield.FieldNum.X; x++ {
 		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 		if pn.ObjectID != "" {
-			dm = append(dm, damage.Damage{
+			netconn.GetInst().AddDamage(damage.Damage{
 				ID:            uuid.New().String(),
 				PosX:          x,
 				PosY:          p.y,
@@ -99,7 +98,7 @@ func (p *vulcan) addDamage() {
 				ViewOfsY: rand.Intn(2*20) - 20,
 			}
 			if p.hit && x < appfield.FieldNum.X-1 {
-				dm = append(dm, damage.Damage{
+				netconn.GetInst().AddDamage(damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x + 1,
 					PosY:          p.y,
@@ -117,8 +116,7 @@ func (p *vulcan) addDamage() {
 		}
 	}
 	p.hit = hit
-	netconn.SendDamages(dm)
 	if hit {
-		netconn.SendEffect(eff)
+		netconn.GetInst().SendEffect(eff)
 	}
 }
