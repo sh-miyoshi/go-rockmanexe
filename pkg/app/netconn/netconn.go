@@ -309,6 +309,13 @@ func (n *NetConn) GetOpponentUserID() string {
 	return ""
 }
 
+func (n *NetConn) ClearSounds() {
+	n.gameInfoMu.Lock()
+	defer n.gameInfoMu.Unlock()
+
+	n.gameInfo.Sounds = []sound.Sound{}
+}
+
 func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
@@ -412,4 +419,5 @@ func (o *sendObject) Init() {
 	o.removeObjects = []object.Object{}
 	o.damages = []damage.Damage{}
 	o.effects = []effect.Effect{}
+	o.sounds = []sound.Sound{}
 }

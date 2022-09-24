@@ -59,5 +59,8 @@ func main() {
 	if err := app.Process(); err != nil {
 		logger.Error("Failed to run app: %v", err)
 	}
+
+	// 終了処理をできるように若干待つ
+	time.Sleep(1 * time.Second)
 	logger.Info("Successfully closed app")
 }

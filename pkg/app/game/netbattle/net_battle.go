@@ -106,9 +106,10 @@ func Process() error {
 	inst.fieldInst.Update()
 
 	// Sound process
-	for _, s := range netconn.GetInst().GetGameInfo().Sounds {
+	for _, s := range inst.conn.GetGameInfo().Sounds {
 		sound.On(sound.SEType(s.SEType))
 	}
+	inst.conn.ClearSounds()
 
 	switch inst.state {
 	case stateWaiting:

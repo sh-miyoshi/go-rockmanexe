@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -63,6 +64,9 @@ func (p *Player) ChipSelect() error {
 func (p *Player) Action() bool {
 	if p.Object.HP <= 0 {
 		// Player deleted
+		netconn.GetInst().SendObject(p.Object)
+		netconn.GetInst().AddSound(int(sound.SEPlayerDeleted))
+		netconn.GetInst().BulkSendData()
 		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true
 	}
@@ -147,7 +151,7 @@ func (p *Player) damageProc() bool {
 		// 	netskill.StopByPlayer(sid)
 		// }
 		// p.ManagedSkills = []string{}
-		// netconn.GetInst().AddSound(sound.SEDamaged)
+		netconn.GetInst().AddSound(int(sound.SEDamaged))
 	} else {
 		netconn.GetInst().SendObject(p.Object)
 	}
