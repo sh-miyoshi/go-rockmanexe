@@ -157,12 +157,6 @@ func (p *wideShot) GetParam() anim.Param {
 	}
 }
 
-func (p *wideShot) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *wideShot) StopByOwner() {
 	if p.state != wideShotStateMove {
 		anim.Delete(p.ID)

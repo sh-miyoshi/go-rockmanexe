@@ -247,6 +247,3 @@ func (a *volgearAtk) GetParam() anim.Param {
 		AnimType: anim.AnimTypeEffect,
 	}
 }
-
-func (a *volgearAtk) AtDelete() {
-}

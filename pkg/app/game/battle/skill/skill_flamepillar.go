@@ -141,12 +141,6 @@ func (p *flamePillarManager) GetParam() anim.Param {
 	}
 }
 
-func (p *flamePillarManager) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *flamePillarManager) StopByOwner() {
 	anim.Delete(p.ID)
 }

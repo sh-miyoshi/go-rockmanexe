@@ -112,12 +112,6 @@ func (p *cannon) GetParam() anim.Param {
 	}
 }
 
-func (p *cannon) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *cannon) StopByOwner() {
 	anim.Delete(p.ID)
 }

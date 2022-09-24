@@ -128,13 +128,6 @@ func (p *aquaman) GetParam() anim.Param {
 	}
 }
 
-func (p *aquaman) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-		p.Arg.RemoveObject(p.atkID)
-	}
-}
-
 func (p *aquaman) StopByOwner() {
 	// Nothing to do after throwing
 }

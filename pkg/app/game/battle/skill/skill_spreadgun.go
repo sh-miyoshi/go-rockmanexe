@@ -118,12 +118,6 @@ func (p *spreadGun) GetParam() anim.Param {
 	}
 }
 
-func (p *spreadGun) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *spreadGun) StopByOwner() {
 	if p.count < 5 {
 		anim.Delete(p.ID)
@@ -154,12 +148,6 @@ func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
 		AnimType: anim.AnimTypeEffect,
-	}
-}
-
-func (p *spreadHit) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
 	}
 }
 

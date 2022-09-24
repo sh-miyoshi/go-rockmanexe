@@ -70,12 +70,6 @@ func (p *dreamSword) GetParam() anim.Param {
 	}
 }
 
-func (p *dreamSword) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *dreamSword) StopByOwner() {
 	anim.Delete(p.ID)
 }

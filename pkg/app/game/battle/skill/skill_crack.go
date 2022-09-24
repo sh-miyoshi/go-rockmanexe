@@ -70,12 +70,6 @@ func (p *crack) GetParam() anim.Param {
 	}
 }
 
-func (p *crack) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *crack) StopByOwner() {
 	anim.Delete(p.ID)
 }

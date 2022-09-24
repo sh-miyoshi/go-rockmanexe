@@ -110,12 +110,6 @@ func (p *vulcan) GetParam() anim.Param {
 	}
 }
 
-func (p *vulcan) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *vulcan) StopByOwner() {
 	anim.Delete(p.ID)
 }

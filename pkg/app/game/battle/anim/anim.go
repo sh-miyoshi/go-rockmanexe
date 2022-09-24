@@ -25,7 +25,6 @@ type Anim interface {
 	Process() (bool, error)
 	Draw()
 	GetParam() Param
-	AtDelete()
 }
 
 var (
@@ -80,7 +79,6 @@ func Delete(animID string) {
 		return
 	}
 
-	anims[animID].AtDelete()
 	delete(anims, animID)
 	for i, sid := range sortedAnimIDs {
 		if sid == animID {

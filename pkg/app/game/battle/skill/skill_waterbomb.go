@@ -104,12 +104,6 @@ func (p *waterBomb) GetParam() anim.Param {
 	}
 }
 
-func (p *waterBomb) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *waterBomb) StopByOwner() {
 	if p.count < 5 {
 		anim.Delete(p.ID)

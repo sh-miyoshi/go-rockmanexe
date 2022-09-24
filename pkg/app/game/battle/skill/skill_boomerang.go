@@ -174,12 +174,6 @@ func (p *boomerang) GetParam() anim.Param {
 	}
 }
 
-func (p *boomerang) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *boomerang) StopByOwner() {
 	// Nothing to do after throwing
 }

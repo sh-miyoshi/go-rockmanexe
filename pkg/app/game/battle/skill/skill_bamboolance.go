@@ -80,12 +80,6 @@ func (p *bambooLance) GetParam() anim.Param {
 	}
 }
 
-func (p *bambooLance) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *bambooLance) StopByOwner() {
 	// Nothing to do after throwing
 }

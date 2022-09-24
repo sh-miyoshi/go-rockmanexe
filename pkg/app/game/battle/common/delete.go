@@ -55,6 +55,3 @@ func (p *deleteAction) GetParam() anim.Param {
 		AnimType: anim.AnimTypeEffect,
 	}
 }
-
-func (p *deleteAction) AtDelete() {
-}

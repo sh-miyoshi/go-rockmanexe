@@ -211,9 +211,6 @@ func (a *metallAtk) GetParam() anim.Param {
 	}
 }
 
-func (a *metallAtk) AtDelete() {
-}
-
 func (a *metallAtk) GetImageNo() int {
 	n := a.count / delayMetallAtk
 	if n >= len(a.images) {

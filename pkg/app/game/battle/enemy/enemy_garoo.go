@@ -243,6 +243,3 @@ func (a *garooAtk) GetParam() anim.Param {
 		AnimType: anim.AnimTypeEffect,
 	}
 }
-
-func (a *garooAtk) AtDelete() {
-}

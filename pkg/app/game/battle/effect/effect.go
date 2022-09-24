@@ -189,9 +189,6 @@ func (e *effect) GetParam() anim.Param {
 	}
 }
 
-func (e *effect) AtDelete() {
-}
-
 func (e *noEffect) Process() (bool, error) {
 	// Nothing to do, so return finish immediately
 	return true, nil
@@ -205,7 +202,4 @@ func (e *noEffect) GetParam() anim.Param {
 		ObjID:    uuid.New().String(), // set dummy param
 		AnimType: anim.AnimTypeEffect,
 	}
-}
-
-func (e *noEffect) AtDelete() {
 }

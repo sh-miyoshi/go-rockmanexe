@@ -92,12 +92,6 @@ func (p *miniBomb) GetParam() anim.Param {
 	}
 }
 
-func (p *miniBomb) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *miniBomb) StopByOwner() {
 	if p.count < 5 {
 		anim.Delete(p.ID)

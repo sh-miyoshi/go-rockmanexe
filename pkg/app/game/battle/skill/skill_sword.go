@@ -95,12 +95,6 @@ func (p *sword) GetParam() anim.Param {
 	}
 }
 
-func (p *sword) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *sword) StopByOwner() {
 	anim.Delete(p.ID)
 }

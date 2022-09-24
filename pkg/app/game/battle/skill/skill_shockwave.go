@@ -120,12 +120,6 @@ func (p *shockWave) GetParam() anim.Param {
 	}
 }
 
-func (p *shockWave) AtDelete() {
-	if p.Arg.RemoveObject != nil {
-		p.Arg.RemoveObject(p.ID)
-	}
-}
-
 func (p *shockWave) StopByOwner() {
 	if p.count <= p.InitWait {
 		anim.Delete(p.ID)
