@@ -168,8 +168,18 @@ func (a *ActSkill) Process() bool {
 
 		a.obj.UpdateBaseTime = true
 		switch a.skillType {
-		case skill.SkillCannon:
+		case skill.SkillCannon, skill.SkillHighCannon, skill.SkillMegaCannon:
 			a.obj.Type = object.TypeRockmanCannon
+		case skill.SkillSword, skill.SkillWideSword, skill.SkillLongSword:
+			a.obj.Type = object.TypeRockmanSword
+		case skill.SkillVulcan1, skill.SkillWideShot, skill.SkillSpreadGun:
+			a.obj.Type = object.TypeRockmanShot
+		case skill.SkillPlayerShockWave, skill.SkillShockWave:
+			a.obj.Type = object.TypeRockmanPick
+		case skill.SkillMiniBomb:
+			a.obj.Type = object.TypeRockmanBomb
+		default:
+			a.obj.Type = object.TypeRockmanStand
 		}
 		netconn.GetInst().SendObject(*a.obj)
 		return false
