@@ -5,14 +5,10 @@
 ### 機能
 
 - state result
-  - plaer(win/lose)
-  - botclient
-
-#### netconn
-
-- AddSound
-- GetOpponentUserID
-- RemoveSounds
+  - plaer win
+    - エフェクトは処理する
+  - player lose
+    - 全般
 
 ### バグ修正
 
