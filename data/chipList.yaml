@@ -129,3 +129,9 @@
   type: 7
   player_act: -1
   description: 少しの間透明になり、殆どの攻撃に当たらなくなる
+- id: 9
+  name: "ヒートショット"
+  power: 40
+  type: 9
+  player_act: 2
+  description: ヒットすると奥の１マスにも誘爆

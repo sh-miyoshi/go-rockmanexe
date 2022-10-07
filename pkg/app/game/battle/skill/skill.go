@@ -36,6 +36,7 @@ const (
 	SkillGarooBreath
 	SkillFlamePillarRandom
 	SkillFlamePillarTracking
+	SkillHeatShot
 )
 
 type SkillAnim interface {
@@ -71,6 +72,8 @@ var (
 	imgDreamSword    []int
 	imgGarooBreath   []int
 	imgFlamePillar   []int
+	imgHeatShotBody  []int
+	imgHeatShotAtk   []int
 )
 
 func Init() error {
@@ -148,6 +151,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newFlamePillar(objID, arg, flamePillarTypeTracking)
 	case SkillFlamePillarRandom:
 		return newFlamePillar(objID, arg, flamePillarTypeRandom)
+	case SkillHeatShot:
+		return newHeatShot(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -199,6 +204,8 @@ func GetSkillID(chipID int) int {
 		return SkillDreamSword
 	case chip.IDInvisible:
 		return SkillInvisible
+	case chip.IDHeatShot:
+		return SkillHeatShot
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
