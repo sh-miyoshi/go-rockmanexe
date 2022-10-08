@@ -23,14 +23,6 @@ type heatShot struct {
 	count int
 }
 
-type heatShotHit struct {
-	ID  string
-	Arg Argument
-
-	count int
-	pos   common.Point
-}
-
 func newHeatShot(objID string, arg Argument) *heatShot {
 	return &heatShot{
 		ID:  objID,
@@ -66,32 +58,24 @@ func (p *heatShot) Process() (bool, error) {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
 				// Hit
-				sound.On(sound.SESpreadHit)
-
 				damage.New(damage.Damage{
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeHitBig,
+					HitEffectType: effect.TypeHeatHit,
 				})
-				// Spreading
-				for sy := -1; sy <= 1; sy++ {
-					if pos.Y+sy < 0 || pos.Y+sy >= field.FieldNum.Y {
-						continue
-					}
-					for sx := -1; sx <= 1; sx++ {
-						if sy == 0 && sx == 0 {
-							continue
-						}
-						if x+sx >= 0 && x+sx < field.FieldNum.X {
-							anim.New(&heatShotHit{
-								Arg: p.Arg,
-								pos: common.Point{X: x + sx, Y: pos.Y + sy},
-							})
-						}
-					}
-				}
+
+				// 誘爆
+				target.X++
+				anim.New(effect.Get(effect.TypeHeatHit, target, 0))
+				damage.New(damage.Damage{
+					Pos:           target,
+					Power:         int(p.Arg.Power),
+					TTL:           1,
+					TargetType:    p.Arg.TargetType,
+					HitEffectType: effect.TypeNone,
+				})
 
 				break
 			}
@@ -122,35 +106,4 @@ func (p *heatShot) StopByOwner() {
 	if p.count < 5 {
 		anim.Delete(p.ID)
 	}
-}
-
-func (p *heatShotHit) Draw() {
-}
-
-func (p *heatShotHit) Process() (bool, error) {
-	p.count++
-	if p.count == 10 {
-		anim.New(effect.Get(effect.TypeSpreadHit, p.pos, 5))
-		damage.New(damage.Damage{
-			Pos:           p.pos,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
-		})
-
-		return true, nil
-	}
-	return false, nil
-}
-
-func (p *heatShotHit) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
-	}
-}
-
-func (p *heatShotHit) StopByOwner() {
-	anim.Delete(p.ID)
 }
