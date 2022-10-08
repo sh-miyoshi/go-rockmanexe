@@ -22,6 +22,7 @@ const (
 const (
 	flamePillarTypeRandom int = iota
 	flamePillarTypeTracking
+	flamePillarTypeLine
 )
 
 const (
@@ -40,9 +41,10 @@ type flamePillarManager struct {
 	ID string
 
 	Arg       Argument
+	count     int
 	skillType int
 	isPlayer  bool
-	pillars   []flamePillar
+	pillars   []*flamePillar
 }
 
 func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManager {
@@ -50,9 +52,10 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 		ID: objID,
 
 		Arg:       arg,
+		count:     0,
 		skillType: skillType,
 		isPlayer:  arg.TargetType == damage.TargetEnemy,
-		pillars:   []flamePillar{},
+		pillars:   []*flamePillar{},
 	}
 
 	switch skillType {
@@ -66,11 +69,26 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			pos.X--
 		}
 
-		res.pillars = append(res.pillars, flamePillar{
+		res.pillars = append(res.pillars, &flamePillar{
 			Arg:   arg,
 			state: flamePillarStateWakeup,
 			point: pos,
 		})
+	case flamePillarTypeLine:
+		posX := objanim.GetObjPos(arg.OwnerID).X
+		if res.isPlayer {
+			posX += 2
+		} else {
+			posX -= 2
+		}
+
+		for y := 0; y < field.FieldNum.Y; y++ {
+			res.pillars = append(res.pillars, &flamePillar{
+				Arg:   arg,
+				state: flamePillarStateWakeup,
+				point: common.Point{X: posX, Y: y},
+			})
+		}
 	}
 
 	return res
@@ -79,6 +97,21 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 func (p *flamePillarManager) Draw() {
 	for _, pillar := range p.pillars {
 		pillar.Draw()
+	}
+
+	if p.skillType == flamePillarTypeLine {
+		if len(p.pillars) > 0 && p.pillars[0].state != flamePillarStateEnd {
+			imageNo := p.count / 4
+			if imageNo >= len(imgFlameLineBody) {
+				imageNo = len(imgFlameLineBody) - 1
+			}
+
+			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			view := battlecommon.ViewPos(pos)
+
+			// Show body
+			dxlib.DrawRotaGraph(view.X+35, view.Y-15, 1, 0, imgFlameLineBody[imageNo], true)
+		}
 	}
 }
 
@@ -123,14 +156,25 @@ func (p *flamePillarManager) Process() (bool, error) {
 				}
 			}
 
-			p.pillars = append([]flamePillar{}, flamePillar{
+			p.pillars = append([]*flamePillar{}, &flamePillar{
 				Arg:   p.Arg,
 				state: flamePillarStateWakeup,
 				point: common.Point{X: x, Y: y},
 			})
 		}
+	case flamePillarTypeLine:
+		for _, pillar := range p.pillars {
+			end, err := pillar.Process()
+			if err != nil {
+				return false, fmt.Errorf("flame pillar process failed: %w", err)
+			}
+			if end {
+				return true, nil
+			}
+		}
 	}
 
+	p.count++
 	return false, nil
 }
 

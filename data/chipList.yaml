@@ -1,5 +1,5 @@
 # type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
-# player_act.type: -1(none), 3(cannon), 4(sword), 8(throw)
+# player_act.type: -1(none), 2(shot), 3(cannon), 4(sword), 5(bomb), 6(buster), 7(pick), 8(throw)
 - id: 1
   name: "キャノン"
   power: 40
@@ -150,3 +150,10 @@
   player_act: 2
   keep_cnt: 2
   description: ヒットすると上下１マスにも誘爆
+- id: 21
+  name: "フレイムライン1"
+  power: 70
+  type: 9
+  player_act: 2
+  keep_cnt: 12
+  description: ２マス前の縦３マスに火柱攻撃

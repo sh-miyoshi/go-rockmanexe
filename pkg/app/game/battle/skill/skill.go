@@ -39,6 +39,7 @@ const (
 	SkillHeatShot
 	SkillHeatV
 	SkillHeatSide
+	SkillFlamePillarLine
 )
 
 type SkillAnim interface {
@@ -74,6 +75,7 @@ var (
 	imgDreamSword    []int
 	imgGarooBreath   []int
 	imgFlamePillar   []int
+	imgFlameLineBody []int
 	imgHeatShotBody  []int
 	imgHeatShotAtk   []int
 )
@@ -159,6 +161,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newHeatShot(objID, arg, heatShotTypeV)
 	case SkillHeatSide:
 		return newHeatShot(objID, arg, heatShotTypeSide)
+	case SkillFlamePillarLine:
+		return newFlamePillar(objID, arg, flamePillarTypeLine)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -216,6 +220,8 @@ func GetSkillID(chipID int) int {
 		return SkillHeatV
 	case chip.IDHeatSide:
 		return SkillHeatSide
+	case chip.IDFlameLine1:
+		return SkillFlamePillarLine
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

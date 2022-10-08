@@ -168,6 +168,11 @@ func loadImages() error {
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 72, 120, imgFlamePillar); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	fname = path + "フレイムライン_body.png"
+	imgFlameLineBody = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 64, imgFlameLineBody); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 	fname = path + "ヒートショット_body.png"
 	imgHeatShotBody = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 40, imgHeatShotBody); res == -1 {
@@ -267,6 +272,10 @@ func cleanupImages() {
 		dxlib.DeleteGraph(imgFlamePillar[i])
 	}
 	imgFlamePillar = []int{}
+	for i := 0; i < len(imgFlameLineBody); i++ {
+		dxlib.DeleteGraph(imgFlameLineBody[i])
+	}
+	imgFlameLineBody = []int{}
 	for i := 0; i < len(imgHeatShotBody); i++ {
 		dxlib.DeleteGraph(imgHeatShotBody[i])
 	}
