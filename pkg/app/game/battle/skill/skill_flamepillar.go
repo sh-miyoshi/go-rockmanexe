@@ -10,6 +10,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -215,6 +216,10 @@ func (p *flamePillar) Draw() {
 func (p *flamePillar) Process() (bool, error) {
 	switch p.state {
 	case flamePillarStateWakeup:
+		if p.count == 0 {
+			sound.On(sound.SEFlameAttack)
+		}
+
 		if p.count == 3*delayFlamePillar {
 			// Add damage
 			damage.New(damage.Damage{
