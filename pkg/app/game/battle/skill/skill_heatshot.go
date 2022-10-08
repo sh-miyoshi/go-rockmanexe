@@ -16,17 +16,25 @@ const (
 	delayHeatShot = 2
 )
 
+const (
+	heatShotTypeShot int = iota
+	heatShotTypeV
+	heatShotTypeSide
+)
+
 type heatShot struct {
-	ID  string
-	Arg Argument
+	ID   string
+	Arg  Argument
+	Type int
 
 	count int
 }
 
-func newHeatShot(objID string, arg Argument) *heatShot {
+func newHeatShot(objID string, arg Argument, shotType int) *heatShot {
 	return &heatShot{
-		ID:  objID,
-		Arg: arg,
+		ID:   objID,
+		Arg:  arg,
+		Type: shotType,
 	}
 }
 
@@ -67,15 +75,28 @@ func (p *heatShot) Process() (bool, error) {
 				})
 
 				// 誘爆
-				target.X++
-				anim.New(effect.Get(effect.TypeHeatHit, target, 0))
-				damage.New(damage.Damage{
-					Pos:           target,
-					Power:         int(p.Arg.Power),
-					TTL:           1,
-					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeNone,
-				})
+				targets := []common.Point{}
+				switch p.Type {
+				case heatShotTypeShot:
+					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y})
+				case heatShotTypeV:
+					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y - 1})
+					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y + 1})
+				case heatShotTypeSide:
+					targets = append(targets, common.Point{X: target.X, Y: target.Y - 1})
+					targets = append(targets, common.Point{X: target.X, Y: target.Y + 1})
+				}
+
+				for _, t := range targets {
+					anim.New(effect.Get(effect.TypeHeatHit, t, 0))
+					damage.New(damage.Damage{
+						Pos:           t,
+						Power:         int(p.Arg.Power),
+						TTL:           1,
+						TargetType:    p.Arg.TargetType,
+						HitEffectType: effect.TypeNone,
+					})
+				}
 
 				break
 			}

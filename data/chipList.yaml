@@ -135,3 +135,15 @@
   type: 9
   player_act: 2
   description: ヒットすると奥の１マスにも誘爆
+- id: 10
+  name: "ヒートブイ"
+  power: 70
+  type: 9
+  player_act: 2
+  description: ヒットするとななめ奥にも誘爆
+- id: 11
+  name: "ヒートサイド"
+  power: 100
+  type: 9
+  player_act: 2
+  description: ヒットすると上下１マスにも誘爆

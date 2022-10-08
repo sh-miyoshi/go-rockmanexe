@@ -37,6 +37,8 @@ const (
 	SkillFlamePillarRandom
 	SkillFlamePillarTracking
 	SkillHeatShot
+	SkillHeatV
+	SkillHeatSide
 )
 
 type SkillAnim interface {
@@ -152,7 +154,11 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillFlamePillarRandom:
 		return newFlamePillar(objID, arg, flamePillarTypeRandom)
 	case SkillHeatShot:
-		return newHeatShot(objID, arg)
+		return newHeatShot(objID, arg, heatShotTypeShot)
+	case SkillHeatV:
+		return newHeatShot(objID, arg, heatShotTypeV)
+	case SkillHeatSide:
+		return newHeatShot(objID, arg, heatShotTypeSide)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -206,6 +212,10 @@ func GetSkillID(chipID int) int {
 		return SkillInvisible
 	case chip.IDHeatShot:
 		return SkillHeatShot
+	case chip.IDHeatV:
+		return SkillHeatV
+	case chip.IDHeatSide:
+		return SkillHeatSide
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
