@@ -220,7 +220,7 @@ func GetSkillID(chipID int) int {
 		return SkillHeatV
 	case chip.IDHeatSide:
 		return SkillHeatSide
-	case chip.IDFlameLine1:
+	case chip.IDFlameLine1, chip.IDFlameLine2, chip.IDFlameLine3:
 		return SkillFlamePillarLine
 	}
 

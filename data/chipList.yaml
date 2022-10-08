@@ -157,3 +157,17 @@
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
+- id: 22
+  name: "フレイムライン2"
+  power: 120
+  type: 9
+  player_act: 2
+  keep_cnt: 12
+  description: ２マス前の縦３マスに火柱攻撃
+- id: 23
+  name: "フレイムライン3"
+  power: 170
+  type: 9
+  player_act: 2
+  keep_cnt: 12
+  description: ２マス前の縦３マスに火柱攻撃
