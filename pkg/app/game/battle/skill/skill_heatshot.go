@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	delayHeatShot = 2
+	delayHeatShot    = 3
+	heatShotAtkDelay = 15
 )
 
 const (
@@ -58,7 +59,7 @@ func (p *heatShot) Draw() {
 }
 
 func (p *heatShot) Process() (bool, error) {
-	if p.count == 5 {
+	if p.count == heatShotAtkDelay {
 		sound.On(sound.SEGun)
 
 		pos := objanim.GetObjPos(p.Arg.OwnerID)
@@ -124,7 +125,7 @@ func (p *heatShot) GetParam() anim.Param {
 }
 
 func (p *heatShot) StopByOwner() {
-	if p.count < 5 {
+	if p.count < heatShotAtkDelay {
 		anim.Delete(p.ID)
 	}
 }
