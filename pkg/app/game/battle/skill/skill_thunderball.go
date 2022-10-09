@@ -109,6 +109,7 @@ func (p *thunderBall) Process() (bool, error) {
 			HitEffectType: effect.TypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
+			DamageType:    damage.DamageTypeElec,
 		})
 
 		// Set next pos

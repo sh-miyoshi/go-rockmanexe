@@ -141,6 +141,7 @@ func (p *wideShot) Process() (bool, error) {
 					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeNone,
 					BigDamage:     true,
+					DamageType:    damage.DamageTypeWater,
 				})
 			}
 		}

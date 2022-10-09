@@ -558,6 +558,7 @@ func (a *act) Process() bool {
 						TTL:           1,
 						TargetType:    damage.TargetEnemy,
 						HitEffectType: eff,
+						DamageType:    damage.DamageTypeNone,
 					})
 					break
 				}

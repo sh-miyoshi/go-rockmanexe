@@ -10,6 +10,14 @@ const (
 	TargetEnemy
 )
 
+const (
+	DamageTypeNone int = iota
+	DamageTypeFire
+	DamageTypeWater
+	DamageTypeElec
+	DamageTypeWood
+)
+
 type Damage struct {
 	ID            string
 	Pos           common.Point
@@ -21,6 +29,7 @@ type Damage struct {
 	BigDamage     bool
 	PushRight     int
 	PushLeft      int
+	DamageType    int
 	// TODO: のけぞり(単体), インビジ貫通
 }
 

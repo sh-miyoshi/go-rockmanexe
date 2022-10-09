@@ -47,6 +47,7 @@ func (p *recover) Process() (bool, error) {
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
+			DamageType:    damage.DamageTypeNone,
 		})
 	}
 

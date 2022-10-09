@@ -74,6 +74,7 @@ func (p *spreadGun) Process() (bool, error) {
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeHitBig,
+					DamageType:    damage.DamageTypeNone,
 				})
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
@@ -137,6 +138,7 @@ func (p *spreadHit) Process() (bool, error) {
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
+			DamageType:    damage.DamageTypeNone,
 		})
 
 		return true, nil

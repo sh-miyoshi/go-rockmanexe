@@ -59,6 +59,7 @@ func (p *bambooLance) Process() (bool, error) {
 			ShowHitArea:   false,
 			BigDamage:     true,
 			PushLeft:      1,
+			DamageType:    damage.DamageTypeWood,
 		}
 		for y := 0; y < field.FieldNum.Y; y++ {
 			dm.Pos.Y = y
