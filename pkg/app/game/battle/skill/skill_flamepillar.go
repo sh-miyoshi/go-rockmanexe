@@ -18,6 +18,7 @@ const (
 	flamePillarStateWakeup int = iota
 	flamePillarStateDoing
 	flamePillarStateEnd
+	flamePillarStateDeleted
 )
 
 const (
@@ -126,6 +127,11 @@ func (p *flamePillarManager) Process() (bool, error) {
 			return false, fmt.Errorf("flame pillar process failed: %w", err)
 		}
 		if end {
+			// 穴パネルなどで進めなかったら終わり
+			if p.pillars[0].state == flamePillarStateDeleted {
+				return true, nil
+			}
+
 			x := p.pillars[0].point.X
 			if p.isPlayer {
 				x++
@@ -164,14 +170,24 @@ func (p *flamePillarManager) Process() (bool, error) {
 			})
 		}
 	case flamePillarTypeLine:
-		for _, pillar := range p.pillars {
+		remove := []int{}
+		for i, pillar := range p.pillars {
 			end, err := pillar.Process()
 			if err != nil {
 				return false, fmt.Errorf("flame pillar process failed: %w", err)
 			}
 			if end {
-				return true, nil
+				remove = append(remove, i)
 			}
+		}
+		// Remove finished pillars
+		sort.Sort(sort.Reverse(sort.IntSlice(remove)))
+		for _, index := range remove {
+			p.pillars[index] = p.pillars[len(p.pillars)-1]
+			p.pillars = p.pillars[:len(p.pillars)-1]
+		}
+		if len(p.pillars) == 0 {
+			return true, nil
 		}
 	}
 
@@ -217,6 +233,12 @@ func (p *flamePillar) Process() (bool, error) {
 	switch p.state {
 	case flamePillarStateWakeup:
 		if p.count == 0 {
+			pn := field.GetPanelInfo(p.point)
+			if pn.Status == field.PanelStatusHole {
+				p.state = flamePillarStateDeleted
+				return true, nil
+			}
+
 			sound.On(sound.SEFlameAttack)
 		}
 
@@ -248,6 +270,8 @@ func (p *flamePillar) Process() (bool, error) {
 		if p.count > len(imgFlamePillar)*delayFlamePillar {
 			return true, nil
 		}
+	case flamePillarStateDeleted:
+		// Nothing to do
 	}
 
 	p.count++
