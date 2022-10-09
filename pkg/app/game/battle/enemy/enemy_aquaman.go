@@ -333,29 +333,7 @@ func (e *enemyAquaman) Draw() {
 }
 
 func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
-	if dm == nil {
-		return false
-	}
-
-	if e.pm.InvincibleCount > 0 {
-		return false
-	}
-
-	if dm.TargetType&damage.TargetEnemy != 0 {
-		e.pm.HP -= dm.Power
-		anim.New(effect.Get(dm.HitEffectType, e.pm.Pos, 5))
-
-		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&e.pm.Pos, common.DirectLeft, field.PanelTypeEnemy, true, field.GetPanelInfo) {
-				break
-			}
-		}
-		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&e.pm.Pos, common.DirectRight, field.PanelTypeEnemy, true, field.GetPanelInfo) {
-				break
-			}
-		}
-
+	if damageProc(dm, &e.pm) {
 		if !dm.BigDamage {
 			return true
 		}
@@ -365,6 +343,7 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 		e.count = 0
 		return true
 	}
+
 	return false
 }
 
