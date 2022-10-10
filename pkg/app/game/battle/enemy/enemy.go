@@ -187,7 +187,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			// TODO Add effect
+			anim.New(effect.Get(effect.TypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power

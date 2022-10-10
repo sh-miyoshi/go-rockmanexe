@@ -25,13 +25,15 @@ const (
 	TypeBlock
 	TypeBambooHit
 	TypeHeatHit
+	TypeExclamation
 
 	typeMax
 )
 
 const (
-	explodeDelay   = 2
-	waterBombDelay = 2
+	explodeDelay     = 2
+	waterBombDelay   = 2
+	exclamationDelay = 2
 )
 
 var (
@@ -106,6 +108,14 @@ func Init() error {
 
 	images[TypeBambooHit] = append([]int{}, images[TypeSpreadHit]...)
 	images[TypeHeatHit] = append([]int{}, images[TypeCannonHit]...)
+	images[TypeExclamation] = make([]int, 6)
+	fname = common.ImagePath + "battle/effect/exclamation.png"
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 104, 102, images[TypeExclamation]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 3; i < 6; i++ {
+		images[TypeExclamation][i] = images[TypeExclamation][2]
+	}
 
 	for i := 0; i < typeMax; i++ {
 		sounds[i] = -1
@@ -115,6 +125,7 @@ func Init() error {
 	sounds[TypeHitBig] = sound.SEBusterHit
 	sounds[TypeBlock] = sound.SEBlock
 	sounds[TypeHeatHit] = sound.SEExplode
+	// TODO add exclamation se
 
 	return nil
 }
@@ -154,6 +165,9 @@ func Get(typ int, pos common.Point, randRange int) anim.Anim {
 		res.ofs.Y -= 10
 	case TypeWaterBomb:
 		res.delay = waterBombDelay
+	case TypeExclamation:
+		res.delay = exclamationDelay
+		res.ofs.Y -= 40
 	}
 
 	return res
