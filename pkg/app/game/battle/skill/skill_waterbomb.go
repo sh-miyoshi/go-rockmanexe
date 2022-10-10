@@ -90,7 +90,7 @@ func (p *waterBomb) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeWater,
+			DamageType:    damage.TypeWater,
 		})
 		field.PanelCrack(p.target)
 		return true, nil

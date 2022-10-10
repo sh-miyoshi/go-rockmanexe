@@ -79,7 +79,7 @@ func (p *miniBomb) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeNone,
+			DamageType:    damage.TypeNone,
 		})
 		return true, nil
 	}

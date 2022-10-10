@@ -83,7 +83,7 @@ func (p *garooBreath) Process() (bool, error) {
 			HitEffectType: effect.TypeHeatHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeFire,
+			DamageType:    damage.TypeFire,
 		})
 
 		// Set next pos

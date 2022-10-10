@@ -73,7 +73,7 @@ func (p *vulcan) Process() (bool, error) {
 						TargetType:    p.Arg.TargetType,
 						HitEffectType: effect.TypeSpreadHit,
 						BigDamage:     lastAtk,
-						DamageType:    damage.DamageTypeNone,
+						DamageType:    damage.TypeNone,
 					})
 					anim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
 					if p.hit && x < field.FieldNum.X-1 {
@@ -86,7 +86,7 @@ func (p *vulcan) Process() (bool, error) {
 							TargetType:    p.Arg.TargetType,
 							HitEffectType: effect.TypeNone,
 							BigDamage:     lastAtk,
-							DamageType:    damage.DamageTypeNone,
+							DamageType:    damage.TypeNone,
 						})
 					}
 					hit = true

@@ -103,7 +103,7 @@ func (p *shockWave) Process() (bool, error) {
 			HitEffectType: effect.TypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeNone,
+			DamageType:    damage.TypeNone,
 		})
 	}
 	p.count++

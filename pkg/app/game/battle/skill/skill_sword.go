@@ -60,7 +60,7 @@ func (p *sword) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeNone,
+			DamageType:    damage.TypeNone,
 		}
 
 		pos := objanim.GetObjPos(p.Arg.OwnerID)

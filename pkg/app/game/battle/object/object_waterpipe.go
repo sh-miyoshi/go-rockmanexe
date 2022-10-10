@@ -212,7 +212,7 @@ func (a *WaterPipeAtk) Process() {
 			TargetType:    target,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeWater,
+			DamageType:    damage.TypeWater,
 		}
 
 		if a.pm.xFlip {

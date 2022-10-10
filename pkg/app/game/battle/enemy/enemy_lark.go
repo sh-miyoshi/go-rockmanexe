@@ -49,6 +49,7 @@ type enemyLark struct {
 
 func (e *enemyLark) Init(objID string) error {
 	e.pm.ObjectID = objID
+	e.pm.DamageType = damage.TypeWater
 	e.atk.ownerID = objID
 	e.next = e.pm.Pos
 	e.prev = e.pm.Pos

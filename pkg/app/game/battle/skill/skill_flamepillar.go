@@ -251,7 +251,7 @@ func (p *flamePillar) Process() (bool, error) {
 				TargetType:  p.Arg.TargetType,
 				ShowHitArea: true,
 				BigDamage:   true,
-				DamageType:  damage.DamageTypeFire,
+				DamageType:  damage.TypeFire,
 			})
 		}
 

@@ -64,7 +64,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeWater,
+			DamageType:    damage.TypeWater,
 		})
 		target := common.Point{X: p.target.X - 1, Y: p.target.Y}
 		anim.New(effect.Get(effect.TypeWaterBomb, target, 0))
@@ -75,7 +75,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeNone,
 			BigDamage:     true,
-			DamageType:    damage.DamageTypeWater,
+			DamageType:    damage.TypeWater,
 		})
 
 		return true, nil

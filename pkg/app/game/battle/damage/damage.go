@@ -11,11 +11,11 @@ const (
 )
 
 const (
-	DamageTypeNone int = iota
-	DamageTypeFire
-	DamageTypeWater
-	DamageTypeElec
-	DamageTypeWood
+	TypeNone int = iota
+	TypeFire
+	TypeWater
+	TypeElec
+	TypeWood
 )
 
 type Damage struct {
@@ -72,4 +72,18 @@ func Remove(id string) {
 
 func RemoveAll() {
 	damages = make(map[string]*Damage)
+}
+
+func IsWeakness(charType int, dm Damage) bool {
+	switch charType {
+	case TypeFire:
+		return dm.DamageType == TypeWater
+	case TypeWater:
+		return dm.DamageType == TypeElec
+	case TypeElec:
+		return dm.DamageType == TypeWood
+	case TypeWood:
+		return dm.DamageType == TypeFire
+	}
+	return false
 }

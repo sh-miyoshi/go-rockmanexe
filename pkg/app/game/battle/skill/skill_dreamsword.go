@@ -51,7 +51,7 @@ func (p *dreamSword) Process() (bool, error) {
 					HitEffectType: effect.TypeNone,
 					BigDamage:     true,
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
-					DamageType:    damage.DamageTypeNone,
+					DamageType:    damage.TypeNone,
 				}
 				damage.New(dm)
 			}

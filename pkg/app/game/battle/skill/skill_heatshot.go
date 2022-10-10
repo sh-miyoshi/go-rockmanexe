@@ -73,7 +73,7 @@ func (p *heatShot) Process() (bool, error) {
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
 					HitEffectType: effect.TypeHeatHit,
-					DamageType:    damage.DamageTypeFire,
+					DamageType:    damage.TypeFire,
 				})
 
 				// 誘爆
@@ -97,7 +97,7 @@ func (p *heatShot) Process() (bool, error) {
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
 						HitEffectType: effect.TypeNone,
-						DamageType:    damage.DamageTypeFire,
+						DamageType:    damage.TypeFire,
 					})
 				}
 

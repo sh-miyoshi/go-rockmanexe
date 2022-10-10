@@ -96,7 +96,7 @@ func (p *boomerang) Process() (bool, error) {
 			TargetType:    p.Arg.TargetType,
 			HitEffectType: effect.TypeSpreadHit,
 			ShowHitArea:   false,
-			DamageType:    damage.DamageTypeWood,
+			DamageType:    damage.TypeWood,
 		})
 
 		switch p.ActType {
