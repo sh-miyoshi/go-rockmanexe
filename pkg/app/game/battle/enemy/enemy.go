@@ -62,6 +62,8 @@ var (
 		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "m", RequiredLevel: 7},
 		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "*", RequiredLevel: 9},
 		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
+		{CharID: IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
+		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
 	}
 )
 
