@@ -101,9 +101,8 @@ func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
 	}
 
 	return battlefield.PanelInfo{
-		Type:      pnType,
-		ObjectID:  id,
-		ObjExists: id != "",
+		Type:     pnType,
+		ObjectID: id,
 
 		// TODO 未実装
 		// Status    int

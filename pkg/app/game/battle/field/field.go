@@ -38,11 +38,12 @@ const (
 )
 
 type PanelInfo struct {
+	objExists bool
+
 	Type      int
 	ObjectID  string
 	Status    int
 	HoleCount int
-	ObjExists bool
 }
 
 var (
@@ -89,7 +90,7 @@ func Init() error {
 				Status:    PanelStatusNormal,
 				Type:      t,
 				HoleCount: 0,
-				ObjExists: false,
+				objExists: false,
 			}
 		}
 	}
@@ -173,7 +174,7 @@ func Update() {
 	for _, obj := range objs {
 		panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ObjID
 		if panels[obj.Pos.X][obj.Pos.Y].Status == PanelStatusCrack {
-			panels[obj.Pos.X][obj.Pos.Y].ObjExists = true
+			panels[obj.Pos.X][obj.Pos.Y].objExists = true
 		}
 	}
 
@@ -195,9 +196,9 @@ func Update() {
 				}
 			case PanelStatusCrack:
 				// Objectが乗って離れたらHole状態へ
-				if panels[x][y].ObjExists && panels[x][y].ObjectID == "" {
+				if panels[x][y].objExists && panels[x][y].ObjectID == "" {
 					sound.On(sound.SEPanelBreak)
-					panels[x][y].ObjExists = false
+					panels[x][y].objExists = false
 					panels[x][y].Status = PanelStatusHole
 					panels[x][y].HoleCount = panelHoleCount
 				}
