@@ -226,6 +226,14 @@ func IsBlackout() bool {
 	return blackoutCount > 0
 }
 
+func ChangePanelType(pos common.Point, pnType int) {
+	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+		return
+	}
+
+	panels[pos.X][pos.Y].Type = pnType
+}
+
 func PanelBreak(pos common.Point) {
 	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
 		return

@@ -4,6 +4,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -25,15 +27,23 @@ type skillAreaSteal struct {
 	count       int
 	state       int
 	targetLineX int
+	myPanelType int
 }
 
 func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
-	return &skillAreaSteal{
-		ID:          objID,
-		Arg:         arg,
-		state:       areaStealStateBlackout,
-		targetLineX: 3, // debug
+	res := &skillAreaSteal{
+		ID:    objID,
+		Arg:   arg,
+		state: areaStealStateBlackout,
 	}
+
+	if arg.TargetType == field.PanelTypePlayer {
+		res.myPanelType = field.PanelTypeEnemy
+	} else {
+		res.myPanelType = field.PanelTypePlayer
+	}
+
+	return res
 }
 
 func (p *skillAreaSteal) Draw() {
@@ -69,7 +79,30 @@ func (p *skillAreaSteal) Process() (bool, error) {
 	case areaStealStateBlackout:
 		if p.count == 1 {
 			// TODO se
-			field.SetBlackoutCount(120)
+			field.SetBlackoutCount(90)
+
+			// Target Lineを実行時の一番最初に設定する
+			if p.myPanelType == field.PanelTypePlayer {
+				for x := 1; x < field.FieldNum.X; x++ {
+					for y := 0; y < field.FieldNum.Y; y++ {
+						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
+						if pn.Type != field.PanelTypePlayer {
+							p.targetLineX = x
+							return false, nil
+						}
+					}
+				}
+			} else {
+				for x := field.FieldNum.X - 2; x >= 0; x-- {
+					for y := 0; y < field.FieldNum.Y; y++ {
+						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
+						if pn.Type != field.PanelTypeEnemy {
+							p.targetLineX = x
+							return false, nil
+						}
+					}
+				}
+			}
 		}
 		if p.count == 30 {
 			p.setState(areaStealStateActing)
@@ -81,7 +114,26 @@ func (p *skillAreaSteal) Process() (bool, error) {
 	case areaStealStateHit:
 		max := delayAreaStealHit * len(imgAreaStealPanel)
 		if p.count >= max {
-			// TODO(エリアを塗り替え)
+			for y := 0; y < field.FieldNum.Y; y++ {
+				pos := common.Point{X: p.targetLineX, Y: y}
+				pn := field.GetPanelInfo(pos)
+				if pn.ObjectID != "" {
+					// ダメージ
+					damage.New(damage.Damage{
+						Pos:           pos,
+						Power:         10,
+						TTL:           1,
+						TargetType:    p.Arg.TargetType,
+						HitEffectType: effect.TypeNone,
+						BigDamage:     false,
+						DamageType:    damage.TypeNone,
+					})
+				} else {
+					// パネルを塗り替え
+					// TODO 最終ラインの場合は塗り替えない
+					field.ChangePanelType(pos, p.myPanelType)
+				}
+			}
 			return true, nil
 		}
 	}
