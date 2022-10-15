@@ -171,3 +171,9 @@
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
+- id: 119
+  name: "エリアスチール"
+  power: 0
+  type: 0
+  player_act: -1
+  description: 敵エリアの左端タテ一列を自分のエリアに塗り替える

@@ -40,6 +40,7 @@ const (
 	SkillHeatV
 	SkillHeatSide
 	SkillFlamePillarLine
+	SkillAreaSteal
 )
 
 type SkillAnim interface {
@@ -55,29 +56,31 @@ type Argument struct {
 }
 
 var (
-	imgCannonAtk     [TypeCannonMax][]int
-	imgCannonBody    [TypeCannonMax][]int
-	imgSword         [TypeSwordMax][]int
-	imgBombThrow     []int
-	imgShockWave     []int
-	imgRecover       []int
-	imgSpreadGunAtk  []int
-	imgSpreadGunBody []int
-	imgVulcan        []int
-	imgPick          []int
-	imgThunderBall   []int
-	imgWideShotBody  []int
-	imgWideShotBegin []int
-	imgWideShotMove  []int
-	imgBoomerang     []int
-	imgAquamanShot   []int
-	imgBambooLance   []int
-	imgDreamSword    []int
-	imgGarooBreath   []int
-	imgFlamePillar   []int
-	imgFlameLineBody []int
-	imgHeatShotBody  []int
-	imgHeatShotAtk   []int
+	imgCannonAtk      [TypeCannonMax][]int
+	imgCannonBody     [TypeCannonMax][]int
+	imgSword          [TypeSwordMax][]int
+	imgBombThrow      []int
+	imgShockWave      []int
+	imgRecover        []int
+	imgSpreadGunAtk   []int
+	imgSpreadGunBody  []int
+	imgVulcan         []int
+	imgPick           []int
+	imgThunderBall    []int
+	imgWideShotBody   []int
+	imgWideShotBegin  []int
+	imgWideShotMove   []int
+	imgBoomerang      []int
+	imgAquamanShot    []int
+	imgBambooLance    []int
+	imgDreamSword     []int
+	imgGarooBreath    []int
+	imgFlamePillar    []int
+	imgFlameLineBody  []int
+	imgHeatShotBody   []int
+	imgHeatShotAtk    []int
+	imgAreaStealMain  []int
+	imgAreaStealPanel []int
 )
 
 func Init() error {
@@ -163,6 +166,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newHeatShot(objID, arg, heatShotTypeSide)
 	case SkillFlamePillarLine:
 		return newFlamePillar(objID, arg, flamePillarTypeLine)
+	case SkillAreaSteal:
+		return newAreaSteal(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -222,6 +227,8 @@ func GetSkillID(chipID int) int {
 		return SkillHeatSide
 	case chip.IDFlameLine1, chip.IDFlameLine2, chip.IDFlameLine3:
 		return SkillFlamePillarLine
+	case chip.IDAreaSteal:
+		return SkillAreaSteal
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
@@ -232,20 +239,16 @@ Skill template
 package skill
 
 type tmpskill struct {
-	ID         string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	ID  string
+	Arg Argument
 
 	count int
 }
 
 func newTmpSkill(objID string, arg Argument) *tmpskill {
 	return &tmpskill{
-		ID:         objID,
-		OwnerID:    arg.OwnerID,
-		Power:      arg.Power,
-		TargetType: arg.TargetType,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
@@ -276,4 +279,7 @@ func (p *tmpskill) GetParam() anim.Param {
 	}
 }
 
+func (p *tmpskill) StopByOwner() {
+	anim.Delete(p.ID)
+}
 */

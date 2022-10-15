@@ -183,6 +183,16 @@ func loadImages() error {
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 60, 45, imgHeatShotAtk); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	fname = path + "エリアスチール_main.png"
+	imgAreaStealMain = make([]int, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 74, 69, imgAreaStealMain); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	fname = path + "エリアスチール_panel.png"
+	imgAreaStealPanel = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 110, 76, imgAreaStealPanel); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	return nil
 }
@@ -284,6 +294,14 @@ func cleanupImages() {
 		dxlib.DeleteGraph(imgHeatShotAtk[i])
 	}
 	imgHeatShotAtk = []int{}
+	for i := 0; i < len(imgAreaStealMain); i++ {
+		dxlib.DeleteGraph(imgAreaStealMain[i])
+	}
+	imgAreaStealMain = []int{}
+	for i := 0; i < len(imgAreaStealPanel); i++ {
+		dxlib.DeleteGraph(imgAreaStealPanel[i])
+	}
+	imgAreaStealPanel = []int{}
 }
 
 func setChipNameDraw(name string) {

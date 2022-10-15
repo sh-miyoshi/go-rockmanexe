@@ -1,0 +1,106 @@
+package skill
+
+import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+)
+
+const (
+	delayAreaStealHit = 2
+)
+
+const (
+	areaStealStateBlackout int = iota
+	areaStealStateActing
+	areaStealStateHit
+)
+
+type skillAreaSteal struct {
+	ID  string
+	Arg Argument
+
+	count       int
+	state       int
+	targetLineX int
+}
+
+func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
+	return &skillAreaSteal{
+		ID:          objID,
+		Arg:         arg,
+		state:       areaStealStateBlackout,
+		targetLineX: 3, // debug
+	}
+}
+
+func (p *skillAreaSteal) Draw() {
+	switch p.state {
+	case areaStealStateBlackout:
+	case areaStealStateActing:
+		ofs := p.count*4 - 30
+		ino := p.count / 3
+		if ino >= len(imgAreaStealMain) {
+			ino = len(imgAreaStealMain) - 1
+		}
+
+		for y := 0; y < field.FieldNum.Y; y++ {
+			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
+			dxlib.DrawRotaGraph(view.X, view.Y+ofs, 1, 0, imgAreaStealMain[ino], true)
+		}
+	case areaStealStateHit:
+		ino := p.count / delayAreaStealHit
+		if ino >= len(imgAreaStealPanel) {
+			ino = len(imgAreaStealPanel) - 1
+		}
+		for y := 0; y < field.FieldNum.Y; y++ {
+			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
+			dxlib.DrawRotaGraph(view.X, view.Y+30, 1, 0, imgAreaStealPanel[ino], true)
+		}
+	}
+}
+
+func (p *skillAreaSteal) Process() (bool, error) {
+	p.count++
+
+	switch p.state {
+	case areaStealStateBlackout:
+		if p.count == 1 {
+			// TODO se
+			field.SetBlackoutCount(120)
+		}
+		if p.count == 30 {
+			p.setState(areaStealStateActing)
+		}
+	case areaStealStateActing:
+		if p.count == 15 {
+			p.setState(areaStealStateHit)
+		}
+	case areaStealStateHit:
+		max := delayAreaStealHit * len(imgAreaStealPanel)
+		if p.count >= max {
+			// TODO(エリアを塗り替え)
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func (p *skillAreaSteal) GetParam() anim.Param {
+	return anim.Param{
+		ObjID:    p.ID,
+		AnimType: anim.AnimTypeSkill,
+	}
+}
+
+func (p *skillAreaSteal) StopByOwner() {
+	anim.Delete(p.ID)
+}
+
+func (p *skillAreaSteal) setState(next int) {
+	p.state = next
+	p.count = 0
+}
