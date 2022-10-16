@@ -52,6 +52,8 @@ const (
 	SEPACreated
 	SEDreamSword
 	SEFlameAttack
+	SEAreaSteal
+	SEAreaStealHit
 
 	seMax
 )
@@ -105,6 +107,8 @@ func Init() error {
 	soundEffects[SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
 	soundEffects[SEDreamSword] = dxlib.LoadSoundMem(basePath + "dream_sword.mp3")
 	soundEffects[SEFlameAttack] = dxlib.LoadSoundMem(basePath + "flame_attack.wav")
+	soundEffects[SEAreaSteal] = dxlib.LoadSoundMem(basePath + "area_steal.mp3")
+	soundEffects[SEAreaStealHit] = dxlib.LoadSoundMem(basePath + "area_steal_hit.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

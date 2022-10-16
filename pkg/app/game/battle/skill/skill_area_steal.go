@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -78,8 +79,9 @@ func (p *skillAreaSteal) Process() (bool, error) {
 	switch p.state {
 	case areaStealStateBlackout:
 		if p.count == 1 {
-			// TODO se
+			sound.On(sound.SEAreaSteal)
 			field.SetBlackoutCount(90)
+			setChipNameDraw("エリアスチール")
 
 			// Target Lineを実行時の一番最初に設定する
 			if p.myPanelType == field.PanelTypePlayer {
@@ -109,6 +111,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 		}
 	case areaStealStateActing:
 		if p.count == 15 {
+			sound.On(sound.SEAreaStealHit)
 			p.setState(areaStealStateHit)
 		}
 	case areaStealStateHit:
