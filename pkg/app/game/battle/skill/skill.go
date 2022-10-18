@@ -41,6 +41,7 @@ const (
 	SkillHeatSide
 	SkillFlamePillarLine
 	SkillAreaSteal
+	SkillPanelSteal
 )
 
 type SkillAnim interface {
@@ -168,6 +169,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newFlamePillar(objID, arg, flamePillarTypeLine)
 	case SkillAreaSteal:
 		return newAreaSteal(objID, arg)
+	case SkillPanelSteal:
+		return newPanelSteal(objID, arg)
 	}
 
 	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -229,6 +232,8 @@ func GetSkillID(chipID int) int {
 		return SkillFlamePillarLine
 	case chip.IDAreaSteal:
 		return SkillAreaSteal
+	case chip.IDPanelSteal:
+		return SkillPanelSteal
 	}
 
 	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

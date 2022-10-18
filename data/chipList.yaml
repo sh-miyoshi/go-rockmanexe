@@ -177,3 +177,9 @@
   type: 0
   player_act: -1
   description: 敵エリアの左端タテ一列を自分のエリアに塗り替える
+- id: 118
+  name: "パネルスチール"
+  power: 0
+  type: 0
+  player_act: -1
+  description: 前方の敵エリア1マスを自分のエリアに塗り替える
