@@ -74,26 +74,28 @@ func Draw() {
 		return
 	}
 
-	dxlib.DrawGraph(0, 0, imgFrame, true)
+	baseY := 20
+
+	dxlib.DrawGraph(0, baseY, imgFrame, true)
 
 	// Show chip data
 	for i, s := range selectList {
 		x := i*32 + 17
-		draw.ChipCode(x+10, 240, s.Code, 50)
+		draw.ChipCode(x+10, 240+baseY, s.Code, 50)
 		if !slice.Contains(selected, i) {
 			// Show Icon
-			dxlib.DrawGraph(x, 210, chip.GetIcon(s.ID, selectable(i)), true)
+			dxlib.DrawGraph(x, 210+baseY, chip.GetIcon(s.ID, selectable(i)), true)
 		}
 
 		// Show Detail Data
 		if i == pointer {
 			c := chip.Get(s.ID)
-			dxlib.DrawGraph(31, 64, c.Image, true)
-			dxlib.DrawGraph(52, 161, chip.GetTypeImage(c.Type), true)
-			draw.String(20, 25, 0x000000, "%s", c.Name)
-			draw.ChipCode(30, 163, s.Code, 100)
+			dxlib.DrawGraph(31, 64+baseY, c.Image, true)
+			dxlib.DrawGraph(52, 161+baseY, chip.GetTypeImage(c.Type), true)
+			draw.String(20, 25+baseY, 0x000000, "%s", c.Name)
+			draw.ChipCode(30, 163+baseY, s.Code, 100)
 			if c.Power != 0 {
-				draw.Number(95, 163, int(c.Power), draw.NumberOption{
+				draw.Number(95, 163+baseY, int(c.Power), draw.NumberOption{
 					Color:        draw.NumberColorWhite,
 					Length:       3,
 					RightAligned: true,
@@ -106,10 +108,10 @@ func Draw() {
 	n := count / 20
 	if n%3 != 0 {
 		if pointer == sendBtnNo {
-			dxlib.DrawGraph(180, 225, imgPointer[1], true)
+			dxlib.DrawGraph(180, 225+baseY, imgPointer[1], true)
 		} else {
 			x := (pointer%5)*32 + 8
-			y := (pointer/5)*20 + 202
+			y := (pointer/5)*20 + 202 + baseY
 			dxlib.DrawGraph(x, y, imgPointer[0], true)
 		}
 	}
@@ -117,7 +119,7 @@ func Draw() {
 	// Show Selected Chips
 	for i, s := range selected {
 		y := i*32 + 50
-		dxlib.DrawGraph(193, y, chip.GetIcon(selectList[s].ID, true), true)
+		dxlib.DrawGraph(193, y+baseY, chip.GetIcon(selectList[s].ID, true), true)
 	}
 }
 

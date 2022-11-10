@@ -17,9 +17,9 @@ const (
 )
 
 var (
-	FieldNum      = common.Point{X: 6, Y: 3}
+	FieldNum      = common.Point{X: 8, Y: 4}
 	PanelSize     = common.Point{X: 80, Y: 50}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * 3) - 30
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 )
 
 const (
@@ -82,7 +82,7 @@ func Init() error {
 	// Initialize panel info
 	for x := 0; x < FieldNum.X; x++ {
 		t := PanelTypePlayer
-		if x > 2 {
+		if x >= FieldNum.X/2 {
 			t = PanelTypeEnemy
 		}
 		for y := 0; y < FieldNum.Y; y++ {
