@@ -28,7 +28,7 @@ const (
 )
 
 var (
-	ScreenSize = Point{X: 640, Y: 480}
+	ScreenSize = Point{X: 480, Y: 320}
 
 	ImagePath = "data/images/"
 	SoundPath = "data/sounds/"

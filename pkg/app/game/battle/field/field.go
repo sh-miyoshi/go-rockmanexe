@@ -262,3 +262,17 @@ func PanelCrack(pos common.Point) {
 
 	panels[pos.X][pos.Y].Status = PanelStatusCrack
 }
+
+func Set4x4Area() {
+	FieldNum = common.Point{X: 8, Y: 4}
+	common.ScreenSize = common.Point{X: 640, Y: 480}
+	dxlib.SetGraphMode(common.ScreenSize)
+}
+
+func ResetSet4x4Area() {
+	if FieldNum.X == 8 {
+		FieldNum = common.Point{X: 6, Y: 3}
+		common.ScreenSize = common.Point{X: 480, Y: 320}
+		dxlib.SetGraphMode(common.ScreenSize)
+	}
+}

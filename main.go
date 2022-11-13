@@ -17,6 +17,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	appdxlib "github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -75,7 +76,7 @@ func main() {
 	}
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
-	dxlib.SetGraphMode(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
+	appdxlib.SetGraphMode(common.ScreenSize)
 
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
