@@ -68,6 +68,8 @@ github.com/sh-miyoshi/dxlib v1.3.0 h1:Sc8Eh4oUivNmcZ7pNFqItr7yYGkJ0b/HKaKc37yv8j
 github.com/sh-miyoshi/dxlib v1.3.0/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
 github.com/sh-miyoshi/dxlib v1.3.1 h1:L1yy3f0wGG1Zoie0eK/lZUTTWUNtKCJeQTtxdXE0wVM=
 github.com/sh-miyoshi/dxlib v1.3.1/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
+github.com/sh-miyoshi/dxlib v1.3.2 h1://AyFaYKm3mjkgZtl4t+at8ErH+d2EgHiW8qcFugD40=
+github.com/sh-miyoshi/dxlib v1.3.2/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b h1:DmfFjW6pLdaJNVHfKgCxTdKFI6tM+0YbMd0kx7kE78s=
 github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b/go.mod h1:yS/5aMz+lfJhykLjlAGbnhUhZIvVapOvtmk0MtzHktE=

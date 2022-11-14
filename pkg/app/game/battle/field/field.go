@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	FieldNum      = common.Point{X: 8, Y: 4}
+	FieldNum      = common.Point{X: 6, Y: 3}
 	PanelSize     = common.Point{X: 80, Y: 50}
 	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 )
