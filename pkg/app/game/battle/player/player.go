@@ -294,7 +294,11 @@ func (p *BattlePlayer) Draw() {
 
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	x := 7
-	y := 25
+	y := 5
+	if field.Is4x4Area() {
+		y = 25
+	}
+
 	if xShift {
 		x += 235
 	}
@@ -309,7 +313,11 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show Custom Gauge
 	if showGauge {
-		baseX := 80
+		baseX := 5
+		if field.Is4x4Area() {
+			baseX = 80
+		}
+
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
 			dxlib.DrawGraph(96+baseX, y, imgGaugeFrame, true)
 			const gaugeMaxSize = 256
