@@ -2,7 +2,6 @@ package dxlib
 
 import (
 	"github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 )
 
 var (
@@ -281,8 +280,4 @@ func DrawLine(x1, y1, x2, y2 int, color uint) {
 	}
 
 	dxlib.DrawLine(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color))
-}
-
-func SetGraphMode(size common.Point) {
-	dxlib.SetGraphMode(int32(size.X), int32(size.Y))
 }

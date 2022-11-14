@@ -3,6 +3,7 @@ package field
 import (
 	"fmt"
 
+	originaldxlib "github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -265,14 +266,20 @@ func PanelCrack(pos common.Point) {
 
 func Set4x4Area() {
 	FieldNum = common.Point{X: 8, Y: 4}
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 	common.ScreenSize = common.Point{X: 640, Y: 480}
-	dxlib.SetGraphMode(common.ScreenSize)
+	originaldxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
-	if FieldNum.X == 8 {
+	if Is4x4Area() {
 		FieldNum = common.Point{X: 6, Y: 3}
+		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 		common.ScreenSize = common.Point{X: 480, Y: 320}
-		dxlib.SetGraphMode(common.ScreenSize)
+		originaldxlib.SetWindowSize(480, 320)
 	}
+}
+
+func Is4x4Area() bool {
+	return FieldNum.X == 8 && FieldNum.Y == 4
 }
