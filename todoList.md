@@ -7,6 +7,13 @@
 - 暗転中にエフェクトを止めておく
   - https://github.com/sh-miyoshi/go-rockmanexe/blob/5266150b836d903742fc2509910a614237a66103/pkg/app/game/battle/battle.go#L217
 - (要確認)パネルスチールで端まで塗り終わっていた場合どうなるか
+- ショックウェーブが止まってなさそう
+
+## 4x4 ステージ
+
+- スキルの調整
+- 位置調整
+  - result フレーム
 
 ## 新機能
 
