@@ -136,6 +136,7 @@ func Process() bool {
 }
 
 func Draw() {
+	baseY := common.ScreenSize.Y/2 - 130
 	switch state {
 	case stateMsg:
 		if winMsgInst != nil {
@@ -146,18 +147,18 @@ func Draw() {
 		if x > 45 {
 			x = 45
 		}
-		dxlib.DrawGraph(x, 30, imgFrame, true)
+		dxlib.DrawGraph(x, baseY, imgFrame, true)
 	case stateResult:
-		dxlib.DrawGraph(45, 30, imgFrame, true)
-		dxlib.DrawGraph(272, 174, reward.Image, true)
-		draw.String(105, 230, 0xffffff, reward.Name)
+		dxlib.DrawGraph(45, baseY, imgFrame, true)
+		dxlib.DrawGraph(272, baseY+144, reward.Image, true)
+		draw.String(105, baseY+200, 0xffffff, reward.Name)
 		if reward.Type == rewardTypeChip {
 			// Show chip code
 			c := strings.ToUpper(reward.Value.(string))
-			draw.String(240, 230, 0xffffff, c)
+			draw.String(240, baseY+200, 0xffffff, c)
 		}
-		showDeleteTime()
-		draw.Number(360, 125, bustingLevel)
+		showDeleteTime(baseY)
+		draw.Number(360, baseY+95, bustingLevel)
 	}
 }
 
@@ -170,7 +171,7 @@ func stateChange(nextState int) {
 	count = 0
 }
 
-func showDeleteTime() {
+func showDeleteTime(baseY int) {
 	tm := deleteTimeSec
 
 	min := tm / 60
@@ -179,9 +180,9 @@ func showDeleteTime() {
 		min = 99
 	}
 	zero := 0
-	draw.Number(300, 77, min, draw.NumberOption{Padding: &zero, Length: 2})
-	draw.String(333, 80, 0xffffff, "：")
-	draw.Number(350, 77, sec, draw.NumberOption{Padding: &zero, Length: 2})
+	draw.Number(300, baseY+47, min, draw.NumberOption{Padding: &zero, Length: 2})
+	draw.String(333, baseY+50, 0xffffff, "：")
+	draw.Number(350, baseY+47, sec, draw.NumberOption{Padding: &zero, Length: 2})
 }
 
 func calcBustingLevel(args WinArg) int {
