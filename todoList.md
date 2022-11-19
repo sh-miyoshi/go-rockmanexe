@@ -8,6 +8,7 @@
   - https://github.com/sh-miyoshi/go-rockmanexe/blob/5266150b836d903742fc2509910a614237a66103/pkg/app/game/battle/battle.go#L217
 - (要確認)パネルスチールで端まで塗り終わっていた場合どうなるか
 - anim.Process()の見直し
+  - ショックウェーブが止まってなさそう
   - チップ選択画面で動いてほしい処理と動いてほしくない処理がありそう
 
 ## 新機能

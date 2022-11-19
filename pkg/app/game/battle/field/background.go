@@ -52,20 +52,16 @@ func (b *Background) Draw() {
 		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, dxlib.GetColor(0, 0, 160), true)
 
 		n := (b.Count / 50) % len(b.Images)
-		initPos := []common.Point{
-			{X: 0, Y: 60},
-			{X: 140, Y: 60},
-			{X: 280, Y: 60},
-			{X: 420, Y: 60},
-			{X: 30, Y: 140},
-			{X: 170, Y: 140},
-			{X: 310, Y: 140},
-			{X: 450, Y: 140},
-		}
-
-		for i, pos := range initPos {
-			n = (n + i) % len(b.Images)
-			dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, b.Images[n], true)
+		i := 0
+		spaceX := 140
+		spaceY := 80
+		for y := 60; y < common.ScreenSize.Y; y += spaceY {
+			for x := 0; x < common.ScreenSize.X; x += spaceX {
+				ofsX := (y / spaceY) * (spaceX / 2)
+				n = (n + i) % len(b.Images)
+				i++
+				dxlib.DrawRotaGraph(x+ofsX, y, 1, 0, b.Images[n], true)
+			}
 		}
 	}
 }

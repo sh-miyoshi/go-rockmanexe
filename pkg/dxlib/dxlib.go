@@ -1,6 +1,8 @@
 package dxlib
 
-import "github.com/sh-miyoshi/dxlib"
+import (
+	"github.com/sh-miyoshi/dxlib"
+)
 
 var (
 	disabled = false

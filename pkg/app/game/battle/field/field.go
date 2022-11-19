@@ -3,6 +3,7 @@ package field
 import (
 	"fmt"
 
+	originaldxlib "github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -19,7 +20,7 @@ const (
 var (
 	FieldNum      = common.Point{X: 6, Y: 3}
 	PanelSize     = common.Point{X: 80, Y: 50}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * 3) - 30
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 )
 
 const (
@@ -82,7 +83,7 @@ func Init() error {
 	// Initialize panel info
 	for x := 0; x < FieldNum.X; x++ {
 		t := PanelTypePlayer
-		if x > 2 {
+		if x >= FieldNum.X/2 {
 			t = PanelTypeEnemy
 		}
 		for y := 0; y < FieldNum.Y; y++ {
@@ -261,4 +262,24 @@ func PanelCrack(pos common.Point) {
 	}
 
 	panels[pos.X][pos.Y].Status = PanelStatusCrack
+}
+
+func Set4x4Area() {
+	FieldNum = common.Point{X: 8, Y: 4}
+	common.ScreenSize = common.Point{X: 640, Y: 480}
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+	originaldxlib.SetWindowSize(640, 480)
+}
+
+func ResetSet4x4Area() {
+	if Is4x4Area() {
+		FieldNum = common.Point{X: 6, Y: 3}
+		common.ScreenSize = common.Point{X: 480, Y: 320}
+		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+		originaldxlib.SetWindowSize(480, 320)
+	}
+}
+
+func Is4x4Area() bool {
+	return FieldNum.X == 8 && FieldNum.Y == 4
 }

@@ -295,6 +295,10 @@ func (p *BattlePlayer) Draw() {
 func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	x := 7
 	y := 5
+	if field.Is4x4Area() {
+		y = 25
+	}
+
 	if xShift {
 		x += 235
 	}
@@ -304,21 +308,26 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Mind Status
-	dxlib.DrawGraph(x, 40, imgMindFrame, true)
-	dxlib.DrawGraph(x, 40, imgMinds[p.MindStatus], true)
+	dxlib.DrawGraph(x, y+35, imgMindFrame, true)
+	dxlib.DrawGraph(x, y+35, imgMinds[p.MindStatus], true)
 
 	// Show Custom Gauge
 	if showGauge {
+		baseX := 5
+		if field.Is4x4Area() {
+			baseX = 80
+		}
+
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
-			dxlib.DrawGraph(96, 5, imgGaugeFrame, true)
+			dxlib.DrawGraph(96+baseX, y, imgGaugeFrame, true)
 			const gaugeMaxSize = 256
 			size := int(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
-			dxlib.DrawBox(112, 19, 112+size, 21, dxlib.GetColor(123, 154, 222), true)
-			dxlib.DrawBox(112, 21, 112+size, 29, dxlib.GetColor(231, 235, 255), true)
-			dxlib.DrawBox(112, 29, 112+size, 31, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112+baseX, y+14, 112+baseX+size, y+16, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112+baseX, y+16, 112+baseX+size, y+24, dxlib.GetColor(231, 235, 255), true)
+			dxlib.DrawBox(112+baseX, y+24, 112+baseX+size, y+26, dxlib.GetColor(123, 154, 222), true)
 		} else {
 			i := (p.GaugeCount / 40) % 4
-			dxlib.DrawGraph(96, 5, imgGaugeMax[i], true)
+			dxlib.DrawGraph(96+baseX, y, imgGaugeMax[i], true)
 		}
 	}
 }

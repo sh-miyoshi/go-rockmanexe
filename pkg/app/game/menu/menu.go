@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -115,8 +116,14 @@ func Process() error {
 	case stateTop:
 		menuTopInst.Process()
 
-		if config.Get().Debug.EnableDevFeature && inputs.CheckKey(inputs.KeyLButton) == 1 {
-			return ErrGoMap
+		if config.Get().Debug.EnableDevFeature {
+			if inputs.CheckKey(inputs.KeyLButton) == 1 {
+				return ErrGoMap
+			}
+			if inputs.CheckKey(inputs.KeyRButton) == 1 {
+				field.Set4x4Area()
+				return ErrGoBattle
+			}
 		}
 	case stateChipFolder:
 		menuFolderInst.Process()
@@ -147,6 +154,7 @@ func Draw() {
 		if config.Get().Debug.EnableDevFeature {
 			draw.String(50, 220, 0x000000, "Debug機能")
 			draw.String(65, 250, 0x000000, "L-btn: マップ移動")
+			draw.String(65, 275, 0x000000, "R-btn: 4x4 対戦")
 		}
 	case stateChipFolder:
 		menuFolderInst.Draw()

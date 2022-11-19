@@ -51,7 +51,7 @@ func (p *bambooLance) Process() (bool, error) {
 
 	if p.count == 5 {
 		dm := damage.Damage{
-			Pos:           common.Point{X: 5},
+			Pos:           common.Point{X: field.FieldNum.X - 1},
 			Power:         int(p.Arg.Power),
 			TTL:           5,
 			TargetType:    p.Arg.TargetType,

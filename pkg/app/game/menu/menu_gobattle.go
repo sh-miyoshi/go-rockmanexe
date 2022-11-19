@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -314,7 +315,7 @@ func goBattleDraw() {
 }
 
 func battleEnemies() []enemy.EnemyParam {
-	if config.Get().Debug.SkipMenu {
+	if config.Get().Debug.SkipMenu || field.Is4x4Area() {
 		// Start from battle mode for debug
 		// return debug data
 		return []enemy.EnemyParam{

@@ -3,6 +3,7 @@ package titlemsg
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -41,7 +42,9 @@ func (m *TitleMsg) Draw() {
 	if imgNo >= len(m.imgMsg) {
 		imgNo = len(m.imgMsg) - 1
 	}
-	dxlib.DrawGraph(105, 125, m.imgMsg[imgNo], true)
+	x := common.ScreenSize.X / 2
+	y := common.ScreenSize.Y / 2
+	dxlib.DrawRotaGraph(x, y, 1, 0, m.imgMsg[imgNo], true)
 }
 
 func (m *TitleMsg) Process() bool {

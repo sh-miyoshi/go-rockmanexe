@@ -75,7 +75,9 @@ func main() {
 	}
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
-	dxlib.SetGraphMode(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
+	dxlib.SetWindowSizeChangeEnableFlag(dxlib.FALSE, dxlib.FALSE)
+	dxlib.SetGraphMode(int32(common.MaxScreenSize.X), int32(common.MaxScreenSize.Y))
+	dxlib.SetWindowSize(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
 
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
