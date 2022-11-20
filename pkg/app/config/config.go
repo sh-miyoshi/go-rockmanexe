@@ -20,10 +20,15 @@ type Config struct {
 		StartContinue      bool `yaml:"start_continue"`
 		InitSleepSec       int  `yaml:"init_sleep_sec"`
 		RunAlways          bool `yaml:"run_always"`
-		EnableDevFeature   bool `yaml:"enable_dev_feature"`
 		UsePrivateResource bool `yaml:"use_private_res"`
 		UseDebugFolder     bool `yaml:"use_debug_folder"`
 	} `yaml:"debug"`
+	DevFeature struct {
+		On         bool
+		MapMove    bool `yaml:"map_move"`
+		WideArea   bool `yaml:"wide_area"`
+		SupportNPC bool `yaml:"support_npc"`
+	} `yaml:"dev_feature"`
 	BGM struct {
 		Disabled bool `yaml:"disabled"`
 	} `yaml:"bgm"`
@@ -49,6 +54,8 @@ func Init(fname string) error {
 	if err := yaml.NewDecoder(fp).Decode(&inst); err != nil {
 		return fmt.Errorf("failed to decode yaml: %v", err)
 	}
+
+	inst.DevFeature.On = inst.DevFeature.MapMove || inst.DevFeature.WideArea || inst.DevFeature.SupportNPC
 
 	return nil
 }
