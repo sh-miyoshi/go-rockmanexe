@@ -9,12 +9,9 @@ debug:
   start_continue: false
   init_sleep_sec: 0
   run_always: true
+  enable_dev_feature: true
   use_private_res: true
   use_debug_folder: true
-dev_feature:
-  map_move: true
-  wide_area: true
-  support_npc: false
 bgm:
   disabled: true
 net:

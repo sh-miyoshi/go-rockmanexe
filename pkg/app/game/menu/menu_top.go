@@ -36,7 +36,7 @@ func (t *menuTop) End() {
 }
 
 func (t *menuTop) Process() {
-	if config.Get().DevFeature.On {
+	if config.Get().Debug.EnableDevFeature {
 		if inputs.CheckKey(inputs.KeyLButton) == 1 {
 			sound.On(sound.SEMenuEnter)
 			stateChange(stateDevFeature)
@@ -118,7 +118,7 @@ func (t *menuTop) Draw() {
 		draw.String(270, 100, 0xffffff, "て対戦します")
 	}
 
-	if config.Get().DevFeature.On {
+	if config.Get().Debug.EnableDevFeature {
 		draw.String(50, 220, 0x000000, "L-btn: Debug機能")
 	}
 }
