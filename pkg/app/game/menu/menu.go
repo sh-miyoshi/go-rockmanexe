@@ -6,10 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -23,6 +20,7 @@ const (
 	stateRecord
 	stateNetBattle
 	stateInvalidChip
+	stateDevFeature
 
 	stateMax
 )
@@ -35,6 +33,7 @@ var (
 	menuRecordInst      *menuRecord
 	menuNetBattleInst   *menuNetBattle
 	menuInvalidChipInst *menuInvalidChip
+	menuDevFeatureInst  *menuDevFeature
 
 	ErrGoBattle    = errors.New("go to battle")
 	ErrGoNetBattle = errors.New("go to net battle")
@@ -80,6 +79,11 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu invalid chip: %w", err)
 	}
 
+	menuDevFeatureInst, err = devFeatureNew()
+	if err != nil {
+		return fmt.Errorf("failed to init menu dev feature: %w", err)
+	}
+
 	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
@@ -105,6 +109,9 @@ func End() {
 	if menuInvalidChipInst != nil {
 		menuInvalidChipInst.End()
 	}
+	if menuDevFeatureInst != nil {
+		menuDevFeatureInst.End()
+	}
 }
 
 func Process() error {
@@ -115,16 +122,6 @@ func Process() error {
 	switch menuState {
 	case stateTop:
 		menuTopInst.Process()
-
-		if config.Get().Debug.EnableDevFeature {
-			if inputs.CheckKey(inputs.KeyLButton) == 1 {
-				return ErrGoMap
-			}
-			if inputs.CheckKey(inputs.KeyRButton) == 1 {
-				field.Set4x4Area()
-				return ErrGoBattle
-			}
-		}
 	case stateChipFolder:
 		menuFolderInst.Process()
 	case stateGoBattle:
@@ -139,6 +136,8 @@ func Process() error {
 		}
 	case stateInvalidChip:
 		menuInvalidChipInst.Process()
+	case stateDevFeature:
+		return menuDevFeatureInst.Process()
 	}
 
 	return nil
@@ -150,12 +149,6 @@ func Draw() {
 	switch menuState {
 	case stateTop:
 		menuTopInst.Draw()
-
-		if config.Get().Debug.EnableDevFeature {
-			draw.String(50, 220, 0x000000, "Debug機能")
-			draw.String(65, 250, 0x000000, "L-btn: マップ移動")
-			draw.String(65, 275, 0x000000, "R-btn: 4x4 対戦")
-		}
 	case stateChipFolder:
 		menuFolderInst.Draw()
 	case stateGoBattle:
@@ -166,6 +159,8 @@ func Draw() {
 		menuNetBattleInst.Draw()
 	case stateInvalidChip:
 		menuInvalidChipInst.Draw()
+	case stateDevFeature:
+		menuDevFeatureInst.Draw()
 	}
 }
 

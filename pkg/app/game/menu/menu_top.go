@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
@@ -35,6 +36,14 @@ func (t *menuTop) End() {
 }
 
 func (t *menuTop) Process() {
+	if config.Get().DevFeature.On {
+		if inputs.CheckKey(inputs.KeyLButton) == 1 {
+			sound.On(sound.SEMenuEnter)
+			stateChange(stateDevFeature)
+			return
+		}
+	}
+
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		sound.On(sound.SEMenuEnter)
 		switch t.pointer {
@@ -51,17 +60,18 @@ func (t *menuTop) Process() {
 				stateChange(stateNetBattle)
 			}
 		}
-	} else {
-		if inputs.CheckKey(inputs.KeyUp) == 1 {
-			if t.pointer > 0 {
-				sound.On(sound.SECursorMove)
-				t.pointer--
-			}
-		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			if t.pointer < topSelectMax-1 {
-				sound.On(sound.SECursorMove)
-				t.pointer++
-			}
+		return
+	}
+
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		if t.pointer > 0 {
+			sound.On(sound.SECursorMove)
+			t.pointer--
+		}
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		if t.pointer < topSelectMax-1 {
+			sound.On(sound.SECursorMove)
+			t.pointer++
 		}
 	}
 }
@@ -106,6 +116,10 @@ func (t *menuTop) Draw() {
 	case topSelectNetBattle:
 		draw.String(270, 70, 0xffffff, "インターネットを経由し")
 		draw.String(270, 100, 0xffffff, "て対戦します")
+	}
+
+	if config.Get().DevFeature.On {
+		draw.String(50, 220, 0x000000, "L-btn: Debug機能")
 	}
 }
 
