@@ -77,9 +77,14 @@ func (t *menuDevFeature) Process() error {
 					Pos:    common.Point{X: 4, Y: 1},
 					HP:     1000,
 				},
+				{
+					CharID: enemy.IDSupportNPC,
+					Pos:    common.Point{X: 0, Y: 0},
+					HP:     100,
+				},
 			}
 
-			// TODO(味方キャラの追加)
+			// TODO(味方キャラの追加、specificEnemyに入れる)
 		}
 		return nil
 	}

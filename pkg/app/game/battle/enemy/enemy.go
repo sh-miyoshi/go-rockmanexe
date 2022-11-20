@@ -24,6 +24,7 @@ const (
 	IDGaroo
 	IDVolgear
 	IDRockman
+	IDSupportNPC
 )
 
 type EnemyChipInfo struct {

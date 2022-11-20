@@ -56,7 +56,15 @@ var (
 func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("Init battle data ...")
 
-	enemyList = enemies
+	enemyList = []enemy.EnemyParam{}
+	for _, e := range enemies {
+		if e.CharID == enemy.IDSupportNPC {
+			// TODO: SupportNPCとして追加
+		} else {
+			enemyList = append(enemyList, e)
+		}
+	}
+
 	gameCount = 0
 	battleCount = 0
 	battleState = stateOpening
