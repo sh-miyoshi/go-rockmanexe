@@ -34,6 +34,7 @@ var (
 	menuNetBattleInst   *menuNetBattle
 	menuInvalidChipInst *menuInvalidChip
 	menuDevFeatureInst  *menuDevFeature
+	specificEnemy       []enemy.EnemyParam
 
 	ErrGoBattle    = errors.New("go to battle")
 	ErrGoNetBattle = errors.New("go to net battle")
@@ -165,6 +166,9 @@ func Draw() {
 }
 
 func GetBattleEnemies() []enemy.EnemyParam {
+	if len(specificEnemy) > 0 {
+		return specificEnemy
+	}
 	return battleEnemies()
 }
 

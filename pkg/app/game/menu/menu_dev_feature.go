@@ -1,7 +1,9 @@
 package menu
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -11,6 +13,7 @@ import (
 const (
 	devFeatureSelectMapMove = iota
 	devFeatureSelectWideArea
+	devFeatureSelectSupportNPC
 
 	devFeatureSelectMax
 )
@@ -32,6 +35,7 @@ func (t *menuDevFeature) Draw() {
 	msgs := []string{
 		"マップ移動",
 		"4x4 対戦",
+		"味方NPC",
 	}
 
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), true)
@@ -54,7 +58,28 @@ func (t *menuDevFeature) Process() error {
 			return ErrGoMap
 		case devFeatureSelectWideArea:
 			field.Set4x4Area()
+
+			// Set enemy info
+			specificEnemy = []enemy.EnemyParam{
+				{
+					CharID: enemy.IDTarget,
+					Pos:    common.Point{X: 6, Y: 2},
+					HP:     1000,
+				},
+			}
+
 			return ErrGoBattle
+		case devFeatureSelectSupportNPC:
+			// Set enemy info
+			specificEnemy = []enemy.EnemyParam{
+				{
+					CharID: enemy.IDTarget,
+					Pos:    common.Point{X: 4, Y: 1},
+					HP:     1000,
+				},
+			}
+
+			// TODO(味方キャラの追加)
 		}
 		return nil
 	}
