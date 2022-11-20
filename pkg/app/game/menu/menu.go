@@ -136,6 +136,8 @@ func Process() error {
 		}
 	case stateInvalidChip:
 		menuInvalidChipInst.Process()
+	case stateDevFeature:
+		return menuDevFeatureInst.Process()
 	}
 
 	return nil
@@ -157,6 +159,8 @@ func Draw() {
 		menuNetBattleInst.Draw()
 	case stateInvalidChip:
 		menuInvalidChipInst.Draw()
+	case stateDevFeature:
+		menuDevFeatureInst.Draw()
 	}
 }
 

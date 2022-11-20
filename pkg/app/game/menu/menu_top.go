@@ -38,6 +38,7 @@ func (t *menuTop) End() {
 func (t *menuTop) Process() {
 	if config.Get().DevFeature.On {
 		if inputs.CheckKey(inputs.KeyLButton) == 1 {
+			sound.On(sound.SEMenuEnter)
 			stateChange(stateDevFeature)
 			return
 		}
@@ -59,17 +60,18 @@ func (t *menuTop) Process() {
 				stateChange(stateNetBattle)
 			}
 		}
-	} else {
-		if inputs.CheckKey(inputs.KeyUp) == 1 {
-			if t.pointer > 0 {
-				sound.On(sound.SECursorMove)
-				t.pointer--
-			}
-		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			if t.pointer < topSelectMax-1 {
-				sound.On(sound.SECursorMove)
-				t.pointer++
-			}
+		return
+	}
+
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		if t.pointer > 0 {
+			sound.On(sound.SECursorMove)
+			t.pointer--
+		}
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		if t.pointer < topSelectMax-1 {
+			sound.On(sound.SECursorMove)
+			t.pointer++
 		}
 	}
 }
