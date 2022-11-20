@@ -115,6 +115,7 @@ func End() {
 // Process ...
 func Process() error {
 	battlecommon.SystemProcess()
+	isRunAnim := false
 
 	switch battleState {
 	case stateOpening:
@@ -166,6 +167,7 @@ func Process() error {
 			return nil
 		}
 	case stateMain:
+		isRunAnim = true
 		gameCount++
 
 		if err := objanim.MgrProcess(true, field.IsBlackout()); err != nil {
@@ -194,6 +196,7 @@ func Process() error {
 
 		field.Update()
 	case stateResultWin:
+		isRunAnim = true
 		if battleCount == 0 {
 			if err := win.Init(win.WinArg{
 				GameTime:        gameCount,
@@ -213,6 +216,7 @@ func Process() error {
 			return ErrWin
 		}
 	case stateResultLose:
+		isRunAnim = true
 		if battleCount == 0 {
 			fname := common.ImagePath + "battle/msg_lose.png"
 			var err error
@@ -228,9 +232,11 @@ func Process() error {
 		}
 	}
 
-	// TODO(blackout中はエフェクトもとめておく？)
-	if err := anim.MgrProcess(); err != nil {
-		return fmt.Errorf("failed to handle animation: %w", err)
+	if isRunAnim {
+		// TODO(blackout中はエフェクトもとめておく？)
+		if err := anim.MgrProcess(); err != nil {
+			return fmt.Errorf("failed to handle animation: %w", err)
+		}
 	}
 
 	battleCount++
