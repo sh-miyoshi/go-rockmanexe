@@ -56,15 +56,6 @@ var (
 func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("Init battle data ...")
 
-	enemyList = []enemy.EnemyParam{}
-	for _, e := range enemies {
-		if e.CharID == enemy.IDSupportNPC {
-			// TODO: SupportNPCとして追加
-		} else {
-			enemyList = append(enemyList, e)
-		}
-	}
-
 	gameCount = 0
 	battleCount = 0
 	battleState = stateOpening
@@ -78,6 +69,23 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 		return fmt.Errorf("battle player init failed: %w", err)
 	}
 	objanim.New(playerInst)
+
+	enemyList = []enemy.EnemyParam{}
+	for _, e := range enemies {
+		if e.CharID == enemy.IDSupportNPC {
+			// Supporterは必ずPlayerを作成後に作成する
+			supporter, err := battleplayer.NewSupporter(battleplayer.SupporterParam{
+				HP:      uint(e.HP),
+				InitPos: e.Pos,
+			})
+			if err != nil {
+				return fmt.Errorf("battle supporter init failed: %w", err)
+			}
+			objanim.New(supporter)
+		} else {
+			enemyList = append(enemyList, e)
+		}
+	}
 
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("battle field init failed: %w", err)
