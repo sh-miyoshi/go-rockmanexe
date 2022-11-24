@@ -84,7 +84,7 @@ func (t *menuDevFeature) Process() error {
 				},
 			}
 
-			// TODO(味方キャラの追加、specificEnemyに入れる)
+			return ErrGoBattle
 		}
 		return nil
 	}
