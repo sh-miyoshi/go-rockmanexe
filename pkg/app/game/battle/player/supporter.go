@@ -51,7 +51,7 @@ func NewSupporter(param SupporterParam) (*Supporter, error) {
 		Pos:       param.InitPos,
 		HP:        param.HP,
 		HPMax:     param.HP,
-		ShotPower: 1,
+		ShotPower: 5,
 		// TODO: ChipFolder
 	}
 	res.act.typ = -1
@@ -89,9 +89,12 @@ func (s *Supporter) Process() (bool, error) {
 		}
 	case supporterStatusMove:
 		s.moveRandom()
-		s.setAction(60, supporterStatusMove) // debug
+		s.setAction(60, supporterStatusShot) // debug
 	case supporterStatusUseChip:
 	case supporterStatusShot:
+		s.act.ShotPower = s.ShotPower
+		s.act.SetAnim(battlecommon.PlayerActBuster, 0)
+		s.setAction(60, supporterStatusMove)
 	}
 
 	return false, nil
