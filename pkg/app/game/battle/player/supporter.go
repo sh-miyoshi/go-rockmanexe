@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -11,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -89,8 +91,26 @@ func (s *Supporter) Process() (bool, error) {
 		}
 	case supporterStatusMove:
 		s.moveRandom()
-		s.setAction(60, supporterStatusShot) // debug
+		s.setAction(60, supporterStatusUseChip) // debug
 	case supporterStatusUseChip:
+		targetChip := chip.IDSpreadGun
+		c := chip.Get(targetChip)
+		if c.PlayerAct != -1 {
+			s.act.SetAnim(c.PlayerAct, c.KeepCount)
+		}
+		target := damage.TargetEnemy
+		if c.ForMe {
+			target = damage.TargetPlayer
+		}
+
+		sid := skill.GetSkillID(c.ID)
+		s.act.skillInst = skill.Get(sid, skill.Argument{
+			OwnerID:    s.ID,
+			Power:      c.Power,
+			TargetType: target,
+		})
+		s.act.skillID = anim.New(s.act.skillInst)
+		s.setAction(60, supporterStatusMove)
 	case supporterStatusShot:
 		s.act.ShotPower = s.ShotPower
 		s.act.SetAnim(battlecommon.PlayerActBuster, 0)
