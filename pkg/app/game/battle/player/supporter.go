@@ -13,7 +13,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -37,7 +36,6 @@ type Supporter struct {
 	HP              uint
 	HPMax           uint
 	ShotPower       uint
-	ChipFolder      []player.ChipInfo
 	act             act
 	invincibleCount int
 	status          int
@@ -54,7 +52,6 @@ func NewSupporter(param SupporterParam) (*Supporter, error) {
 		HP:        param.HP,
 		HPMax:     param.HP,
 		ShotPower: 5,
-		// TODO: ChipFolder
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
@@ -91,7 +88,7 @@ func (s *Supporter) Process() (bool, error) {
 		}
 	case supporterStatusMove:
 		s.moveRandom()
-		s.setAction(60, supporterStatusUseChip) // debug
+		s.decideNextAction()
 	case supporterStatusUseChip:
 		targetChip := chip.IDSpreadGun
 		c := chip.Get(targetChip)
@@ -220,5 +217,17 @@ func (s *Supporter) moveRandom() {
 			s.act.SetAnim(battlecommon.PlayerActMove, 0)
 			return
 		}
+	}
+}
+
+func (s *Supporter) decideNextAction() {
+	n := rand.Intn(100)
+	wait := 30 + rand.Intn(60)
+	if n < 40 {
+		s.setAction(wait, supporterStatusMove)
+	} else if n < 80 {
+		s.setAction(wait, supporterStatusShot)
+	} else {
+		s.setAction(wait, supporterStatusUseChip)
 	}
 }
