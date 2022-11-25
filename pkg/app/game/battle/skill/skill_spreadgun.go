@@ -64,7 +64,8 @@ func (p *spreadGun) Process() (bool, error) {
 		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < field.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
-			if field.GetPanelInfo(target).ObjectID != "" {
+			objs := objanim.GetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
+			if len(objs) > 0 {
 				// Hit
 				sound.On(sound.SESpreadHit)
 
