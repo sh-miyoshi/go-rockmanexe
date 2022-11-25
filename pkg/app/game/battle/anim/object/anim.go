@@ -25,6 +25,7 @@ const (
 type Filter struct {
 	ObjID   string
 	ObjType int
+	Pos     *common.Point
 }
 
 // Anim ...
@@ -138,19 +139,19 @@ func GetObjPos(objID string) common.Point {
 
 func GetObjs(filter Filter) []anim.Param {
 	res := []anim.Param{}
-	if filter.ObjID != "" {
-		for _, anim := range anims {
-			pm := anim.GetParam()
-			res = append(res, pm)
-		}
-		return res
-	}
 
 	for _, anim := range anims {
 		pm := anim.GetParam()
-		if filter.ObjType&anim.GetObjectType() != 0 {
-			res = append(res, pm)
+		if filter.ObjID != "" && pm.ObjID != filter.ObjID {
+			continue
 		}
+		if filter.Pos != nil && (pm.Pos.X != filter.Pos.X || pm.Pos.Y != filter.Pos.Y) {
+			continue
+		}
+		if filter.ObjType&anim.GetObjectType() == 0 {
+			continue
+		}
+		res = append(res, pm)
 	}
 
 	return res
@@ -168,12 +169,11 @@ func MakeInvisible(id string, count int) {
 }
 
 func ExistsObject(pos common.Point) string {
-	for _, anim := range anims {
-		pm := anim.GetParam()
-		if pm.Pos == pos {
-			return pm.ObjID
-		}
+	objs := GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
+	if len(objs) > 0 {
+		return objs[0].ObjID
 	}
+
 	return ""
 }
 
