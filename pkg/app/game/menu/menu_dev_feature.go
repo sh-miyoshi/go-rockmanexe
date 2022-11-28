@@ -51,6 +51,11 @@ func (t *menuDevFeature) Draw() {
 }
 
 func (t *menuDevFeature) Process() error {
+	// 隠しコマンド
+	if inputs.CheckKey(inputs.KeyDebug) == 1 {
+		return ErrGoScratch
+	}
+
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		sound.On(sound.SEMenuEnter)
 		switch t.pointer {

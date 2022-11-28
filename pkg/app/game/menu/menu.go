@@ -39,6 +39,7 @@ var (
 	ErrGoBattle    = errors.New("go to battle")
 	ErrGoNetBattle = errors.New("go to net battle")
 	ErrGoMap       = errors.New("go to map")
+	ErrGoScratch   = errors.New("go to scratch")
 )
 
 func Init(plyr *player.Player) error {
