@@ -7,10 +7,10 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/scratch"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/scratch"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
