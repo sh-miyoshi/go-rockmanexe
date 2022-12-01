@@ -208,7 +208,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				e.targetPos.Y = t.Y
 				e.state = aquamanActTypeMove
 				e.count = 0
-				logger.Debug("%+v", e)
+				logger.Debug("Aquaman Param: %+v", e)
 				return false, nil
 			}
 		}
@@ -255,8 +255,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeCreate:
 		if e.count == 0 {
-			if e.pm.Pos.X == 3 && (e.pm.Pos.Y == 0 || e.pm.Pos.Y == 2) {
-				e.targetPos.X = 5
+			if e.pm.Pos.X == field.FieldNum.X/2 && (e.pm.Pos.Y == 0 || e.pm.Pos.Y == (field.FieldNum.Y-1)) {
+				e.targetPos.X = field.FieldNum.X - 1
 				e.targetPos.Y = 1
 				e.state = aquamanActTypeMove
 				e.count = 0
@@ -273,14 +273,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 				Interval:      150,
 				Power:         20,
 			}
-			pm.Pos.X = 3
+			pm.Pos.X = field.FieldNum.X / 2
 			pm.Pos.Y = 0
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 			obj = &object.WaterPipe{}
-			pm.Pos.Y = 2
+			pm.Pos.Y = field.FieldNum.Y - 1
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
@@ -313,16 +313,16 @@ func (e *enemyAquaman) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofs := [aquamanActTypeMax][]int{
-		{0, 0},    // stand
-		{0, 0},    // move
-		{-20, 10}, // shot
-		{0, 0},    // damage
-		{0, 0},    // bomb
-		{0, 0},    // create
+	ofs := [aquamanActTypeMax]common.Point{
+		{X: 0, Y: 0},    // stand
+		{X: 0, Y: 0},    // move
+		{X: -20, Y: 10}, // shot
+		{X: 0, Y: 0},    // damage
+		{X: 0, Y: 0},    // bomb
+		{X: 0, Y: 0},    // create
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofs[e.state][0], view.Y+ofs[e.state][1], 1, 0, *img, true)
+	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
 
 	// Show HP
 	if e.pm.HP > 0 {
