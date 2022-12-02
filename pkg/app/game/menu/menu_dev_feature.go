@@ -67,7 +67,7 @@ func (t *menuDevFeature) Process() error {
 			// Set enemy info
 			specificEnemy = []enemy.EnemyParam{
 				{
-					CharID: enemy.IDTarget,
+					CharID: enemy.IDAquaman,
 					Pos:    common.Point{X: 6, Y: 2},
 					HP:     1000,
 				},
@@ -75,11 +75,13 @@ func (t *menuDevFeature) Process() error {
 
 			return ErrGoBattle
 		case devFeatureSelectSupportNPC:
+			field.Set4x4Area()
+
 			// Set enemy info
 			specificEnemy = []enemy.EnemyParam{
 				{
-					CharID: enemy.IDTarget,
-					Pos:    common.Point{X: 4, Y: 1},
+					CharID: enemy.IDAquaman,
+					Pos:    common.Point{X: 6, Y: 2},
 					HP:     1000,
 				},
 				{
