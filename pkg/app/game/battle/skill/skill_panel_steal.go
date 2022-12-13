@@ -120,9 +120,9 @@ func (p *skillPanelSteal) Process() (bool, error) {
 					BigDamage:     false,
 					DamageType:    damage.TypeNone,
 				})
-			} else {
+			} else if p.target.X >= 1 && p.target.X < field.FieldNum.X-1 {
 				// パネルを塗り替え
-				// TODO 最終ラインの場合は塗り替えない
+				// 最終ラインの場合は塗り替えない
 				field.ChangePanelType(p.target, p.myPanelType)
 			}
 			return true, nil
