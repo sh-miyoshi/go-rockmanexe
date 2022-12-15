@@ -3,6 +3,7 @@ package mapmove
 import (
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -107,6 +108,12 @@ func Process() error {
 	} else if inputs.CheckKey(inputs.KeyUp) != 0 {
 		goVec.Y -= 4
 		nextDirect |= common.DirectUp
+	}
+
+	// 斜め移動の場合は速度を調整
+	if goVec.X != 0 && goVec.Y != 0 {
+		goVec.X /= math.Sqrt(2)
+		goVec.Y /= math.Sqrt(2)
 	}
 
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
