@@ -5,6 +5,7 @@ import (
 
 	originaldxlib "github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -51,7 +52,6 @@ var (
 	imgPanel      [PanelStatusMax][panelTypeMax]int
 	blackoutCount = 0
 	panels        [][]PanelInfo
-	bgInst        Background
 )
 
 // Init ...
@@ -97,7 +97,7 @@ func Init() error {
 	}
 
 	// TODO: Map情報から取得する
-	if err := bgInst.Init(BGType秋原町); err != nil {
+	if err := background.Set(background.Type秋原町); err != nil {
 		return fmt.Errorf("failed to load background: %w", err)
 	}
 
@@ -115,15 +115,12 @@ func End() {
 		}
 	}
 
-	bgInst.End()
-
+	background.Unset()
 	logger.Info("Successfully cleanuped battle field data")
 }
 
 // Draw ...
 func Draw() {
-	bgInst.Draw()
-
 	for x := 0; x < FieldNum.X; x++ {
 		for y := 0; y < FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
@@ -162,8 +159,6 @@ func DrawBlackout() {
 }
 
 func Update() {
-	bgInst.Process()
-
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {

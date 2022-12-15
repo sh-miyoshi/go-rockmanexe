@@ -103,7 +103,6 @@ func End() {
 
 func Process() error {
 	inst.gameCount++
-	inst.fieldInst.Update()
 
 	// Sound process
 	for _, s := range inst.conn.GetGameInfo().Sounds {

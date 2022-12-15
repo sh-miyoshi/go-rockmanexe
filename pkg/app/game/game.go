@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
@@ -35,6 +36,8 @@ var (
 
 // Process ...
 func Process() error {
+	background.Process()
+
 	if playerInfo != nil {
 		playerInfo.PlayCount++
 		// Countermeasures against buffer overflow
@@ -181,6 +184,8 @@ func Draw() {
 		// skip if initialize phase
 		return
 	}
+
+	background.Draw()
 
 	switch state {
 	case stateTitle:

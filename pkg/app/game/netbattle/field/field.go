@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -13,7 +14,6 @@ import (
 )
 
 type Field struct {
-	bgInst   battlefield.Background
 	imgPanel [battlefield.PanelStatusMax][2]int
 }
 
@@ -23,7 +23,7 @@ func New() (*Field, error) {
 	res := &Field{}
 
 	// TODO: Serverから取得する
-	if err := res.bgInst.Init(battlefield.BGType秋原町); err != nil {
+	if err := background.Set(background.Type秋原町); err != nil {
 		return nil, fmt.Errorf("failed to load background: %w", err)
 	}
 
@@ -49,7 +49,7 @@ func New() (*Field, error) {
 }
 
 func (f *Field) End() {
-	f.bgInst.End()
+	background.Unset()
 
 	for i := 0; i < battlefield.PanelStatusMax; i++ {
 		for j := 0; j < 2; j++ {
@@ -60,7 +60,6 @@ func (f *Field) End() {
 }
 
 func (f *Field) Draw() {
-	f.bgInst.Draw()
 	clientID := config.Get().Net.ClientID
 
 	panels := netconn.GetInst().GetGameInfo().Panels
@@ -77,10 +76,6 @@ func (f *Field) Draw() {
 			dxlib.DrawGraph(vx, vy, img, true)
 		}
 	}
-}
-
-func (f *Field) Update() {
-	f.bgInst.Process()
 }
 
 func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
