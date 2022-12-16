@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"gopkg.in/yaml.v2"
 )
@@ -64,6 +65,9 @@ func Load(id int) (*MapInfo, error) {
 		return nil, fmt.Errorf("failed to load image: %s", fname)
 	}
 	dxlib.GetGraphSize(res.Image, &res.Size.X, &res.Size.Y)
+	if err := background.Set(background.Type秋原町); err != nil {
+		return nil, fmt.Errorf("failed to load background: %w", err)
+	}
 
 	return res, nil
 }
