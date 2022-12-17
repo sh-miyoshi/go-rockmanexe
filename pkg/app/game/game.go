@@ -87,6 +87,9 @@ func Process() error {
 		if err := menu.Process(); err != nil {
 			menu.End()
 			if errors.Is(err, menu.ErrGoBattle) {
+				if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
+					return fmt.Errorf("battle init failed at menu: %w", err)
+				}
 				stateChange(stateBattle)
 				return nil
 			} else if errors.Is(err, menu.ErrGoNetBattle) {
@@ -102,11 +105,6 @@ func Process() error {
 			return fmt.Errorf("game process in state menu failed: %w", err)
 		}
 	case stateBattle:
-		if count == 0 {
-			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
-				return fmt.Errorf("game process in state battle failed: %w", err)
-			}
-		}
 		if err := battle.Process(); err != nil {
 			battle.End()
 			if errors.Is(err, battle.ErrWin) {
