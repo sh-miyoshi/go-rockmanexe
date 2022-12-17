@@ -88,6 +88,12 @@ func Draw() {
 			cy := window.Y
 			dxlib.DrawLine(w.X1-cx, w.Y1-cy, w.X2-cx, w.Y2-cy, color)
 		}
+
+		for _, e := range mapInfo.Events {
+			cx := window.X
+			cy := window.Y
+			dxlib.DrawCircle(e.X-cx, e.Y-cy, e.R, 0x0000ff, true)
+		}
 	}
 }
 
@@ -117,6 +123,8 @@ func Process() error {
 	}
 
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
+	// TODO(hit events, or object)
+
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
 		absPlayerPosX = nextX
 		absPlayerPosY = nextY

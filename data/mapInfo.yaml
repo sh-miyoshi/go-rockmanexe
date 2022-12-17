@@ -17,6 +17,12 @@
       y1: 644
       x2: 15
       y2: 327
+  events:
+    - type: 0
+      x: 10
+      y: 10
+      r: 10
+      args: "0;0;0"
 - id: 1
   name: "秋原町"
   walls:
