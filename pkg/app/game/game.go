@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
@@ -24,6 +25,7 @@ const (
 	stateMenu
 	stateMap
 	stateScratch
+	stateEvent
 
 	stateMax
 )
@@ -167,13 +169,25 @@ func Process() error {
 		}
 		if err := mapmove.Process(); err != nil {
 			mapmove.End()
-			// TODO
+			if errors.Is(err, mapmove.ErrGoBattle) {
+				stateChange(stateBattle)
+				return nil
+			} else if errors.Is(err, mapmove.ErrGoMenu) {
+				stateChange(stateMenu)
+				return nil
+			} else if errors.Is(err, mapmove.ErrGoEvent) {
+				stateChange(stateEvent)
+				return nil
+			}
+			return fmt.Errorf("map move process failed: %w", err)
 		}
 	case stateScratch:
 		if count == 0 {
 			scratch.Init()
 		}
 		scratch.Process()
+	case stateEvent:
+		event.Process()
 	}
 	count++
 	return nil
@@ -200,6 +214,8 @@ func Draw() {
 		mapmove.Draw()
 	case stateScratch:
 		scratch.Draw()
+	case stateEvent:
+		event.Draw()
 	}
 }
 

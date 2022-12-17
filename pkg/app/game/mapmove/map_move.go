@@ -17,6 +17,7 @@ import (
 var (
 	ErrGoBattle = errors.New("go to battle")
 	ErrGoMenu   = errors.New("go to menu")
+	ErrGoEvent  = errors.New("go to event")
 
 	mapInfo       *mapinfo.MapInfo
 	absPlayerPosX float64
