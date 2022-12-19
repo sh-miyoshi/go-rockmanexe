@@ -40,6 +40,7 @@ func Init() error {
 	absPlayerPosY = 200
 
 	collision.SetWalls(mapInfo.CollisionWalls)
+	collision.SetEvents(mapInfo.Events)
 
 	// Load player image
 	tmp := make([]int, 30)
@@ -136,6 +137,11 @@ func Process() error {
 	}
 
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
+	if e := collision.GetEvent(nextX, nextY); e != nil {
+		// Hit to Event
+		// TODO set event
+		return nil
+	}
 	// TODO(hit events, or object)
 
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
