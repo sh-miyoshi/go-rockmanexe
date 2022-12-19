@@ -69,6 +69,7 @@ func End() {
 		for _, img := range playerMoveImages[i] {
 			dxlib.DeleteGraph(img)
 		}
+		playerMoveImages[i] = []int{}
 	}
 }
 
@@ -93,12 +94,23 @@ func Draw() {
 		for _, e := range mapInfo.Events {
 			cx := window.X
 			cy := window.Y
-			dxlib.DrawCircle(e.X-cx, e.Y-cy, e.R, 0x0000ff, true)
+			dxlib.DrawCircle(e.X-cx, e.Y-cy, e.R, color, false)
 		}
+
+		dxlib.DrawFormatString(0, 0, color, "Window: (%d, %d)", window.X, window.Y)
+		dxlib.DrawFormatString(0, 20, color, "Player: (%d, %d)", player.X, player.Y)
+		dxlib.DrawFormatString(0, 40, color, "ABS: (%.2f, %.2f)", absPlayerPosX, absPlayerPosY)
+		dxlib.DrawFormatString(0, 60, color, "Reload: L-btn")
 	}
 }
 
 func Process() error {
+	if inputs.CheckKey(inputs.KeyLButton) == 1 {
+		End()
+		Init()
+		return nil
+	}
+
 	goVec := vector.Vector{}
 	nextDirect := 0
 	if inputs.CheckKey(inputs.KeyRight) != 0 {
