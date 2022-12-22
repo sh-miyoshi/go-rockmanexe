@@ -7,6 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
@@ -139,8 +140,8 @@ func Process() error {
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
 	if e := collision.GetEvent(nextX, nextY); e != nil {
 		// Hit to Event
-		// TODO set event
-		return nil
+		event.Set(e.Type, e.Args)
+		return ErrGoEvent
 	}
 	// TODO(hit events, or object)
 

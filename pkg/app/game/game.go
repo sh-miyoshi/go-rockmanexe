@@ -166,11 +166,12 @@ func Process() error {
 			}
 		}
 		if err := mapmove.Process(); err != nil {
-			mapmove.End()
 			if errors.Is(err, mapmove.ErrGoBattle) {
+				mapmove.End()
 				stateChange(stateBattle)
 				return nil
 			} else if errors.Is(err, mapmove.ErrGoMenu) {
+				mapmove.End()
 				stateChange(stateMenu)
 				return nil
 			} else if errors.Is(err, mapmove.ErrGoEvent) {
@@ -213,6 +214,7 @@ func Draw() {
 	case stateScratch:
 		scratch.Draw()
 	case stateEvent:
+		mapmove.Draw()
 		event.Draw()
 	}
 }
