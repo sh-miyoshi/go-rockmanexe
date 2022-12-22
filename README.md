@@ -2,7 +2,7 @@
 
 ## 遊び方
 
-まず、[リリースリンク](https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.9/project.zip)からzipファイルをダウンロードします。  
+まず、[リリースリンク](https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.10/project.zip)からzipファイルをダウンロードします。  
 その後、任意の場所にzipファイルを解凍し、rockman.exeをダブルクリックで実行します。  
 ※dataディレクトリ配下はいじらないでください。
 
