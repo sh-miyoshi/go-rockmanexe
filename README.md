@@ -13,8 +13,21 @@
   - ゲーム中のLボタン: A
   - ゲーム中のRボタン: S
 
-## ネット対戦のしかた
+## 開発機能をONにする方法
 
+1. `data/config.yaml`を編集
+
+  ```config.yaml
+  # ↓を追加する
+  debug:
+    enable_dev_feature: true
+  ```
+
+2. メニュー画面でLボタン(Aキー)を押す
+
+## (工事中)ネット対戦のしかた
+
+- 現在工事中のためアクセスできません
 - [https://rockmanexe.herokuapp.com](https://rockmanexe.herokuapp.com)にアクセス
 - ログイン
   - 初回は新規登録をお願いします
