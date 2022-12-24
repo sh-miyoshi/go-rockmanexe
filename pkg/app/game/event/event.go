@@ -1,6 +1,9 @@
 package event
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	TypeChangeMapArea int = iota
@@ -13,16 +16,21 @@ type Handler interface {
 }
 
 var (
+	ErrMapChange = errors.New("change map")
+)
+
+var (
 	handler Handler
 )
 
-func Set(eventType int, args string) {
+func Set(eventType int, args string) error {
 	switch eventType {
 	case TypeChangeMapArea:
-		// TODO handler = &mapchange.Handler{}
+		handler = &MapChangeHandler{}
 	default:
-		panic(fmt.Sprintf("invalid event type %d was specified", eventType))
+		return fmt.Errorf("invalid event type %d was specified", eventType)
 	}
+	return handler.Init(args)
 }
 
 func Draw() {

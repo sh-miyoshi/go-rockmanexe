@@ -28,9 +28,16 @@ var (
 	playerMoveStandImages []int
 	playerMoveDirect      int
 	playerMoveCount       int
+
+	initFlag bool = false
 )
 
 func Init() error {
+	if initFlag {
+		End()
+		initFlag = false
+	}
+
 	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
 	var err error
 	mapInfo, err = mapinfo.Load(mapinfo.ID_犬小屋)
@@ -61,6 +68,7 @@ func Init() error {
 	}
 
 	playerMoveDirect = common.DirectDown
+	initFlag = true
 
 	return nil
 }
@@ -73,6 +81,20 @@ func End() {
 		}
 		playerMoveImages[i] = []int{}
 	}
+}
+
+func MapChange(mapID int, pos common.Point) error {
+	var err error
+	mapInfo, err = mapinfo.Load(mapID)
+	if err != nil {
+		return fmt.Errorf("failed to load map info: %w", err)
+	}
+	absPlayerPosX = float64(pos.X)
+	absPlayerPosY = float64(pos.Y)
+
+	collision.SetWalls(mapInfo.CollisionWalls)
+	collision.SetEvents(mapInfo.Events)
+	return nil
 }
 
 func Draw() {
@@ -108,7 +130,6 @@ func Draw() {
 
 func Process() error {
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
-		End()
 		Init()
 		return nil
 	}
@@ -140,7 +161,9 @@ func Process() error {
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
 	if e := collision.GetEvent(nextX, nextY); e != nil {
 		// Hit to Event
-		event.Set(e.Type, e.Args)
+		if err := event.Set(e.Type, e.Args); err != nil {
+			return err
+		}
 		return ErrGoEvent
 	}
 	// TODO(hit events, or object)
