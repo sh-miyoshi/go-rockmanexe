@@ -1,7 +1,6 @@
 package event
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -9,28 +8,38 @@ const (
 	TypeChangeMapArea int = iota
 )
 
+const (
+	ResultContinue int = iota
+	ResultMapChange
+	ResultEnd
+)
+
+type Scenario struct {
+	Type int
+	// TODO values
+}
+
 type Handler interface {
 	Init(args string) error
 	Draw()
-	Process() error
+	Process() (int, error)
 }
 
 var (
-	ErrMapChange = errors.New("change map")
+	handler   Handler
+	scenarios []Scenario
+	current   = 0
 )
 
-var (
-	handler Handler
-)
-
-func Set(eventType int, args string) error {
-	switch eventType {
-	case TypeChangeMapArea:
-		handler = &MapChangeHandler{}
-	default:
-		return fmt.Errorf("invalid event type %d was specified", eventType)
+func SetScenarios(s []Scenario) {
+	if len(s) == 0 {
+		// 何もしない
+		return
 	}
-	return handler.Init(args)
+
+	scenarios = append([]Scenario{}, s...)
+	current = 0
+	setHandler(scenarios[current])
 }
 
 func Draw() {
@@ -39,9 +48,29 @@ func Draw() {
 	}
 }
 
-func Process() error {
+func Process() (int, error) {
 	if handler != nil {
-		return handler.Process()
+		res, err := handler.Process()
+		if err != nil {
+			return ResultContinue, err
+		}
+		if res != ResultContinue {
+			current++
+			if current >= len(scenarios) {
+				return ResultEnd, nil
+			}
+			setHandler(scenarios[current])
+			return res, nil
+		}
 	}
-	return nil
+	return ResultContinue, nil
+}
+
+func setHandler(s Scenario) {
+	switch s.Type {
+	case TypeChangeMapArea:
+		handler = &MapChangeHandler{}
+	default:
+		panic(fmt.Sprintf("scenario type %d is not implemented", s.Type))
+	}
 }

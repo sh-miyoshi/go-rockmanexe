@@ -7,10 +7,9 @@ func (h *MapChangeHandler) Init(args string) error {
 }
 
 func (h *MapChangeHandler) Draw() {
-
 }
 
-func (h *MapChangeHandler) Process() error {
+func (h *MapChangeHandler) Process() (int, error) {
 	// TODO set event data
-	return ErrMapChange
+	return ResultMapChange, nil
 }

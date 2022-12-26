@@ -18,11 +18,10 @@ type Wall struct {
 }
 
 type Event struct {
-	Type int    `yaml:"type"`
-	X    int    `yaml:"x"`
-	Y    int    `yaml:"y"`
-	R    int    `yaml:"r"`
-	Args string `yaml:"args"`
+	No int `yaml:"no"`
+	X  int `yaml:"x"`
+	Y  int `yaml:"y"`
+	R  int `yaml:"r"`
 }
 
 type MapInfo struct {

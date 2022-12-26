@@ -186,6 +186,7 @@ func Process() error {
 		}
 		scratch.Process()
 	case stateEvent:
+		// TODO result, err handling
 		event.Process()
 	}
 	count++

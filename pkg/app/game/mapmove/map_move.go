@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/scenario"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -39,8 +40,10 @@ func Init() error {
 	}
 
 	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
+	mapID := mapinfo.ID_犬小屋
+
 	var err error
-	mapInfo, err = mapinfo.Load(mapinfo.ID_犬小屋)
+	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
 		return fmt.Errorf("failed to load map info: %w", err)
 	}
@@ -161,9 +164,7 @@ func Process() error {
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
 	if e := collision.GetEvent(nextX, nextY); e != nil {
 		// Hit to Event
-		if err := event.Set(e.Type, e.Args); err != nil {
-			return err
-		}
+		loadScenarioData(mapInfo.ID, e.No)
 		return ErrGoEvent
 	}
 	// TODO(hit events, or object)
@@ -247,5 +248,14 @@ func drawRockman(pos common.Point) {
 	} else {
 		n := (playerMoveCount / 4) % 6
 		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, playerMoveImages[typ][n], true, dxopts)
+	}
+}
+
+func loadScenarioData(mapType int, eventNo int) {
+	switch mapType {
+	case mapinfo.ID_犬小屋:
+		event.SetScenarios(scenario.Scenario_犬小屋[eventNo])
+	default:
+		panic(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}
 }
