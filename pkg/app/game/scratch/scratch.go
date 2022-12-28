@@ -10,6 +10,7 @@ import (
 var (
 	imgPlayers [battlecommon.PlayerActMax][]int
 	imgMetall  int
+	imgAquaman int
 )
 
 func Init() {
@@ -62,6 +63,9 @@ func Init() {
 
 	fname = common.ImagePath + "battle/character/メットール_move.png"
 	imgMetall = dxlib.LoadGraph(fname)
+
+	fname = common.ImagePath + "battle/character/アクアマン.png"
+	imgAquaman = dxlib.LoadGraph(fname)
 }
 
 func Draw() {

@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
@@ -23,7 +24,9 @@ const (
 	stateNetBattle
 	stateMenu
 	stateMap
+	stateMapChange
 	stateScratch
+	stateEvent
 
 	stateMax
 )
@@ -85,6 +88,9 @@ func Process() error {
 		if err := menu.Process(); err != nil {
 			menu.End()
 			if errors.Is(err, menu.ErrGoBattle) {
+				if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
+					return fmt.Errorf("battle init failed at menu: %w", err)
+				}
 				stateChange(stateBattle)
 				return nil
 			} else if errors.Is(err, menu.ErrGoNetBattle) {
@@ -100,11 +106,6 @@ func Process() error {
 			return fmt.Errorf("game process in state menu failed: %w", err)
 		}
 	case stateBattle:
-		if count == 0 {
-			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
-				return fmt.Errorf("game process in state battle failed: %w", err)
-			}
-		}
 		if err := battle.Process(); err != nil {
 			battle.End()
 			if errors.Is(err, battle.ErrWin) {
@@ -166,14 +167,41 @@ func Process() error {
 			}
 		}
 		if err := mapmove.Process(); err != nil {
-			mapmove.End()
-			// TODO
+			if errors.Is(err, mapmove.ErrGoBattle) {
+				mapmove.End()
+				stateChange(stateBattle)
+				return nil
+			} else if errors.Is(err, mapmove.ErrGoMenu) {
+				mapmove.End()
+				stateChange(stateMenu)
+				return nil
+			} else if errors.Is(err, mapmove.ErrGoEvent) {
+				stateChange(stateEvent)
+				return nil
+			}
+			return fmt.Errorf("map move process failed: %w", err)
 		}
+	case stateMapChange:
+		mapmove.Init()
+		stateChange(stateEvent)
+		return nil
 	case stateScratch:
 		if count == 0 {
 			scratch.Init()
 		}
 		scratch.Process()
+	case stateEvent:
+		res, err := event.Process()
+		if err != nil {
+			return fmt.Errorf("event process failed: %w", err)
+		}
+		switch res {
+		case event.ResultMapChange:
+			stateChange(stateMapChange)
+		case event.ResultEnd:
+			stateChange(stateMap)
+		}
+		return nil
 	}
 	count++
 	return nil
@@ -198,8 +226,13 @@ func Draw() {
 		netbattle.Draw()
 	case stateMap:
 		mapmove.Draw()
+	case stateMapChange:
+		mapmove.Draw()
 	case stateScratch:
 		scratch.Draw()
+	case stateEvent:
+		mapmove.Draw()
+		event.Draw()
 	}
 }
 

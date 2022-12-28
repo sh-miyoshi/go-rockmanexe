@@ -9,11 +9,29 @@ import (
 )
 
 var (
-	walls = []mapinfo.Wall{}
+	walls  = []mapinfo.Wall{}
+	events = []mapinfo.Event{}
 )
+
+func SetEvents(e []mapinfo.Event) {
+	events = append([]mapinfo.Event{}, e...)
+}
 
 func SetWalls(w []mapinfo.Wall) {
 	walls = append([]mapinfo.Wall{}, w...)
+}
+
+func GetEvent(currentX, currentY float64) *mapinfo.Event {
+	const r = common.MapPlayerHitRange
+	for _, e := range events {
+		x2 := (float64(e.X) - currentX) * (float64(e.X) - currentX)
+		y2 := (float64(e.Y) - currentY) * (float64(e.Y) - currentY)
+		r2 := float64((r + e.R) * (r + e.R))
+		if x2+y2 <= r2 {
+			return &e
+		}
+	}
+	return nil
 }
 
 func NextPos(currentX, currentY float64, goVec vector.Vector) (float64, float64) {

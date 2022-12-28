@@ -17,10 +17,18 @@ type Wall struct {
 	Y2 int `yaml:"y2"`
 }
 
+type Event struct {
+	No int `yaml:"no"`
+	X  int `yaml:"x"`
+	Y  int `yaml:"y"`
+	R  int `yaml:"r"`
+}
+
 type MapInfo struct {
-	ID             int    `yaml:"id"`
-	Name           string `yaml:"name"`
-	CollisionWalls []Wall `yaml:"walls"`
+	ID             int     `yaml:"id"`
+	Name           string  `yaml:"name"`
+	CollisionWalls []Wall  `yaml:"walls"`
+	Events         []Event `yaml:"events"`
 
 	Image int
 	Size  common.Point
@@ -60,6 +68,7 @@ func Load(id int) (*MapInfo, error) {
 	res := &MapInfo{
 		Image:          dxlib.LoadGraph(fname),
 		CollisionWalls: m.CollisionWalls,
+		Events:         m.Events,
 	}
 	if res.Image == -1 {
 		return nil, fmt.Errorf("failed to load image: %s", fname)

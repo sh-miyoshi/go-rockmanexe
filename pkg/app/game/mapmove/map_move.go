@@ -7,7 +7,9 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/scenario"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -17,6 +19,7 @@ import (
 var (
 	ErrGoBattle = errors.New("go to battle")
 	ErrGoMenu   = errors.New("go to menu")
+	ErrGoEvent  = errors.New("go to event")
 
 	mapInfo       *mapinfo.MapInfo
 	absPlayerPosX float64
@@ -26,12 +29,21 @@ var (
 	playerMoveStandImages []int
 	playerMoveDirect      int
 	playerMoveCount       int
+
+	initFlag bool = false
 )
 
 func Init() error {
+	if initFlag {
+		End()
+		initFlag = false
+	}
+
 	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
+	mapID := mapinfo.ID_犬小屋
+
 	var err error
-	mapInfo, err = mapinfo.Load(mapinfo.ID_犬小屋)
+	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
 		return fmt.Errorf("failed to load map info: %w", err)
 	}
@@ -39,6 +51,7 @@ func Init() error {
 	absPlayerPosY = 200
 
 	collision.SetWalls(mapInfo.CollisionWalls)
+	collision.SetEvents(mapInfo.Events)
 
 	// Load player image
 	tmp := make([]int, 30)
@@ -58,6 +71,7 @@ func Init() error {
 	}
 
 	playerMoveDirect = common.DirectDown
+	initFlag = true
 
 	return nil
 }
@@ -68,7 +82,22 @@ func End() {
 		for _, img := range playerMoveImages[i] {
 			dxlib.DeleteGraph(img)
 		}
+		playerMoveImages[i] = []int{}
 	}
+}
+
+func MapChange(mapID int, pos common.Point) error {
+	var err error
+	mapInfo, err = mapinfo.Load(mapID)
+	if err != nil {
+		return fmt.Errorf("failed to load map info: %w", err)
+	}
+	absPlayerPosX = float64(pos.X)
+	absPlayerPosY = float64(pos.Y)
+
+	collision.SetWalls(mapInfo.CollisionWalls)
+	collision.SetEvents(mapInfo.Events)
+	return nil
 }
 
 func Draw() {
@@ -88,10 +117,26 @@ func Draw() {
 			cy := window.Y
 			dxlib.DrawLine(w.X1-cx, w.Y1-cy, w.X2-cx, w.Y2-cy, color)
 		}
+
+		for _, e := range mapInfo.Events {
+			cx := window.X
+			cy := window.Y
+			dxlib.DrawCircle(e.X-cx, e.Y-cy, e.R, color, false)
+		}
+
+		dxlib.DrawFormatString(0, 0, color, "Window: (%d, %d)", window.X, window.Y)
+		dxlib.DrawFormatString(0, 20, color, "Player: (%d, %d)", player.X, player.Y)
+		dxlib.DrawFormatString(0, 40, color, "ABS: (%.2f, %.2f)", absPlayerPosX, absPlayerPosY)
+		dxlib.DrawFormatString(0, 60, color, "Reload: L-btn")
 	}
 }
 
 func Process() error {
+	if inputs.CheckKey(inputs.KeyLButton) == 1 {
+		Init()
+		return nil
+	}
+
 	goVec := vector.Vector{}
 	nextDirect := 0
 	if inputs.CheckKey(inputs.KeyRight) != 0 {
@@ -117,6 +162,13 @@ func Process() error {
 	}
 
 	nextX, nextY := collision.NextPos(absPlayerPosX, absPlayerPosY, goVec)
+	if e := collision.GetEvent(nextX, nextY); e != nil {
+		// Hit to Event
+		loadScenarioData(mapInfo.ID, e.No)
+		return ErrGoEvent
+	}
+	// TODO(hit events, or object)
+
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
 		absPlayerPosX = nextX
 		absPlayerPosY = nextY
@@ -196,5 +248,14 @@ func drawRockman(pos common.Point) {
 	} else {
 		n := (playerMoveCount / 4) % 6
 		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, playerMoveImages[typ][n], true, dxopts)
+	}
+}
+
+func loadScenarioData(mapType int, eventNo int) {
+	switch mapType {
+	case mapinfo.ID_犬小屋:
+		event.SetScenarios(scenario.Scenario_犬小屋[eventNo])
+	default:
+		panic(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}
 }
