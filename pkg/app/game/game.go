@@ -24,6 +24,7 @@ const (
 	stateNetBattle
 	stateMenu
 	stateMap
+	stateMapChange
 	stateScratch
 	stateEvent
 
@@ -180,14 +181,27 @@ func Process() error {
 			}
 			return fmt.Errorf("map move process failed: %w", err)
 		}
+	case stateMapChange:
+		mapmove.Init()
+		stateChange(stateEvent)
+		return nil
 	case stateScratch:
 		if count == 0 {
 			scratch.Init()
 		}
 		scratch.Process()
 	case stateEvent:
-		// TODO result, err handling
-		event.Process()
+		res, err := event.Process()
+		if err != nil {
+			return fmt.Errorf("event process failed: %w", err)
+		}
+		switch res {
+		case event.ResultMapChange:
+			stateChange(stateMapChange)
+		case event.ResultEnd:
+			stateChange(stateMap)
+		}
+		return nil
 	}
 	count++
 	return nil
@@ -211,6 +225,8 @@ func Draw() {
 	case stateNetBattle:
 		netbattle.Draw()
 	case stateMap:
+		mapmove.Draw()
+	case stateMapChange:
 		mapmove.Draw()
 	case stateScratch:
 		scratch.Draw()
