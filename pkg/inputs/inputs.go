@@ -37,6 +37,8 @@ func Init(deviceType int) error {
 	switch deviceType {
 	case DeviceTypeKeyboard:
 		device = &keyboard{}
+	case DeviceTypeGamepad:
+		device = &pad{}
 	default:
 		return fmt.Errorf("invalid device type %d specified", deviceType)
 	}
