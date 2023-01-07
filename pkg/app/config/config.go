@@ -12,6 +12,9 @@ type Config struct {
 		FileName     string `yaml:"file"`
 		DebugEnabled bool   `yaml:"debug_enabled"`
 	} `yaml:"log"`
+	Input struct {
+		Type int `yaml:"type"`
+	} `yaml:"input"`
 	Debug struct {
 		ShowDebugData      bool `yaml:"show_debug_data"`
 		SkipTitle          bool `yaml:"skip_title"`

@@ -1,6 +1,8 @@
 log:
   file: "application.log"
   debug_enabled: true
+input:
+  type: 0
 debug:
   show_debug_data: true
   skip_title: true

@@ -133,7 +133,9 @@ MAIN:
 }
 
 func appInit() error {
-	inputs.InitByDefault()
+	if err := inputs.Init(config.Get().Input.Type); err != nil {
+		return fmt.Errorf("inputs init failed: %w", err)
+	}
 	if err := chip.Init(common.ChipFilePath); err != nil {
 		return fmt.Errorf("chip init failed: %w", err)
 	}
