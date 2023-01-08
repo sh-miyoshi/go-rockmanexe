@@ -93,7 +93,8 @@ func objectVulcan(images []int, viewPos common.Point, imgNo int, dxopts dxlib.Dr
 
 func objectWideShotMove(images []int, viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
 	if obj.Speed == 0 {
-		panic("ワイドショット描画のためのSpeedが0です")
+		common.SetError("ワイドショット描画のためのSpeedが0です")
+		return
 	}
 
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(images)

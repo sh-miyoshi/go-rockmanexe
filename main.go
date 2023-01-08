@@ -85,11 +85,10 @@ func main() {
 	logger.Info("Program version: %s", common.ProgramVersion)
 
 	count := 0
-	var exitErr error
 
 	if err := appInit(); err != nil {
 		logger.Error("Failed to init application: %+v", err)
-		exitErr = errors.New("ゲーム初期化時")
+		common.IrreversibleError = errors.New("ゲーム初期化時")
 	}
 
 	logger.Info("Successfully init application.")
@@ -99,11 +98,11 @@ func main() {
 		time.Sleep(tm)
 	}
 MAIN:
-	for exitErr == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
+	for common.IrreversibleError == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
 		if err := game.Process(); err != nil {
 			logger.Error("Failed to play game: %+v", err)
-			exitErr = errors.New("ゲームプレイ中")
+			common.IrreversibleError = errors.New("ゲームプレイ中")
 			break MAIN
 		}
 		game.Draw()
@@ -120,10 +119,10 @@ MAIN:
 		}
 	}
 
-	if exitErr != nil {
+	if common.IrreversibleError != nil {
 		sound.BGMStop()
 		dxlib.ClearDrawScreen()
-		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", exitErr.Error())
+		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", common.IrreversibleError.Error())
 		dxlib.DrawFormatString(10, 40, 0xff0000, "詳細はログを参照してください。")
 		dxlib.ScreenFlip()
 		dxlib.WaitKey()

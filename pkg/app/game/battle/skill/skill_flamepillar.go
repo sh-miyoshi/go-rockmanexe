@@ -62,7 +62,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 
 	switch skillType {
 	case flamePillarTypeRandom:
-		panic("TODO: not implemented yet")
+		common.SetError("TODO: not implemented yet")
 	case flamePillarTypeTracking:
 		pos := objanim.GetObjPos(arg.OwnerID)
 		if res.isPlayer {
@@ -120,7 +120,7 @@ func (p *flamePillarManager) Draw() {
 func (p *flamePillarManager) Process() (bool, error) {
 	switch p.skillType {
 	case flamePillarTypeRandom:
-		panic("TODO: not implemented yet")
+		common.SetError("TODO: not implemented yet")
 	case flamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {

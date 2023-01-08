@@ -173,7 +173,7 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	case IDVolgear:
 		return &enemyVolgear{pm: initParam}
 	case IDRockman:
-		panic("enemy rockman is not implemented yet")
+		common.SetError("enemy rockman is not implemented yet")
 	}
 	return nil
 }

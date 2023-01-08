@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -92,7 +93,7 @@ func (m *SkillManager) Add(skillType int, args Argument) string {
 	case skill.SkillMiniBomb:
 		m.skills[id] = newMiniBomb(args.X, args.Y, args.Power)
 	default:
-		panic(fmt.Sprintf("skill %d is not implemented yet", skillType))
+		common.SetError(fmt.Sprintf("skill %d is not implemented yet", skillType))
 	}
 
 	return id

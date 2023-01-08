@@ -176,7 +176,7 @@ func GetBattleEnemies() []enemy.EnemyParam {
 func stateChange(nextState int) {
 	logger.Info("Change menu state from %d to %d", menuState, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		common.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	menuState = nextState
 }

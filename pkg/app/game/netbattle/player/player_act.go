@@ -93,7 +93,8 @@ func (a *Act) Process() bool {
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick:
 		// No special action
 	default:
-		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
+		common.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.Type))
+		return false
 	}
 
 	a.Count++
@@ -140,5 +141,6 @@ func getObjType(actType int) int {
 		return object.TypeRockmanSword
 	}
 
-	panic(fmt.Sprintf("Undefined object type for act %d", actType))
+	common.SetError(fmt.Sprintf("Undefined object type for act %d", actType))
+	return 0
 }

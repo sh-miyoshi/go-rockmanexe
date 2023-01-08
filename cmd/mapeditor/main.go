@@ -83,11 +83,11 @@ MAIN:
 func readWalls() {
 	fp, err := os.Open("info.yaml")
 	if err != nil {
-		panic(err)
+		common.SetError(err.Error())
 	}
 	defer fp.Close()
 
 	if err := yaml.NewDecoder(fp).Decode(&mapInfo); err != nil {
-		panic(err)
+		common.SetError(err.Error())
 	}
 }

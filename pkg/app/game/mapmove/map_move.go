@@ -257,6 +257,6 @@ func loadScenarioData(mapType int, eventNo int) {
 	case mapinfo.ID_犬小屋:
 		event.SetScenarios(scenario.Scenario_犬小屋[eventNo])
 	default:
-		panic(fmt.Sprintf("no scenario data for map type %d", mapType))
+		common.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
 
@@ -21,7 +22,8 @@ type rewardInfo struct {
 
 func getReward(all []rewardInfo) rewardInfo {
 	if len(all) == 0 {
-		panic("no reward data")
+		common.SetError("no reward data")
+		return rewardInfo{}
 	}
 
 	// TODO 重みづけ

@@ -2,6 +2,8 @@ package event
 
 import (
 	"fmt"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 )
 
 const (
@@ -71,6 +73,6 @@ func setHandler(s Scenario) {
 	case TypeChangeMapArea:
 		handler = &MapChangeHandler{}
 	default:
-		panic(fmt.Sprintf("scenario type %d is not implemented", s.Type))
+		common.SetError(fmt.Sprintf("scenario type %d is not implemented", s.Type))
 	}
 }

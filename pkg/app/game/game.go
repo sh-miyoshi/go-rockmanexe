@@ -238,7 +238,8 @@ func Draw() {
 
 func stateChange(nextState int) {
 	if nextState < 0 || nextState >= stateMax {
-		panic(fmt.Sprintf("Invalid next game state: %d", nextState))
+		common.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
+		return
 	}
 	state = nextState
 	count = 0

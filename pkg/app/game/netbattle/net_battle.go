@@ -263,7 +263,7 @@ func Draw() {
 func stateChange(nextState int) {
 	logger.Info("Change battle state from %d to %d", inst.state, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		panic(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		common.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	inst.state = nextState
 	inst.stateCount = 0

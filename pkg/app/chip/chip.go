@@ -178,7 +178,8 @@ func Get(id int) Chip {
 		}
 	}
 
-	panic(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
+	common.SetError(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
+	return Chip{}
 }
 
 func GetByName(name string) Chip {
@@ -188,7 +189,8 @@ func GetByName(name string) Chip {
 		}
 	}
 
-	panic(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
+	common.SetError(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
+	return Chip{}
 }
 
 // GetIcon ...

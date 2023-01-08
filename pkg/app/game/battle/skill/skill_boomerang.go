@@ -157,7 +157,7 @@ func (p *boomerang) Process() (bool, error) {
 				}
 			}
 		default:
-			panic("not implemented yet")
+			common.SetError("not implemented yet")
 		}
 	}
 

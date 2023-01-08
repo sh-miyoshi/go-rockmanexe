@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 )
 
@@ -138,7 +139,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillAquaman:
 		res, err := newAquaman(objID, arg)
 		if err != nil {
-			panic(err)
+			common.SetError(err.Error())
 		}
 		return res
 	case SkillCrackout:
@@ -173,7 +174,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newPanelSteal(objID, arg)
 	}
 
-	panic(fmt.Sprintf("Skill %d is not implemented yet", skillID))
+	common.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
+	return nil
 }
 
 func GetSkillID(chipID int) int {
@@ -236,7 +238,8 @@ func GetSkillID(chipID int) int {
 		return SkillPanelSteal
 	}
 
-	panic(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
+	common.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
+	return 0
 }
 
 /*

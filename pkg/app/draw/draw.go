@@ -124,7 +124,8 @@ func ExtendString(x int, y int, exRateY float64, color uint, format string, a ..
 func ChipCode(x int, y int, code string, percent int) {
 	index := -1
 	if len(code) != 1 {
-		panic(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		common.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		return
 	}
 
 	rc := []rune(code)
@@ -135,7 +136,8 @@ func ChipCode(x int, y int, code string, percent int) {
 	} else if rc[0] == '*' {
 		index = 26
 	} else {
-		panic(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		common.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		return
 	}
 
 	if percent == 100 {
@@ -163,7 +165,8 @@ func Number(x int, y int, number int, opts ...NumberOption) {
 		} else if opts[0].RightAligned {
 			n := opts[0].Length - len(nums)
 			if n < 0 {
-				panic(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
+				common.SetError(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
+				return
 			}
 			x += n * numberSizeX
 		} else if opts[0].Padding != nil {

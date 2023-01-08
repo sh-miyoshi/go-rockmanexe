@@ -580,7 +580,8 @@ func (a *act) Process() bool {
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action
 	default:
-		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
+		common.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
+		return false
 	}
 
 	a.count++
