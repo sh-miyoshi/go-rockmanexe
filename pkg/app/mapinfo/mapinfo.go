@@ -25,10 +25,11 @@ type Event struct {
 }
 
 type MapInfo struct {
-	ID             int     `yaml:"id"`
-	Name           string  `yaml:"name"`
-	CollisionWalls []Wall  `yaml:"walls"`
-	Events         []Event `yaml:"events"`
+	ID               int     `yaml:"id"`
+	Name             string  `yaml:"name"`
+	CollisionWalls   []Wall  `yaml:"walls"`
+	Events           []Event `yaml:"events"`
+	IsEnemyEncounter bool    `yaml:"is_enemy_encounter"`
 
 	Image int
 	Size  common.Point

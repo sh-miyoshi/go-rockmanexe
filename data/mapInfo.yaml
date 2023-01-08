@@ -22,6 +22,7 @@
       x: 460
       y: 420
       r: 40
+  is_enemy_encounter: true
 - id: 1
   name: "秋原町"
   walls:
@@ -173,3 +174,4 @@
       y1: 753
       x2: 884
       y2: 732
+  is_enemy_encounter: false

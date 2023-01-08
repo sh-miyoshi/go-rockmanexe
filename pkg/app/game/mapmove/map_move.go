@@ -167,7 +167,7 @@ func Process() error {
 		loadScenarioData(mapInfo.ID, e.No)
 		return ErrGoEvent
 	}
-	// TODO(hit events, or object)
+	// TODO(hit object)
 
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
 		absPlayerPosX = nextX
@@ -175,6 +175,7 @@ func Process() error {
 	}
 
 	if nextDirect != 0 {
+		// TODO(is_enemy_encounterがtrueなら敵遭遇処理)
 		playerMoveCount++
 		playerMoveDirect = nextDirect
 	} else {
