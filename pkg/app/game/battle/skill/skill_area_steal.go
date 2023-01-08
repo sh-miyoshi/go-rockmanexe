@@ -131,9 +131,9 @@ func (p *skillAreaSteal) Process() (bool, error) {
 						BigDamage:     false,
 						DamageType:    damage.TypeNone,
 					})
-				} else {
+				} else if p.targetLineX >= 1 && p.targetLineX < field.FieldNum.X-1 {
 					// パネルを塗り替え
-					// TODO 最終ラインの場合は塗り替えない
+					// 最終ラインの場合は塗り替えない
 					field.ChangePanelType(pos, p.myPanelType)
 				}
 			}
