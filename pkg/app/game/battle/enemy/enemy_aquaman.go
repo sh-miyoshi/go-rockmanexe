@@ -44,7 +44,6 @@ type enemyAquaman struct {
 	waterPipeObjIDs []string
 	moveNum         int
 	targetPos       common.Point
-	beforeAction    int
 }
 
 func (e *enemyAquaman) Init(objID string) error {
@@ -56,7 +55,6 @@ func (e *enemyAquaman) Init(objID string) error {
 	e.waterPipeObjIDs = []string{}
 	e.moveNum = rand.Intn(2) + 2
 	e.targetPos = common.Point{X: -1, Y: -1}
-	e.beforeAction = -1
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -189,7 +187,6 @@ func (e *enemyAquaman) Process() (bool, error) {
 					e.nextState = aquamanActTypeShot
 					e.moveNum = rand.Intn(2) + 1
 				}
-				e.beforeAction = e.nextState
 			}
 
 			e.count = 0
