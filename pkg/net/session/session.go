@@ -32,8 +32,7 @@ type Session struct {
 	nextStatus int
 	expiresAt  time.Time
 	dmMgr      *damage.Manager
-	cancel     chan struct{}
-	exitErr    chan sessionError
+	exitErr    *sessionError
 }
 
 func (s *Session) UpdateObject(obj object.Object) {
@@ -89,20 +88,21 @@ func (s *Session) SendSignal(clientID string, signal pb.Action_SignalType) error
 	return fmt.Errorf("no such client %s", clientID)
 }
 
-func (s *Session) start() {
-	s.expiresAt = time.Now().Add(sessionExpireTime)
-	go s.errorHandler()
+func (s *Session) Run() {
+	// TODO: 要調整
 	go s.frameProc()
 	go s.gameInfoPublish()
 }
 
-func (s *Session) errorHandler() {
-	err := <-s.exitErr
+func (s *Session) IsEnd() bool {
+	return s.exitErr != nil
+}
 
-	if err.reason != nil {
-		if err.reason == errSendFailed {
+func (s *Session) End() {
+	if s.exitErr.reason != nil {
+		if s.exitErr.reason == errSendFailed {
 			for _, c := range s.clients {
-				if c.dataStream == nil || c.clientID == err.generatorClientID {
+				if c.dataStream == nil || c.clientID == s.exitErr.generatorClientID {
 					continue
 				}
 
@@ -115,95 +115,90 @@ func (s *Session) errorHandler() {
 				})
 			}
 		}
-		logger.Error("Got error in session %s: %+v", s.id, err.reason)
+		logger.Error("Got error in session %s: %+v", s.id, s.exitErr.reason)
 	}
-
-	close(s.cancel)
-	delete(inst.sessions, s.id)
 }
 
 func (s *Session) frameProc() {
 	fpsMgr := fps.Fps{TargetFPS: 60}
 	for {
-		select {
-		case <-s.cancel:
+		if s.exitErr != nil {
 			return
-		default:
-			if s.status == statusActing {
-				// damage process
-				for i, c := range s.clients {
-					for _, obj := range c.gameInfo.Objects {
-						if !obj.Hittable {
-							continue
-						}
-
-						dmList := []damage.Damage{}
-						if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
-							dmList = append(dmList, *dm)
-							logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
-						}
-						s.clients[i].gameInfo.AddDamages(dmList)
-					}
-				}
-				s.dmMgr.Update()
-			}
-
-			fpsMgr.Wait()
 		}
+
+		if s.status == statusActing {
+			// damage process
+			for i, c := range s.clients {
+				for _, obj := range c.gameInfo.Objects {
+					if !obj.Hittable {
+						continue
+					}
+
+					dmList := []damage.Damage{}
+					if dm := s.dmMgr.Hit(c.clientID, obj.ClientID, obj.X, obj.Y); dm != nil {
+						dmList = append(dmList, *dm)
+						logger.Debug("Hit damage for %s: %+v", c.clientID, dm)
+					}
+					s.clients[i].gameInfo.AddDamages(dmList)
+				}
+			}
+			s.dmMgr.Update()
+		}
+
+		fpsMgr.Wait()
 	}
 }
 
 func (s *Session) gameInfoPublish() {
 	for {
-		select {
-		case <-s.cancel:
+		if s.exitErr != nil {
 			return
-		default:
-			now := time.Now()
-			before := now.UnixNano() / (1000 * 1000)
-
-			// check session expires
-			if s.expiresAt.Before(now) {
-				s.exitErr <- sessionError{
-					reason: fmt.Errorf("session expired"),
-				}
-				return
-			}
-
-			if err := s.updateGameStatus(); err != nil {
-				s.exitErr <- *err
-				return
-			}
-
-			// publish game info to clients
-			for _, c := range s.clients {
-				if c.dataStream == nil {
-					continue
-				}
-				c.gameInfo.CurrentTime = time.Now()
-
-				gameInfoBin := c.gameInfo.Marshal()
-				err := c.dataStream.Send(&pb.Data{
-					Type: pb.Data_DATA,
-					Data: &pb.Data_RawData{
-						RawData: gameInfoBin,
-					},
-				})
-				if err != nil {
-					logger.Error("failed to send game info to client %s: %v", c.clientID, err)
-					s.exitErr <- sessionError{
-						generatorClientID: c.clientID,
-						reason:            errSendFailed,
-					}
-					return
-				}
-
-				c.gameInfo.Cleanup()
-			}
-
-			after := time.Now().UnixNano() / (1000 * 1000)
-			time.Sleep(publishInterval - time.Duration(after-before))
 		}
+
+		now := time.Now()
+		before := now.UnixNano() / (1000 * 1000)
+
+		// check session expires
+		if s.expiresAt.Before(now) {
+			s.exitErr = &sessionError{
+				reason: fmt.Errorf("session expired"),
+			}
+			return
+		}
+
+		if err := s.updateGameStatus(); err != nil {
+			s.exitErr = err
+			return
+		}
+
+		// publish game info to clients
+		for _, c := range s.clients {
+			if c.dataStream == nil {
+				continue
+			}
+			c.gameInfo.CurrentTime = time.Now()
+
+			gameInfoBin := c.gameInfo.Marshal()
+			err := c.dataStream.Send(&pb.Data{
+				Type: pb.Data_DATA,
+				Data: &pb.Data_RawData{
+					RawData: gameInfoBin,
+				},
+			})
+			if err != nil {
+				logger.Error("failed to send game info to client %s: %v", c.clientID, err)
+				s.exitErr = &sessionError{
+					generatorClientID: c.clientID,
+					reason:            errSendFailed,
+				}
+				return
+			}
+
+			c.gameInfo.Cleanup()
+		}
+
+		after := time.Now().UnixNano() / (1000 * 1000)
+		time.Sleep(publishInterval - time.Duration(after-before))
 	}
 }
 

@@ -18,8 +18,9 @@ const (
 )
 
 const (
-	publishInterval   = 100 * time.Millisecond // debug
-	sessionExpireTime = 30 * time.Minute
+	publishInterval      = 100 * time.Millisecond // debug
+	sessionExpireTime    = 30 * time.Minute
+	sessionCheckInterval = 1 * time.Second
 )
 
 type SessionManager struct {
@@ -65,13 +66,12 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 					dataStream: nil,
 				},
 			},
-			status:  statusConnectWait,
-			cancel:  make(chan struct{}),
-			exitErr: make(chan sessionError),
-			dmMgr:   &damage.Manager{},
+			status:    statusConnectWait,
+			dmMgr:     &damage.Manager{},
+			expiresAt: time.Now().Add(sessionExpireTime),
 		}
 
-		inst.sessions[sessionID].start()
+		inst.sessions[sessionID].Run()
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}
 	return nil
@@ -83,4 +83,20 @@ func GetSession(sessionID string) *Session {
 		return nil
 	}
 	return s
+}
+
+func ManagerExec() {
+	for {
+		before := time.Now().UnixNano() / (1000 * 1000)
+
+		for key, s := range inst.sessions {
+			if s.IsEnd() {
+				s.End()
+				delete(inst.sessions, key)
+			}
+		}
+
+		after := time.Now().UnixNano() / (1000 * 1000)
+		time.Sleep(sessionCheckInterval - time.Duration(after-before))
+	}
 }

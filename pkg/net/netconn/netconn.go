@@ -77,6 +77,8 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		default:
 			return fmt.Errorf("invalid action type: %v", action.GetType())
 		}
+
+		// TODO return current status
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconn"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 	"google.golang.org/grpc"
 )
 
@@ -34,6 +35,8 @@ func main() {
 		logger.Error("Failed to listen data stream: %v", err)
 		return
 	}
+
+	go session.ManagerExec()
 
 	s := grpc.NewServer()
 	pb.RegisterNetConnServer(s, netconn.New())
