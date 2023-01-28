@@ -20,7 +20,7 @@ func New() *NetConn {
 	return &NetConn{}
 }
 
-func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
+func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 	for {
 		action, err := stream.Recv()
 		if err != nil {
