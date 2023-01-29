@@ -7,9 +7,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -41,11 +41,11 @@ func (p *cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		netconn.GetInst().SendObject(p.getObjectInfo(true, false, true)) // Body
+		net.GetInst().SendObject(p.getObjectInfo(true, false, true)) // Body
 	}
 
 	if p.count == 15 {
-		netconn.GetInst().SendObject(p.getObjectInfo(false, false, true)) // Attack
+		net.GetInst().SendObject(p.getObjectInfo(false, false, true)) // Attack
 	}
 
 	if p.count == 20 {
@@ -62,7 +62,7 @@ func (p *cannon) Process() (bool, error) {
 	}
 
 	if p.count == 2*bodyDelay {
-		netconn.GetInst().SendObject(p.getObjectInfo(true, true, false)) // Shifted Body
+		net.GetInst().SendObject(p.getObjectInfo(true, true, false)) // Shifted Body
 	}
 
 	if p.count > max {
@@ -72,8 +72,8 @@ func (p *cannon) Process() (bool, error) {
 }
 
 func (p *cannon) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.atkID)
-	netconn.GetInst().RemoveObject(p.bodyID)
+	net.GetInst().RemoveObject(p.atkID)
+	net.GetInst().RemoveObject(p.bodyID)
 }
 
 func (p *cannon) StopByPlayer() {
@@ -94,7 +94,7 @@ func (p *cannon) addDamage() {
 			ViewOfsY:      rand.Intn(2*5) - 5,
 			BigDamage:     true,
 		}
-		netconn.GetInst().AddDamage(dm)
+		net.GetInst().AddDamage(dm)
 
 		// break if object exists
 		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})

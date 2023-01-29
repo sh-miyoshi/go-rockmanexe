@@ -7,7 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/stretchr/stew/slice"
 )
@@ -120,7 +120,7 @@ func getEnemies() []object.Object {
 	}
 
 	myClientID := config.Get().Net.ClientID
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	for _, obj := range ginfo.Objects {
 		if obj.ClientID != myClientID && slice.Contains(rockmanObj, obj.Type) {
 			res = append(res, obj)
@@ -131,7 +131,7 @@ func getEnemies() []object.Object {
 }
 
 func isObjectHit(x, y int) bool {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	for _, obj := range ginfo.Objects {
 		if obj.Hittable && obj.X == x && obj.Y == y && obj.ID != inst.playerObjID {
 			return true

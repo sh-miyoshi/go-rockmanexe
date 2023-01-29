@@ -8,9 +8,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
@@ -80,7 +80,7 @@ func (a *Act) Process() bool {
 					ViewOfsX:      rand.Intn(2*5) - 5,
 					ViewOfsY:      rand.Intn(2*5) - 5,
 				}
-				netconn.GetInst().AddDamage(dm)
+				net.GetInst().AddDamage(dm)
 
 				// break if object exists
 				pn := netfield.GetPanelInfo(common.Point{X: x, Y: y})
@@ -104,7 +104,7 @@ func (a *Act) Process() bool {
 		// Reset params
 		a.Init()
 		a.Object.Type = object.TypeRockmanStand
-		netconn.GetInst().SendObject(*a.Object)
+		net.GetInst().SendObject(*a.Object)
 		return false // finished
 	}
 	return true // processing now
@@ -118,7 +118,7 @@ func (a *Act) Set(actType int, opts *ActOption) {
 
 	a.Object.UpdateBaseTime = true
 	a.Object.Type = getObjType(actType)
-	netconn.GetInst().SendObject(*a.Object)
+	net.GetInst().SendObject(*a.Object)
 }
 
 func getObjType(actType int) int {

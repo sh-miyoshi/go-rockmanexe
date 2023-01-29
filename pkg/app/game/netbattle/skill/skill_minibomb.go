@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -34,7 +34,7 @@ func (p *miniBomb) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeMiniBomb,
 			X:              p.x,
@@ -50,14 +50,14 @@ func (p *miniBomb) Process() (bool, error) {
 		// Add Explode
 		sound.On(sound.SEExplode)
 
-		netconn.GetInst().SendEffect(effect.Effect{
+		net.GetInst().SendEffect(effect.Effect{
 			ID:   uuid.New().String(),
 			Type: effect.TypeExplodeEffect,
 			X:    p.x + 3,
 			Y:    p.y,
 		})
 
-		netconn.GetInst().AddDamage(damage.Damage{
+		net.GetInst().AddDamage(damage.Damage{
 			ID:         uuid.New().String(),
 			PosX:       p.x + 3,
 			PosY:       p.y,
@@ -74,7 +74,7 @@ func (p *miniBomb) Process() (bool, error) {
 }
 
 func (p *miniBomb) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.id)
+	net.GetInst().RemoveObject(p.id)
 }
 
 func (p *miniBomb) StopByPlayer() {

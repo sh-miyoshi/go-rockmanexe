@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -92,7 +92,7 @@ func (p *thunderBall) Process() (bool, error) {
 			}
 		}
 
-		netconn.GetInst().AddDamage(damage.Damage{
+		net.GetInst().AddDamage(damage.Damage{
 			ID:          uuid.New().String(),
 			PosX:        p.x,
 			PosY:        p.y,
@@ -103,7 +103,7 @@ func (p *thunderBall) Process() (bool, error) {
 			BigDamage:   true, // TODO make paralysis
 		})
 
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeThunderBall,
 			X:              p.x,
@@ -122,7 +122,7 @@ func (p *thunderBall) Process() (bool, error) {
 }
 
 func (p *thunderBall) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.id)
+	net.GetInst().RemoveObject(p.id)
 }
 
 func (p *thunderBall) StopByPlayer() {

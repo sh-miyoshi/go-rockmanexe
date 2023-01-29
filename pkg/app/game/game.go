@@ -11,10 +11,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/scratch"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
 
@@ -135,7 +135,7 @@ func Process() error {
 
 			history := player.History{
 				Date:       time.Now(),
-				OpponentID: netconn.GetInst().GetOpponentUserID(),
+				OpponentID: net.GetInst().GetOpponentUserID(),
 			}
 
 			if errors.Is(err, battle.ErrWin) {

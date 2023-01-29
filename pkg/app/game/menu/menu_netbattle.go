@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -30,15 +30,7 @@ func netBattleNew() (*menuNetBattle, error) {
 		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
 	}
 
-	c := config.Get()
-	netconn.Init(netconn.Config{
-		StreamAddr:     c.Net.StreamAddr,
-		ClientID:       c.Net.ClientID,
-		ClientKey:      c.Net.ClientKey,
-		ProgramVersion: common.ProgramVersion,
-		Insecure:       c.Net.Insecure,
-	})
-
+	net.Init()
 	return res, nil
 }
 
@@ -50,19 +42,19 @@ func (m *menuNetBattle) Process() bool {
 	if !m.isConnect {
 		m.isConnect = true
 
-		netconn.GetInst().ConnectRequest()
+		net.GetInst().ConnectRequest()
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		// Data init for next access
-		netconn.GetInst().Disconnect()
+		net.GetInst().Disconnect()
 		m.isConnect = false
 		m.messages = []string{"通信待機中です・・・"}
 
 		stateChange(stateTop)
 	}
 
-	status := netconn.GetInst().GetConnStatus()
+	status := net.GetInst().GetConnStatus()
 	if status.Status == netconn.ConnStateOK {
 		return true
 	}

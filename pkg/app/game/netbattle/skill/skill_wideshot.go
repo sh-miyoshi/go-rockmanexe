@@ -3,8 +3,8 @@ package skill
 import (
 	"github.com/google/uuid"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -39,7 +39,7 @@ func (p *wideShot) Process() (bool, error) {
 	if p.count == 1 {
 		sound.On(sound.SEWideShot)
 		// Add wide shot body
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.bodyID,
 			Type:           object.TypeWideShotBody,
 			X:              p.x,
@@ -50,7 +50,7 @@ func (p *wideShot) Process() (bool, error) {
 		})
 
 		// Add wide shot begin
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.beginID,
 			Type:           object.TypeWideShotBegin,
 			X:              p.x,
@@ -64,8 +64,8 @@ func (p *wideShot) Process() (bool, error) {
 	num, delay := draw.GetInst().GetObjectImageInfo(object.TypeWideShotBody)
 
 	if p.count == num*delay {
-		netconn.GetInst().RemoveObject(p.bodyID)
-		netconn.GetInst().RemoveObject(p.beginID)
+		net.GetInst().RemoveObject(p.bodyID)
+		net.GetInst().RemoveObject(p.beginID)
 	}
 
 	// Wide Shot Move
@@ -77,7 +77,7 @@ func (p *wideShot) Process() (bool, error) {
 			}
 
 			// Add object
-			netconn.GetInst().SendObject(object.Object{
+			net.GetInst().SendObject(object.Object{
 				ID:             p.moveID,
 				Type:           object.TypeWideShotMove,
 				X:              p.x,
@@ -99,9 +99,9 @@ func (p *wideShot) Process() (bool, error) {
 }
 
 func (p *wideShot) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.bodyID)
-	netconn.GetInst().RemoveObject(p.beginID)
-	netconn.GetInst().RemoveObject(p.moveID)
+	net.GetInst().RemoveObject(p.bodyID)
+	net.GetInst().RemoveObject(p.beginID)
+	net.GetInst().RemoveObject(p.moveID)
 }
 
 func (p *wideShot) StopByPlayer() {
@@ -124,9 +124,9 @@ func (p *wideShot) addDamages() {
 	}
 
 	// Add damages to 3 wide
-	netconn.GetInst().AddDamage(dm)
+	net.GetInst().AddDamage(dm)
 	dm.PosY--
-	netconn.GetInst().AddDamage(dm)
+	net.GetInst().AddDamage(dm)
 	dm.PosY += 2
-	netconn.GetInst().AddDamage(dm)
+	net.GetInst().AddDamage(dm)
 }

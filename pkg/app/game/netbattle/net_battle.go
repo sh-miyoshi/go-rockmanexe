@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
@@ -59,7 +60,7 @@ var (
 func Init(plyr *player.Player) error {
 	logger.Info("Init net battle data ...")
 	inst = NetBattle{
-		conn:       netconn.GetInst(),
+		conn:       net.GetInst(),
 		gameCount:  0,
 		state:      stateWaiting,
 		stateCount: 0,
@@ -192,7 +193,7 @@ func Process() error {
 		inst.conn.UpdateDataCount()
 
 		if inst.stateCount == 0 {
-			netconn.GetInst().Disconnect()
+			net.GetInst().Disconnect()
 
 			fname := common.ImagePath + "battle/msg_win.png"
 			if inst.playerInst.Object.HP <= 0 {

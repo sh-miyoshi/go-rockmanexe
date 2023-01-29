@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -70,7 +70,7 @@ func (m *DrawManager) End() {
 }
 
 func (m *DrawManager) DrawObjects() {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	objects := []object.Object{}
 	for _, obj := range ginfo.Objects {
 		objects = append(objects, obj)
@@ -104,11 +104,11 @@ func (m *DrawManager) DrawObjects() {
 }
 
 func (m *DrawManager) DrawEffects() {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	for _, eff := range ginfo.Effects {
 		num, delay := m.GetEffectImageInfo(eff.Type)
 		if eff.Count >= num*delay {
-			netconn.GetInst().RemoveEffect(eff.ID)
+			net.GetInst().RemoveEffect(eff.ID)
 			continue
 		}
 		imgNo := eff.Count / delay

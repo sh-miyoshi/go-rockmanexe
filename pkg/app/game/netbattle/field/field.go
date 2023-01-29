@@ -7,7 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
@@ -62,7 +62,7 @@ func (f *Field) End() {
 func (f *Field) Draw() {
 	clientID := config.Get().Net.ClientID
 
-	panels := netconn.GetInst().GetGameInfo().Panels
+	panels := net.GetInst().GetGameInfo().Panels
 	for x := 0; x < netconfig.FieldNumX; x++ {
 		for y := 0; y < netconfig.FieldNumY; y++ {
 			typ := battlefield.PanelTypePlayer
@@ -79,7 +79,7 @@ func (f *Field) Draw() {
 }
 
 func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	clientID := config.Get().Net.ClientID
 
 	id := ""

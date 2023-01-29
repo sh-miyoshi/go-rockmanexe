@@ -3,8 +3,8 @@ package skill
 import (
 	"github.com/google/uuid"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -36,7 +36,7 @@ func (p *shockWave) Process() (bool, error) {
 
 	if p.count == 1 {
 		// Add pick
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.pickID,
 			Type:           object.TypePick,
 			X:              p.x,
@@ -47,7 +47,7 @@ func (p *shockWave) Process() (bool, error) {
 	}
 
 	if p.count == pickNum*pickDelay+1 {
-		netconn.GetInst().RemoveObject(p.pickID)
+		net.GetInst().RemoveObject(p.pickID)
 	}
 
 	if p.count > 10 {
@@ -60,7 +60,7 @@ func (p *shockWave) Process() (bool, error) {
 
 			sound.On(sound.SEShockWave)
 			// Add wave
-			netconn.GetInst().SendObject(object.Object{
+			net.GetInst().SendObject(object.Object{
 				ID:             p.waveID,
 				Type:           object.TypeShockWave,
 				X:              p.x,
@@ -69,7 +69,7 @@ func (p *shockWave) Process() (bool, error) {
 			})
 
 			// Add damage
-			netconn.GetInst().AddDamage(damage.Damage{
+			net.GetInst().AddDamage(damage.Damage{
 				ID:          uuid.New().String(),
 				PosX:        p.x,
 				PosY:        p.y,
@@ -86,8 +86,8 @@ func (p *shockWave) Process() (bool, error) {
 }
 
 func (p *shockWave) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.pickID)
-	netconn.GetInst().RemoveObject(p.waveID)
+	net.GetInst().RemoveObject(p.pickID)
+	net.GetInst().RemoveObject(p.waveID)
 }
 
 func (p *shockWave) StopByPlayer() {

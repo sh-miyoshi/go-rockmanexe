@@ -3,8 +3,8 @@ package skill
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -43,7 +43,7 @@ func (p *sword) Process() (bool, error) {
 		case skill.TypeLongSword:
 			objType = object.TypeLongSword
 		}
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           objType,
 			X:              p.x,
@@ -68,7 +68,7 @@ func (p *sword) Process() (bool, error) {
 }
 
 func (p *sword) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.id)
+	net.GetInst().RemoveObject(p.id)
 }
 
 func (p *sword) addDamage() {
@@ -82,19 +82,19 @@ func (p *sword) addDamage() {
 
 	dm.PosX = p.x + 1
 	dm.PosY = p.y
-	netconn.GetInst().AddDamage(dm)
+	net.GetInst().AddDamage(dm)
 
 	switch p.typ {
 	case skill.TypeSword:
 		// No more damage area
 	case skill.TypeWideSword:
 		dm.PosY = p.y - 1
-		netconn.GetInst().AddDamage(dm)
+		net.GetInst().AddDamage(dm)
 		dm.PosY = p.y + 1
-		netconn.GetInst().AddDamage(dm)
+		net.GetInst().AddDamage(dm)
 	case skill.TypeLongSword:
 		dm.PosX = p.x + 2
-		netconn.GetInst().AddDamage(dm)
+		net.GetInst().AddDamage(dm)
 	}
 }
 

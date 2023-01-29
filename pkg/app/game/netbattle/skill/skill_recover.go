@@ -2,8 +2,8 @@ package skill
 
 import (
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -33,7 +33,7 @@ func (p *recover) Process() (bool, error) {
 		sound.On(sound.SERecover)
 
 		// Add object
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeRecover,
 			X:              p.x,
@@ -42,7 +42,7 @@ func (p *recover) Process() (bool, error) {
 		})
 
 		// Add damage
-		netconn.GetInst().AddDamage(damage.Damage{
+		net.GetInst().AddDamage(damage.Damage{
 			ID:         uuid.New().String(),
 			PosX:       p.x,
 			PosY:       p.y,
@@ -60,7 +60,7 @@ func (p *recover) Process() (bool, error) {
 }
 
 func (p *recover) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.id)
+	net.GetInst().RemoveObject(p.id)
 }
 
 func (p *recover) StopByPlayer() {

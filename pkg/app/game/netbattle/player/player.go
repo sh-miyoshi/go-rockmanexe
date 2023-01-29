@@ -13,9 +13,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -219,7 +219,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	p.GaugeCount += 4 // TODO GaugeSpeed
 
 	if p.Object.HP <= 0 {
-		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
+		net.GetInst().SendSignal(pb.Action_PLAYERDEAD)
 		return true, nil
 	}
 
@@ -228,7 +228,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if p.InvincibleCount > battlecommon.PlayerDefaultInvincibleTime {
 			p.InvincibleCount = 0
 			p.Object.Invincible = false
-			netconn.GetInst().SendObject(p.Object)
+			net.GetInst().SendObject(p.Object)
 		}
 	}
 
@@ -248,7 +248,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
-			netconn.GetInst().SendSignal(pb.Action_GOCHIPSELECT)
+			net.GetInst().SendSignal(pb.Action_GOCHIPSELECT)
 
 			return false, nil
 		}
@@ -320,13 +320,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 }
 
 func (p *BattlePlayer) damageProc() bool {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := net.GetInst().GetGameInfo()
 	if len(ginfo.HitDamages) == 0 {
 		return false
 	}
 
 	dm := ginfo.HitDamages[0]
-	defer netconn.GetInst().RemoveDamage(dm.ID)
+	defer net.GetInst().RemoveDamage(dm.ID)
 
 	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
@@ -356,14 +356,14 @@ func (p *BattlePlayer) damageProc() bool {
 			netskill.GetInst().StopByPlayer(sid)
 		}
 		p.ManagedSkills = []string{}
-		netconn.GetInst().AddSound(int(sound.SEDamaged))
+		net.GetInst().AddSound(int(sound.SEDamaged))
 		p.Act.Set(battlecommon.PlayerActDamage, nil)
 	} else {
-		netconn.GetInst().SendObject(p.Object)
+		net.GetInst().SendObject(p.Object)
 	}
 
 	if dm.HitEffectType > 0 {
-		netconn.GetInst().SendEffect(effect.Effect{
+		net.GetInst().SendEffect(effect.Effect{
 			ID:       uuid.New().String(),
 			Type:     dm.HitEffectType,
 			X:        p.Object.X,

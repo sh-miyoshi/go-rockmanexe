@@ -4,9 +4,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -60,7 +60,7 @@ func (p *spreadGun) Process() (bool, error) {
 					}
 					if x+sx >= 0 && x+sx < appfield.FieldNum.X {
 						// Send effect
-						netconn.GetInst().SendEffect(effect.Effect{
+						net.GetInst().SendEffect(effect.Effect{
 							ID:   uuid.New().String(),
 							Type: effect.TypeSpreadHitEffect,
 							X:    x + sx,
@@ -70,7 +70,7 @@ func (p *spreadGun) Process() (bool, error) {
 						// Add damage
 						dm.PosX = x + sx
 						dm.PosY = y + sy
-						netconn.GetInst().AddDamage(dm)
+						net.GetInst().AddDamage(dm)
 					}
 				}
 			}
@@ -80,7 +80,7 @@ func (p *spreadGun) Process() (bool, error) {
 
 	if p.count == 1 {
 		// Add objects
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.atkID,
 			Type:           object.TypeSpreadGunAtk,
 			X:              p.x,
@@ -90,7 +90,7 @@ func (p *spreadGun) Process() (bool, error) {
 			ViewOfsY:       -20,
 		})
 
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.bodyID,
 			Type:           object.TypeSpreadGunBody,
 			X:              p.x,
@@ -124,7 +124,7 @@ func (p *spreadGun) Process() (bool, error) {
 				p.spreadBaseInfo = dm
 				p.waitCount = 1
 
-				netconn.GetInst().AddDamage(dm)
+				net.GetInst().AddDamage(dm)
 				break
 			}
 		}
@@ -144,8 +144,8 @@ func (p *spreadGun) Process() (bool, error) {
 }
 
 func (p *spreadGun) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.atkID)
-	netconn.GetInst().RemoveObject(p.bodyID)
+	net.GetInst().RemoveObject(p.atkID)
+	net.GetInst().RemoveObject(p.bodyID)
 }
 
 func (p *spreadGun) StopByPlayer() {

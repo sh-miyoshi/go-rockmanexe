@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
@@ -41,7 +41,7 @@ func (p *vulcan) Process() (bool, error) {
 
 	if p.count == 1 {
 		// Body
-		netconn.GetInst().SendObject(object.Object{
+		net.GetInst().SendObject(object.Object{
 			ID:             p.id,
 			Type:           object.TypeVulcan,
 			X:              p.x,
@@ -67,7 +67,7 @@ func (p *vulcan) Process() (bool, error) {
 }
 
 func (p *vulcan) RemoveObject() {
-	netconn.GetInst().RemoveObject(p.id)
+	net.GetInst().RemoveObject(p.id)
 }
 
 func (p *vulcan) StopByPlayer() {
@@ -80,7 +80,7 @@ func (p *vulcan) addDamage() {
 	for x := p.x + 1; x < appfield.FieldNum.X; x++ {
 		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 		if pn.ObjectID != "" {
-			netconn.GetInst().AddDamage(damage.Damage{
+			net.GetInst().AddDamage(damage.Damage{
 				ID:            uuid.New().String(),
 				PosX:          x,
 				PosY:          p.y,
@@ -98,7 +98,7 @@ func (p *vulcan) addDamage() {
 				ViewOfsY: rand.Intn(2*20) - 20,
 			}
 			if p.hit && x < appfield.FieldNum.X-1 {
-				netconn.GetInst().AddDamage(damage.Damage{
+				net.GetInst().AddDamage(damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x + 1,
 					PosY:          p.y,
@@ -117,6 +117,6 @@ func (p *vulcan) addDamage() {
 	}
 	p.hit = hit
 	if hit {
-		netconn.GetInst().SendEffect(eff)
+		net.GetInst().SendEffect(eff)
 	}
 }
