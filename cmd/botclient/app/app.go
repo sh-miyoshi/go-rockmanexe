@@ -29,10 +29,10 @@ var (
 	connInst   *netconn.NetConn
 )
 
-func Init(clientID string) {
+func Init(clientID string, conn *netconn.NetConn) {
 	dxlib.Disable()
-	playerInst = player.New(clientID)
-	connInst = netconn.GetInst()
+	playerInst = player.New(clientID, conn)
+	connInst = conn
 	skill.GetInst().Init(playerInst.Object.ID)
 	draw.Init(playerInst.Object.ID)
 }

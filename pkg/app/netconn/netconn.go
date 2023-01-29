@@ -61,23 +61,19 @@ type NetConn struct {
 	sendInfo   sendObject
 }
 
-var (
-	inst NetConn
-)
+func New(conf Config) *NetConn {
+	res := &NetConn{}
 
-func Init(conf Config) {
-	inst.config = conf
-	inst.connectStatus = ConnectStatus{
+	res.config = conf
+	res.connectStatus = ConnectStatus{
 		Status: ConnStateWaiting,
 		Error:  nil,
 	}
-	inst.sendInfo = sendObject{
+	res.sendInfo = sendObject{
 		objects: make(map[string]object.Object),
 	}
-}
 
-func GetInst() *NetConn {
-	return &inst
+	return res
 }
 
 func (n *NetConn) GetConnStatus() ConnectStatus {

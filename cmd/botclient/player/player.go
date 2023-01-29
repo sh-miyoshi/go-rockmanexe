@@ -20,9 +20,10 @@ type Player struct {
 	currentActNo       int
 	currentActInterval int
 	actTable           []Act
+	conn               *netconn.NetConn
 }
 
-func New(clientID string) *Player {
+func New(clientID string, conn *netconn.NetConn) *Player {
 	res := &Player{
 		Object: object.Object{
 			ID:             uuid.New().String(),
@@ -37,6 +38,7 @@ func New(clientID string) *Player {
 		currentActNo:       0,
 		currentActInterval: 0,
 		HitDamages:         make(map[string]bool),
+		conn:               conn,
 	}
 	res.initActTable()
 
@@ -52,9 +54,9 @@ func (p *Player) ChipSelect() error {
 	}
 
 	// Finished chip select, so send action
-	netconn.GetInst().SendObject(p.Object)
+	p.conn.SendObject(p.Object)
 
-	if err := netconn.GetInst().SendSignal(pb.Action_CHIPSEND); err != nil {
+	if err := p.conn.SendSignal(pb.Action_CHIPSEND); err != nil {
 		return fmt.Errorf("failed to get data stream: %w", err)
 	}
 
@@ -64,10 +66,10 @@ func (p *Player) ChipSelect() error {
 func (p *Player) Action() bool {
 	if p.Object.HP <= 0 {
 		// Player deleted
-		netconn.GetInst().SendObject(p.Object)
-		netconn.GetInst().AddSound(int(sound.SEPlayerDeleted))
-		netconn.GetInst().BulkSendData()
-		netconn.GetInst().SendSignal(pb.Action_PLAYERDEAD)
+		p.conn.SendObject(p.Object)
+		p.conn.AddSound(int(sound.SEPlayerDeleted))
+		p.conn.BulkSendData()
+		p.conn.SendSignal(pb.Action_PLAYERDEAD)
 		return true
 	}
 
@@ -84,7 +86,7 @@ func (p *Player) Action() bool {
 		logger.Info("finished process %d", p.currentActNo)
 		p.Object.UpdateBaseTime = true
 		p.Object.Type = object.TypeRockmanStand
-		netconn.GetInst().SendObject(p.Object)
+		p.conn.SendObject(p.Object)
 
 		p.currentActNo++
 		if p.currentActNo >= len(p.actTable) {
@@ -117,13 +119,13 @@ func (p *Player) initActTable() {
 }
 
 func (p *Player) damageProc() bool {
-	ginfo := netconn.GetInst().GetGameInfo()
+	ginfo := p.conn.GetGameInfo()
 	if len(ginfo.HitDamages) == 0 {
 		return false
 	}
 
 	dm := ginfo.HitDamages[0]
-	defer netconn.GetInst().RemoveDamage(dm.ID)
+	defer p.conn.RemoveDamage(dm.ID)
 
 	if _, exists := p.HitDamages[dm.ID]; exists {
 		return false
@@ -146,14 +148,14 @@ func (p *Player) damageProc() bool {
 
 	if dm.BigDamage {
 		// p.Object.Invincible = true // インビジ未実装
-		netconn.GetInst().AddSound(int(sound.SEDamaged))
+		p.conn.AddSound(int(sound.SEDamaged))
 	} else {
-		netconn.GetInst().SendObject(p.Object)
+		p.conn.SendObject(p.Object)
 	}
 
 	if dm.HitEffectType > 0 {
 		logger.Info("Add hit effect %d", dm.HitEffectType)
-		netconn.GetInst().SendEffect(effect.Effect{
+		p.conn.SendEffect(effect.Effect{
 			ID:       uuid.New().String(),
 			Type:     dm.HitEffectType,
 			X:        p.Object.X,

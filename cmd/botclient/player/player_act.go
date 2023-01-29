@@ -60,13 +60,15 @@ type ActMove struct {
 	targetX int
 	targetY int
 	obj     *object.Object
+	conn    *netconn.NetConn
 }
 
-func NewActMove(obj *object.Object, targetX, targetY int) *ActMove {
+func NewActMove(obj *object.Object, targetX, targetY int, conn *netconn.NetConn) *ActMove {
 	return &ActMove{
 		targetX: targetX,
 		targetY: targetY,
 		obj:     obj,
+		conn:    conn,
 	}
 }
 
@@ -74,7 +76,7 @@ func (a *ActMove) Process() bool {
 	logger.Debug("Move to (%d, %d)", a.targetX, a.targetY)
 	a.obj.X = a.targetX
 	a.obj.Y = a.targetY
-	netconn.GetInst().SendObject(*a.obj)
+	a.conn.SendObject(*a.obj)
 	return true
 }
 
@@ -85,14 +87,16 @@ func (a *ActMove) Interval() int {
 type ActBuster struct {
 	count     int
 	obj       *object.Object
+	conn      *netconn.NetConn
 	shotPower uint
 	charged   bool
 }
 
-func NewActBuster(obj *object.Object) *ActBuster {
+func NewActBuster(obj *object.Object, conn *netconn.NetConn) *ActBuster {
 	return &ActBuster{
 		count: 0,
 		obj:   obj,
+		conn:  conn,
 
 		// debug
 		shotPower: 1,
@@ -104,7 +108,7 @@ func (a *ActBuster) Process() bool {
 	if a.count == 0 {
 		a.obj.UpdateBaseTime = true
 		a.obj.Type = object.TypeRockmanBuster
-		netconn.GetInst().SendObject(*a.obj)
+		a.conn.SendObject(*a.obj)
 	}
 
 	if a.count == 1 {
@@ -119,7 +123,7 @@ func (a *ActBuster) Process() bool {
 		for x := a.obj.X + 1; x < config.FieldNumX; x++ {
 			pos := common.Point{X: x, Y: y}
 			if field.GetPanelInfo(pos).ObjectID != "" {
-				netconn.GetInst().AddDamage(damage.Damage{
+				a.conn.AddDamage(damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          pos.X,
 					PosY:          pos.Y,
@@ -149,12 +153,14 @@ type ActSkill struct {
 	id        string
 	skillType int
 	obj       *object.Object
+	conn      *netconn.NetConn
 }
 
-func NewActSkill(skillType int, obj *object.Object) *ActSkill {
+func NewActSkill(skillType int, obj *object.Object, conn *netconn.NetConn) *ActSkill {
 	return &ActSkill{
 		skillType: skillType,
 		obj:       obj,
+		conn:      conn,
 	}
 }
 
@@ -181,7 +187,7 @@ func (a *ActSkill) Process() bool {
 		default:
 			a.obj.Type = object.TypeRockmanStand
 		}
-		netconn.GetInst().SendObject(*a.obj)
+		a.conn.SendObject(*a.obj)
 		return false
 	}
 

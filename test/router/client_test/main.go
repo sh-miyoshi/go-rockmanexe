@@ -30,14 +30,13 @@ func main() {
 	logger.InitLogger(true, "")
 
 	clientKey := "testtest"
-	netconn.Init(netconn.Config{
+	connInst := netconn.New(netconn.Config{
 		StreamAddr:     streamAddr,
 		ClientID:       clientID,
 		ClientKey:      clientKey,
 		ProgramVersion: "testclient",
 		Insecure:       true,
 	})
-	connInst := netconn.GetInst()
 	connInst.ConnectRequest()
 
 	// Waiting connection
