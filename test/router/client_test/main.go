@@ -2,15 +2,24 @@ package main
 
 import (
 	"errors"
-	"flag"
-	"fmt"
 	"os"
 	"time"
 
 	"github.com/google/uuid"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+)
+
+const (
+	stateWaiting int = iota
+	stateOpening
+	stateChipSelect
+	stateWaitSelect
+	stateBeforeMain
+	stateMain
+	stateResult
 )
 
 const (
@@ -18,26 +27,16 @@ const (
 )
 
 func main() {
-	var clientID string
-	flag.StringVar(&clientID, "c", "", "client id")
-	flag.Parse()
-
-	if clientID == "" {
-		fmt.Println("Please set client ID")
-		return
-	}
-
 	logger.InitLogger(true, "")
 
-	clientKey := "testtest"
-	connInst := netconn.New(netconn.Config{
+	conn := netconn.New(netconn.Config{
 		StreamAddr:     streamAddr,
-		ClientID:       clientID,
-		ClientKey:      clientKey,
+		ClientID:       "tester1",
+		ClientKey:      "testtest",
 		ProgramVersion: "testclient",
 		Insecure:       true,
 	})
-	connInst.ConnectRequest()
+	conn.ConnectRequest()
 
 	// Waiting connection
 	for n := 0; ; n++ {
@@ -45,7 +44,7 @@ func main() {
 			exitByError(errors.New("failed to connect to router"))
 		}
 
-		st := connInst.GetConnStatus()
+		st := conn.GetConnStatus()
 		if st.Status == netconn.ConnStateOK {
 			break
 		}
@@ -61,7 +60,7 @@ func main() {
 	// TODO test
 	obj := object.Object{
 		ID:             uuid.New().String(),
-		ClientID:       clientID,
+		ClientID:       "tester1",
 		Type:           object.TypeRockmanStand,
 		HP:             10,
 		X:              1,
@@ -69,67 +68,47 @@ func main() {
 		Hittable:       true,
 		UpdateBaseTime: true,
 	}
-	connInst.SendObject(obj)
-	if err := connInst.BulkSendData(); err != nil {
+	conn.SendObject(obj)
+	if err := conn.BulkSendData(); err != nil {
 		exitByError(err)
 	}
 
+	go runClient2()
+
+	// Client2の起動を待つ
+	time.Sleep(300 * time.Millisecond)
+
 	// TODO
-	// 	switch appStatus {
-	// case stateWaiting:
-	// 	status := connInst.GetGameStatus()
-	// 	if status == pb.Data_CHIPSELECTWAIT {
-	// 		statusChange(stateOpening)
-	// 	}
-	// case stateOpening:
-	// 	statusChange(stateChipSelect)
-	// case stateChipSelect:
-	// 	// Select using chip
-	// 	if err := playerInst.ChipSelect(); err != nil {
-	// 		return err
-	// 	}
+	appStatus := stateWaiting
+MAIN_LOOP:
+	for {
+		switch appStatus {
+		case stateWaiting:
+			status := conn.GetGameStatus()
+			if status == pb.Data_CHIPSELECTWAIT {
+				appStatus = stateChipSelect
+			}
+		case stateChipSelect:
+			obj.Chips = []object.ChipInfo{
+				{ID: 1, Code: "*"},
+			}
 
-	// 	statusChange(stateWaitSelect)
-	// case stateWaitSelect:
-	// 	status := connInst.GetGameStatus()
-	// 	if status == pb.Data_ACTING {
-	// 		statusChange(stateBeforeMain)
-	// 		continue
-	// 	}
-	// case stateBeforeMain:
-	// 	statusChange(stateMain)
-	// case stateMain:
-	// 	if playerInst.Action() {
-	// 		statusChange(stateResult)
-	// 		continue
-	// 	}
-
-	// 	if err := skill.GetInst().Process(); err != nil {
-	// 		return fmt.Errorf("skill process failed: %w", err)
-	// 	}
-
-	// 	status := connInst.GetGameStatus()
-	// 	switch status {
-	// 	case pb.Data_CHIPSELECTWAIT:
-	// 		statusChange(stateChipSelect)
-	// 		continue MAIN_LOOP
-	// 	case pb.Data_GAMEEND:
-	// 		statusChange(stateResult)
-	// 		continue MAIN_LOOP
-	// 	}
-	// case stateResult:
-	// 	logger.Info("Reached to state result")
-	// 	if playerInst.Object.HP == 0 {
-	// 		logger.Info("bot client lose")
-	// 	} else {
-	// 		logger.Info("bot client win")
-	// 	}
-	// 	return nil
-	// }
-
-	// if err := connInst.BulkSendData(); err != nil {
-	// 	return err
-	// }
+			conn.SendObject(obj)
+			conn.SendSignal(pb.Action_CHIPSEND)
+			appStatus = stateWaitSelect
+		case stateWaitSelect:
+			status := conn.GetGameStatus()
+			if status == pb.Data_ACTING {
+				appStatus = stateMain
+				continue
+			}
+		case stateMain:
+			// TODO
+			break MAIN_LOOP
+		case stateResult:
+			// TODO
+		}
+	}
 
 	// 終了処理をできるように若干待つ
 	time.Sleep(1 * time.Second)
@@ -141,4 +120,73 @@ func exitByError(err error) {
 	logger.SetExtraSkipCount(1)
 	logger.Error("Failed to run test: %+v", err)
 	os.Exit(1)
+}
+
+func runClient2() {
+	conn := netconn.New(netconn.Config{
+		StreamAddr:     streamAddr,
+		ClientID:       "tester2",
+		ClientKey:      "testtest",
+		ProgramVersion: "testclient",
+		Insecure:       true,
+	})
+	conn.ConnectRequest()
+
+	for n := 0; ; n++ {
+		if n > 100 {
+			exitByError(errors.New("failed to connect to router"))
+		}
+
+		st := conn.GetConnStatus()
+		if st.Status == netconn.ConnStateOK {
+			break
+		}
+		if st.Status == netconn.ConnStateError {
+			exitByError(st.Error)
+		}
+
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	obj := object.Object{
+		ID:             uuid.New().String(),
+		ClientID:       "tester2",
+		Type:           object.TypeRockmanStand,
+		HP:             10,
+		X:              1,
+		Y:              1,
+		Hittable:       true,
+		UpdateBaseTime: true,
+	}
+	conn.SendObject(obj)
+	conn.BulkSendData()
+
+	appStatus := stateWaiting
+	for {
+		switch appStatus {
+		case stateWaiting:
+			status := conn.GetGameStatus()
+			if status == pb.Data_CHIPSELECTWAIT {
+				appStatus = stateChipSelect
+			}
+		case stateChipSelect:
+			obj.Chips = []object.ChipInfo{
+				{ID: 1, Code: "*"},
+			}
+
+			conn.SendObject(obj)
+			conn.SendSignal(pb.Action_CHIPSEND)
+			appStatus = stateWaitSelect
+		case stateWaitSelect:
+			status := conn.GetGameStatus()
+			if status == pb.Data_ACTING {
+				appStatus = stateMain
+				continue
+			}
+		case stateMain:
+			// TODO
+		case stateResult:
+			// TODO
+		}
+	}
 }
