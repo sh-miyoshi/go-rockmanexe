@@ -175,6 +175,7 @@ func runClient2() {
 			}
 
 			conn.SendObject(obj)
+			conn.BulkSendData()
 			conn.SendSignal(pb.Action_CHIPSEND)
 			appStatus = stateWaitSelect
 		case stateWaitSelect:
@@ -184,9 +185,13 @@ func runClient2() {
 				continue
 			}
 		case stateMain:
-			// TODO
-		case stateResult:
-			// TODO
+			time.Sleep(300 * time.Millisecond)
+
+			// 負けたことにする
+			obj.HP = 0
+			conn.SendObject(obj)
+			conn.BulkSendData()
+			return
 		}
 	}
 }
