@@ -10,8 +10,8 @@
   - main
     - コネクション要求の受付
     - Sessionを作る
-- 現状のよくない仕様
-  - 終了時に`SendSignal(pb.Action_PLAYERDEAD)`しないといけない
+- 作業メモ
+  - PLAYERDEADシグナルの削除
 
 ## v0.11でやりたいこと
 
