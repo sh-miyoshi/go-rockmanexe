@@ -69,7 +69,6 @@ func (p *Player) Action() bool {
 		p.conn.SendObject(p.Object)
 		p.conn.AddSound(int(sound.SEPlayerDeleted))
 		p.conn.BulkSendData()
-		p.conn.SendSignal(pb.Action_PLAYERDEAD)
 		return true
 	}
 
