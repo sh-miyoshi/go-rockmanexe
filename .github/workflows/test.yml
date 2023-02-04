@@ -37,3 +37,6 @@ jobs:
       - name: API Test
         working-directory: ./test/router
         run: ./api_test.sh
+      - name: Client Test
+        working-directory: ./test/router/client_test
+        run: go run main.go
