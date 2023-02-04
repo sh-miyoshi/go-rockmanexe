@@ -10,11 +10,6 @@
   - main
     - コネクション要求の受付
     - Sessionを作る
-- テスト内容
-  - Clientを起動
-  - routerに繋ぐ x2
-  - アクション(※)
-  - 片方が死ぬ
 - 現状のよくない仕様
   - 終了時に`SendSignal(pb.Action_PLAYERDEAD)`しないといけない
 
