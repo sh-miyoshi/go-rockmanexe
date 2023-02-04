@@ -36,9 +36,16 @@ type Session struct {
 }
 
 func (s *Session) UpdateObject(obj object.Object) {
+	end := obj.HP <= 0
 	for i, c := range s.clients {
 		isMyObj := c.clientID == obj.ClientID
 		s.clients[i].gameInfo.UpdateObject(obj, isMyObj)
+		if end && isMyObj && !c.gameInfo.ExistsAliveObject(obj.ClientID) {
+			// 生きているObjectがなければ終了
+			s.nextStatus = statusGameEnd
+			logger.Debug("lose client objects: %+v", c.gameInfo.Objects)
+			end = false // 次のclient用にfalseにしておく
+		}
 	}
 }
 
@@ -76,8 +83,6 @@ func (s *Session) SendSignal(clientID string, signal pb.Action_SignalType) error
 				s.clients[i].chipSent = true
 			case pb.Action_GOCHIPSELECT:
 				s.nextStatus = statusChipSelectWait
-			case pb.Action_PLAYERDEAD:
-				s.nextStatus = statusGameEnd
 			default:
 				return fmt.Errorf("got unexpected signal type: %d", signal)
 			}

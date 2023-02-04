@@ -204,7 +204,6 @@ func runClient2() {
 			obj.HP = 0
 			conn.SendObject(obj)
 			conn.BulkSendData()
-			conn.SendSignal(pb.Action_PLAYERDEAD)
 			return
 		}
 	}

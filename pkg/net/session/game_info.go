@@ -110,6 +110,15 @@ func (g *GameInfo) AddSound(se sound.Sound) {
 	g.Sounds = append(g.Sounds, se)
 }
 
+func (g *GameInfo) ExistsAliveObject(clientID string) bool {
+	for _, o := range g.Objects {
+		if o.ClientID == clientID && o.HP > 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func (g *GameInfo) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(g)
