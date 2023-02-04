@@ -78,15 +78,21 @@ func main() {
 	// Client2の起動を待つ
 	time.Sleep(300 * time.Millisecond)
 
-	// TODO
+	startTime := time.Now()
 	appStatus := stateWaiting
 MAIN_LOOP:
 	for {
+		current := time.Now()
+		const timeout = 5 * time.Second
+		if current.After(startTime.Add(timeout)) {
+			exitByError(errors.New("timeout main loop"))
+		}
+
 		switch appStatus {
 		case stateWaiting:
 			status := conn.GetGameStatus()
 			if status == pb.Data_CHIPSELECTWAIT {
-				appStatus = stateChipSelect
+				stateChange(&appStatus, stateChipSelect)
 			}
 		case stateChipSelect:
 			obj.Chips = []object.ChipInfo{
@@ -95,24 +101,31 @@ MAIN_LOOP:
 
 			conn.SendObject(obj)
 			conn.SendSignal(pb.Action_CHIPSEND)
-			appStatus = stateWaitSelect
+			stateChange(&appStatus, stateWaitSelect)
 		case stateWaitSelect:
 			status := conn.GetGameStatus()
 			if status == pb.Data_ACTING {
-				appStatus = stateMain
-				continue
+				stateChange(&appStatus, stateMain)
 			}
 		case stateMain:
-			// TODO
-			break MAIN_LOOP
+			status := conn.GetGameStatus()
+			if status == pb.Data_GAMEEND {
+				stateChange(&appStatus, stateResult)
+			}
 		case stateResult:
-			// TODO
+			logger.Info("Successfully state change to result")
+			break MAIN_LOOP
 		}
 	}
 
 	// 終了処理をできるように若干待つ
 	time.Sleep(1 * time.Second)
 	logger.Info("Successfully closed app")
+}
+
+func stateChange(state *int, next int) {
+	logger.Info("state change from %d to %d", *state, next)
+	*state = next
 }
 
 func exitByError(err error) {
@@ -191,6 +204,7 @@ func runClient2() {
 			obj.HP = 0
 			conn.SendObject(obj)
 			conn.BulkSendData()
+			conn.SendSignal(pb.Action_PLAYERDEAD)
 			return
 		}
 	}
