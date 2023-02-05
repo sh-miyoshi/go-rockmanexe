@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/gameinfo"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
@@ -31,10 +32,10 @@ type Session struct {
 	id        string
 	clients   [2]SessionClient
 	expiresAt time.Time
-	// WIP gameInfo  GameInfo
-	exitErr *sessionError
-	fpsMgr  fps.Fps
-	state   int
+	gameInfo  gameinfo.GameInfo
+	exitErr   *sessionError
+	fpsMgr    fps.Fps
+	state     int
 
 	// TODO
 	/*
@@ -93,9 +94,12 @@ MAIN_LOOP:
 			}
 
 			s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
+			clientIDs := [2]string{}
 			for i := 0; i < len(s.clients); i++ {
 				s.clients[i].chipSent = false
+				clientIDs[i] = s.clients[i].clientID
 			}
+			s.gameInfo.Init(clientIDs)
 			s.changeState(stateChipSelectWait)
 		case stateChipSelectWait:
 			for _, c := range s.clients {
@@ -110,7 +114,9 @@ MAIN_LOOP:
 			}
 			s.changeState(stateActing)
 		case stateActing:
-			// TODO(未実装)
+			s.publishGameInfo() // debug(送信頻度は要確認)
+
+			// TODO(game info情報を見て必要に応じてstateGameEndへ)
 		case stateGameEnd:
 			// TODO(未実装)
 		}
@@ -179,6 +185,29 @@ func (s *Session) publishStateToClient(st pb.Response_Status) {
 		})
 		if err != nil {
 			logger.Error("failed to send status to client %s: %v", c.clientID, err)
+			s.exitErr = &sessionError{
+				generatorClientID: c.clientID,
+				reason:            errSendFailed,
+			}
+			return
+		}
+	}
+}
+
+func (s *Session) publishGameInfo() {
+	for _, c := range s.clients {
+		if c.dataStream == nil {
+			continue
+		}
+
+		err := c.dataStream.Send(&pb.Response{
+			Type: pb.Response_DATA,
+			Data: &pb.Response_RawData{
+				RawData: s.gameInfo.Marshal(),
+			},
+		})
+		if err != nil {
+			logger.Error("failed to send game info to client %s: %v", c.clientID, err)
 			s.exitErr = &sessionError{
 				generatorClientID: c.clientID,
 				reason:            errSendFailed,
