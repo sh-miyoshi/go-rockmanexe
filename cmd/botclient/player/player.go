@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/oldnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"

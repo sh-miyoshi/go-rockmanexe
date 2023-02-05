@@ -8,7 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/config"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
