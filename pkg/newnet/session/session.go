@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
 // TODO
@@ -92,10 +92,10 @@ func (s *Session) End() {
 				}
 
 				// publish to alive clients
-				c.dataStream.Send(&pb.Data{
-					Type: pb.Data_UPDATESTATUS,
-					Data: &pb.Data_Status_{
-						Status: pb.Data_GAMEEND,
+				c.dataStream.Send(&pb.Response{
+					Type: pb.Response_UPDATESTATUS,
+					Data: &pb.Response_Status_{
+						Status: pb.Response_GAMEEND,
 					},
 				})
 			}
