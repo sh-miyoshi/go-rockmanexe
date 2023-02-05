@@ -42,7 +42,13 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		}
 
 		switch msg.GetType() {
-		// TODO
+		case pb.Request_SENDSIGNAL:
+			if err := s.HandleSignal(msg.GetSignal()); err != nil {
+				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
+				return fmt.Errorf("failed to send signal: %v", err)
+			}
+		case pb.Request_ACTION:
+			// TODO(未実装)
 		default:
 			return fmt.Errorf("invalid message type: %v", msg.GetType())
 		}

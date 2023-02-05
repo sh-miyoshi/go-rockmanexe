@@ -9,12 +9,11 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
-// TODO
 const (
-	statusConnectWait int = iota
-	statusChipSelectWait
-	statusActing
-	statusGameEnd
+	stateConnectWait int = iota
+	stateChipSelectWait
+	stateActing
+	stateGameEnd
 )
 
 type sessionError struct {
@@ -25,6 +24,7 @@ type sessionError struct {
 type SessionClient struct {
 	clientID   string
 	dataStream pb.NetConn_TransDataServer
+	chipSent   bool
 }
 
 type Session struct {
@@ -34,7 +34,7 @@ type Session struct {
 	// WIP gameInfo  GameInfo
 	exitErr *sessionError
 	fpsMgr  fps.Fps
-	status  int
+	state   int
 
 	// TODO
 	/*
@@ -49,7 +49,7 @@ func newSession(sessionID string) *Session {
 		id:        sessionID,
 		expiresAt: time.Now().Add(sessionExpireTime),
 		fpsMgr:    fps.Fps{TargetFPS: 60},
-		status:    statusConnectWait,
+		state:     stateConnectWait,
 	}
 	return res
 }
@@ -68,12 +68,52 @@ func (s *Session) SetClient(clientID string, stream pb.NetConn_TransDataServer) 
 }
 
 func (s *Session) Run() {
+MAIN_LOOP:
 	for {
 		if s.exitErr != nil {
 			return
 		}
 
-		// TODO 処理
+		now := time.Now()
+
+		// check session expires
+		if s.expiresAt.Before(now) {
+			s.exitErr = &sessionError{
+				reason: fmt.Errorf("session expired"),
+			}
+			return
+		}
+
+		switch s.state {
+		case stateConnectWait:
+			for _, c := range s.clients {
+				if c.clientID == "" {
+					continue MAIN_LOOP
+				}
+			}
+
+			s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
+			for i := 0; i < len(s.clients); i++ {
+				s.clients[i].chipSent = false
+			}
+			s.changeState(stateChipSelectWait)
+		case stateChipSelectWait:
+			for _, c := range s.clients {
+				if !c.chipSent {
+					continue MAIN_LOOP
+				}
+			}
+
+			s.publishStateToClient(pb.Response_ACTING)
+			for i := 0; i < len(s.clients); i++ {
+				s.clients[i].chipSent = false
+			}
+			s.changeState(stateActing)
+		case stateActing:
+			// TODO(未実装)
+		case stateGameEnd:
+			// TODO(未実装)
+		}
 
 		s.fpsMgr.Wait()
 	}
@@ -101,5 +141,43 @@ func (s *Session) End() {
 			}
 		}
 		logger.Error("Got error in session %s: %+v", s.id, s.exitErr.reason)
+	}
+}
+
+func (s *Session) HandleSignal(signal pb.Request_SignalType) error {
+	switch signal {
+	case pb.Request_CHIPSELECT:
+		// TODO(未実装)
+	case pb.Request_GOCHIPSELECT:
+		// TODO(未実装)
+	}
+	return nil
+}
+
+func (s *Session) changeState(next int) {
+	logger.Info("Change state from %d to %d", s.state, next)
+	s.state = next
+}
+
+func (s *Session) publishStateToClient(st pb.Response_Status) {
+	for _, c := range s.clients {
+		if c.dataStream == nil {
+			continue
+		}
+
+		err := c.dataStream.Send(&pb.Response{
+			Type: pb.Response_UPDATESTATUS,
+			Data: &pb.Response_Status_{
+				Status: st,
+			},
+		})
+		if err != nil {
+			logger.Error("failed to send status to client %s: %v", c.clientID, err)
+			s.exitErr = &sessionError{
+				generatorClientID: c.clientID,
+				reason:            errSendFailed,
+			}
+			return
+		}
 	}
 }
