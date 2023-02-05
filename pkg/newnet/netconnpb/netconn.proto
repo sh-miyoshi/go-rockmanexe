@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package netconn;
+option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb";
+
+service NetConn {
+    rpc TransData(stream Request) returns (stream Response) {}
+}
+
+message Request {
+    enum MsgType {
+        AUTHENTICATE = 0;
+        SENDSIGNAL = 1;
+        ACTION = 2;
+    }
+
+    enum SignalType {
+        CHIPSELECT = 0;
+        GOCHIPSELECT = 1;
+    }
+
+    enum ActionType {
+        MOVE = 0;
+        BUSTER = 1;
+        CHIPUSE = 2;
+    }
+
+    string sessionID = 1;
+    string clientID = 2;
+    MsgType type = 3;
+
+    oneof data {
+        AuthRequest req = 4;
+        SignalType signal = 5;
+        Action act = 6;
+    }
+
+    message AuthRequest {
+        string id = 1;
+        string key = 2;
+        string version = 3;
+    }
+
+    message Action {
+        int64 x = 1;
+        int64 y = 2;
+        ActionType type = 3;
+        bytes rawData = 4;
+    }
+}
+
+message Response {
+    enum MsgType {
+        AUTHRESPONSE = 0;
+        UPDATESTATUS = 1;
+        DATA = 2;
+    }
+
+    enum Status {
+        CONNECTWAIT = 0;
+        CHIPSELECTWAIT = 1;
+        ACTING = 2;
+        GAMEEND = 3;
+    }
+
+    message AuthResponse {
+        bool success = 1;
+        string errMsg = 2;
+        string sessionID = 3;
+        repeated string allUserIDs = 4;
+    }
+
+    MsgType type = 1;
+    oneof data {
+        AuthResponse authRes = 2;
+        Status status = 3;
+        bytes rawData = 4;
+    }
+}

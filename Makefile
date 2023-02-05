@@ -15,6 +15,10 @@ protoc:
 	protoc --go_out=plugins=grpc:. *.proto && \
 	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\netconnpb\netconn.pb.go . && \
 	rd /s /q github.com
+protoc-linux:
+	protoc --go_out=. --go-grpc_out=. ./pkg/newnet/netconnpb/netconn.proto && \
+	cp github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb/* ./pkg/newnet/netconnpb/ && \
+	rm -rf github.com
 docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
 	docker build -t asia-northeast1-docker.pkg.dev/rockmanexe/router/router -f build/Dockerfile.router .
