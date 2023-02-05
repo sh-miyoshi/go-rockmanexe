@@ -43,7 +43,7 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 
 		switch msg.GetType() {
 		case pb.Request_SENDSIGNAL:
-			if err := s.HandleSignal(msg.GetSignal()); err != nil {
+			if err := s.HandleSignal(msg.GetClientID(), msg.GetSignal()); err != nil {
 				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
 				return fmt.Errorf("failed to send signal: %v", err)
 			}

@@ -100,8 +100,7 @@ MAIN_LOOP:
 
 			// conn.SendObject(obj)
 
-			// TODO
-			// conn.SendSignal(pb.Action_CHIPSEND)
+			conn.SendSignal(pb.Request_CHIPSELECT)
 			stateChange(&appStatus, stateWaitSelect)
 		case stateWaitSelect:
 			status := conn.GetGameStatus()
@@ -190,7 +189,7 @@ func runClient2() {
 
 			// conn.SendObject(obj)
 			// conn.BulkSendData()
-			// conn.SendSignal(pb.Action_CHIPSEND)
+			conn.SendSignal(pb.Request_CHIPSELECT)
 			appStatus = stateWaitSelect
 		case stateWaitSelect:
 			status := conn.GetGameStatus()

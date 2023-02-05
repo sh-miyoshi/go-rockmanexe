@@ -144,12 +144,18 @@ func (s *Session) End() {
 	}
 }
 
-func (s *Session) HandleSignal(signal pb.Request_SignalType) error {
+func (s *Session) HandleSignal(clientID string, signal pb.Request_SignalType) error {
 	switch signal {
 	case pb.Request_CHIPSELECT:
-		// TODO(未実装)
+		for i, c := range s.clients {
+			if c.clientID == clientID {
+				s.clients[i].chipSent = true
+				return nil
+			}
+		}
+		return fmt.Errorf("no such client %s", clientID)
 	case pb.Request_GOCHIPSELECT:
-		// TODO(未実装)
+		panic("TODO: 未実装")
 	}
 	return nil
 }
