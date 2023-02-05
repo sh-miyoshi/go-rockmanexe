@@ -65,21 +65,19 @@ func (x *netConnTransDataClient) Recv() (*Response, error) {
 }
 
 // NetConnServer is the server API for NetConn service.
-// All implementations must embed UnimplementedNetConnServer
+// All implementations should embed UnimplementedNetConnServer
 // for forward compatibility
 type NetConnServer interface {
 	TransData(NetConn_TransDataServer) error
-	mustEmbedUnimplementedNetConnServer()
 }
 
-// UnimplementedNetConnServer must be embedded to have forward compatible implementations.
+// UnimplementedNetConnServer should be embedded to have forward compatible implementations.
 type UnimplementedNetConnServer struct {
 }
 
 func (UnimplementedNetConnServer) TransData(NetConn_TransDataServer) error {
 	return status.Errorf(codes.Unimplemented, "method TransData not implemented")
 }
-func (UnimplementedNetConnServer) mustEmbedUnimplementedNetConnServer() {}
 
 // UnsafeNetConnServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to NetConnServer will
