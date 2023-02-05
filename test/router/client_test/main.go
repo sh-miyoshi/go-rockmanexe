@@ -5,11 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/google/uuid"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	// "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 const (
@@ -57,21 +56,21 @@ func main() {
 
 	logger.Info("Success to connect router")
 
-	// TODO test
-	obj := object.Object{
-		ID:             uuid.New().String(),
-		ClientID:       "tester1",
-		Type:           object.TypeRockmanStand,
-		HP:             10,
-		X:              1,
-		Y:              1,
-		Hittable:       true,
-		UpdateBaseTime: true,
-	}
-	conn.SendObject(obj)
-	if err := conn.BulkSendData(); err != nil {
-		exitByError(err)
-	}
+	// TODO
+	// obj := object.Object{
+	// 	ID:             uuid.New().String(),
+	// 	ClientID:       "tester1",
+	// 	Type:           object.TypeRockmanStand,
+	// 	HP:             10,
+	// 	X:              1,
+	// 	Y:              1,
+	// 	Hittable:       true,
+	// 	UpdateBaseTime: true,
+	// }
+	// conn.SendObject(obj)
+	// if err := conn.BulkSendData(); err != nil {
+	// 	exitByError(err)
+	// }
 
 	go runClient2()
 
@@ -91,25 +90,27 @@ MAIN_LOOP:
 		switch appStatus {
 		case stateWaiting:
 			status := conn.GetGameStatus()
-			if status == pb.Data_CHIPSELECTWAIT {
+			if status == pb.Response_CHIPSELECTWAIT {
 				stateChange(&appStatus, stateChipSelect)
 			}
 		case stateChipSelect:
-			obj.Chips = []object.ChipInfo{
-				{ID: 1, Code: "*"},
-			}
+			// obj.Chips = []object.ChipInfo{
+			// 	{ID: 1, Code: "*"},
+			// }
 
-			conn.SendObject(obj)
-			conn.SendSignal(pb.Action_CHIPSEND)
+			// conn.SendObject(obj)
+
+			// TODO
+			// conn.SendSignal(pb.Action_CHIPSEND)
 			stateChange(&appStatus, stateWaitSelect)
 		case stateWaitSelect:
 			status := conn.GetGameStatus()
-			if status == pb.Data_ACTING {
+			if status == pb.Response_ACTING {
 				stateChange(&appStatus, stateMain)
 			}
 		case stateMain:
 			status := conn.GetGameStatus()
-			if status == pb.Data_GAMEEND {
+			if status == pb.Response_GAMEEND {
 				stateChange(&appStatus, stateResult)
 			}
 		case stateResult:
@@ -161,39 +162,39 @@ func runClient2() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	obj := object.Object{
-		ID:             uuid.New().String(),
-		ClientID:       "tester2",
-		Type:           object.TypeRockmanStand,
-		HP:             10,
-		X:              1,
-		Y:              1,
-		Hittable:       true,
-		UpdateBaseTime: true,
-	}
-	conn.SendObject(obj)
-	conn.BulkSendData()
+	// obj := object.Object{
+	// 	ID:             uuid.New().String(),
+	// 	ClientID:       "tester2",
+	// 	Type:           object.TypeRockmanStand,
+	// 	HP:             10,
+	// 	X:              1,
+	// 	Y:              1,
+	// 	Hittable:       true,
+	// 	UpdateBaseTime: true,
+	// }
+	// conn.SendObject(obj)
+	// conn.BulkSendData()
 
 	appStatus := stateWaiting
 	for {
 		switch appStatus {
 		case stateWaiting:
 			status := conn.GetGameStatus()
-			if status == pb.Data_CHIPSELECTWAIT {
+			if status == pb.Response_CHIPSELECTWAIT {
 				appStatus = stateChipSelect
 			}
 		case stateChipSelect:
-			obj.Chips = []object.ChipInfo{
-				{ID: 1, Code: "*"},
-			}
+			// obj.Chips = []object.ChipInfo{
+			// 	{ID: 1, Code: "*"},
+			// }
 
-			conn.SendObject(obj)
-			conn.BulkSendData()
-			conn.SendSignal(pb.Action_CHIPSEND)
+			// conn.SendObject(obj)
+			// conn.BulkSendData()
+			// conn.SendSignal(pb.Action_CHIPSEND)
 			appStatus = stateWaitSelect
 		case stateWaitSelect:
 			status := conn.GetGameStatus()
-			if status == pb.Data_ACTING {
+			if status == pb.Response_ACTING {
 				appStatus = stateMain
 				continue
 			}
@@ -201,9 +202,9 @@ func runClient2() {
 			time.Sleep(300 * time.Millisecond)
 
 			// 負けたことにする
-			obj.HP = 0
-			conn.SendObject(obj)
-			conn.BulkSendData()
+			// obj.HP = 0
+			// conn.SendObject(obj)
+			// conn.BulkSendData()
 			return
 		}
 	}

@@ -8,9 +8,9 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconn"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconn"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
 	"google.golang.org/grpc"
 )
 
