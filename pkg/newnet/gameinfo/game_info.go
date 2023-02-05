@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 )
 
 type PanelInfo struct {

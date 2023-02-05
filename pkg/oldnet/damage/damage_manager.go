@@ -3,7 +3,7 @@ package damage
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 )
 
 type Manager struct {

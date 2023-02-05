@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
+	api "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/apiclient"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
 )

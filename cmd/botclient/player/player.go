@@ -9,9 +9,9 @@ import (
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 type Player struct {

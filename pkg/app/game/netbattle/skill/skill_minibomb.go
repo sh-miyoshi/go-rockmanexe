@@ -4,9 +4,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 const (

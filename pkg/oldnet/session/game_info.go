@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/sound"
 )
 
 type PanelInfo struct {

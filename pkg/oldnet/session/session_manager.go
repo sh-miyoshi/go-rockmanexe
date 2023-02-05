@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
 )
 
 const (

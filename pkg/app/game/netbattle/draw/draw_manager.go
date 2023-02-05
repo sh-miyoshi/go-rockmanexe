@@ -8,9 +8,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 type Option struct {

@@ -22,7 +22,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
 )
 
 const (

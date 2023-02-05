@@ -13,9 +13,9 @@ import (
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 type ActOption struct {

@@ -10,7 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/config"
 )
 
 type Field struct {

@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
+	api "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/apiclient"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/sound"
 )
 
 type NetConn struct {

@@ -21,9 +21,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 type BattlePlayer struct {

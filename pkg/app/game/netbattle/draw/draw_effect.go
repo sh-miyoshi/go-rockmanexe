@@ -4,7 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
 )
 
 func drawEffect(images [effect.TypeMax][]int, imgNo int, eff effect.Effect) {

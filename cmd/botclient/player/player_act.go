@@ -8,10 +8,10 @@ import (
 	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
 )
 
 type Act interface {
