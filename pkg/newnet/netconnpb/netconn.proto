@@ -17,6 +17,7 @@ message Request {
     enum SignalType {
         CHIPSELECT = 0;
         GOCHIPSELECT = 1;
+        INITPARAMS = 2;
     }
 
     enum ActionType {
@@ -31,7 +32,7 @@ message Request {
 
     oneof data {
         AuthRequest req = 4;
-        SignalType signal = 5;
+        Signal signal = 5;
         Action act = 6;
     }
 
@@ -46,6 +47,11 @@ message Request {
         int64 y = 2;
         ActionType type = 3;
         bytes rawData = 4;
+    }
+
+    message Signal {
+        SignalType type = 1;
+        bytes rawData = 2;
     }
 }
 

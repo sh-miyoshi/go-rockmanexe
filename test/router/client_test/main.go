@@ -100,7 +100,7 @@ MAIN_LOOP:
 
 			// conn.SendObject(obj)
 
-			conn.SendSignal(pb.Request_CHIPSELECT)
+			conn.SendSignal(pb.Request_CHIPSELECT, nil)
 			stateChange(&appStatus, stateWaitSelect)
 		case stateWaitSelect:
 			status := conn.GetGameStatus()
@@ -112,6 +112,9 @@ MAIN_LOOP:
 			if status == pb.Response_GAMEEND {
 				stateChange(&appStatus, stateResult)
 			}
+
+			// TODO check action
+			// move, buster, use chip
 		case stateResult:
 			logger.Info("Successfully state change to result")
 			break MAIN_LOOP
@@ -189,7 +192,7 @@ func runClient2() {
 
 			// conn.SendObject(obj)
 			// conn.BulkSendData()
-			conn.SendSignal(pb.Request_CHIPSELECT)
+			conn.SendSignal(pb.Request_CHIPSELECT, nil)
 			appStatus = stateWaitSelect
 		case stateWaitSelect:
 			status := conn.GetGameStatus()

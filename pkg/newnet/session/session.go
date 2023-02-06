@@ -150,9 +150,10 @@ func (s *Session) End() {
 	}
 }
 
-func (s *Session) HandleSignal(clientID string, signal pb.Request_SignalType) error {
-	switch signal {
+func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error {
+	switch signal.GetType() {
 	case pb.Request_CHIPSELECT:
+		// TODO(rawDataから選択したchipを取得)
 		for i, c := range s.clients {
 			if c.clientID == clientID {
 				s.clients[i].chipSent = true
@@ -161,6 +162,8 @@ func (s *Session) HandleSignal(clientID string, signal pb.Request_SignalType) er
 		}
 		return fmt.Errorf("no such client %s", clientID)
 	case pb.Request_GOCHIPSELECT:
+		panic("TODO: 未実装")
+	case pb.Request_INITPARAMS:
 		panic("TODO: 未実装")
 	}
 	return nil

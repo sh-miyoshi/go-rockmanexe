@@ -92,12 +92,12 @@ func (n *NetConn) GetGameStatus() pb.Response_Status {
 	return n.gameStatus
 }
 
-func (n *NetConn) SendSignal(signal pb.Request_SignalType) error {
+func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) error {
 	return n.dataStream.Send(&pb.Request{
 		SessionID: n.sessionID,
 		ClientID:  n.config.ClientID,
 		Type:      pb.Request_SENDSIGNAL,
-		Data:      &pb.Request_Signal{Signal: signal},
+		Data:      &pb.Request_Signal_{Signal: &pb.Request_Signal{Type: signalType, RawData: data}},
 	})
 }
 
