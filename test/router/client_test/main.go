@@ -8,7 +8,7 @@ import (
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	// "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
+	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 const (
@@ -56,21 +56,14 @@ func main() {
 
 	logger.Info("Success to connect router")
 
-	// TODO
-	// obj := object.Object{
-	// 	ID:             uuid.New().String(),
-	// 	ClientID:       "tester1",
-	// 	Type:           object.TypeRockmanStand,
-	// 	HP:             10,
-	// 	X:              1,
-	// 	Y:              1,
-	// 	Hittable:       true,
-	// 	UpdateBaseTime: true,
-	// }
-	// conn.SendObject(obj)
-	// if err := conn.BulkSendData(); err != nil {
-	// 	exitByError(err)
-	// }
+	obj := netobj.InitParam{
+		HP: 10,
+		X:  1,
+		Y:  1,
+	}
+	if err := conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
+		exitByError(err)
+	}
 
 	go runClient2()
 
@@ -164,18 +157,12 @@ func runClient2() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	// obj := object.Object{
-	// 	ID:             uuid.New().String(),
-	// 	ClientID:       "tester2",
-	// 	Type:           object.TypeRockmanStand,
-	// 	HP:             10,
-	// 	X:              1,
-	// 	Y:              1,
-	// 	Hittable:       true,
-	// 	UpdateBaseTime: true,
-	// }
-	// conn.SendObject(obj)
-	// conn.BulkSendData()
+	obj := netobj.InitParam{
+		HP: 10,
+		X:  1,
+		Y:  1,
+	}
+	conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal())
 
 	appStatus := stateWaiting
 	for {
