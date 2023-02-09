@@ -5,8 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
@@ -107,6 +109,13 @@ MAIN_LOOP:
 			}
 
 			// TODO check action
+			move := action.Move{
+				Type:    action.MoveTypeAbs,
+				AbsPosX: 2,
+				AbsPosY: 1,
+			}
+			conn.SendAction(pb.Request_MOVE, common.Point{X: 1, Y: 1}, move.Marshal())
+
 			// move, buster, use chip
 		case stateResult:
 			logger.Info("Successfully state change to result")

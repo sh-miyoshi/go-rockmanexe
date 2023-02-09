@@ -52,6 +52,9 @@ func newSession(sessionID string) *Session {
 		expiresAt: time.Now().Add(sessionExpireTime),
 		fpsMgr:    fps.Fps{TargetFPS: 60},
 		state:     stateConnectWait,
+		gameInfo: gameinfo.GameInfo{
+			Objects: make(map[string]object.Object),
+		},
 	}
 	return res
 }

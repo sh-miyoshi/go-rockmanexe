@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"google.golang.org/grpc"
@@ -98,6 +99,20 @@ func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) erro
 		ClientID:  n.config.ClientID,
 		Type:      pb.Request_SENDSIGNAL,
 		Data:      &pb.Request_Signal_{Signal: &pb.Request_Signal{Type: signalType, RawData: data}},
+	})
+}
+
+func (n *NetConn) SendAction(actType pb.Request_ActionType, pos common.Point, data []byte) error {
+	return n.dataStream.Send(&pb.Request{
+		SessionID: n.sessionID,
+		ClientID:  n.config.ClientID,
+		Type:      pb.Request_ACTION,
+		Data: &pb.Request_Act{Act: &pb.Request_Action{
+			Type:    actType,
+			X:       int64(pos.X),
+			Y:       int64(pos.Y),
+			RawData: data,
+		}},
 	})
 }
 

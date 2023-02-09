@@ -28,7 +28,6 @@ func (g *GameInfo) Init(clientIDs [2]string) {
 			g.Panels[x+hx][y] = PanelInfo{OwnerClientID: clientIDs[1]}
 		}
 	}
-	g.Objects = make(map[string]object.Object)
 }
 
 func (g *GameInfo) AddObject(param object.InitParam) {
