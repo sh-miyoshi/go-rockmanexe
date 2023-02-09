@@ -14,9 +14,10 @@ type InitParam struct {
 }
 
 type Object struct {
-	ID  string
-	HP  int
-	Pos common.Point
+	ID            string
+	OwnerClientID string
+	HP            int
+	Pos           common.Point
 	// TODO(他にも必要だと思うが都度追加していく)
 }
 

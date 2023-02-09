@@ -170,7 +170,7 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 	case pb.Request_INITPARAMS:
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())
-		s.gameInfo.AddObject(obj)
+		s.gameInfo.AddObject(clientID, obj)
 	}
 	return nil
 }

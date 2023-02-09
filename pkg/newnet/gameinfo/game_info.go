@@ -30,12 +30,13 @@ func (g *GameInfo) Init(clientIDs [2]string) {
 	}
 }
 
-func (g *GameInfo) AddObject(param object.InitParam) {
+func (g *GameInfo) AddObject(clientID string, param object.InitParam) {
 	id := uuid.New().String()
 	g.Objects[id] = object.Object{
-		ID:  id,
-		HP:  param.HP,
-		Pos: common.Point{X: param.X, Y: param.Y},
+		ID:            id,
+		OwnerClientID: clientID,
+		HP:            param.HP,
+		Pos:           common.Point{X: param.X, Y: param.Y},
 	}
 }
 
