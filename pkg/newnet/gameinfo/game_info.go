@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"encoding/gob"
 
+	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 type PanelInfo struct {
@@ -13,8 +16,8 @@ type PanelInfo struct {
 }
 
 type GameInfo struct {
-	Panels [config.FieldNumX][config.FieldNumY]PanelInfo
-	// TODO objects
+	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
+	Objects map[string]object.Object
 }
 
 func (g *GameInfo) Init(clientIDs [2]string) {
@@ -24,6 +27,16 @@ func (g *GameInfo) Init(clientIDs [2]string) {
 			g.Panels[x][y] = PanelInfo{OwnerClientID: clientIDs[0]}
 			g.Panels[x+hx][y] = PanelInfo{OwnerClientID: clientIDs[1]}
 		}
+	}
+	g.Objects = make(map[string]object.Object)
+}
+
+func (g *GameInfo) AddObject(param object.InitParam) {
+	id := uuid.New().String()
+	g.Objects[id] = object.Object{
+		ID:  id,
+		HP:  param.HP,
+		Pos: common.Point{X: param.X, Y: param.Y},
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/gameinfo"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 const (
@@ -164,7 +165,9 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 	case pb.Request_GOCHIPSELECT:
 		panic("TODO: 未実装")
 	case pb.Request_INITPARAMS:
-		panic("TODO: 未実装")
+		var obj object.InitParam
+		obj.Unmarshal(signal.GetRawData())
+		s.gameInfo.AddObject(obj)
 	}
 	return nil
 }
