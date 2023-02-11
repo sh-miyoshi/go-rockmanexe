@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
@@ -39,16 +38,15 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 }
 
 func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
-	id := uuid.New().String()
-	g.Objects[id] = object.Object{
-		ID:            id,
+	g.Objects[param.ID] = object.Object{
+		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: param.X, Y: param.Y},
 	}
 }
 
-func (g *GameHandler) MoveObject(objectID string, moveInfo action.Move) {
+func (g *GameHandler) MoveObject(moveInfo action.Move) {
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
 	case action.MoveTypeAbs:

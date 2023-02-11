@@ -21,7 +21,7 @@ const (
 type GameLogic interface {
 	Init(clientIDs [2]string) error
 	AddObject(clientID string, param object.InitParam)
-	MoveObject(objectID string, moveInfo action.Move)
+	MoveObject(moveInfo action.Move)
 	GetInfo() []byte
 	ParseInfo(data []byte)
 }
@@ -109,7 +109,12 @@ MAIN_LOOP:
 				s.clients[i].chipSent = false
 				clientIDs[i] = s.clients[i].clientID
 			}
-			s.gameHandler.Init(clientIDs)
+			if err := s.gameHandler.Init(clientIDs); err != nil {
+				s.exitErr = &sessionError{
+					reason: fmt.Errorf("failed to initialize game handler"),
+				}
+				return
+			}
 			s.changeState(stateChipSelectWait)
 		case stateChipSelectWait:
 			for _, c := range s.clients {
@@ -186,7 +191,7 @@ func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
 	case pb.Request_MOVE:
 		var move action.Move
 		move.Unmarshal(act.GetRawData())
-		panic("TODO: 未実装")
+		s.gameHandler.MoveObject(move)
 	case pb.Request_BUSTER:
 		panic("TODO: 未実装")
 	case pb.Request_CHIPUSE:

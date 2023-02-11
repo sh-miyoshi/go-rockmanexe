@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -59,6 +60,7 @@ func main() {
 	logger.Info("Success to connect router")
 
 	obj := netobj.InitParam{
+		ID: uuid.New().String(),
 		HP: 10,
 		X:  1,
 		Y:  1,
@@ -167,6 +169,7 @@ func runClient2() {
 	}
 
 	obj := netobj.InitParam{
+		ID: uuid.New().String(),
 		HP: 10,
 		X:  1,
 		Y:  1,

@@ -8,6 +8,7 @@ import (
 )
 
 type InitParam struct {
+	ID string
 	HP int
 	X  int
 	Y  int
