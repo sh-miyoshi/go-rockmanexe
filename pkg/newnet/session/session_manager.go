@@ -15,7 +15,8 @@ const (
 )
 
 type SessionManager struct {
-	sessions map[string]*Session
+	sessions    map[string]*Session
+	gameHandler GameLogic
 }
 
 var (
@@ -25,6 +26,10 @@ var (
 	errSendFailed = errors.New("data send failed")
 )
 
+func SetGameHandler(gameHandler GameLogic) {
+	inst.gameHandler = gameHandler
+}
+
 func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 	s, ok := inst.sessions[sessionID]
 	if ok {
@@ -33,7 +38,7 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		}
 		logger.Info("set new client %s to session %s", clientID, sessionID)
 	} else {
-		inst.sessions[sessionID] = newSession(sessionID)
+		inst.sessions[sessionID] = newSession(sessionID, inst.gameHandler)
 		inst.sessions[sessionID].SetClient(clientID, stream)
 
 		// TODO init game info

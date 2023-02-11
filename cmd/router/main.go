@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconn"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gamehandler"
 	"google.golang.org/grpc"
 )
 
@@ -35,6 +36,8 @@ func main() {
 		logger.Error("Failed to listen data stream: %v", err)
 		return
 	}
+	h := gamehandler.NewHandler()
+	session.SetGameHandler(h)
 
 	go session.ManagerExec()
 

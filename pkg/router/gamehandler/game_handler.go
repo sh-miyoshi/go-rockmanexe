@@ -1,4 +1,4 @@
-package gameinfo
+package gamehandler
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
@@ -15,12 +16,18 @@ type PanelInfo struct {
 	ShowHitArea   bool
 }
 
-type GameInfo struct {
+type GameHandler struct {
 	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
 	Objects map[string]object.Object
 }
 
-func (g *GameInfo) Init(clientIDs [2]string) {
+func NewHandler() *GameHandler {
+	return &GameHandler{
+		Objects: make(map[string]object.Object),
+	}
+}
+
+func (g *GameHandler) Init(clientIDs [2]string) error {
 	for y := 0; y < config.FieldNumY; y++ {
 		hx := config.FieldNumX / 2
 		for x := 0; x < hx; x++ {
@@ -28,9 +35,10 @@ func (g *GameInfo) Init(clientIDs [2]string) {
 			g.Panels[x+hx][y] = PanelInfo{OwnerClientID: clientIDs[1]}
 		}
 	}
+	return nil
 }
 
-func (g *GameInfo) AddObject(clientID string, param object.InitParam) {
+func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
 	id := uuid.New().String()
 	g.Objects[id] = object.Object{
 		ID:            id,
@@ -40,13 +48,21 @@ func (g *GameInfo) AddObject(clientID string, param object.InitParam) {
 	}
 }
 
-func (g *GameInfo) Marshal() []byte {
+func (g *GameHandler) MoveObject(objectID string, moveInfo action.Move) {
+	switch moveInfo.Type {
+	case action.MoveTypeDirect:
+	case action.MoveTypeAbs:
+
+	}
+}
+
+func (g *GameHandler) GetInfo() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(g)
 	return buf.Bytes()
 }
 
-func (g *GameInfo) Unmarshal(data []byte) {
+func (g *GameHandler) ParseInfo(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(g)
 }

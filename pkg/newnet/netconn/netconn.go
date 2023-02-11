@@ -45,10 +45,13 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		case pb.Request_SENDSIGNAL:
 			if err := s.HandleSignal(msg.GetClientID(), msg.GetSignal()); err != nil {
 				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
-				return fmt.Errorf("failed to send signal: %v", err)
+				return fmt.Errorf("failed to send signal: %w", err)
 			}
 		case pb.Request_ACTION:
-			// TODO(未実装)
+			if err := s.HandleAction(msg.GetClientID(), msg.GetAct()); err != nil {
+				logger.Error("Failed to handle action %v: %+v", msg.GetAct(), err)
+				return fmt.Errorf("failed to handle action: %w", err)
+			}
 		default:
 			return fmt.Errorf("invalid message type: %v", msg.GetType())
 		}

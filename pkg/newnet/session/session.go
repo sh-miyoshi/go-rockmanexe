@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
@@ -17,6 +17,14 @@ const (
 	stateActing
 	stateGameEnd
 )
+
+type GameLogic interface {
+	Init(clientIDs [2]string) error
+	AddObject(clientID string, param object.InitParam)
+	MoveObject(objectID string, moveInfo action.Move)
+	GetInfo() []byte
+	ParseInfo(data []byte)
+}
 
 type sessionError struct {
 	generatorClientID string
@@ -30,13 +38,13 @@ type SessionClient struct {
 }
 
 type Session struct {
-	id        string
-	clients   [2]SessionClient
-	expiresAt time.Time
-	gameInfo  gameinfo.GameInfo
-	exitErr   *sessionError
-	fpsMgr    fps.Fps
-	state     int
+	id          string
+	clients     [2]SessionClient
+	expiresAt   time.Time
+	gameHandler GameLogic
+	exitErr     *sessionError
+	fpsMgr      fps.Fps
+	state       int
 
 	// TODO
 	/*
@@ -46,15 +54,13 @@ type Session struct {
 	*/
 }
 
-func newSession(sessionID string) *Session {
+func newSession(sessionID string, gameHandler GameLogic) *Session {
 	res := &Session{
-		id:        sessionID,
-		expiresAt: time.Now().Add(sessionExpireTime),
-		fpsMgr:    fps.Fps{TargetFPS: 60},
-		state:     stateConnectWait,
-		gameInfo: gameinfo.GameInfo{
-			Objects: make(map[string]object.Object),
-		},
+		id:          sessionID,
+		expiresAt:   time.Now().Add(sessionExpireTime),
+		fpsMgr:      fps.Fps{TargetFPS: 60},
+		state:       stateConnectWait,
+		gameHandler: gameHandler,
 	}
 	return res
 }
@@ -103,7 +109,7 @@ MAIN_LOOP:
 				s.clients[i].chipSent = false
 				clientIDs[i] = s.clients[i].clientID
 			}
-			s.gameInfo.Init(clientIDs)
+			s.gameHandler.Init(clientIDs)
 			s.changeState(stateChipSelectWait)
 		case stateChipSelectWait:
 			for _, c := range s.clients {
@@ -170,7 +176,23 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 	case pb.Request_INITPARAMS:
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())
-		s.gameInfo.AddObject(clientID, obj)
+		s.gameHandler.AddObject(clientID, obj)
+	}
+	return nil
+}
+
+func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
+	switch act.GetType() {
+	case pb.Request_MOVE:
+		var move action.Move
+		move.Unmarshal(act.GetRawData())
+		panic("TODO: 未実装")
+	case pb.Request_BUSTER:
+		panic("TODO: 未実装")
+	case pb.Request_CHIPUSE:
+		panic("TODO: 未実装")
+	default:
+		return fmt.Errorf("invalid action type %d is specified", act.GetType())
 	}
 	return nil
 }
@@ -212,7 +234,7 @@ func (s *Session) publishGameInfo() {
 		err := c.dataStream.Send(&pb.Response{
 			Type: pb.Response_DATA,
 			Data: &pb.Response_RawData{
-				RawData: s.gameInfo.Marshal(),
+				RawData: s.gameHandler.GetInfo(),
 			},
 		})
 		if err != nil {
