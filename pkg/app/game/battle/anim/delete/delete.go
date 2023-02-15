@@ -1,9 +1,10 @@
-package common
+package deleteanim
 
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -15,7 +16,7 @@ type deleteAction struct {
 	count int
 }
 
-func NewDelete(image int, pos common.Point, isPlayer bool) {
+func New(image int, pos common.Point, isPlayer bool) {
 	if isPlayer {
 		sound.On(sound.SEPlayerDeleted)
 	} else {
@@ -39,7 +40,7 @@ func (p *deleteAction) Process() (bool, error) {
 }
 
 func (p *deleteAction) Draw() {
-	view := ViewPos(p.pos)
+	view := battlecommon.ViewPos(p.pos)
 
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.image, true)

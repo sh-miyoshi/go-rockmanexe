@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -340,7 +341,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if p.HP <= 0 {
 		// Player deleted
 		img := &imgPlayers[battlecommon.PlayerActDamage][1]
-		battlecommon.NewDelete(*img, p.Pos, true)
+		deleteanim.New(*img, p.Pos, true)
 		*img = -1 // DeleteGraph at delete animation
 		p.NextAction = NextActLose
 		p.EnableAct = false
