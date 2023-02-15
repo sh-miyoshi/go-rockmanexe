@@ -3,7 +3,6 @@ package field
 import (
 	"fmt"
 
-	originaldxlib "github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -263,7 +262,7 @@ func Set4x4Area() {
 	FieldNum = common.Point{X: 8, Y: 4}
 	common.ScreenSize = common.Point{X: 640, Y: 480}
 	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
-	originaldxlib.SetWindowSize(640, 480)
+	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
@@ -271,7 +270,7 @@ func ResetSet4x4Area() {
 		FieldNum = common.Point{X: 6, Y: 3}
 		common.ScreenSize = common.Point{X: 480, Y: 320}
 		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
-		originaldxlib.SetWindowSize(480, 320)
+		dxlib.SetWindowSize(480, 320)
 	}
 }
 

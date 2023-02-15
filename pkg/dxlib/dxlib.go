@@ -281,3 +281,11 @@ func DrawLine(x1, y1, x2, y2 int, color uint) {
 
 	dxlib.DrawLine(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color))
 }
+
+func SetWindowSize(width int32, height int32) {
+	if disabled {
+		return
+	}
+
+	dxlib.SetWindowSize(width, height)
+}
