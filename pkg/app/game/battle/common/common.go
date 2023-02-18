@@ -2,11 +2,10 @@ package common
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
 // MoveObject ...
-func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
 	next := *pos
 
 	// Check field out
@@ -36,7 +35,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 	return MoveObjectDirect(pos, next, objPanelType, isMove, GetPanelInfo)
 }
 
-func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
 	pn := GetPanelInfo(target)
 	// Object exists?
 	if pn.ObjectID != "" {

@@ -58,3 +58,10 @@ const (
 
 	PanelStatusMax
 )
+
+type PanelInfo struct {
+	Type      int
+	ObjectID  string
+	Status    int
+	HoleCount int
+}

@@ -6,11 +6,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
+
+type extendPanelInfo struct {
+	info      battlecommon.PanelInfo
+	objExists bool
+}
 
 const (
 	panelReturnAnimCount = 60
@@ -38,28 +44,19 @@ const (
 	tmpPanelStatusMax
 )
 
-type PanelInfo struct {
-	objExists bool
-
-	Type      int
-	ObjectID  string
-	Status    int
-	HoleCount int
-}
-
 var (
 	imgPanel      [tmpPanelStatusMax][panelTypeMax]int
 	blackoutCount = 0
-	panels        [][]PanelInfo
+	panels        [][]extendPanelInfo
 )
 
 // Init ...
 func Init() error {
 	logger.Info("Initialize battle field data")
 
-	panels = make([][]PanelInfo, tmpFieldNum.X)
+	panels = make([][]extendPanelInfo, tmpFieldNum.X)
 	for i := 0; i < tmpFieldNum.X; i++ {
-		panels[i] = make([]PanelInfo, tmpFieldNum.Y)
+		panels[i] = make([]extendPanelInfo, tmpFieldNum.Y)
 	}
 
 	// Initialize images
@@ -86,10 +83,12 @@ func Init() error {
 			t = PanelTypeEnemy
 		}
 		for y := 0; y < tmpFieldNum.Y; y++ {
-			panels[x][y] = PanelInfo{
-				Status:    tmpPanelStatusNormal,
-				Type:      t,
-				HoleCount: 0,
+			panels[x][y] = extendPanelInfo{
+				info: battlecommon.PanelInfo{
+					Status:    tmpPanelStatusNormal,
+					Type:      t,
+					HoleCount: 0,
+				},
 				objExists: false,
 			}
 		}
@@ -122,16 +121,16 @@ func End() {
 func Draw() {
 	for x := 0; x < tmpFieldNum.X; x++ {
 		for y := 0; y < tmpFieldNum.Y; y++ {
-			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
+			img := imgPanel[panels[x][y].info.Status][panels[x][y].info.Type]
 			vx := tmpPanelSize.X * x
 			vy := tmpDrawPanelTopY + tmpPanelSize.Y*y
 
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].HoleCount > 0 {
-				if panels[x][y].HoleCount < panelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
-					img = imgPanel[tmpPanelStatusHole][panels[x][y].Type]
+			if panels[x][y].info.HoleCount > 0 {
+				if panels[x][y].info.HoleCount < panelReturnAnimCount && (panels[x][y].info.HoleCount/2)%2 == 0 {
+					img = imgPanel[tmpPanelStatusHole][panels[x][y].info.Type]
 				}
 			}
 
@@ -161,14 +160,14 @@ func Update() {
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
-			panels[x][y].ObjectID = ""
+			panels[x][y].info.ObjectID = ""
 		}
 	}
 
 	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
 	for _, obj := range objs {
-		panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ObjID
-		if panels[obj.Pos.X][obj.Pos.Y].Status == tmpPanelStatusCrack {
+		panels[obj.Pos.X][obj.Pos.Y].info.ObjectID = obj.ObjID
+		if panels[obj.Pos.X][obj.Pos.Y].info.Status == tmpPanelStatusCrack {
 			panels[obj.Pos.X][obj.Pos.Y].objExists = true
 		}
 	}
@@ -180,37 +179,37 @@ func Update() {
 	// Panel status update
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
-			if panels[x][y].HoleCount > 0 {
-				panels[x][y].HoleCount--
+			if panels[x][y].info.HoleCount > 0 {
+				panels[x][y].info.HoleCount--
 			}
 
-			switch panels[x][y].Status {
+			switch panels[x][y].info.Status {
 			case tmpPanelStatusHole:
-				if panels[x][y].HoleCount <= panelReturnAnimCount {
-					panels[x][y].Status = tmpPanelStatusNormal
+				if panels[x][y].info.HoleCount <= panelReturnAnimCount {
+					panels[x][y].info.Status = tmpPanelStatusNormal
 				}
 			case tmpPanelStatusCrack:
 				// Objectが乗って離れたらHole状態へ
-				if panels[x][y].objExists && panels[x][y].ObjectID == "" {
+				if panels[x][y].objExists && panels[x][y].info.ObjectID == "" {
 					sound.On(sound.SEPanelBreak)
 					panels[x][y].objExists = false
-					panels[x][y].Status = tmpPanelStatusHole
-					panels[x][y].HoleCount = panelHoleCount
+					panels[x][y].info.Status = tmpPanelStatusHole
+					panels[x][y].info.HoleCount = panelHoleCount
 				}
 			}
 		}
 	}
 }
 
-func GetPanelInfo(pos common.Point) PanelInfo {
+func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
-		return PanelInfo{}
+		return battlecommon.PanelInfo{}
 	}
 
 	// Update objectID to latest
-	panels[pos.X][pos.Y].ObjectID = objanim.ExistsObject(pos)
+	panels[pos.X][pos.Y].info.ObjectID = objanim.ExistsObject(pos)
 
-	return panels[pos.X][pos.Y]
+	return panels[pos.X][pos.Y].info
 }
 
 func SetBlackoutCount(cnt int) {
@@ -226,7 +225,7 @@ func ChangePanelType(pos common.Point, pnType int) {
 		return
 	}
 
-	panels[pos.X][pos.Y].Type = pnType
+	panels[pos.X][pos.Y].info.Type = pnType
 }
 
 func PanelBreak(pos common.Point) {
@@ -234,15 +233,15 @@ func PanelBreak(pos common.Point) {
 		return
 	}
 
-	if panels[pos.X][pos.Y].Status == tmpPanelStatusHole {
+	if panels[pos.X][pos.Y].info.Status == tmpPanelStatusHole {
 		return
 	}
 
-	if panels[pos.X][pos.Y].ObjectID != "" {
-		panels[pos.X][pos.Y].Status = tmpPanelStatusCrack
+	if panels[pos.X][pos.Y].info.ObjectID != "" {
+		panels[pos.X][pos.Y].info.Status = tmpPanelStatusCrack
 	} else {
-		panels[pos.X][pos.Y].Status = tmpPanelStatusHole
-		panels[pos.X][pos.Y].HoleCount = panelHoleCount
+		panels[pos.X][pos.Y].info.Status = tmpPanelStatusHole
+		panels[pos.X][pos.Y].info.HoleCount = panelHoleCount
 	}
 }
 
@@ -251,11 +250,11 @@ func PanelCrack(pos common.Point) {
 		return
 	}
 
-	if panels[pos.X][pos.Y].Status == tmpPanelStatusHole {
+	if panels[pos.X][pos.Y].info.Status == tmpPanelStatusHole {
 		return
 	}
 
-	panels[pos.X][pos.Y].Status = tmpPanelStatusCrack
+	panels[pos.X][pos.Y].info.Status = tmpPanelStatusCrack
 }
 
 func Set4x4Area() {

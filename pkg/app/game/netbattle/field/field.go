@@ -79,7 +79,7 @@ func (f *Field) Draw() {
 	}
 }
 
-func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
+func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 	ginfo := netconn.GetInst().GetGameInfo()
 	clientID := config.Get().Net.ClientID
 
@@ -96,7 +96,7 @@ func GetPanelInfo(pos common.Point) battlefield.PanelInfo {
 		pnType = battlefield.PanelTypeEnemy
 	}
 
-	return battlefield.PanelInfo{
+	return battlecommon.PanelInfo{
 		Type:     pnType,
 		ObjectID: id,
 
