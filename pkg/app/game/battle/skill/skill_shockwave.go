@@ -108,7 +108,7 @@ func (p *shockWave) Process() (bool, error) {
 	}
 	p.count++
 
-	if p.pos.X < 0 || p.pos.X > field.FieldNum.X {
+	if p.pos.X < 0 || p.pos.X > battlecommon.FieldNum.X {
 		return true, nil
 	}
 	return false, nil

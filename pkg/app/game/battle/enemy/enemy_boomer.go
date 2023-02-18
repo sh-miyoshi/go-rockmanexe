@@ -123,7 +123,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 
 		if cnt == boomerActNextStepCount/2 {
 			// 次の行動を決定
-			if e.pm.Pos.Y == 0 || e.pm.Pos.Y == field.FieldNum.Y-1 {
+			if e.pm.Pos.Y == 0 || e.pm.Pos.Y == battlecommon.FieldNum.Y-1 {
 				e.state = boomerStateWait
 				e.nextState = boomerStateAtk
 				e.waitCount = 60
@@ -139,11 +139,11 @@ func (e *enemyBoomer) Process() (bool, error) {
 					e.direct = common.DirectDown
 				}
 			} else { // Down
-				if e.nextY < field.FieldNum.Y-1 {
+				if e.nextY < battlecommon.FieldNum.Y-1 {
 					e.nextY++
 				}
 
-				if e.nextY == field.FieldNum.Y-1 {
+				if e.nextY == battlecommon.FieldNum.Y-1 {
 					e.direct = common.DirectUp
 				}
 			}

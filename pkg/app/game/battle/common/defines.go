@@ -1,5 +1,7 @@
 package common
 
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+
 const (
 	GaugeMaxCount               = 1200
 	ChargeTime                  = 180 // TODO 変数化
@@ -42,3 +44,5 @@ const (
 
 	PlayerMindStatusMax
 )
+
+var FieldNum = common.Point{X: 6, Y: 3}

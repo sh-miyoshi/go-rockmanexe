@@ -133,8 +133,8 @@ func (e *enemyGaroo) Process() (bool, error) {
 
 		for i := 0; i < 10; i++ {
 			next := common.Point{
-				X: rand.Intn(field.FieldNum.X/2) + field.FieldNum.X/2,
-				Y: rand.Intn(field.FieldNum.Y),
+				X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
+				Y: rand.Intn(battlecommon.FieldNum.Y),
 			}
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,

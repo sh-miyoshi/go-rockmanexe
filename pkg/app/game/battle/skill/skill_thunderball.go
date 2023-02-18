@@ -91,7 +91,7 @@ func (p *thunderBall) Process() (bool, error) {
 				return true, nil
 			}
 
-			if p.pos.X < 0 || p.pos.X > field.FieldNum.X || p.pos.Y < 0 || p.pos.Y > field.FieldNum.Y {
+			if p.pos.X < 0 || p.pos.X > battlecommon.FieldNum.X || p.pos.Y < 0 || p.pos.Y > battlecommon.FieldNum.Y {
 				return true, nil
 			}
 		}

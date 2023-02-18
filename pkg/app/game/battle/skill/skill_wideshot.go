@@ -124,13 +124,13 @@ func (p *wideShot) Process() (bool, error) {
 				p.pos.X--
 			}
 
-			if p.pos.X >= field.FieldNum.X || p.pos.X < 0 {
+			if p.pos.X >= battlecommon.FieldNum.X || p.pos.X < 0 {
 				return true, nil
 			}
 
 			for i := -1; i <= 1; i++ {
 				y := p.pos.Y + i
-				if y < 0 || y >= field.FieldNum.Y {
+				if y < 0 || y >= battlecommon.FieldNum.Y {
 					continue
 				}
 

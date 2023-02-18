@@ -84,7 +84,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			posX -= 2
 		}
 
-		for y := 0; y < field.FieldNum.Y; y++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			res.pillars = append(res.pillars, &flamePillar{
 				Arg:   arg,
 				state: flamePillarStateWakeup,
@@ -135,7 +135,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 			x := p.pillars[0].point.X
 			if p.isPlayer {
 				x++
-				if x >= field.FieldNum.X {
+				if x >= battlecommon.FieldNum.X {
 					return true, nil
 				}
 			} else {

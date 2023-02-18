@@ -39,17 +39,17 @@ const (
 func newBoomerang(objID string, arg Argument) *boomerang {
 	// TODO(直線移動)
 	sx := 0
-	sy := field.FieldNum.Y - 1
+	sy := battlecommon.FieldNum.Y - 1
 	act := boomerangActTypeCounterClockwise
 	px := -1
 	if arg.TargetType == damage.TargetPlayer {
 		// 敵の攻撃
-		sx = field.FieldNum.X - 2
+		sx = battlecommon.FieldNum.X - 2
 		sy = objanim.GetObjPos(arg.OwnerID).Y
-		if sy == field.FieldNum.Y-1 {
+		if sy == battlecommon.FieldNum.Y-1 {
 			act = boomerangActTypeClockwise
 		}
-		px = field.FieldNum.X - 1
+		px = battlecommon.FieldNum.X - 1
 	}
 
 	return &boomerang{
@@ -106,13 +106,13 @@ func (p *boomerang) Process() (bool, error) {
 					p.turnNum++
 					p.next.Y++
 				} else {
-					if p.next.X == field.FieldNum.X-1 {
+					if p.next.X == battlecommon.FieldNum.X-1 {
 						p.turnNum++
 					}
 					p.next.X--
 				}
-			} else if p.next.Y == field.FieldNum.Y-1 {
-				if p.next.X == field.FieldNum.X-1 && p.turnNum < 2 {
+			} else if p.next.Y == battlecommon.FieldNum.Y-1 {
+				if p.next.X == battlecommon.FieldNum.X-1 && p.turnNum < 2 {
 					p.turnNum++
 					p.next.Y--
 				} else {
@@ -130,7 +130,7 @@ func (p *boomerang) Process() (bool, error) {
 			}
 		case boomerangActTypeClockwise:
 			if p.next.Y == 0 {
-				if p.next.X == field.FieldNum.X-1 && p.turnNum < 2 {
+				if p.next.X == battlecommon.FieldNum.X-1 && p.turnNum < 2 {
 					p.turnNum++
 					p.next.Y++
 				} else {
@@ -139,12 +139,12 @@ func (p *boomerang) Process() (bool, error) {
 					}
 					p.next.X++
 				}
-			} else if p.next.Y == field.FieldNum.Y-1 {
+			} else if p.next.Y == battlecommon.FieldNum.Y-1 {
 				if p.next.X == 0 && p.turnNum < 2 {
 					p.turnNum++
 					p.next.Y--
 				} else {
-					if p.next.X == field.FieldNum.X-1 {
+					if p.next.X == battlecommon.FieldNum.X-1 {
 						p.turnNum++
 					}
 					p.next.X--
@@ -162,7 +162,7 @@ func (p *boomerang) Process() (bool, error) {
 	}
 
 	p.count++
-	if p.pos.X < 0 || p.pos.X >= field.FieldNum.X || p.pos.Y < 0 || p.pos.Y >= field.FieldNum.Y {
+	if p.pos.X < 0 || p.pos.X >= battlecommon.FieldNum.X || p.pos.Y < 0 || p.pos.Y >= battlecommon.FieldNum.Y {
 		return true, nil
 	}
 	return false, nil

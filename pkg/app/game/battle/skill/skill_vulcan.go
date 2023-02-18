@@ -63,7 +63,7 @@ func (p *vulcan) Process() (bool, error) {
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
-			for x := pos.X + 1; x < field.FieldNum.X; x++ {
+			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
 				if field.GetPanelInfo(target).ObjectID != "" {
 					damage.New(damage.Damage{
@@ -76,7 +76,7 @@ func (p *vulcan) Process() (bool, error) {
 						DamageType:    damage.TypeNone,
 					})
 					anim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
-					if p.hit && x < field.FieldNum.X-1 {
+					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
 						anim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
 						damage.New(damage.Damage{

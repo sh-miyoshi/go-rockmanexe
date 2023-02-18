@@ -558,7 +558,7 @@ func (a *act) Process() bool {
 			}
 
 			y := a.pPos.Y
-			for x := a.pPos.X + 1; x < field.FieldNum.X; x++ {
+			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				pos := common.Point{X: x, Y: y}
 				if field.GetPanelInfo(pos).ObjectID != "" {

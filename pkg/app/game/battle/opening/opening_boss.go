@@ -89,7 +89,7 @@ func (b *Boss) Draw() {
 	color := dxlib.GetColor(17, 168, 10)
 
 	// horizontal lines
-	for i := 0; i < field.FieldNum.Y+1; i++ {
+	for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
 		y := field.DrawPanelTopY + i*field.PanelSize.Y
 		len := (b.count - i*10) * 40
 		if len > common.ScreenSize.X {
@@ -100,11 +100,11 @@ func (b *Boss) Draw() {
 	}
 
 	// vertical lines
-	for i := 0; i < field.FieldNum.X-1; i++ {
+	for i := 0; i < battlecommon.FieldNum.X-1; i++ {
 		x := (i + 1) * field.PanelSize.X
 		len := (b.count - 40) * 40
 		s := 0
-		delay := 45 + common.MountainIndex(i, field.FieldNum.X-1)*5
+		delay := 45 + common.MountainIndex(i, battlecommon.FieldNum.X-1)*5
 		if b.count >= delay {
 			s = (b.count - delay) * 20
 			if s > field.DrawPanelTopY {

@@ -17,7 +17,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 		}
 		next.Y--
 	case common.DirectDown:
-		if next.Y >= field.FieldNum.Y-1 {
+		if next.Y >= FieldNum.Y-1 {
 			return false
 		}
 		next.Y++
@@ -27,7 +27,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 		}
 		next.X--
 	case common.DirectRight:
-		if next.X >= field.FieldNum.X-1 {
+		if next.X >= FieldNum.X-1 {
 			return false
 		}
 		next.X++

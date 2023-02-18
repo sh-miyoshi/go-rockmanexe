@@ -18,9 +18,9 @@ const (
 )
 
 var (
-	FieldNum      = common.Point{X: 6, Y: 3}
+	tmpFieldNum   = common.Point{X: 6, Y: 3} // TODO: 要修正
 	PanelSize     = common.Point{X: 80, Y: 50}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
 )
 
 const (
@@ -57,9 +57,9 @@ var (
 func Init() error {
 	logger.Info("Initialize battle field data")
 
-	panels = make([][]PanelInfo, FieldNum.X)
-	for i := 0; i < FieldNum.X; i++ {
-		panels[i] = make([]PanelInfo, FieldNum.Y)
+	panels = make([][]PanelInfo, tmpFieldNum.X)
+	for i := 0; i < tmpFieldNum.X; i++ {
+		panels[i] = make([]PanelInfo, tmpFieldNum.Y)
 	}
 
 	// Initialize images
@@ -80,12 +80,12 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := 0; x < FieldNum.X; x++ {
+	for x := 0; x < tmpFieldNum.X; x++ {
 		t := PanelTypePlayer
-		if x >= FieldNum.X/2 {
+		if x >= tmpFieldNum.X/2 {
 			t = PanelTypeEnemy
 		}
-		for y := 0; y < FieldNum.Y; y++ {
+		for y := 0; y < tmpFieldNum.Y; y++ {
 			panels[x][y] = PanelInfo{
 				Status:    PanelStatusNormal,
 				Type:      t,
@@ -120,8 +120,8 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := 0; x < FieldNum.X; x++ {
-		for y := 0; y < FieldNum.Y; y++ {
+	for x := 0; x < tmpFieldNum.X; x++ {
+		for y := 0; y < tmpFieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
 			vx := PanelSize.X * x
 			vy := DrawPanelTopY + PanelSize.Y*y
@@ -203,7 +203,7 @@ func Update() {
 }
 
 func GetPanelInfo(pos common.Point) PanelInfo {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
 		return PanelInfo{}
 	}
 
@@ -222,7 +222,7 @@ func IsBlackout() bool {
 }
 
 func ChangePanelType(pos common.Point, pnType int) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
 		return
 	}
 
@@ -230,7 +230,7 @@ func ChangePanelType(pos common.Point, pnType int) {
 }
 
 func PanelBreak(pos common.Point) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
 		return
 	}
 
@@ -247,7 +247,7 @@ func PanelBreak(pos common.Point) {
 }
 
 func PanelCrack(pos common.Point) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
 		return
 	}
 
@@ -259,21 +259,21 @@ func PanelCrack(pos common.Point) {
 }
 
 func Set4x4Area() {
-	FieldNum = common.Point{X: 8, Y: 4}
+	tmpFieldNum = common.Point{X: 8, Y: 4}
 	common.ScreenSize = common.Point{X: 640, Y: 480}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
 	if Is4x4Area() {
-		FieldNum = common.Point{X: 6, Y: 3}
+		tmpFieldNum = common.Point{X: 6, Y: 3}
 		common.ScreenSize = common.Point{X: 480, Y: 320}
-		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }
 
 func Is4x4Area() bool {
-	return FieldNum.X == 8 && FieldNum.Y == 4
+	return tmpFieldNum.X == 8 && tmpFieldNum.Y == 4
 }
