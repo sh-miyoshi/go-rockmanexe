@@ -61,7 +61,7 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 func ViewPos(pos common.Point) common.Point {
 	return common.Point{
 		X: PanelSize.X*pos.X + PanelSize.X/2,
-		Y: field.DrawPanelTopY + PanelSize.Y*pos.Y - 10,
+		Y: DrawPanelTopY + PanelSize.Y*pos.Y - 10,
 	}
 }
 

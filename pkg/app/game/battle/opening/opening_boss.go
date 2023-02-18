@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -90,7 +89,7 @@ func (b *Boss) Draw() {
 
 	// horizontal lines
 	for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
-		y := field.DrawPanelTopY + i*battlecommon.PanelSize.Y
+		y := battlecommon.DrawPanelTopY + i*battlecommon.PanelSize.Y
 		len := (b.count - i*10) * 40
 		if len > common.ScreenSize.X {
 			len = common.ScreenSize.X
@@ -107,12 +106,12 @@ func (b *Boss) Draw() {
 		delay := 45 + common.MountainIndex(i, battlecommon.FieldNum.X-1)*5
 		if b.count >= delay {
 			s = (b.count - delay) * 20
-			if s > field.DrawPanelTopY {
-				s = field.DrawPanelTopY
+			if s > battlecommon.DrawPanelTopY {
+				s = battlecommon.DrawPanelTopY
 			}
 		}
 
-		maxLen := common.ScreenSize.Y - field.DrawPanelTopY
+		maxLen := common.ScreenSize.Y - battlecommon.DrawPanelTopY
 		if len > maxLen {
 			len = maxLen
 		}

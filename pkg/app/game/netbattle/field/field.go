@@ -72,7 +72,7 @@ func (f *Field) Draw() {
 			}
 			img := f.imgPanel[panels[x][y].Status][typ]
 			vx := battlecommon.PanelSize.X * x
-			vy := battlefield.DrawPanelTopY + battlecommon.PanelSize.Y*y
+			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
 
 			dxlib.DrawGraph(vx, vy, img, true)
 		}

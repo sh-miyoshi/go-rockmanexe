@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -56,7 +55,7 @@ func drawObject(images [object.TypeMax][]int, obj object.Object, opt Option) {
 
 	if len(obj.Chips) > 0 && opt.ViewChip {
 		x := battlecommon.PanelSize.X*obj.X + battlecommon.PanelSize.X/2 - 18
-		y := field.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Y - 83
+		y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Y - 83
 		dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 		dxlib.DrawGraph(x, y, opt.ImgUnknownIcon, true)
 	}
