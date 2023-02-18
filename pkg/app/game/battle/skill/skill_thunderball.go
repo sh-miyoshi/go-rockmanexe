@@ -97,7 +97,7 @@ func (p *thunderBall) Process() (bool, error) {
 		}
 
 		pn := field.GetPanelInfo(p.pos)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

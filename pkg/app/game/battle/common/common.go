@@ -47,7 +47,7 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 		return false
 	}
 	// Panel Status
-	if pn.Status == field.PanelStatusHole {
+	if pn.Status == PanelStatusHole {
 		return false
 	}
 

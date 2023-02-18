@@ -234,7 +234,7 @@ func (p *flamePillar) Process() (bool, error) {
 	case flamePillarStateWakeup:
 		if p.count == 0 {
 			pn := field.GetPanelInfo(p.point)
-			if pn.Status == field.PanelStatusHole {
+			if pn.Status == battlecommon.PanelStatusHole {
 				p.state = flamePillarStateDeleted
 				return true, nil
 			}

@@ -75,7 +75,7 @@ func (o *WaterPipe) Process() (bool, error) {
 		sound.On(sound.SEObjectCreate)
 
 		pn := field.GetPanelInfo(o.pm.Pos)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 	}

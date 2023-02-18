@@ -77,7 +77,7 @@ func (p *waterBomb) Process() (bool, error) {
 
 	if p.count == waterBombEndCount {
 		pn := field.GetPanelInfo(p.target)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

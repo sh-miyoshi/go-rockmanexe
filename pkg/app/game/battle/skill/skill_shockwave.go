@@ -90,7 +90,7 @@ func (p *shockWave) Process() (bool, error) {
 		}
 
 		pn := field.GetPanelInfo(p.pos)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 
