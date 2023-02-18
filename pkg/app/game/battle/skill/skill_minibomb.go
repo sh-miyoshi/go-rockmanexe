@@ -43,13 +43,13 @@ func (p *miniBomb) Draw() {
 	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
-	size := field.PanelSize.X * (p.target.X - p.pos.X)
+	size := battlecommon.PanelSize.X * (p.target.X - p.pos.X)
 	ofsx := size * p.count / miniBombEndCount
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if p.target.Y != p.pos.Y {
-		size = field.PanelSize.Y * (p.target.Y - p.pos.Y)
+		size = battlecommon.PanelSize.Y * (p.target.Y - p.pos.Y)
 		dy := size * p.count / miniBombEndCount
 		ofsy += dy
 	}
@@ -66,7 +66,7 @@ func (p *miniBomb) Process() (bool, error) {
 
 	if p.count == miniBombEndCount {
 		pn := field.GetPanelInfo(p.target)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

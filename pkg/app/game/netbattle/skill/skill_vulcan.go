@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	netfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -77,7 +77,7 @@ func (p *vulcan) StopByPlayer() {
 func (p *vulcan) addDamage() {
 	hit := false
 	eff := effect.Effect{}
-	for x := p.x + 1; x < appfield.FieldNum.X; x++ {
+	for x := p.x + 1; x < battlecommon.FieldNum.X; x++ {
 		pn := netfield.GetPanelInfo(common.Point{X: x, Y: p.y})
 		if pn.ObjectID != "" {
 			netconn.GetInst().AddDamage(damage.Damage{
@@ -97,7 +97,7 @@ func (p *vulcan) addDamage() {
 				ViewOfsX: rand.Intn(2*20) - 20,
 				ViewOfsY: rand.Intn(2*20) - 20,
 			}
-			if p.hit && x < appfield.FieldNum.X-1 {
+			if p.hit && x < battlecommon.FieldNum.X-1 {
 				netconn.GetInst().AddDamage(damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x + 1,

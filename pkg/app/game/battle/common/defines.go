@@ -1,5 +1,7 @@
 package common
 
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+
 const (
 	GaugeMaxCount               = 1200
 	ChargeTime                  = 180 // TODO 変数化
@@ -42,3 +44,24 @@ const (
 
 	PlayerMindStatusMax
 )
+
+var (
+	FieldNum      = common.Point{X: 6, Y: 3}
+	PanelSize     = common.Point{X: 80, Y: 50}
+	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+)
+
+const (
+	PanelStatusNormal int = iota
+	PanelStatusCrack
+	PanelStatusHole
+
+	PanelStatusMax
+)
+
+type PanelInfo struct {
+	Type      int
+	ObjectID  string
+	Status    int
+	HoleCount int
+}

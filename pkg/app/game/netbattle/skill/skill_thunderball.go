@@ -3,7 +3,7 @@ package skill
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
@@ -67,7 +67,7 @@ func (p *thunderBall) Process() (bool, error) {
 				return true, nil
 			}
 
-			if p.x < 0 || p.x > field.FieldNum.X || p.y < 0 || p.y > field.FieldNum.Y {
+			if p.x < 0 || p.x > battlecommon.FieldNum.X || p.y < 0 || p.y > battlecommon.FieldNum.Y {
 				return true, nil
 			}
 		}

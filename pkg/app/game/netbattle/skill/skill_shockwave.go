@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -54,7 +54,7 @@ func (p *shockWave) Process() (bool, error) {
 		n := waveNum * waveDelay
 		if p.count%(n) == 11 {
 			p.x++
-			if p.x >= appfield.FieldNum.X {
+			if p.x >= battlecommon.FieldNum.X {
 				return true, nil
 			}
 

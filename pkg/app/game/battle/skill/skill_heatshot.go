@@ -63,7 +63,7 @@ func (p *heatShot) Process() (bool, error) {
 		sound.On(sound.SEGun)
 
 		pos := objanim.GetObjPos(p.Arg.OwnerID)
-		for x := pos.X + 1; x < field.FieldNum.X; x++ {
+		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
 				// Hit

@@ -57,7 +57,7 @@ func (p *skillAreaSteal) Draw() {
 			ino = len(imgAreaStealMain) - 1
 		}
 
-		for y := 0; y < field.FieldNum.Y; y++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
 			dxlib.DrawRotaGraph(view.X, view.Y+ofs, 1, 0, imgAreaStealMain[ino], true)
 		}
@@ -66,7 +66,7 @@ func (p *skillAreaSteal) Draw() {
 		if ino >= len(imgAreaStealPanel) {
 			ino = len(imgAreaStealPanel) - 1
 		}
-		for y := 0; y < field.FieldNum.Y; y++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
 			dxlib.DrawRotaGraph(view.X, view.Y+30, 1, 0, imgAreaStealPanel[ino], true)
 		}
@@ -85,8 +85,8 @@ func (p *skillAreaSteal) Process() (bool, error) {
 
 			// Target Lineを実行時の一番最初に設定する
 			if p.myPanelType == field.PanelTypePlayer {
-				for x := 1; x < field.FieldNum.X; x++ {
-					for y := 0; y < field.FieldNum.Y; y++ {
+				for x := 1; x < battlecommon.FieldNum.X; x++ {
+					for y := 0; y < battlecommon.FieldNum.Y; y++ {
 						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
 						if pn.Type != field.PanelTypePlayer {
 							p.targetLineX = x
@@ -95,8 +95,8 @@ func (p *skillAreaSteal) Process() (bool, error) {
 					}
 				}
 			} else {
-				for x := field.FieldNum.X - 2; x >= 0; x-- {
-					for y := 0; y < field.FieldNum.Y; y++ {
+				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
+					for y := 0; y < battlecommon.FieldNum.Y; y++ {
 						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
 						if pn.Type != field.PanelTypeEnemy {
 							p.targetLineX = x
@@ -117,7 +117,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 	case areaStealStateHit:
 		max := delayAreaStealHit * len(imgAreaStealPanel)
 		if p.count >= max {
-			for y := 0; y < field.FieldNum.Y; y++ {
+			for y := 0; y < battlecommon.FieldNum.Y; y++ {
 				pos := common.Point{X: p.targetLineX, Y: y}
 				pn := field.GetPanelInfo(pos)
 				if pn.ObjectID != "" {
@@ -131,7 +131,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 						BigDamage:     false,
 						DamageType:    damage.TypeNone,
 					})
-				} else if p.targetLineX >= 1 && p.targetLineX < field.FieldNum.X-1 {
+				} else if p.targetLineX >= 1 && p.targetLineX < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え
 					// 最終ラインの場合は塗り替えない
 					field.ChangePanelType(pos, p.myPanelType)

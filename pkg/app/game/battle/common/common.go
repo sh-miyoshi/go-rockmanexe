@@ -2,11 +2,10 @@ package common
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
 // MoveObject ...
-func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
 	next := *pos
 
 	// Check field out
@@ -17,7 +16,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 		}
 		next.Y--
 	case common.DirectDown:
-		if next.Y >= field.FieldNum.Y-1 {
+		if next.Y >= FieldNum.Y-1 {
 			return false
 		}
 		next.Y++
@@ -27,7 +26,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 		}
 		next.X--
 	case common.DirectRight:
-		if next.X >= field.FieldNum.X-1 {
+		if next.X >= FieldNum.X-1 {
 			return false
 		}
 		next.X++
@@ -36,7 +35,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 	return MoveObjectDirect(pos, next, objPanelType, isMove, GetPanelInfo)
 }
 
-func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) field.PanelInfo) bool {
+func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
 	pn := GetPanelInfo(target)
 	// Object exists?
 	if pn.ObjectID != "" {
@@ -47,7 +46,7 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 		return false
 	}
 	// Panel Status
-	if pn.Status == field.PanelStatusHole {
+	if pn.Status == PanelStatusHole {
 		return false
 	}
 
@@ -60,8 +59,8 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 
 func ViewPos(pos common.Point) common.Point {
 	return common.Point{
-		X: field.PanelSize.X*pos.X + field.PanelSize.X/2,
-		Y: field.DrawPanelTopY + field.PanelSize.Y*pos.Y - 10,
+		X: PanelSize.X*pos.X + PanelSize.X/2,
+		Y: DrawPanelTopY + PanelSize.Y*pos.Y - 10,
 	}
 }
 

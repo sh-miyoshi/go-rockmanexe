@@ -6,21 +6,21 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
+type extendPanelInfo struct {
+	info      battlecommon.PanelInfo
+	objExists bool
+}
+
 const (
 	panelReturnAnimCount = 60
 	panelHoleCount       = 480
-)
-
-var (
-	FieldNum      = common.Point{X: 6, Y: 3}
-	PanelSize     = common.Point{X: 80, Y: 50}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 )
 
 const (
@@ -31,47 +31,38 @@ const (
 )
 
 const (
-	PanelStatusNormal int = iota
-	PanelStatusCrack
-	PanelStatusHole
+	tmpPanelStatusNormal int = iota
+	tmpPanelStatusCrack
+	tmpPanelStatusHole
 
-	PanelStatusMax
+	tmpPanelStatusMax
 )
 
-type PanelInfo struct {
-	objExists bool
-
-	Type      int
-	ObjectID  string
-	Status    int
-	HoleCount int
-}
-
 var (
-	imgPanel      [PanelStatusMax][panelTypeMax]int
+	imgPanel      [tmpPanelStatusMax][panelTypeMax]int
 	blackoutCount = 0
-	panels        [][]PanelInfo
+	panels        [][]extendPanelInfo
 )
 
 // Init ...
 func Init() error {
 	logger.Info("Initialize battle field data")
 
-	panels = make([][]PanelInfo, FieldNum.X)
-	for i := 0; i < FieldNum.X; i++ {
-		panels[i] = make([]PanelInfo, FieldNum.Y)
+	panels = make([][]extendPanelInfo, battlecommon.FieldNum.X)
+	for i := 0; i < battlecommon.FieldNum.X; i++ {
+		panels[i] = make([]extendPanelInfo, battlecommon.FieldNum.Y)
 	}
 
 	// Initialize images
-	files := [PanelStatusMax]string{"normal", "crack", "hole"}
-	for i := 0; i < PanelStatusMax; i++ {
+	files := [tmpPanelStatusMax]string{"normal", "crack", "hole"}
+	for i := 0; i < tmpPanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
 		imgPanel[i][PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][PanelTypePlayer] < 0 {
 			return fmt.Errorf("failed to read player panel image %s", fname)
 		}
 	}
-	for i := 0; i < PanelStatusMax; i++ {
+	for i := 0; i < tmpPanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
 		imgPanel[i][PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][PanelTypeEnemy] < 0 {
@@ -80,16 +71,18 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := 0; x < FieldNum.X; x++ {
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
 		t := PanelTypePlayer
-		if x >= FieldNum.X/2 {
+		if x >= battlecommon.FieldNum.X/2 {
 			t = PanelTypeEnemy
 		}
-		for y := 0; y < FieldNum.Y; y++ {
-			panels[x][y] = PanelInfo{
-				Status:    PanelStatusNormal,
-				Type:      t,
-				HoleCount: 0,
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			panels[x][y] = extendPanelInfo{
+				info: battlecommon.PanelInfo{
+					Status:    tmpPanelStatusNormal,
+					Type:      t,
+					HoleCount: 0,
+				},
 				objExists: false,
 			}
 		}
@@ -107,7 +100,7 @@ func Init() error {
 // End ...
 func End() {
 	logger.Info("Cleanup battle field data")
-	for i := 0; i < PanelStatusMax; i++ {
+	for i := 0; i < tmpPanelStatusMax; i++ {
 		for j := 0; j < panelTypeMax; j++ {
 			dxlib.DeleteGraph(imgPanel[i][j])
 			imgPanel[i][j] = -1
@@ -120,18 +113,18 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := 0; x < FieldNum.X; x++ {
-		for y := 0; y < FieldNum.Y; y++ {
-			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
-			vx := PanelSize.X * x
-			vy := DrawPanelTopY + PanelSize.Y*y
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			img := imgPanel[panels[x][y].info.Status][panels[x][y].info.Type]
+			vx := battlecommon.PanelSize.X * x
+			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
 
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].HoleCount > 0 {
-				if panels[x][y].HoleCount < panelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
-					img = imgPanel[PanelStatusHole][panels[x][y].Type]
+			if panels[x][y].info.HoleCount > 0 {
+				if panels[x][y].info.HoleCount < panelReturnAnimCount && (panels[x][y].info.HoleCount/2)%2 == 0 {
+					img = imgPanel[tmpPanelStatusHole][panels[x][y].info.Type]
 				}
 			}
 
@@ -140,8 +133,8 @@ func Draw() {
 			if dm := damage.Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
-				x2 := vx + PanelSize.X
-				y2 := vy + PanelSize.Y
+				x2 := vx + battlecommon.PanelSize.X
+				y2 := vy + battlecommon.PanelSize.Y
 				const s = 5
 				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 			}
@@ -161,14 +154,14 @@ func Update() {
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
-			panels[x][y].ObjectID = ""
+			panels[x][y].info.ObjectID = ""
 		}
 	}
 
 	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
 	for _, obj := range objs {
-		panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ObjID
-		if panels[obj.Pos.X][obj.Pos.Y].Status == PanelStatusCrack {
+		panels[obj.Pos.X][obj.Pos.Y].info.ObjectID = obj.ObjID
+		if panels[obj.Pos.X][obj.Pos.Y].info.Status == tmpPanelStatusCrack {
 			panels[obj.Pos.X][obj.Pos.Y].objExists = true
 		}
 	}
@@ -180,37 +173,37 @@ func Update() {
 	// Panel status update
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
-			if panels[x][y].HoleCount > 0 {
-				panels[x][y].HoleCount--
+			if panels[x][y].info.HoleCount > 0 {
+				panels[x][y].info.HoleCount--
 			}
 
-			switch panels[x][y].Status {
-			case PanelStatusHole:
-				if panels[x][y].HoleCount <= panelReturnAnimCount {
-					panels[x][y].Status = PanelStatusNormal
+			switch panels[x][y].info.Status {
+			case tmpPanelStatusHole:
+				if panels[x][y].info.HoleCount <= panelReturnAnimCount {
+					panels[x][y].info.Status = tmpPanelStatusNormal
 				}
-			case PanelStatusCrack:
+			case tmpPanelStatusCrack:
 				// Objectが乗って離れたらHole状態へ
-				if panels[x][y].objExists && panels[x][y].ObjectID == "" {
+				if panels[x][y].objExists && panels[x][y].info.ObjectID == "" {
 					sound.On(sound.SEPanelBreak)
 					panels[x][y].objExists = false
-					panels[x][y].Status = PanelStatusHole
-					panels[x][y].HoleCount = panelHoleCount
+					panels[x][y].info.Status = tmpPanelStatusHole
+					panels[x][y].info.HoleCount = panelHoleCount
 				}
 			}
 		}
 	}
 }
 
-func GetPanelInfo(pos common.Point) PanelInfo {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
-		return PanelInfo{}
+func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
+		return battlecommon.PanelInfo{}
 	}
 
 	// Update objectID to latest
-	panels[pos.X][pos.Y].ObjectID = objanim.ExistsObject(pos)
+	panels[pos.X][pos.Y].info.ObjectID = objanim.ExistsObject(pos)
 
-	return panels[pos.X][pos.Y]
+	return panels[pos.X][pos.Y].info
 }
 
 func SetBlackoutCount(cnt int) {
@@ -222,58 +215,58 @@ func IsBlackout() bool {
 }
 
 func ChangePanelType(pos common.Point, pnType int) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
-	panels[pos.X][pos.Y].Type = pnType
+	panels[pos.X][pos.Y].info.Type = pnType
 }
 
 func PanelBreak(pos common.Point) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
-	if panels[pos.X][pos.Y].Status == PanelStatusHole {
+	if panels[pos.X][pos.Y].info.Status == tmpPanelStatusHole {
 		return
 	}
 
-	if panels[pos.X][pos.Y].ObjectID != "" {
-		panels[pos.X][pos.Y].Status = PanelStatusCrack
+	if panels[pos.X][pos.Y].info.ObjectID != "" {
+		panels[pos.X][pos.Y].info.Status = tmpPanelStatusCrack
 	} else {
-		panels[pos.X][pos.Y].Status = PanelStatusHole
-		panels[pos.X][pos.Y].HoleCount = panelHoleCount
+		panels[pos.X][pos.Y].info.Status = tmpPanelStatusHole
+		panels[pos.X][pos.Y].info.HoleCount = panelHoleCount
 	}
 }
 
 func PanelCrack(pos common.Point) {
-	if pos.X < 0 || pos.X >= FieldNum.X || pos.Y < 0 || pos.Y >= FieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
-	if panels[pos.X][pos.Y].Status == PanelStatusHole {
+	if panels[pos.X][pos.Y].info.Status == tmpPanelStatusHole {
 		return
 	}
 
-	panels[pos.X][pos.Y].Status = PanelStatusCrack
+	panels[pos.X][pos.Y].info.Status = tmpPanelStatusCrack
 }
 
 func Set4x4Area() {
-	FieldNum = common.Point{X: 8, Y: 4}
+	battlecommon.FieldNum = common.Point{X: 8, Y: 4}
 	common.ScreenSize = common.Point{X: 640, Y: 480}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+	battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
 	if Is4x4Area() {
-		FieldNum = common.Point{X: 6, Y: 3}
+		battlecommon.FieldNum = common.Point{X: 6, Y: 3}
 		common.ScreenSize = common.Point{X: 480, Y: 320}
-		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
+		battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }
 
 func Is4x4Area() bool {
-	return FieldNum.X == 8 && FieldNum.Y == 4
+	return battlecommon.FieldNum.X == 8 && battlecommon.FieldNum.Y == 4
 }

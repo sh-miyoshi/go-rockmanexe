@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -84,7 +83,7 @@ func (p *wideShot) Draw() {
 
 		c := p.count % p.NextStepCount
 		if c != 0 {
-			ofsx := battlecommon.GetOffset(next, p.pos.X, prev, c, p.NextStepCount, field.PanelSize.X)
+			ofsx := battlecommon.GetOffset(next, p.pos.X, prev, c, p.NextStepCount, battlecommon.PanelSize.X)
 			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true, opt)
 		}
 	}
@@ -124,13 +123,13 @@ func (p *wideShot) Process() (bool, error) {
 				p.pos.X--
 			}
 
-			if p.pos.X >= field.FieldNum.X || p.pos.X < 0 {
+			if p.pos.X >= battlecommon.FieldNum.X || p.pos.X < 0 {
 				return true, nil
 			}
 
 			for i := -1; i <= 1; i++ {
 				y := p.pos.Y + i
-				if y < 0 || y >= field.FieldNum.Y {
+				if y < 0 || y >= battlecommon.FieldNum.Y {
 					continue
 				}
 

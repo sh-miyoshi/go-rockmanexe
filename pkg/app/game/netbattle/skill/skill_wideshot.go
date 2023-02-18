@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	appfield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -72,7 +72,7 @@ func (p *wideShot) Process() (bool, error) {
 	if p.count > num*delay {
 		if p.count%p.nextStepCount == 0 {
 			p.x++
-			if p.x >= appfield.FieldNum.X {
+			if p.x >= battlecommon.FieldNum.X {
 				return true, nil
 			}
 

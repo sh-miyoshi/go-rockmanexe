@@ -264,8 +264,8 @@ func (p *BattlePlayer) Draw() {
 		const px = 3
 		max := n * px
 		for i := 0; i < n; i++ {
-			x := field.PanelSize.X*p.Pos.X + field.PanelSize.X/2 - 2 + (i * px) - max
-			y := field.DrawPanelTopY + field.PanelSize.Y*p.Pos.Y - 10 - 81 + (i * px) - max
+			x := battlecommon.PanelSize.X*p.Pos.X + battlecommon.PanelSize.X/2 - 2 + (i * px) - max
+			y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*p.Pos.Y - 10 - 81 + (i * px) - max
 			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
 			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
@@ -558,7 +558,7 @@ func (a *act) Process() bool {
 			}
 
 			y := a.pPos.Y
-			for x := a.pPos.X + 1; x < field.FieldNum.X; x++ {
+			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				pos := common.Point{X: x, Y: y}
 				if field.GetPanelInfo(pos).ObjectID != "" {

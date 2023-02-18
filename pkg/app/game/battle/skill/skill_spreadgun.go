@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -62,7 +61,7 @@ func (p *spreadGun) Process() (bool, error) {
 		sound.On(sound.SEGun)
 
 		pos := objanim.GetObjPos(p.Arg.OwnerID)
-		for x := pos.X + 1; x < field.FieldNum.X; x++ {
+		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
 			objs := objanim.GetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
 			if len(objs) > 0 {
@@ -79,14 +78,14 @@ func (p *spreadGun) Process() (bool, error) {
 				})
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
-					if pos.Y+sy < 0 || pos.Y+sy >= field.FieldNum.Y {
+					if pos.Y+sy < 0 || pos.Y+sy >= battlecommon.FieldNum.Y {
 						continue
 					}
 					for sx := -1; sx <= 1; sx++ {
 						if sy == 0 && sx == 0 {
 							continue
 						}
-						if x+sx >= 0 && x+sx < field.FieldNum.X {
+						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
 							anim.New(&spreadHit{
 								Arg: p.Arg,
 								pos: common.Point{X: x + sx, Y: pos.Y + sy},

@@ -51,7 +51,7 @@ func (p *aquamanShot) Process() (bool, error) {
 
 	if p.ofs.X < -size {
 		pn := field.GetPanelInfo(p.target)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

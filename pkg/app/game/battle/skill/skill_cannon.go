@@ -77,7 +77,7 @@ func (p *cannon) Process() (bool, error) {
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
-			for x := pos.X + 1; x < field.FieldNum.X; x++ {
+			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					damage.New(dm)
