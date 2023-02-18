@@ -23,12 +23,6 @@ const (
 	panelHoleCount       = 480
 )
 
-var (
-	tmpFieldNum      = common.Point{X: 6, Y: 3} // TODO: 要修正
-	tmpPanelSize     = common.Point{X: 80, Y: 50}
-	tmpDrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
-)
-
 const (
 	PanelTypePlayer int = iota
 	PanelTypeEnemy
@@ -54,9 +48,9 @@ var (
 func Init() error {
 	logger.Info("Initialize battle field data")
 
-	panels = make([][]extendPanelInfo, tmpFieldNum.X)
-	for i := 0; i < tmpFieldNum.X; i++ {
-		panels[i] = make([]extendPanelInfo, tmpFieldNum.Y)
+	panels = make([][]extendPanelInfo, battlecommon.FieldNum.X)
+	for i := 0; i < battlecommon.FieldNum.X; i++ {
+		panels[i] = make([]extendPanelInfo, battlecommon.FieldNum.Y)
 	}
 
 	// Initialize images
@@ -77,12 +71,12 @@ func Init() error {
 	}
 
 	// Initialize panel info
-	for x := 0; x < tmpFieldNum.X; x++ {
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
 		t := PanelTypePlayer
-		if x >= tmpFieldNum.X/2 {
+		if x >= battlecommon.FieldNum.X/2 {
 			t = PanelTypeEnemy
 		}
-		for y := 0; y < tmpFieldNum.Y; y++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			panels[x][y] = extendPanelInfo{
 				info: battlecommon.PanelInfo{
 					Status:    tmpPanelStatusNormal,
@@ -119,11 +113,11 @@ func End() {
 
 // Draw ...
 func Draw() {
-	for x := 0; x < tmpFieldNum.X; x++ {
-		for y := 0; y < tmpFieldNum.Y; y++ {
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].info.Status][panels[x][y].info.Type]
-			vx := tmpPanelSize.X * x
-			vy := tmpDrawPanelTopY + tmpPanelSize.Y*y
+			vx := battlecommon.PanelSize.X * x
+			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
 
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
@@ -139,8 +133,8 @@ func Draw() {
 			if dm := damage.Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
-				x2 := vx + tmpPanelSize.X
-				y2 := vy + tmpPanelSize.Y
+				x2 := vx + battlecommon.PanelSize.X
+				y2 := vy + battlecommon.PanelSize.Y
 				const s = 5
 				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 			}
@@ -202,7 +196,7 @@ func Update() {
 }
 
 func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
-	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return battlecommon.PanelInfo{}
 	}
 
@@ -221,7 +215,7 @@ func IsBlackout() bool {
 }
 
 func ChangePanelType(pos common.Point, pnType int) {
-	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
@@ -229,7 +223,7 @@ func ChangePanelType(pos common.Point, pnType int) {
 }
 
 func PanelBreak(pos common.Point) {
-	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
@@ -246,7 +240,7 @@ func PanelBreak(pos common.Point) {
 }
 
 func PanelCrack(pos common.Point) {
-	if pos.X < 0 || pos.X >= tmpFieldNum.X || pos.Y < 0 || pos.Y >= tmpFieldNum.Y {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
@@ -258,21 +252,21 @@ func PanelCrack(pos common.Point) {
 }
 
 func Set4x4Area() {
-	tmpFieldNum = common.Point{X: 8, Y: 4}
+	battlecommon.FieldNum = common.Point{X: 8, Y: 4}
 	common.ScreenSize = common.Point{X: 640, Y: 480}
-	tmpDrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
+	battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
 	if Is4x4Area() {
-		tmpFieldNum = common.Point{X: 6, Y: 3}
+		battlecommon.FieldNum = common.Point{X: 6, Y: 3}
 		common.ScreenSize = common.Point{X: 480, Y: 320}
-		tmpDrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
+		battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }
 
 func Is4x4Area() bool {
-	return tmpFieldNum.X == 8 && tmpFieldNum.Y == 4
+	return battlecommon.FieldNum.X == 8 && battlecommon.FieldNum.Y == 4
 }
