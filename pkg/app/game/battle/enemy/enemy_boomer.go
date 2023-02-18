@@ -11,7 +11,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -176,7 +175,7 @@ func (e *enemyBoomer) Draw() {
 		if c == 0 || c == boomerActNextStepCount/2 {
 			ofsy = e.prevOfsY
 		} else {
-			ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, boomerActNextStepCount, field.PanelSize.Y)
+			ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, boomerActNextStepCount, battlecommon.PanelSize.Y)
 			e.prevOfsY = ofsy
 		}
 	}

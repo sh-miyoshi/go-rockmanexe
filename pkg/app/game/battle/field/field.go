@@ -19,8 +19,8 @@ const (
 
 var (
 	tmpFieldNum   = common.Point{X: 6, Y: 3} // TODO: 要修正
-	PanelSize     = common.Point{X: 80, Y: 50}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
+	tmpPanelSize  = common.Point{X: 80, Y: 50}
+	DrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
 )
 
 const (
@@ -123,8 +123,8 @@ func Draw() {
 	for x := 0; x < tmpFieldNum.X; x++ {
 		for y := 0; y < tmpFieldNum.Y; y++ {
 			img := imgPanel[panels[x][y].Status][panels[x][y].Type]
-			vx := PanelSize.X * x
-			vy := DrawPanelTopY + PanelSize.Y*y
+			vx := tmpPanelSize.X * x
+			vy := DrawPanelTopY + tmpPanelSize.Y*y
 
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
@@ -140,8 +140,8 @@ func Draw() {
 			if dm := damage.Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
-				x2 := vx + PanelSize.X
-				y2 := vy + PanelSize.Y
+				x2 := vx + tmpPanelSize.X
+				y2 := vy + tmpPanelSize.Y
 				const s = 5
 				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 			}
@@ -261,7 +261,7 @@ func PanelCrack(pos common.Point) {
 func Set4x4Area() {
 	tmpFieldNum = common.Point{X: 8, Y: 4}
 	common.ScreenSize = common.Point{X: 640, Y: 480}
-	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
+	DrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
@@ -269,7 +269,7 @@ func ResetSet4x4Area() {
 	if Is4x4Area() {
 		tmpFieldNum = common.Point{X: 6, Y: 3}
 		common.ScreenSize = common.Point{X: 480, Y: 320}
-		DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * tmpFieldNum.Y) - 30
+		DrawPanelTopY = common.ScreenSize.Y - (tmpPanelSize.Y * tmpFieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }

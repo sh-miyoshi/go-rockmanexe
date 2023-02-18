@@ -55,8 +55,8 @@ func drawObject(images [object.TypeMax][]int, obj object.Object, opt Option) {
 	}
 
 	if len(obj.Chips) > 0 && opt.ViewChip {
-		x := field.PanelSize.X*obj.X + field.PanelSize.X/2 - 18
-		y := field.DrawPanelTopY + field.PanelSize.Y*obj.Y - 83
+		x := battlecommon.PanelSize.X*obj.X + battlecommon.PanelSize.X/2 - 18
+		y := field.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Y - 83
 		dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 		dxlib.DrawGraph(x, y, opt.ImgUnknownIcon, true)
 	}
@@ -98,7 +98,7 @@ func objectWideShotMove(images []int, viewPos common.Point, obj object.Object, d
 	}
 
 	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(images)
-	ofsx := field.PanelSize.X * obj.Count / obj.Speed
+	ofsx := battlecommon.PanelSize.X * obj.Count / obj.Speed
 	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
 		ofsx *= -1
 	}
@@ -115,8 +115,8 @@ func objectThunderBall(images []int, viewPos common.Point, obj object.Object, dx
 	}
 
 	cnt := obj.Count % obj.Speed
-	ofsx := battlecommon.GetOffset(obj.TargetX, obj.X, obj.PrevX, cnt, obj.Speed, field.PanelSize.X)
-	ofsy := battlecommon.GetOffset(obj.TargetY, obj.Y, obj.PrevY, cnt, obj.Speed, field.PanelSize.Y)
+	ofsx := battlecommon.GetOffset(obj.TargetX, obj.X, obj.PrevX, cnt, obj.Speed, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(obj.TargetY, obj.Y, obj.PrevY, cnt, obj.Speed, battlecommon.PanelSize.Y)
 
 	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+25+ofsy, 1, 0, images[imgNo], true)
 }
@@ -126,7 +126,7 @@ func objectMiniBomb(images []int, viewPos common.Point, obj object.Object, dxopt
 
 	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
-	size := field.PanelSize.X * 3
+	size := battlecommon.PanelSize.X * 3
 	ofsx := size * obj.Count / obj.Speed
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size

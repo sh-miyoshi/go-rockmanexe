@@ -90,7 +90,7 @@ func (b *Boss) Draw() {
 
 	// horizontal lines
 	for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
-		y := field.DrawPanelTopY + i*field.PanelSize.Y
+		y := field.DrawPanelTopY + i*battlecommon.PanelSize.Y
 		len := (b.count - i*10) * 40
 		if len > common.ScreenSize.X {
 			len = common.ScreenSize.X
@@ -101,7 +101,7 @@ func (b *Boss) Draw() {
 
 	// vertical lines
 	for i := 0; i < battlecommon.FieldNum.X-1; i++ {
-		x := (i + 1) * field.PanelSize.X
+		x := (i + 1) * battlecommon.PanelSize.X
 		len := (b.count - 40) * 40
 		s := 0
 		delay := 45 + common.MountainIndex(i, battlecommon.FieldNum.X-1)*5

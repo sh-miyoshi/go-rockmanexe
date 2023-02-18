@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -74,8 +73,8 @@ func (p *boomerang) Draw() {
 		return
 	}
 
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, boomerangNextStepCount, field.PanelSize.X)
-	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, boomerangNextStepCount, field.PanelSize.Y)
+	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, boomerangNextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, boomerangNextStepCount, battlecommon.PanelSize.Y)
 	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgBoomerang[n], true)
 }
 

@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -56,7 +55,7 @@ func (p *garooBreath) Draw() {
 		return
 	}
 
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, garooBreathNextStepCount, field.PanelSize.X)
+	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, garooBreathNextStepCount, battlecommon.PanelSize.X)
 	ofsy := -15
 	xflip := int32(dxlib.TRUE)
 	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})

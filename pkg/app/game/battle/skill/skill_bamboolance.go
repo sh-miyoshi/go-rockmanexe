@@ -6,7 +6,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -36,13 +35,13 @@ func (p *bambooLance) Draw() {
 	}
 
 	xd := p.count * 25
-	if xd > field.PanelSize.X {
-		xd = field.PanelSize.X
+	if xd > battlecommon.PanelSize.X {
+		xd = battlecommon.PanelSize.X
 	}
 	x := common.ScreenSize.X + p.imgSizeX/2 - xd
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		v := battlecommon.ViewPos(common.Point{X: 0, Y: y})
-		dxlib.DrawRotaGraph(x, v.Y+field.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)
+		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)
 	}
 }
 

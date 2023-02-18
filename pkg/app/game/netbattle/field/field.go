@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -70,8 +71,8 @@ func (f *Field) Draw() {
 				typ = battlefield.PanelTypeEnemy
 			}
 			img := f.imgPanel[panels[x][y].Status][typ]
-			vx := battlefield.PanelSize.X * x
-			vy := battlefield.DrawPanelTopY + battlefield.PanelSize.Y*y
+			vx := battlecommon.PanelSize.X * x
+			vy := battlefield.DrawPanelTopY + battlecommon.PanelSize.Y*y
 
 			dxlib.DrawGraph(vx, vy, img, true)
 		}
