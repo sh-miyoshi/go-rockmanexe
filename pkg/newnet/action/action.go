@@ -11,10 +11,11 @@ const (
 )
 
 type Move struct {
-	Type    int
-	Direct  int
-	AbsPosX int
-	AbsPosY int
+	ObjectID string
+	Type     int
+	Direct   int
+	AbsPosX  int
+	AbsPosY  int
 }
 
 func (p *Move) Marshal() []byte {

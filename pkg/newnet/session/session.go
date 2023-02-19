@@ -103,7 +103,6 @@ MAIN_LOOP:
 				}
 			}
 
-			s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
 			clientIDs := [2]string{}
 			for i := 0; i < len(s.clients); i++ {
 				s.clients[i].chipSent = false
@@ -116,6 +115,7 @@ MAIN_LOOP:
 				return
 			}
 			s.changeState(stateChipSelectWait)
+			s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
 		case stateChipSelectWait:
 			for _, c := range s.clients {
 				if !c.chipSent {
@@ -123,11 +123,11 @@ MAIN_LOOP:
 				}
 			}
 
-			s.publishStateToClient(pb.Response_ACTING)
 			for i := 0; i < len(s.clients); i++ {
 				s.clients[i].chipSent = false
 			}
 			s.changeState(stateActing)
+			s.publishStateToClient(pb.Response_ACTING)
 		case stateActing:
 			s.publishGameInfo() // debug(送信頻度は要確認)
 
