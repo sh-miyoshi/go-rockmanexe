@@ -76,7 +76,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 
 			// Target位置を実行時の一番最初に設定する
 			if p.myPanelType == field.PanelTypePlayer {
-				for x := 1; x < field.FieldNum.X; x++ {
+				for x := 1; x < battlecommon.FieldNum.X; x++ {
 					pos := objanim.GetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
@@ -86,7 +86,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 					}
 				}
 			} else {
-				for x := field.FieldNum.X - 2; x >= 0; x-- {
+				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
 					pos := objanim.GetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
@@ -120,7 +120,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 					BigDamage:     false,
 					DamageType:    damage.TypeNone,
 				})
-			} else if p.target.X >= 1 && p.target.X < field.FieldNum.X-1 {
+			} else if p.target.X >= 1 && p.target.X < battlecommon.FieldNum.X-1 {
 				// パネルを塗り替え
 				// 最終ラインの場合は塗り替えない
 				field.ChangePanelType(p.target, p.myPanelType)

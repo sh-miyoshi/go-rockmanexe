@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -108,7 +109,7 @@ func (e *enemyLark) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		deleteanim.New(*img, e.pm.Pos, false)
 		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
@@ -172,8 +173,8 @@ func (e *enemyLark) Draw() {
 	}
 
 	c := e.count % larkMoveNextStepCount
-	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, larkMoveNextStepCount, field.PanelSize.X)
-	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, larkMoveNextStepCount, field.PanelSize.Y)
+	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, larkMoveNextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, larkMoveNextStepCount, battlecommon.PanelSize.Y)
 
 	dxlib.DrawRotaGraph(view.X+20+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 

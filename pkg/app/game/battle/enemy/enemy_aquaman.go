@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -117,7 +118,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		deleteanim.New(*img, e.pm.Pos, false)
 		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
@@ -156,8 +157,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 
 			for i := 0; i < 10; i++ {
 				next := common.Point{
-					X: rand.Intn(field.FieldNum.X/2) + field.FieldNum.X/2,
-					Y: rand.Intn(field.FieldNum.Y),
+					X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
+					Y: rand.Intn(battlecommon.FieldNum.Y),
 				}
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
@@ -252,8 +253,8 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 	case aquamanActTypeCreate:
 		if e.count == 0 {
-			if e.pm.Pos.X == field.FieldNum.X/2 && (e.pm.Pos.Y == 0 || e.pm.Pos.Y == (field.FieldNum.Y-1)) {
-				e.targetPos.X = field.FieldNum.X - 1
+			if e.pm.Pos.X == battlecommon.FieldNum.X/2 && (e.pm.Pos.Y == 0 || e.pm.Pos.Y == (battlecommon.FieldNum.Y-1)) {
+				e.targetPos.X = battlecommon.FieldNum.X - 1
 				e.targetPos.Y = 1
 				e.state = aquamanActTypeMove
 				e.count = 0
@@ -270,14 +271,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 				Interval:      150,
 				Power:         20,
 			}
-			pm.Pos.X = field.FieldNum.X / 2
+			pm.Pos.X = battlecommon.FieldNum.X / 2
 			pm.Pos.Y = 0
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
 			obj = &object.WaterPipe{}
-			pm.Pos.Y = field.FieldNum.Y - 1
+			pm.Pos.Y = battlecommon.FieldNum.Y - 1
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}

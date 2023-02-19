@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -80,7 +81,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		deleteanim.New(*img, e.pm.Pos, false)
 		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
@@ -111,8 +112,8 @@ func (e *enemyVolgear) Process() (bool, error) {
 	const actionInterval = 70
 
 	if e.count%actionInterval == 0 {
-		y := rand.Intn(field.FieldNum.Y)
-		for i := 0; i < field.FieldNum.Y+1; i++ {
+		y := rand.Intn(battlecommon.FieldNum.Y)
+		for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
 			next := common.Point{
 				X: e.pm.Pos.X,
 				Y: y,
@@ -126,7 +127,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 			) {
 				break
 			}
-			y = (y + 1) % field.FieldNum.Y
+			y = (y + 1) % battlecommon.FieldNum.Y
 		}
 		e.moveNum--
 		if e.moveNum <= 0 {

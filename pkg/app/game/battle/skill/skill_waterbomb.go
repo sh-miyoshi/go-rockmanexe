@@ -54,13 +54,13 @@ func (p *waterBomb) Draw() {
 	// y = ax^2 + bx + c
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
-	size := field.PanelSize.X * (p.target.X - p.pos.X)
+	size := battlecommon.PanelSize.X * (p.target.X - p.pos.X)
 	ofsx := size * p.count / waterBombEndCount
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if p.target.Y != p.pos.Y {
-		size = field.PanelSize.Y * (p.target.Y - p.pos.Y)
+		size = battlecommon.PanelSize.Y * (p.target.Y - p.pos.Y)
 		dy := size * p.count / waterBombEndCount
 		ofsy += dy
 	}
@@ -77,7 +77,7 @@ func (p *waterBomb) Process() (bool, error) {
 
 	if p.count == waterBombEndCount {
 		pn := field.GetPanelInfo(p.target)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

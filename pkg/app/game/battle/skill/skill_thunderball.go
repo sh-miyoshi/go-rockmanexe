@@ -59,8 +59,8 @@ func (p *thunderBall) Draw() {
 		return
 	}
 
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, thunderBallNextStepCount, field.PanelSize.X)
-	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, thunderBallNextStepCount, field.PanelSize.Y)
+	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, thunderBallNextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, thunderBallNextStepCount, battlecommon.PanelSize.Y)
 
 	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], true)
 }
@@ -91,13 +91,13 @@ func (p *thunderBall) Process() (bool, error) {
 				return true, nil
 			}
 
-			if p.pos.X < 0 || p.pos.X > field.FieldNum.X || p.pos.Y < 0 || p.pos.Y > field.FieldNum.Y {
+			if p.pos.X < 0 || p.pos.X > battlecommon.FieldNum.X || p.pos.Y < 0 || p.pos.Y > battlecommon.FieldNum.Y {
 				return true, nil
 			}
 		}
 
 		pn := field.GetPanelInfo(p.pos)
-		if pn.Status == field.PanelStatusHole {
+		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 

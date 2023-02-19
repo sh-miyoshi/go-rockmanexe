@@ -68,7 +68,7 @@ func (a *Act) Process() bool {
 				power *= 10
 			}
 
-			for x := a.Object.X + 1; x < appfield.FieldNum.X; x++ {
+			for x := a.Object.X + 1; x < battlecommon.FieldNum.X; x++ {
 				dm := damage.Damage{
 					ID:            uuid.New().String(),
 					PosX:          x,

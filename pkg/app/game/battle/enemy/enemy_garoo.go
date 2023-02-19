@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -81,7 +82,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		battlecommon.NewDelete(*img, e.pm.Pos, false)
+		deleteanim.New(*img, e.pm.Pos, false)
 		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
@@ -132,8 +133,8 @@ func (e *enemyGaroo) Process() (bool, error) {
 
 		for i := 0; i < 10; i++ {
 			next := common.Point{
-				X: rand.Intn(field.FieldNum.X/2) + field.FieldNum.X/2,
-				Y: rand.Intn(field.FieldNum.Y),
+				X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
+				Y: rand.Intn(battlecommon.FieldNum.Y),
 			}
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
