@@ -1,8 +1,6 @@
 package gamehandler
 
 import (
-	"bytes"
-	"encoding/gob"
 	"sort"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -11,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
 type PanelInfo struct {
@@ -18,13 +17,14 @@ type PanelInfo struct {
 }
 
 type GameHandler struct {
-	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
-	Objects map[string]*object.Object
+	info gameinfo.GameInfo
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
-		Objects: make(map[string]*object.Object),
+		info: gameinfo.GameInfo{
+			Objects: make(map[string]*object.Object),
+		},
 	}
 }
 
@@ -32,15 +32,15 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 	for y := 0; y < config.FieldNumY; y++ {
 		hx := config.FieldNumX / 2
 		for x := 0; x < hx; x++ {
-			g.Panels[x][y] = PanelInfo{OwnerClientID: clientIDs[0]}
-			g.Panels[x+hx][y] = PanelInfo{OwnerClientID: clientIDs[1]}
+			g.info.Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
+			g.info.Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
 		}
 	}
 	return nil
 }
 
 func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
-	g.Objects[param.ID] = &object.Object{
+	g.info.Objects[param.ID] = &object.Object{
 		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
@@ -49,7 +49,7 @@ func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
 }
 
 func (g *GameHandler) MoveObject(moveInfo action.Move) {
-	obj, ok := g.Objects[moveInfo.ObjectID]
+	obj, ok := g.info.Objects[moveInfo.ObjectID]
 	if !ok {
 		logger.Info("Failed to find move target object: %+v", moveInfo)
 		return
@@ -65,19 +65,12 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 }
 
 func (g *GameHandler) GetInfo() []byte {
-	buf := bytes.NewBuffer(nil)
-	gob.NewEncoder(buf).Encode(g)
-	return buf.Bytes()
-}
-
-func (g *GameHandler) ParseInfo(data []byte) {
-	buf := bytes.NewBuffer(data)
-	_ = gob.NewDecoder(buf).Decode(g)
+	return g.info.Marshal()
 }
 
 func (g *GameHandler) getPlayerPanelType(clientID string) int {
 	var ids []string
-	for objID := range g.Objects {
+	for objID := range g.info.Objects {
 		ids = append(ids, objID)
 	}
 	sort.Strings(ids)
@@ -94,9 +87,9 @@ func (g *GameHandler) getPanelInfo(pos common.Point) battlecommon.PanelInfo {
 		return battlecommon.PanelInfo{}
 	}
 
-	pn := g.Panels[pos.X][pos.Y]
+	pn := g.info.Panels[pos.X][pos.Y]
 	objectID := ""
-	for _, obj := range g.Objects {
+	for _, obj := range g.info.Objects {
 		if obj.Pos.X == pos.X && obj.Pos.Y == pos.Y {
 			objectID = obj.ID
 			break

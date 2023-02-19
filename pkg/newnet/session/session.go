@@ -23,7 +23,6 @@ type GameLogic interface {
 	AddObject(clientID string, param object.InitParam)
 	MoveObject(moveInfo action.Move)
 	GetInfo() []byte
-	ParseInfo(data []byte)
 }
 
 type sessionError struct {

@@ -110,7 +110,8 @@ MAIN_LOOP:
 				stateChange(&appStatus, stateResult)
 			}
 
-			// TODO check action
+			// Check action
+			// 1. Move
 			move := action.Move{
 				Type:    action.MoveTypeAbs,
 				AbsPosX: 2,
@@ -118,6 +119,7 @@ MAIN_LOOP:
 			}
 			conn.SendAction(pb.Request_MOVE, common.Point{X: 1, Y: 1}, move.Marshal())
 
+			// TODO(更新後のデータを取得)
 			// move, buster, use chip
 		case stateResult:
 			logger.Info("Successfully state change to result")
@@ -170,7 +172,7 @@ func runClient2() {
 
 	obj := netobj.InitParam{
 		ID: uuid.New().String(),
-		HP: 10,
+		HP: 1,
 		X:  1,
 		Y:  1,
 	}
