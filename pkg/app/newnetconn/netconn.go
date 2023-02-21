@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -43,6 +44,7 @@ type NetConn struct {
 	allUserIDs    []string
 
 	gameStatus pb.Response_Status
+	gameInfo   gameinfo.GameInfo
 	gameInfoMu sync.Mutex
 }
 
@@ -91,6 +93,10 @@ func (n *NetConn) Disconnect() {
 
 func (n *NetConn) GetGameStatus() pb.Response_Status {
 	return n.gameStatus
+}
+
+func (n *NetConn) GetGameInfo() gameinfo.GameInfo {
+	return n.gameInfo
 }
 
 func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) error {
@@ -184,8 +190,10 @@ func (n *NetConn) dataRecv() {
 			logger.Debug("got status update data: %+v", data)
 			n.gameStatus = data.GetStatus()
 		case pb.Response_DATA:
+			var info gameinfo.GameInfo
+			info.Unmarshal(data.GetRawData())
 			n.gameInfoMu.Lock()
-			// TODO
+			n.gameInfo = info
 			n.gameInfoMu.Unlock()
 		default:
 			n.connectStatus = ConnectStatus{

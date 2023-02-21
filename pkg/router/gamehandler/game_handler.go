@@ -23,7 +23,7 @@ type GameHandler struct {
 func NewHandler() *GameHandler {
 	return &GameHandler{
 		info: gameinfo.GameInfo{
-			Objects: make(map[string]*object.Object),
+			Objects: make(map[string]object.Object),
 		},
 	}
 }
@@ -36,15 +36,21 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 			g.info.Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
 		}
 	}
+	g.info.ReverseClientID = clientIDs[1]
 	return nil
 }
 
 func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
-	g.info.Objects[param.ID] = &object.Object{
+	x := param.X
+	if g.info.ReverseClientID == clientID {
+		x = battlecommon.FieldNum.X - x - 1
+	}
+
+	g.info.Objects[param.ID] = object.Object{
 		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
-		Pos:           common.Point{X: param.X, Y: param.Y},
+		Pos:           common.Point{X: x, Y: param.Y},
 	}
 }
 
@@ -62,6 +68,8 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 		target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
 		battlecommon.MoveObjectDirect(&obj.Pos, target, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
 	}
+
+	g.info.Objects[moveInfo.ObjectID] = obj
 }
 
 func (g *GameHandler) GetInfo() []byte {

@@ -13,8 +13,9 @@ type PanelInfo struct {
 }
 
 type GameInfo struct {
-	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
-	Objects map[string]*object.Object
+	Panels          [config.FieldNumX][config.FieldNumY]PanelInfo
+	Objects         map[string]object.Object
+	ReverseClientID string
 }
 
 func (p *GameInfo) Marshal() []byte {

@@ -113,13 +113,19 @@ MAIN_LOOP:
 			// Check action
 			// 1. Move
 			move := action.Move{
-				Type:    action.MoveTypeAbs,
-				AbsPosX: 2,
-				AbsPosY: 1,
+				ObjectID: obj.ID,
+				Type:     action.MoveTypeAbs,
+				AbsPosX:  2,
+				AbsPosY:  1,
 			}
 			conn.SendAction(pb.Request_MOVE, common.Point{X: 1, Y: 1}, move.Marshal())
 
 			// TODO(更新後のデータを取得)
+			time.Sleep(100 * time.Millisecond)
+			info := conn.GetGameInfo()
+			logger.Debug("current game info: %+v", info)
+			break MAIN_LOOP
+
 			// move, buster, use chip
 		case stateResult:
 			logger.Info("Successfully state change to result")
