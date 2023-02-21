@@ -61,6 +61,7 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 		return
 	}
 
+	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
 		battlecommon.MoveObject(&obj.Pos, moveInfo.Direct, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)

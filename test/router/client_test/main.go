@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -112,6 +113,7 @@ MAIN_LOOP:
 
 			// Check action
 			// 1. Move
+			ok := false
 			move := action.Move{
 				ObjectID: obj.ID,
 				Type:     action.MoveTypeAbs,
@@ -119,14 +121,27 @@ MAIN_LOOP:
 				AbsPosY:  1,
 			}
 			conn.SendAction(pb.Request_MOVE, common.Point{X: 1, Y: 1}, move.Marshal())
-
-			// TODO(更新後のデータを取得)
-			time.Sleep(100 * time.Millisecond)
 			info := conn.GetGameInfo()
-			logger.Debug("current game info: %+v", info)
+			for i := 0; i < 10; i++ {
+				info = conn.GetGameInfo()
+				myObj := info.Objects[obj.ID]
+				if myObj.Pos.X == 2 && myObj.Pos.Y == 1 {
+					ok = true
+					logger.Info("Success to move")
+					break
+				}
+				time.Sleep(30 * time.Millisecond)
+			}
+			if !ok {
+				exitByError(fmt.Errorf("failed to move: %+v", info))
+			}
+
+			// 2. Buster
+			// TODO
 			break MAIN_LOOP
 
-			// move, buster, use chip
+			// 3. Use Chip
+			// TODO
 		case stateResult:
 			logger.Info("Successfully state change to result")
 			break MAIN_LOOP
