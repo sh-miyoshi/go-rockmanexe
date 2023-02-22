@@ -137,6 +137,11 @@ MAIN_LOOP:
 			}
 
 			// 2. Buster
+			buster := action.Buster{
+				ObjectID: obj.ID,
+				Power:    1,
+			}
+			conn.SendAction(pb.Request_BUSTER, common.Point{X: 2, Y: 1}, buster.Marshal())
 			// TODO
 			break MAIN_LOOP
 

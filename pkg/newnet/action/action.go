@@ -18,6 +18,11 @@ type Move struct {
 	AbsPosY  int
 }
 
+type Buster struct {
+	ObjectID string
+	Power    int
+}
+
 func (p *Move) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)
@@ -25,6 +30,17 @@ func (p *Move) Marshal() []byte {
 }
 
 func (p *Move) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
+}
+
+func (p *Buster) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *Buster) Unmarshal(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(p)
 }

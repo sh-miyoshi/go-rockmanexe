@@ -73,6 +73,10 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 	g.info.Objects[moveInfo.ObjectID] = obj
 }
 
+func (g *GameHandler) AddBuster(busterInfo action.Buster) {
+	// TODO
+}
+
 func (g *GameHandler) GetInfo() []byte {
 	return g.info.Marshal()
 }

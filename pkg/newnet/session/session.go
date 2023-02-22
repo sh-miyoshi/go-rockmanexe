@@ -22,6 +22,7 @@ type GameLogic interface {
 	Init(clientIDs [2]string) error
 	AddObject(clientID string, param object.InitParam)
 	MoveObject(moveInfo action.Move)
+	AddBuster(busterInfo action.Buster)
 	GetInfo() []byte
 }
 
@@ -192,7 +193,9 @@ func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
 		move.Unmarshal(act.GetRawData())
 		s.gameHandler.MoveObject(move)
 	case pb.Request_BUSTER:
-		panic("TODO: 未実装")
+		var buster action.Buster
+		buster.Unmarshal(act.GetRawData())
+		s.gameHandler.AddBuster(buster)
 	case pb.Request_CHIPUSE:
 		panic("TODO: 未実装")
 	default:
