@@ -12,10 +12,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
-type PanelInfo struct {
-	OwnerClientID string
-}
-
 type GameHandler struct {
 	info gameinfo.GameInfo
 }
@@ -52,6 +48,7 @@ func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
 	}
+	g.info.Panels[x][param.Y].ObjectID = param.ID
 }
 
 func (g *GameHandler) MoveObject(moveInfo action.Move) {
@@ -71,6 +68,7 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 	}
 
 	g.info.Objects[moveInfo.ObjectID] = obj
+	g.updatePanelObject()
 }
 
 func (g *GameHandler) AddBuster(busterInfo action.Buster) {
@@ -100,21 +98,27 @@ func (g *GameHandler) getPanelInfo(pos common.Point) battlecommon.PanelInfo {
 		return battlecommon.PanelInfo{}
 	}
 
+	g.updatePanelObject()
 	pn := g.info.Panels[pos.X][pos.Y]
-	objectID := ""
-	for _, obj := range g.info.Objects {
-		if obj.Pos.X == pos.X && obj.Pos.Y == pos.Y {
-			objectID = obj.ID
-			break
-		}
-	}
 
 	return battlecommon.PanelInfo{
 		Type:     g.getPlayerPanelType(pn.OwnerClientID),
-		ObjectID: objectID,
+		ObjectID: pn.ObjectID,
 
 		// TODO: 適切な値を入れる
 		Status:    battlecommon.PanelStatusNormal,
 		HoleCount: 0,
+	}
+}
+
+func (g *GameHandler) updatePanelObject() {
+	// Cleanup at first
+	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+		for x := 0; x < battlecommon.FieldNum.X; x++ {
+			g.info.Panels[x][y].ObjectID = ""
+		}
+	}
+	for _, obj := range g.info.Objects {
+		g.info.Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
 	}
 }

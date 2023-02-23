@@ -10,6 +10,7 @@ import (
 
 type PanelInfo struct {
 	OwnerClientID string
+	ObjectID      string
 }
 
 type GameInfo struct {
