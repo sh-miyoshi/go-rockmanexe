@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -204,9 +205,9 @@ func (f *menuFolder) Draw() {
 		}
 
 		y := 75 + i*30
-		dxlib.DrawGraph(x, y, chip.GetIcon(c.ID, true), true)
+		dxlib.DrawGraph(x, y, chipimage.GetIcon(c.ID, true), true)
 		draw.String(x+30, y+5, 0xffffff, info.Name)
-		dxlib.DrawGraph(x+160, y, chip.GetTypeImage(info.Type), true)
+		dxlib.DrawGraph(x+160, y, chipimage.GetType(info.Type), true)
 		// TODO font
 		draw.String(x+192, y+5, 0xffffff, strings.ToUpper(c.Code))
 	}
@@ -304,9 +305,9 @@ func (f *menuFolder) drawChipDetail(index int) {
 	}
 
 	info := chip.Get(c.ID)
-	dxlib.DrawGraph(23+ofsx, 65, info.Image, true)
+	dxlib.DrawGraph(23+ofsx, 65, chipimage.GetDetail(c.ID), true)
 	draw.ChipCode(15+ofsx, 165, c.Code, 100)
-	dxlib.DrawGraph(50+ofsx, 165, chip.GetTypeImage(info.Type), true)
+	dxlib.DrawGraph(50+ofsx, 165, chipimage.GetType(info.Type), true)
 	if info.Power > 0 {
 		draw.Number(80+ofsx, 165, int(info.Power), draw.NumberOption{
 			RightAligned: true,

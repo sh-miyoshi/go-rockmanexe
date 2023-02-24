@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -268,7 +269,7 @@ func (p *BattlePlayer) Draw() {
 			y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*p.Pos.Y - 10 - 81 + (i * px) - max
 			dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
 			// draw from the end
-			dxlib.DrawGraph(x, y, chip.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
+			dxlib.DrawGraph(x, y, chipimage.GetIcon(p.SelectedChips[n-1-i].ID, true), true)
 		}
 	}
 
