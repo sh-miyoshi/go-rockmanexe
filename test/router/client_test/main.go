@@ -142,6 +142,23 @@ MAIN_LOOP:
 				Power:    1,
 			}
 			conn.SendAction(pb.Request_BUSTER, common.Point{X: 2, Y: 1}, buster.Marshal())
+			ok = false
+		BUSTER_CHECK_LOOP:
+			for i := 0; i < 10; i++ {
+				info := conn.GetGameInfo()
+				for _, obj := range info.Objects {
+					if obj.OwnerClientID != "tester1" && obj.HP == 0 {
+						ok = true
+						logger.Info("Successfully damaged by buster")
+						break BUSTER_CHECK_LOOP
+					}
+				}
+				time.Sleep(30 * time.Millisecond)
+			}
+			if !ok {
+				exitByError(fmt.Errorf("failed to add buster: %+v", info))
+			}
+
 			// TODO
 			break MAIN_LOOP
 

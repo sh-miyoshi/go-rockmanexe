@@ -71,8 +71,37 @@ func (g *GameHandler) MoveObject(moveInfo action.Move) {
 	g.updatePanelObject()
 }
 
-func (g *GameHandler) AddBuster(busterInfo action.Buster) {
-	// TODO
+func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
+	obj, ok := g.info.Objects[busterInfo.ObjectID]
+	if !ok {
+		logger.Info("Failed to find buster send object: %+v", busterInfo)
+		return
+	}
+
+	// TODO: このタイミングで実行せず、アニメーションの追加のみにする
+	// TODO: Busterアニメーション
+	damageToObj := func(objID string, power int) {
+		o := g.info.Objects[objID]
+		o.HP -= power
+		if o.HP < 0 {
+			o.HP = 0
+		}
+		g.info.Objects[objID] = o
+	}
+
+	if g.info.ReverseClientID == clientID {
+		for x := obj.Pos.X - 1; x >= 0; x-- {
+			if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
+				damageToObj(objID, busterInfo.Power)
+			}
+		}
+	} else {
+		for x := obj.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
+			if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
+				damageToObj(objID, busterInfo.Power)
+			}
+		}
+	}
 }
 
 func (g *GameHandler) GetInfo() []byte {
