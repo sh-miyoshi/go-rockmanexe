@@ -108,6 +108,10 @@ func (g *GameHandler) GetInfo() []byte {
 	return g.info.Marshal()
 }
 
+func (g *GameHandler) UpdateGameStatus() {
+	// TODO
+}
+
 func (g *GameHandler) getPlayerPanelType(clientID string) int {
 	var ids []string
 	for objID := range g.info.Objects {

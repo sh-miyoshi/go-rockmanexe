@@ -24,6 +24,7 @@ type GameLogic interface {
 	MoveObject(moveInfo action.Move)
 	AddBuster(clientID string, busterInfo action.Buster)
 	GetInfo() []byte
+	UpdateGameStatus()
 }
 
 type sessionError struct {
@@ -129,6 +130,7 @@ MAIN_LOOP:
 			s.changeState(stateActing)
 			s.publishStateToClient(pb.Response_ACTING)
 		case stateActing:
+			s.gameHandler.UpdateGameStatus()
 			s.publishGameInfo() // debug(送信頻度は要確認)
 
 			// TODO(game info情報を見て必要に応じてstateGameEndへ)
