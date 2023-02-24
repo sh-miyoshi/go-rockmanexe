@@ -19,7 +19,6 @@ type Chip struct {
 	KeepCount   int    `yaml:"keep_cnt"`
 	Description string `yaml:"description"`
 
-	ImageX           int
 	IsProgramAdvance bool
 }
 
