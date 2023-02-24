@@ -23,6 +23,11 @@ type Buster struct {
 	Power    int
 }
 
+type UseChip struct {
+	ObjectID string
+	ChipID   int
+}
+
 func (p *Move) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)
@@ -41,6 +46,17 @@ func (p *Buster) Marshal() []byte {
 }
 
 func (p *Buster) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
+}
+
+func (p *UseChip) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *UseChip) Unmarshal(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(p)
 }
