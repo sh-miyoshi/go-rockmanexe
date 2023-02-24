@@ -20,6 +20,10 @@ func Init() error {
 	// Load Chip Image
 	imgDetails = make(map[int]int)
 	for _, id := range chip.GetIDList() {
+		if id >= chip.IDPAIndex {
+			continue
+		}
+
 		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, id)
 		imgDetails[id] = dxlib.LoadGraph(fname)
 		if imgDetails[id] == -1 {
@@ -59,6 +63,10 @@ func Init() error {
 
 	// Set icons by manual
 	for _, id := range chip.GetIDList() {
+		if id >= chip.IDPAIndex {
+			continue
+		}
+
 		// tmp and tmp2 start with 0, but chip id start with 1
 		imgIcons[id] = tmp[id-1]
 		imgMonoIcons[id] = tmp2[id-1]
