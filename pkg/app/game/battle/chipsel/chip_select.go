@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -88,14 +89,14 @@ func Draw() {
 		draw.ChipCode(x+10, 240+baseY, s.Code, 50)
 		if !slice.Contains(selected, i) {
 			// Show Icon
-			dxlib.DrawGraph(x, 210+baseY, chip.GetIcon(s.ID, selectable(i)), true)
+			dxlib.DrawGraph(x, 210+baseY, chipimage.GetIcon(s.ID, selectable(i)), true)
 		}
 
 		// Show Detail Data
 		if i == pointer {
 			c := chip.Get(s.ID)
-			dxlib.DrawGraph(31, 64+baseY, c.Image, true)
-			dxlib.DrawGraph(52, 161+baseY, chip.GetTypeImage(c.Type), true)
+			dxlib.DrawGraph(31, 64+baseY, chipimage.GetDetail(c.ID), true)
+			dxlib.DrawGraph(52, 161+baseY, chipimage.GetType(c.Type), true)
 			draw.String(20, 25+baseY, 0x000000, "%s", c.Name)
 			draw.ChipCode(30, 163+baseY, s.Code, 100)
 			if c.Power != 0 {
@@ -123,7 +124,7 @@ func Draw() {
 	// Show Selected Chips
 	for i, s := range selected {
 		y := i*32 + 50
-		dxlib.DrawGraph(193, y+baseY, chip.GetIcon(selectList[s].ID, true), true)
+		dxlib.DrawGraph(193, y+baseY, chipimage.GetIcon(selectList[s].ID, true), true)
 	}
 }
 

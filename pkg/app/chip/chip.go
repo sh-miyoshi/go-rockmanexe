@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/stretchr/stew/slice"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -21,7 +19,7 @@ type Chip struct {
 	KeepCount   int    `yaml:"keep_cnt"`
 	Description string `yaml:"description"`
 
-	Image            int
+	ImageX           int
 	IsProgramAdvance bool
 }
 
@@ -65,8 +63,8 @@ const (
 	IDShockWave   = 229
 
 	// Program Advance
-	idPAIndex    = 1000
-	IDDreamSword = idPAIndex + 1
+	IDPAIndex    = 1000
+	IDDreamSword = IDPAIndex + 1
 )
 
 const (
@@ -84,14 +82,11 @@ const (
 	TypeElec
 	TypeWood
 
-	typeMax
+	TypeMax
 )
 
 var (
-	imgIcons     map[int]int
-	imgMonoIcons map[int]int
-	imgTypes     []int
-	chipData     []Chip
+	chipData []Chip
 )
 
 // Init ...
@@ -105,72 +100,20 @@ func Init(fname string) error {
 		return err
 	}
 
-	for i, c := range chipData {
-		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, c.ID)
-		chipData[i].Image = dxlib.LoadGraph(fname)
-		if chipData[i].Image == -1 {
-			return fmt.Errorf("failed to read chip detail image %s", fname)
-		}
-	}
-
-	// Load Type Image
-	tmp := make([]int, 14)
-	fname = common.ImagePath + "chipInfo/chip_type.png"
-	if res := dxlib.LoadDivGraph(fname, 14, 7, 2, 28, 28, tmp); res == -1 {
-		return fmt.Errorf("failed to read chip type image %s", fname)
-	}
-	imgTypes = make([]int, typeMax)
-	for i := 0; i < typeMax; i++ {
-		imgTypes[i] = tmp[i]
-	}
-	for i := typeMax; i < 14; i++ {
-		dxlib.DeleteGraph(tmp[i])
-	}
-
-	// Load Icon Image
-	tmp = make([]int, 240)
-	tmp2 := make([]int, 240)
-	fname = common.ImagePath + "chipInfo/chip_icon.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp); res == -1 {
-		return fmt.Errorf("failed to read chip icon image %s", fname)
-	}
-	fname = common.ImagePath + "chipInfo/chip_icon_mono.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp2); res == -1 {
-		return fmt.Errorf("failed to read chip monochro icon image %s", fname)
-	}
-
-	imgIcons = make(map[int]int)
-	imgMonoIcons = make(map[int]int)
-	used := []int{}
-
-	// Set icons by manual
-	for _, c := range chipData {
-		// tmp and tmp2 start with 0, but chip id start with 1
-		imgIcons[c.ID] = tmp[c.ID-1]
-		imgMonoIcons[c.ID] = tmp2[c.ID-1]
-		used = append(used, c.ID-1)
-	}
-	fname = common.ImagePath + "chipInfo/pa_icon.png"
-	imgIcons[idPAIndex] = dxlib.LoadGraph(fname)
-	if imgIcons[idPAIndex] == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	// Release unused images
-	for i := 0; i < 240; i++ {
-		if !slice.Contains(used, i) {
-			dxlib.DeleteGraph(tmp[i])
-			dxlib.DeleteGraph(tmp2[i])
-		}
-	}
-
 	// Load Program Advance chips
 	setPAData()
 
 	return nil
 }
 
-// Get ...
+func GetIDList() []int {
+	res := []int{}
+	for _, c := range chipData {
+		res = append(res, c.ID)
+	}
+	return res
+}
+
 func Get(id int) Chip {
 	for _, c := range chipData {
 		if c.ID == id {
@@ -191,23 +134,6 @@ func GetByName(name string) Chip {
 
 	common.SetError(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
 	return Chip{}
-}
-
-// GetIcon ...
-func GetIcon(id int, colored bool) int {
-	if id > idPAIndex {
-		return imgIcons[idPAIndex]
-	}
-
-	if colored {
-		return imgIcons[id]
-	}
-	return imgMonoIcons[id]
-}
-
-// GetTypeImage ...
-func GetTypeImage(typ int) int {
-	return imgTypes[typ]
 }
 
 func Selectable(target SelectParam, currentList []SelectParam) bool {
