@@ -7,7 +7,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
@@ -108,15 +107,13 @@ func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) erro
 	})
 }
 
-func (n *NetConn) SendAction(actType pb.Request_ActionType, currentPos common.Point, data []byte) error {
+func (n *NetConn) SendAction(actType pb.Request_ActionType, data []byte) error {
 	return n.dataStream.Send(&pb.Request{
 		SessionID: n.sessionID,
 		ClientID:  n.config.ClientID,
 		Type:      pb.Request_ACTION,
 		Data: &pb.Request_Act{Act: &pb.Request_Action{
 			Type:    actType,
-			X:       int64(currentPos.X),
-			Y:       int64(currentPos.Y),
 			RawData: data,
 		}},
 	})

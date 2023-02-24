@@ -43,10 +43,8 @@ message Request {
     }
 
     message Action {
-        int64 x = 1;
-        int64 y = 2;
-        ActionType type = 3;
-        bytes rawData = 4;
+        ActionType type = 1;
+        bytes rawData = 2;
     }
 
     message Signal {

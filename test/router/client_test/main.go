@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
@@ -120,7 +119,7 @@ MAIN_LOOP:
 				AbsPosX:  2,
 				AbsPosY:  1,
 			}
-			conn.SendAction(pb.Request_MOVE, common.Point{X: 1, Y: 1}, move.Marshal())
+			conn.SendAction(pb.Request_MOVE, move.Marshal())
 			info := conn.GetGameInfo()
 			for i := 0; i < 10; i++ {
 				info = conn.GetGameInfo()
@@ -141,7 +140,7 @@ MAIN_LOOP:
 				ObjectID: obj.ID,
 				Power:    1,
 			}
-			conn.SendAction(pb.Request_BUSTER, common.Point{X: 2, Y: 1}, buster.Marshal())
+			conn.SendAction(pb.Request_BUSTER, buster.Marshal())
 			ok = false
 		BUSTER_CHECK_LOOP:
 			for i := 0; i < 10; i++ {
