@@ -10,6 +10,7 @@ import (
 
 	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -137,6 +138,9 @@ func appInit() error {
 	}
 	if err := chip.Init(common.ChipFilePath); err != nil {
 		return fmt.Errorf("chip init failed: %w", err)
+	}
+	if err := chipimage.Init(); err != nil {
+		return fmt.Errorf("chip image init failed: %w", err)
 	}
 	if err := draw.Init(); err != nil {
 		return fmt.Errorf("drawing data init failed: %w", err)

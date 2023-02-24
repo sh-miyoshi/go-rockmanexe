@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -87,7 +88,7 @@ func Init(args WinArg, plyr *player.Player) error {
 				Type:  rewardTypeChip,
 				Name:  chipInfo.Name,
 				Value: c.Code,
-				Image: chipInfo.Image,
+				Image: chipimage.GetDetail(chipInfo.ID),
 			})
 		}
 	}
