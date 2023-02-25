@@ -17,11 +17,13 @@ import (
 type GameHandler struct {
 	info              gameinfo.GameInfo
 	objOwnerClientIDs map[string]string // Key: ObjectID, Value: ClientID
+	playerObjects     map[string]*gameobj.Player
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
 		objOwnerClientIDs: make(map[string]string),
+		playerObjects:     make(map[string]*gameobj.Player),
 	}
 }
 
@@ -37,42 +39,25 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 	return nil
 }
 
-func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
+func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 	x := param.X
 	if g.info.ReverseClientID == clientID {
 		x = battlecommon.FieldNum.X - x - 1
 	}
 
 	g.objOwnerClientIDs[param.ID] = clientID
-	objanim.New(gameobj.NewPlayer(gameinfo.Object{
+	g.playerObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
-	}))
+	}, &g.info)
+	objanim.New(g.playerObjects[clientID])
 	g.updateGameInfo()
-	g.info.Panels[x][param.Y].ObjectID = param.ID
 }
 
-func (g *GameHandler) MoveObject(moveInfo action.Move) {
-	// TODO
-	// obj, ok := g.info.Objects[moveInfo.ObjectID]
-	// if !ok {
-	// 	logger.Info("Failed to find move target object: %+v", moveInfo)
-	// 	return
-	// }
-
-	// // TODO: このタイミングで移動せず、アニメーションの追加のみにする
-	// switch moveInfo.Type {
-	// case action.MoveTypeDirect:
-	// 	battlecommon.MoveObject(&obj.Pos, moveInfo.Direct, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
-	// case action.MoveTypeAbs:
-	// 	target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
-	// 	battlecommon.MoveObjectDirect(&obj.Pos, target, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
-	// }
-
-	// g.info.Objects[moveInfo.ObjectID] = obj
-	// g.updatePanelObject()
+func (g *GameHandler) MoveObject(clientID string, moveInfo action.Move) {
+	g.playerObjects[clientID].AddMove(moveInfo)
 }
 
 func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
@@ -128,32 +113,12 @@ func (g *GameHandler) UpdateGameStatus() {
 		logger.Error("Failed to manage animation: %+v", err)
 		// TODO: 処理を終了する
 	}
-	// TODO
-}
-
-func (g *GameHandler) getPlayerPanelType(clientID string) int {
-	if clientID == g.info.ReverseClientID {
-		return 1
-	}
-	return 0
-}
-
-func (g *GameHandler) getPanelInfo(pos common.Point) battlecommon.PanelInfo {
-	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
-		return battlecommon.PanelInfo{}
+	if err := objanim.MgrProcess(true, false); err != nil {
+		logger.Error("Failed to manage object animation: %+v", err)
+		// TODO: 処理を終了する
 	}
 
-	g.updatePanelObject()
-	pn := g.info.Panels[pos.X][pos.Y]
-
-	return battlecommon.PanelInfo{
-		Type:     g.getPlayerPanelType(pn.OwnerClientID),
-		ObjectID: pn.ObjectID,
-
-		// TODO: 適切な値を入れる
-		Status:    battlecommon.PanelStatusNormal,
-		HoleCount: 0,
-	}
+	g.updateGameInfo()
 }
 
 func (g *GameHandler) updatePanelObject() {
@@ -189,4 +154,6 @@ func (g *GameHandler) updateGameInfo() {
 			AnimType:      a.AnimType,
 		})
 	}
+
+	g.updatePanelObject()
 }

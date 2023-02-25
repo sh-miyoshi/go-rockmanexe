@@ -20,8 +20,8 @@ const (
 
 type GameLogic interface {
 	Init(clientIDs [2]string) error
-	AddObject(clientID string, param object.InitParam)
-	MoveObject(moveInfo action.Move)
+	AddPlayerObject(clientID string, param object.InitParam)
+	MoveObject(clientID string, moveInfo action.Move)
 	AddBuster(clientID string, busterInfo action.Buster)
 	UseChip(clientID string, chipInfo action.UseChip)
 	GetInfo() []byte
@@ -184,7 +184,7 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 	case pb.Request_INITPARAMS:
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())
-		s.gameHandler.AddObject(clientID, obj)
+		s.gameHandler.AddPlayerObject(clientID, obj)
 	}
 	return nil
 }
@@ -194,7 +194,7 @@ func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
 	case pb.Request_MOVE:
 		var move action.Move
 		move.Unmarshal(act.GetRawData())
-		s.gameHandler.MoveObject(move)
+		s.gameHandler.MoveObject(clientID, move)
 	case pb.Request_BUSTER:
 		var buster action.Buster
 		buster.Unmarshal(act.GetRawData())
