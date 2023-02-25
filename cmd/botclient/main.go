@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/app"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/oldnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 

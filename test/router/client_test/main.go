@@ -110,10 +110,9 @@ MAIN_LOOP:
 			// 1. Move
 			ok := false
 			move := action.Move{
-				ObjectID: obj.ID,
-				Type:     action.MoveTypeAbs,
-				AbsPosX:  2,
-				AbsPosY:  1,
+				Type:    action.MoveTypeAbs,
+				AbsPosX: 2,
+				AbsPosY: 1,
 			}
 			conn.SendAction(pb.Request_MOVE, move.Marshal())
 			info := conn.GetGameInfo()
@@ -133,8 +132,7 @@ MAIN_LOOP:
 
 			// 2. Buster
 			buster := action.Buster{
-				ObjectID: obj.ID,
-				Power:    1,
+				Power: 1,
 			}
 			conn.SendAction(pb.Request_BUSTER, buster.Marshal())
 			ok = false
@@ -155,9 +153,11 @@ MAIN_LOOP:
 			}
 
 			// 3. Use Chip
+			id := uuid.New().String()
 			chipInfo := action.UseChip{
-				ObjectID: obj.ID,
-				ChipID:   chip.IDCannon,
+				AnimID:           id,
+				ChipUserClientID: obj.ID,
+				ChipID:           chip.IDCannon,
 			}
 			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
 			ok = false
@@ -165,6 +165,7 @@ MAIN_LOOP:
 			for i := 0; i < 10; i++ {
 				info := conn.GetGameInfo()
 				for _, obj := range info.Objects {
+					// TODO: idもチェックする
 					if obj.OwnerClientID != "tester1" && obj.HP == 59 {
 						ok = true
 						logger.Info("Successfully damaged by use chip cannon")

@@ -32,9 +32,9 @@ type cannon struct {
 	count int
 }
 
-func newCannon(objID string, cannonType int, arg Argument) *cannon {
+func newCannon(cannonType int, arg Argument) *cannon {
 	return &cannon{
-		ID:   objID,
+		ID:   arg.AnimObjID,
 		Type: cannonType,
 		Arg:  arg,
 	}

@@ -2,16 +2,10 @@ package player
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
-	netskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/oldnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
 type Act interface {
@@ -59,24 +53,25 @@ func (a *ActWait) Interval() int {
 type ActMove struct {
 	targetX int
 	targetY int
-	obj     *object.Object
 	conn    *netconn.NetConn
 }
 
-func NewActMove(obj *object.Object, targetX, targetY int, conn *netconn.NetConn) *ActMove {
+func NewActMove(targetX, targetY int, conn *netconn.NetConn) *ActMove {
 	return &ActMove{
 		targetX: targetX,
 		targetY: targetY,
-		obj:     obj,
 		conn:    conn,
 	}
 }
 
 func (a *ActMove) Process() bool {
 	logger.Debug("Move to (%d, %d)", a.targetX, a.targetY)
-	a.obj.X = a.targetX
-	a.obj.Y = a.targetY
-	a.conn.SendObject(*a.obj)
+	move := action.Move{
+		Type:    action.MoveTypeAbs,
+		AbsPosX: a.targetX,
+		AbsPosY: a.targetY,
+	}
+	a.conn.SendAction(pb.Request_MOVE, move.Marshal())
 	return true
 }
 
@@ -86,16 +81,14 @@ func (a *ActMove) Interval() int {
 
 type ActBuster struct {
 	count     int
-	obj       *object.Object
 	conn      *netconn.NetConn
 	shotPower uint
 	charged   bool
 }
 
-func NewActBuster(obj *object.Object, conn *netconn.NetConn) *ActBuster {
+func NewActBuster(conn *netconn.NetConn) *ActBuster {
 	return &ActBuster{
 		count: 0,
-		obj:   obj,
 		conn:  conn,
 
 		// debug
@@ -105,44 +98,11 @@ func NewActBuster(obj *object.Object, conn *netconn.NetConn) *ActBuster {
 }
 
 func (a *ActBuster) Process() bool {
-	if a.count == 0 {
-		a.obj.UpdateBaseTime = true
-		a.obj.Type = object.TypeRockmanBuster
-		a.conn.SendObject(*a.obj)
+	buster := action.Buster{
+		Power: 1,
 	}
-
-	if a.count == 1 {
-		s := a.shotPower
-		eff := effect.TypeHitSmallEffect
-		if a.charged {
-			s *= 10
-			eff = effect.TypeHitBigEffect
-		}
-
-		y := a.obj.Y
-		for x := a.obj.X + 1; x < config.FieldNumX; x++ {
-			pos := common.Point{X: x, Y: y}
-			if field.GetPanelInfo(pos).ObjectID != "" {
-				a.conn.AddDamage(damage.Damage{
-					ID:            uuid.New().String(),
-					PosX:          pos.X,
-					PosY:          pos.Y,
-					Power:         int(s),
-					TTL:           1,
-					TargetType:    damage.TargetOtherClient,
-					BigDamage:     a.charged,
-					ShowHitArea:   false,
-					HitEffectType: eff,
-				})
-				break
-			}
-		}
-	}
-
-	a.count++
-	delay := object.ImageDelays[a.obj.Type]
-	num := 6
-	return a.count > delay*num
+	a.conn.SendAction(pb.Request_BUSTER, buster.Marshal())
+	return true
 }
 
 func (a *ActBuster) Interval() int {
@@ -150,48 +110,42 @@ func (a *ActBuster) Interval() int {
 }
 
 type ActSkill struct {
-	id        string
-	skillType int
-	obj       *object.Object
-	conn      *netconn.NetConn
+	objID  string
+	chipID int
+	conn   *netconn.NetConn
+	count  int
+	id     string
 }
 
-func NewActSkill(skillType int, obj *object.Object, conn *netconn.NetConn) *ActSkill {
+func NewActSkill(chipID int, objID string, conn *netconn.NetConn) *ActSkill {
 	return &ActSkill{
-		skillType: skillType,
-		obj:       obj,
-		conn:      conn,
+		chipID: chipID,
+		objID:  objID,
+		conn:   conn,
+		count:  0,
+		id:     uuid.New().String(),
 	}
 }
 
 func (a *ActSkill) Process() bool {
-	if a.id == "" {
-		a.id = netskill.GetInst().Add(a.skillType, netskill.Argument{
-			X:     a.obj.X,
-			Y:     a.obj.Y,
-			Power: 10, // debug(とりあえず全部10にする)
-		})
-
-		a.obj.UpdateBaseTime = true
-		switch a.skillType {
-		case skill.SkillCannon, skill.SkillHighCannon, skill.SkillMegaCannon:
-			a.obj.Type = object.TypeRockmanCannon
-		case skill.SkillSword, skill.SkillWideSword, skill.SkillLongSword:
-			a.obj.Type = object.TypeRockmanSword
-		case skill.SkillVulcan1, skill.SkillWideShot, skill.SkillSpreadGun:
-			a.obj.Type = object.TypeRockmanShot
-		case skill.SkillPlayerShockWave, skill.SkillShockWave:
-			a.obj.Type = object.TypeRockmanPick
-		case skill.SkillMiniBomb:
-			a.obj.Type = object.TypeRockmanBomb
-		default:
-			a.obj.Type = object.TypeRockmanStand
+	if a.count == 0 {
+		chipInfo := action.UseChip{
+			AnimID:           a.id,
+			ChipUserClientID: a.objID,
+			ChipID:           a.chipID,
 		}
-		a.conn.SendObject(*a.obj)
-		return false
+		a.conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
+	}
+	a.count++
+
+	info := a.conn.GetGameInfo()
+	for _, anim := range info.Anims {
+		if anim.ObjectID == a.id {
+			return false // まだ処理中
+		}
 	}
 
-	return !netskill.GetInst().Exists(a.id)
+	return true
 }
 
 func (a *ActSkill) Interval() int {

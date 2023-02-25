@@ -4,13 +4,12 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/skill"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/oldnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/netconnpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 const (
@@ -33,13 +32,19 @@ func Init(clientID string, conn *netconn.NetConn) {
 	dxlib.Disable()
 	playerInst = player.New(clientID, conn)
 	connInst = conn
-	skill.GetInst().Init(playerInst.Object.ID)
-	draw.Init(playerInst.Object.ID)
 }
 
 func Process() error {
-	// set init data to router
-	connInst.SendObject(playerInst.Object)
+	obj := netobj.InitParam{
+		ID: playerInst.ID,
+		HP: playerInst.HP,
+		X:  playerInst.Pos.X,
+		Y:  playerInst.Pos.Y,
+	}
+	if err := connInst.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
+		return fmt.Errorf("failed to send init object param: %w", err)
+	}
+
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
@@ -48,7 +53,7 @@ MAIN_LOOP:
 		switch appStatus {
 		case stateWaiting:
 			status := connInst.GetGameStatus()
-			if status == pb.Data_CHIPSELECTWAIT {
+			if status == pb.Response_CHIPSELECTWAIT {
 				statusChange(stateOpening)
 			}
 		case stateOpening:
@@ -62,7 +67,7 @@ MAIN_LOOP:
 			statusChange(stateWaitSelect)
 		case stateWaitSelect:
 			status := connInst.GetGameStatus()
-			if status == pb.Data_ACTING {
+			if status == pb.Response_ACTING {
 				statusChange(stateBeforeMain)
 				continue
 			}
@@ -74,31 +79,23 @@ MAIN_LOOP:
 				continue
 			}
 
-			if err := skill.GetInst().Process(); err != nil {
-				return fmt.Errorf("skill process failed: %w", err)
-			}
-
 			status := connInst.GetGameStatus()
 			switch status {
-			case pb.Data_CHIPSELECTWAIT:
+			case pb.Response_CHIPSELECTWAIT:
 				statusChange(stateChipSelect)
 				continue MAIN_LOOP
-			case pb.Data_GAMEEND:
+			case pb.Response_GAMEEND:
 				statusChange(stateResult)
 				continue MAIN_LOOP
 			}
 		case stateResult:
 			logger.Info("Reached to state result")
-			if playerInst.Object.HP == 0 {
+			if playerInst.HP == 0 {
 				logger.Info("bot client lose")
 			} else {
 				logger.Info("bot client win")
 			}
 			return nil
-		}
-
-		if err := connInst.BulkSendData(); err != nil {
-			return err
 		}
 
 		fpsMgr.Wait()

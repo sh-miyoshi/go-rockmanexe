@@ -86,7 +86,8 @@ func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
 	}
 
 	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
-		OwnerID:    chipInfo.ObjectID,
+		AnimObjID:  chipInfo.AnimID,
+		OwnerID:    chipInfo.ChipUserClientID,
 		Power:      c.Power,
 		TargetType: targetType,
 

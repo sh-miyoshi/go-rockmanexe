@@ -11,21 +11,20 @@ const (
 )
 
 type Move struct {
-	ObjectID string
-	Type     int
-	Direct   int
-	AbsPosX  int
-	AbsPosY  int
+	Type    int
+	Direct  int
+	AbsPosX int
+	AbsPosY int
 }
 
 type Buster struct {
-	ObjectID string
-	Power    int
+	Power int
 }
 
 type UseChip struct {
-	ObjectID string
-	ChipID   int
+	AnimID           string // anim id must uniq at global
+	ChipID           int
+	ChipUserClientID string
 }
 
 func (p *Move) Marshal() []byte {
