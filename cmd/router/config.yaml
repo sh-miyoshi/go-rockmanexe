@@ -4,3 +4,4 @@ log:
   debug_log: true
   file: ""
 acceptable_version: ""
+chip_file_path: "../../data/chipList.yaml"

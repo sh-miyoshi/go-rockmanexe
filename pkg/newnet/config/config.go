@@ -15,6 +15,7 @@ type Config struct {
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
 	AcceptableVersion string `yaml:"acceptable_version"`
+	ChipFilePath      string `yaml:"chip_file_path"`
 }
 
 var (

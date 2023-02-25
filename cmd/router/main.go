@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconn"
@@ -28,6 +29,12 @@ func main() {
 
 	c := config.Get()
 	logger.InitLogger(c.Log.DebugLog, c.Log.FileName)
+
+	// Init Chip Info
+	if err := chip.Init(c.ChipFilePath); err != nil {
+		logger.Error("Failed to initialize chip info: %+v", err)
+		return
+	}
 
 	// Listen data connection
 	logger.Info("start data stream with %s", c.DataStreamAddr)
