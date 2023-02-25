@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/gob"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
 
 type PanelInfo struct {
@@ -13,9 +13,18 @@ type PanelInfo struct {
 	ObjectID      string
 }
 
+type Object struct {
+	ID            string
+	OwnerClientID string
+	HP            int
+	Pos           common.Point
+	// TODO(他にも必要だと思うが都度追加していく)
+}
+
 type GameInfo struct {
-	Panels          [config.FieldNumX][config.FieldNumY]PanelInfo
-	Objects         map[string]object.Object
+	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
+	Objects map[string]Object
+	// Anims
 	ReverseClientID string
 }
 

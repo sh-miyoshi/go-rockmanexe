@@ -21,7 +21,7 @@ type GameHandler struct {
 func NewHandler() *GameHandler {
 	return &GameHandler{
 		info: gameinfo.GameInfo{
-			Objects: make(map[string]object.Object),
+			Objects: make(map[string]gameinfo.Object),
 		},
 	}
 }
@@ -44,7 +44,7 @@ func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
 		x = battlecommon.FieldNum.X - x - 1
 	}
 
-	g.info.Objects[param.ID] = object.Object{
+	g.info.Objects[param.ID] = gameinfo.Object{
 		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
