@@ -158,7 +158,7 @@ func Update() {
 		}
 	}
 
-	objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypeAll})
+	objs := objanim.GetObjs(objanim.FilterAll)
 	for _, obj := range objs {
 		panels[obj.Pos.X][obj.Pos.Y].info.ObjectID = obj.ObjID
 		if panels[obj.Pos.X][obj.Pos.Y].info.Status == tmpPanelStatusCrack {

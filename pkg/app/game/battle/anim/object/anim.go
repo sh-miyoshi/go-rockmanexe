@@ -42,6 +42,8 @@ var (
 	anims         = map[string]Anim{}
 	sortedAnimIDs = []string{}
 	activeAnimIDs = []string{}
+
+	FilterAll = Filter{ObjType: ObjTypeAll}
 )
 
 // MgrProcess ...
