@@ -23,6 +23,7 @@ type GameLogic interface {
 	AddObject(clientID string, param object.InitParam)
 	MoveObject(moveInfo action.Move)
 	AddBuster(clientID string, busterInfo action.Buster)
+	UseChip(clientID string, chipInfo action.UseChip)
 	GetInfo() []byte
 	UpdateGameStatus()
 }
@@ -199,7 +200,9 @@ func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
 		buster.Unmarshal(act.GetRawData())
 		s.gameHandler.AddBuster(clientID, buster)
 	case pb.Request_CHIPUSE:
-		panic("TODO: 未実装")
+		var chipInfo action.UseChip
+		chipInfo.Unmarshal(act.GetRawData())
+		s.gameHandler.UseChip(clientID, chipInfo)
 	default:
 		return fmt.Errorf("invalid action type %d is specified", act.GetType())
 	}

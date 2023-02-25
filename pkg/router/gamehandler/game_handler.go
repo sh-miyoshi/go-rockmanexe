@@ -4,12 +4,14 @@ import (
 	"sort"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
 type GameHandler struct {
@@ -104,11 +106,25 @@ func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
 	}
 }
 
+func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
+	// TODO
+	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
+		OwnerID:    clientID,
+		Power:      40, // debug
+		TargetType: 0,  // debug
+	})
+	anim.New(s)
+}
+
 func (g *GameHandler) GetInfo() []byte {
 	return g.info.Marshal()
 }
 
 func (g *GameHandler) UpdateGameStatus() {
+	if err := anim.MgrProcess(); err != nil {
+		logger.Error("Failed to manage animation: %+v", err)
+		// TODO: 処理を終了する
+	}
 	// TODO
 }
 

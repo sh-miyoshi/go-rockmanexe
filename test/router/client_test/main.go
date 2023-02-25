@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
@@ -158,11 +159,15 @@ MAIN_LOOP:
 				exitByError(fmt.Errorf("failed to add buster: %+v", info))
 			}
 
+			// 3. Use Chip
+			chipInfo := action.UseChip{
+				ObjectID: obj.ID,
+				ChipID:   chip.IDCannon,
+			}
+			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
+
 			// TODO
 			break MAIN_LOOP
-
-			// 3. Use Chip
-			// TODO
 		case stateResult:
 			logger.Info("Successfully state change to result")
 			break MAIN_LOOP
