@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 )
 
@@ -52,4 +53,27 @@ func (p *GameInfo) GetObject(id string) *Object {
 		}
 	}
 	return nil
+}
+
+func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
+		return battlecommon.PanelInfo{}
+	}
+
+	pn := p.Panels[pos.X][pos.Y]
+	return battlecommon.PanelInfo{
+		Type:     p.GetPanelType(pn.OwnerClientID),
+		ObjectID: pn.ObjectID,
+
+		// TODO: 適切な値を入れる
+		Status:    battlecommon.PanelStatusNormal,
+		HoleCount: 0,
+	}
+}
+
+func (p *GameInfo) GetPanelType(clientID string) int {
+	if p.ReverseClientID == clientID {
+		return 1
+	}
+	return 0
 }

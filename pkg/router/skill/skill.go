@@ -4,12 +4,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
 type Argument struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
+
+	GameInfo *gameinfo.GameInfo
 }
 
 type SkillAnim interface {

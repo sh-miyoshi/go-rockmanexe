@@ -1,6 +1,7 @@
 package gamehandler
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -66,13 +67,34 @@ func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
 }
 
 func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
-	// TODO
+	c := chip.Get(chipInfo.ChipID)
+	logger.Debug("Use chip: %+v", c)
+
+	var targetType int
+	if g.info.ReverseClientID == clientID {
+		if c.ForMe {
+			targetType = damage.TargetEnemy
+		} else {
+			targetType = damage.TargetPlayer
+		}
+	} else {
+		if c.ForMe {
+			targetType = damage.TargetPlayer
+		} else {
+			targetType = damage.TargetEnemy
+		}
+	}
+
 	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
-		OwnerID:    clientID,
-		Power:      40, // debug
-		TargetType: 0,  // debug
+		OwnerID:    chipInfo.ObjectID,
+		Power:      c.Power,
+		TargetType: targetType,
+
+		GameInfo: &g.info,
 	})
 	anim.New(s)
+
+	// TODO: player_act
 }
 
 func (g *GameHandler) GetInfo() []byte {

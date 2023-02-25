@@ -106,11 +106,6 @@ MAIN_LOOP:
 				stateChange(&appStatus, stateMain)
 			}
 		case stateMain:
-			status := conn.GetGameStatus()
-			if status == pb.Response_GAMEEND {
-				stateChange(&appStatus, stateResult)
-			}
-
 			// Check action
 			// 1. Move
 			ok := false
@@ -147,7 +142,7 @@ MAIN_LOOP:
 			for i := 0; i < 10; i++ {
 				info := conn.GetGameInfo()
 				for _, obj := range info.Objects {
-					if obj.OwnerClientID != "tester1" && obj.HP == 0 {
+					if obj.OwnerClientID != "tester1" && obj.HP == 99 {
 						ok = true
 						logger.Info("Successfully damaged by buster")
 						break BUSTER_CHECK_LOOP
@@ -165,9 +160,26 @@ MAIN_LOOP:
 				ChipID:   chip.IDCannon,
 			}
 			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
+			ok = false
+		USE_CHIP_CHECK_LOOP:
+			for i := 0; i < 10; i++ {
+				info := conn.GetGameInfo()
+				for _, obj := range info.Objects {
+					if obj.OwnerClientID != "tester1" && obj.HP == 59 {
+						ok = true
+						logger.Info("Successfully damaged by use chip cannon")
+						break USE_CHIP_CHECK_LOOP
+					}
+				}
+				time.Sleep(100 * time.Millisecond)
+			}
+			if !ok {
+				exitByError(fmt.Errorf("failed to use chip cannon: %+v", info))
+			}
 
-			// TODO
-			break MAIN_LOOP
+			stateChange(&appStatus, stateResult)
+
+			// TODO check game end status
 		case stateResult:
 			logger.Info("Successfully state change to result")
 			break MAIN_LOOP
@@ -219,7 +231,7 @@ func runClient2() {
 
 	obj := netobj.InitParam{
 		ID: uuid.New().String(),
-		HP: 1,
+		HP: 100,
 		X:  1,
 		Y:  1,
 	}

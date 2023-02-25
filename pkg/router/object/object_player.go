@@ -53,12 +53,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		// TODO: damage effect
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, p.getPanelType(p.objectInfo.ID), true, p.getPanelInfo) {
+			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, p.getPanelType(p.objectInfo.ID), true, p.getPanelInfo) {
+			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo) {
 				break
 			}
 		}
@@ -108,10 +108,10 @@ func (p *Player) AddMove(moveInfo action.Move) {
 	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
-		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, p.getPanelType(p.objectInfo.ID), true, p.getPanelInfo)
+		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo)
 	case action.MoveTypeAbs:
 		target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
-		battlecommon.MoveObjectDirect(&p.objectInfo.Pos, target, p.getPanelType(p.objectInfo.ID), true, p.getPanelInfo)
+		battlecommon.MoveObjectDirect(&p.objectInfo.Pos, target, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo)
 	}
 }
 
@@ -119,7 +119,7 @@ func (p *Player) AddBuster(busterInfo action.Buster) {
 	// TODO: このタイミングで動作させず、アニメーションの追加のみにする
 
 	damageAdd := func(pos common.Point, power int, targetType int) {
-		if p.getPanelInfo(pos).ObjectID != "" {
+		if p.gameInfo.GetPanelInfo(pos).ObjectID != "" {
 			logger.Debug("Rock buster damage set %d to (%d, %d)", busterInfo.Power, pos.X, pos.Y)
 			damage.New(damage.Damage{
 				Pos:           pos,
@@ -144,29 +144,6 @@ func (p *Player) AddBuster(busterInfo action.Buster) {
 			damageAdd(pos, busterInfo.Power, damage.TargetEnemy)
 		}
 	}
-}
-
-func (p *Player) getPanelInfo(pos common.Point) battlecommon.PanelInfo {
-	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
-		return battlecommon.PanelInfo{}
-	}
-
-	pn := p.gameInfo.Panels[pos.X][pos.Y]
-	return battlecommon.PanelInfo{
-		Type:     p.getPanelType(pn.OwnerClientID),
-		ObjectID: pn.ObjectID,
-
-		// TODO: 適切な値を入れる
-		Status:    battlecommon.PanelStatusNormal,
-		HoleCount: 0,
-	}
-}
-
-func (p *Player) getPanelType(clientID string) int {
-	if p.gameInfo.ReverseClientID == clientID {
-		return 1
-	}
-	return 0
 }
 
 func (p *Player) isReverse() bool {
