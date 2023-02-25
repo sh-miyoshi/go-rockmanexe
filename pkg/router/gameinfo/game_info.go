@@ -21,10 +21,17 @@ type Object struct {
 	// TODO(他にも必要だと思うが都度追加していく)
 }
 
+type Anim struct {
+	ObjectID      string
+	OwnerClientID string
+	Pos           common.Point
+	AnimType      int
+}
+
 type GameInfo struct {
-	Panels  [config.FieldNumX][config.FieldNumY]PanelInfo
-	Objects map[string]Object
-	// Anims
+	Panels          [config.FieldNumX][config.FieldNumY]PanelInfo
+	Objects         []Object
+	Anims           []Anim
 	ReverseClientID string
 }
 
@@ -37,4 +44,13 @@ func (p *GameInfo) Marshal() []byte {
 func (p *GameInfo) Unmarshal(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(p)
+}
+
+func (p *GameInfo) GetObject(id string) *Object {
+	for i, obj := range p.Objects {
+		if obj.ID == id {
+			return &p.Objects[i]
+		}
+	}
+	return nil
 }

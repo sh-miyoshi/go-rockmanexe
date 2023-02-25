@@ -88,6 +88,15 @@ func Delete(animID string) {
 	}
 }
 
+func GetAll() []Param {
+	res := []Param{}
+	for _, anim := range anims {
+		res = append(res, anim.GetParam())
+	}
+
+	return res
+}
+
 func sortAnim() {
 	type sortParam struct {
 		Index int

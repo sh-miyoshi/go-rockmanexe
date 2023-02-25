@@ -1,28 +1,27 @@
 package gamehandler
 
 import (
-	"sort"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
 type GameHandler struct {
-	info gameinfo.GameInfo
+	info              gameinfo.GameInfo
+	objOwnerClientIDs map[string]string // Key: ObjectID, Value: ClientID
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
-		info: gameinfo.GameInfo{
-			Objects: make(map[string]gameinfo.Object),
-		},
+		objOwnerClientIDs: make(map[string]string),
 	}
 }
 
@@ -44,66 +43,70 @@ func (g *GameHandler) AddObject(clientID string, param object.InitParam) {
 		x = battlecommon.FieldNum.X - x - 1
 	}
 
-	g.info.Objects[param.ID] = gameinfo.Object{
+	g.objOwnerClientIDs[param.ID] = clientID
+	objanim.New(gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
-	}
+	}))
+	g.updateGameInfo()
 	g.info.Panels[x][param.Y].ObjectID = param.ID
 }
 
 func (g *GameHandler) MoveObject(moveInfo action.Move) {
-	obj, ok := g.info.Objects[moveInfo.ObjectID]
-	if !ok {
-		logger.Info("Failed to find move target object: %+v", moveInfo)
-		return
-	}
+	// TODO
+	// obj, ok := g.info.Objects[moveInfo.ObjectID]
+	// if !ok {
+	// 	logger.Info("Failed to find move target object: %+v", moveInfo)
+	// 	return
+	// }
 
-	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
-	switch moveInfo.Type {
-	case action.MoveTypeDirect:
-		battlecommon.MoveObject(&obj.Pos, moveInfo.Direct, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
-	case action.MoveTypeAbs:
-		target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
-		battlecommon.MoveObjectDirect(&obj.Pos, target, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
-	}
+	// // TODO: このタイミングで移動せず、アニメーションの追加のみにする
+	// switch moveInfo.Type {
+	// case action.MoveTypeDirect:
+	// 	battlecommon.MoveObject(&obj.Pos, moveInfo.Direct, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
+	// case action.MoveTypeAbs:
+	// 	target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
+	// 	battlecommon.MoveObjectDirect(&obj.Pos, target, g.getPlayerPanelType(obj.OwnerClientID), true, g.getPanelInfo)
+	// }
 
-	g.info.Objects[moveInfo.ObjectID] = obj
-	g.updatePanelObject()
+	// g.info.Objects[moveInfo.ObjectID] = obj
+	// g.updatePanelObject()
 }
 
 func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
-	obj, ok := g.info.Objects[busterInfo.ObjectID]
-	if !ok {
-		logger.Info("Failed to find buster send object: %+v", busterInfo)
-		return
-	}
+	// TODO
+	// obj, ok := g.info.Objects[busterInfo.ObjectID]
+	// if !ok {
+	// 	logger.Info("Failed to find buster send object: %+v", busterInfo)
+	// 	return
+	// }
 
-	// TODO: このタイミングで実行せず、アニメーションの追加のみにする
-	// TODO: Busterアニメーション
-	damageToObj := func(objID string, power int) {
-		o := g.info.Objects[objID]
-		o.HP -= power
-		if o.HP < 0 {
-			o.HP = 0
-		}
-		g.info.Objects[objID] = o
-	}
+	// // TODO: このタイミングで実行せず、アニメーションの追加のみにする
+	// // TODO: Busterアニメーション
+	// damageToObj := func(objID string, power int) {
+	// 	o := g.info.Objects[objID]
+	// 	o.HP -= power
+	// 	if o.HP < 0 {
+	// 		o.HP = 0
+	// 	}
+	// 	g.info.Objects[objID] = o
+	// }
 
-	if g.info.ReverseClientID == clientID {
-		for x := obj.Pos.X - 1; x >= 0; x-- {
-			if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
-				damageToObj(objID, busterInfo.Power)
-			}
-		}
-	} else {
-		for x := obj.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
-				damageToObj(objID, busterInfo.Power)
-			}
-		}
-	}
+	// if g.info.ReverseClientID == clientID {
+	// 	for x := obj.Pos.X - 1; x >= 0; x-- {
+	// 		if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
+	// 			damageToObj(objID, busterInfo.Power)
+	// 		}
+	// 	}
+	// } else {
+	// 	for x := obj.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
+	// 		if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
+	// 			damageToObj(objID, busterInfo.Power)
+	// 		}
+	// 	}
+	// }
 }
 
 func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
@@ -129,15 +132,8 @@ func (g *GameHandler) UpdateGameStatus() {
 }
 
 func (g *GameHandler) getPlayerPanelType(clientID string) int {
-	var ids []string
-	for objID := range g.info.Objects {
-		ids = append(ids, objID)
-	}
-	sort.Strings(ids)
-	for i, id := range ids {
-		if clientID == id {
-			return i
-		}
+	if clientID == g.info.ReverseClientID {
+		return 1
 	}
 	return 0
 }
@@ -169,5 +165,28 @@ func (g *GameHandler) updatePanelObject() {
 	}
 	for _, obj := range g.info.Objects {
 		g.info.Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
+	}
+}
+
+func (g *GameHandler) updateGameInfo() {
+	// Cleanup at first
+	g.info.Objects = []gameinfo.Object{}
+	g.info.Anims = []gameinfo.Anim{}
+
+	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
+		g.info.Objects = append(g.info.Objects, gameinfo.Object{
+			ID:            obj.ObjID,
+			OwnerClientID: g.objOwnerClientIDs[obj.ObjID],
+			HP:            obj.HP,
+			Pos:           obj.Pos,
+		})
+	}
+	for _, a := range anim.GetAll() {
+		g.info.Anims = append(g.info.Anims, gameinfo.Anim{
+			ObjectID:      a.ObjID,
+			OwnerClientID: "", // TODO: ちゃんと設定する
+			Pos:           a.Pos,
+			AnimType:      a.AnimType,
+		})
 	}
 }

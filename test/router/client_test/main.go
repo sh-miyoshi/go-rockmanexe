@@ -124,8 +124,8 @@ MAIN_LOOP:
 			info := conn.GetGameInfo()
 			for i := 0; i < 10; i++ {
 				info = conn.GetGameInfo()
-				myObj := info.Objects[obj.ID]
-				if myObj.Pos.X == 2 && myObj.Pos.Y == 1 {
+				myObj := info.GetObject(obj.ID)
+				if myObj != nil && myObj.Pos.X == 2 && myObj.Pos.Y == 1 {
 					ok = true
 					logger.Info("Success to move")
 					break
