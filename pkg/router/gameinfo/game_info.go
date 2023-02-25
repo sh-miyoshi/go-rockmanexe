@@ -22,10 +22,9 @@ type Object struct {
 }
 
 type Anim struct {
-	ObjectID      string
-	OwnerClientID string
-	Pos           common.Point
-	AnimType      int
+	ObjectID string
+	Pos      common.Point
+	AnimType int
 }
 
 type GameInfo struct {

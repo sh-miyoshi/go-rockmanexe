@@ -5,6 +5,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
@@ -61,37 +62,7 @@ func (g *GameHandler) MoveObject(clientID string, moveInfo action.Move) {
 }
 
 func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
-	// TODO
-	// obj, ok := g.info.Objects[busterInfo.ObjectID]
-	// if !ok {
-	// 	logger.Info("Failed to find buster send object: %+v", busterInfo)
-	// 	return
-	// }
-
-	// // TODO: このタイミングで実行せず、アニメーションの追加のみにする
-	// // TODO: Busterアニメーション
-	// damageToObj := func(objID string, power int) {
-	// 	o := g.info.Objects[objID]
-	// 	o.HP -= power
-	// 	if o.HP < 0 {
-	// 		o.HP = 0
-	// 	}
-	// 	g.info.Objects[objID] = o
-	// }
-
-	// if g.info.ReverseClientID == clientID {
-	// 	for x := obj.Pos.X - 1; x >= 0; x-- {
-	// 		if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
-	// 			damageToObj(objID, busterInfo.Power)
-	// 		}
-	// 	}
-	// } else {
-	// 	for x := obj.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-	// 		if objID := g.info.Panels[x][obj.Pos.Y].ObjectID; objID != "" {
-	// 			damageToObj(objID, busterInfo.Power)
-	// 		}
-	// 	}
-	// }
+	g.playerObjects[clientID].AddBuster(busterInfo)
 }
 
 func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
@@ -117,6 +88,7 @@ func (g *GameHandler) UpdateGameStatus() {
 		logger.Error("Failed to manage object animation: %+v", err)
 		// TODO: 処理を終了する
 	}
+	damage.MgrProcess()
 
 	g.updateGameInfo()
 }
@@ -148,10 +120,9 @@ func (g *GameHandler) updateGameInfo() {
 	}
 	for _, a := range anim.GetAll() {
 		g.info.Anims = append(g.info.Anims, gameinfo.Anim{
-			ObjectID:      a.ObjID,
-			OwnerClientID: "", // TODO: ちゃんと設定する
-			Pos:           a.Pos,
-			AnimType:      a.AnimType,
+			ObjectID: a.ObjID,
+			Pos:      a.Pos,
+			AnimType: a.AnimType,
 		})
 	}
 
