@@ -498,11 +498,14 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (p *BattlePlayer) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    p.ID,
-		Pos:      p.Pos,
-		AnimType: anim.AnimTypeObject,
+func (p *BattlePlayer) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    p.ID,
+			Pos:      p.Pos,
+			AnimType: anim.AnimTypeObject,
+		},
+		HP: int(p.HP),
 	}
 }
 

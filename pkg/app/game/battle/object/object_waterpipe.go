@@ -133,11 +133,14 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (o *WaterPipe) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    o.pm.objectID,
-		Pos:      o.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (o *WaterPipe) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    o.pm.objectID,
+			Pos:      o.pm.Pos,
+			AnimType: anim.AnimTypeObject,
+		},
+		HP: o.pm.HP,
 	}
 }
 

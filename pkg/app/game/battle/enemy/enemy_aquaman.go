@@ -346,11 +346,14 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (e *enemyAquaman) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyAquaman) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			AnimType: anim.AnimTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 

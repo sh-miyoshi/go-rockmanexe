@@ -174,11 +174,14 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (s *Supporter) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    s.ID,
-		Pos:      s.Pos,
-		AnimType: anim.AnimTypeObject,
+func (s *Supporter) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    s.ID,
+			Pos:      s.Pos,
+			AnimType: anim.AnimTypeObject,
+		},
+		HP: int(s.HP),
 	}
 }
 

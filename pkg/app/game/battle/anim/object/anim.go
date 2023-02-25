@@ -28,12 +28,17 @@ type Filter struct {
 	Pos     *common.Point
 }
 
-// Anim ...
+type Param struct {
+	anim.Param
+
+	HP int
+}
+
 type Anim interface {
 	Process() (bool, error)
 	Draw()
 	DamageProc(dm *damage.Damage) bool
-	GetParam() anim.Param
+	GetParam() Param
 	GetObjectType() int
 	MakeInvisible(count int)
 }
@@ -139,8 +144,8 @@ func GetObjPos(objID string) common.Point {
 	return common.Point{X: -1, Y: -1}
 }
 
-func GetObjs(filter Filter) []anim.Param {
-	res := []anim.Param{}
+func GetObjs(filter Filter) []Param {
+	res := []Param{}
 
 	for _, anim := range anims {
 		pm := anim.GetParam()
