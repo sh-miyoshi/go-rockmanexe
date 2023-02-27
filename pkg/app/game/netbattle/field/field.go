@@ -11,7 +11,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	netconfig "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 )
 
 type Field struct {
@@ -64,44 +63,18 @@ func (f *Field) Draw() {
 	clientID := config.Get().Net.ClientID
 
 	panels := net.GetInst().GetGameInfo().Panels
-	for x := 0; x < netconfig.FieldNumX; x++ {
-		for y := 0; y < netconfig.FieldNumY; y++ {
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			typ := battlefield.PanelTypePlayer
 			if panels[x][y].OwnerClientID != clientID {
 				typ = battlefield.PanelTypeEnemy
 			}
-			img := f.imgPanel[panels[x][y].Status][typ]
+			// TODO: statusを反映させる
+			img := f.imgPanel[battlecommon.PanelStatusNormal][typ]
 			vx := battlecommon.PanelSize.X * x
 			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
 
 			dxlib.DrawGraph(vx, vy, img, true)
 		}
-	}
-}
-
-func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
-	ginfo := net.GetInst().GetGameInfo()
-	clientID := config.Get().Net.ClientID
-
-	id := ""
-	for _, obj := range ginfo.Objects {
-		if obj.Hittable && obj.X == pos.X && obj.Y == pos.Y {
-			id = obj.ID
-			break
-		}
-	}
-
-	pnType := battlefield.PanelTypePlayer
-	if ginfo.Panels[pos.X][pos.Y].OwnerClientID != clientID {
-		pnType = battlefield.PanelTypeEnemy
-	}
-
-	return battlecommon.PanelInfo{
-		Type:     pnType,
-		ObjectID: id,
-
-		// TODO 未実装
-		// Status    int
-		// HoleCount int
 	}
 }
