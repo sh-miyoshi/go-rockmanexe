@@ -16,9 +16,11 @@ type PanelInfo struct {
 
 type Object struct {
 	ID            string
+	Type          int
 	OwnerClientID string
 	HP            int
 	Pos           common.Point
+	ActCount      int
 	// TODO(他にも必要だと思うが都度追加していく)
 }
 

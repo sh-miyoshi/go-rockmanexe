@@ -16,16 +16,24 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
+type objectInfo struct {
+	OwnerClientID string
+	Type          int
+	StartCount    int
+}
+
 type GameHandler struct {
-	info              gameinfo.GameInfo
-	objOwnerClientIDs map[string]string // Key: ObjectID, Value: ClientID
-	playerObjects     map[string]*gameobj.Player
+	info          gameinfo.GameInfo
+	objInfo       map[string]*objectInfo
+	playerObjects map[string]*gameobj.Player
+	gameCount     int
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
-		objOwnerClientIDs: make(map[string]string),
-		playerObjects:     make(map[string]*gameobj.Player),
+		objInfo:       make(map[string]*objectInfo),
+		playerObjects: make(map[string]*gameobj.Player),
+		gameCount:     0,
 	}
 }
 
@@ -47,9 +55,14 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		x = battlecommon.FieldNum.X - x - 1
 	}
 
-	g.objOwnerClientIDs[param.ID] = clientID
+	g.objInfo[param.ID] = &objectInfo{
+		OwnerClientID: clientID,
+		Type:          0, // debug
+		StartCount:    g.gameCount,
+	}
 	g.playerObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
+		Type:          g.objInfo[param.ID].Type,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
@@ -136,9 +149,11 @@ func (g *GameHandler) updateGameInfo() {
 	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
 		g.info.Objects = append(g.info.Objects, gameinfo.Object{
 			ID:            obj.ObjID,
-			OwnerClientID: g.objOwnerClientIDs[obj.ObjID],
+			Type:          g.objInfo[obj.ObjID].Type,
+			OwnerClientID: g.objInfo[obj.ObjID].OwnerClientID,
 			HP:            obj.HP,
 			Pos:           obj.Pos,
+			ActCount:      g.gameCount - g.objInfo[obj.ObjID].StartCount,
 		})
 	}
 	for _, a := range anim.GetAll() {
@@ -150,4 +165,5 @@ func (g *GameHandler) updateGameInfo() {
 	}
 
 	g.updatePanelObject()
+	g.gameCount++
 }
