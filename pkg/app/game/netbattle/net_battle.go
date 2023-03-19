@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
@@ -81,6 +82,10 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
+	if err = draw.Init(); err != nil {
+		return err
+	}
+
 	obj := netobj.InitParam{
 		ID: uuid.New().String(),
 		HP: 10,
@@ -102,6 +107,7 @@ func End() {
 	if inst.fieldInst != nil {
 		inst.fieldInst.End()
 	}
+	draw.End()
 }
 
 func Process() error {
@@ -211,6 +217,7 @@ func Process() error {
 func Draw() {
 	inst.fieldInst.Draw()
 	inst.playerInst.LocalDraw()
+	draw.Draw()
 
 	switch inst.state {
 	case stateWaiting:
