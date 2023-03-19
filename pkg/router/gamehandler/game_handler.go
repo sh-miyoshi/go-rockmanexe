@@ -57,7 +57,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 
 	g.objInfo[param.ID] = &objectInfo{
 		OwnerClientID: clientID,
-		Type:          0, // debug
+		Type:          gameobj.TypePlayerStand,
 		StartCount:    g.gameCount,
 	}
 	g.playerObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
