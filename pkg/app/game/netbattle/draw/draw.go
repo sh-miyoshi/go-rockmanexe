@@ -99,6 +99,14 @@ func Draw() {
 	for _, obj := range ginfo.Objects {
 		pos := battlecommon.ViewPos(obj.Pos)
 		ino := 0 // debug
-		dxlib.DrawGraph(pos.X, pos.Y, images[obj.Type][ino], true)
+		// TODO offset
+
+		opts := dxlib.DrawRotaGraphOption{}
+		if obj.IsReverse {
+			rev := int32(dxlib.TRUE)
+			opts.ReverseXFlag = &rev
+		}
+
+		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, images[obj.Type][ino], true, opts)
 	}
 }

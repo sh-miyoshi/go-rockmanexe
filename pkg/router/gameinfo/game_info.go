@@ -21,6 +21,7 @@ type Object struct {
 	HP            int
 	Pos           common.Point
 	ActCount      int
+	IsReverse     bool
 	// TODO(他にも必要だと思うが都度追加していく)
 }
 

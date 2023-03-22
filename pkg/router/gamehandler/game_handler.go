@@ -66,6 +66,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
+		IsReverse:     g.info.ReverseClientID == clientID,
 	}, &g.info)
 	objanim.New(g.playerObjects[clientID])
 	g.updateGameInfo()
@@ -154,6 +155,7 @@ func (g *GameHandler) updateGameInfo() {
 			HP:            obj.HP,
 			Pos:           obj.Pos,
 			ActCount:      g.gameCount - g.objInfo[obj.ObjID].StartCount,
+			IsReverse:     g.info.ReverseClientID == g.objInfo[obj.ObjID].OwnerClientID,
 		})
 	}
 	for _, a := range anim.GetAll() {
