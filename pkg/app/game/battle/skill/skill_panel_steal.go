@@ -33,10 +33,10 @@ func newPanelSteal(objID string, arg Argument) *skillPanelSteal {
 		state: areaStealStateBlackout,
 	}
 
-	if arg.TargetType == field.PanelTypePlayer {
-		res.myPanelType = field.PanelTypeEnemy
+	if arg.TargetType == battlecommon.PanelTypePlayer {
+		res.myPanelType = battlecommon.PanelTypeEnemy
 	} else {
-		res.myPanelType = field.PanelTypePlayer
+		res.myPanelType = battlecommon.PanelTypePlayer
 	}
 
 	return res
@@ -75,12 +75,12 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			setChipNameDraw("パネルスチール")
 
 			// Target位置を実行時の一番最初に設定する
-			if p.myPanelType == field.PanelTypePlayer {
+			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
 					pos := objanim.GetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
-					if pn.Type != field.PanelTypePlayer {
+					if pn.Type != battlecommon.PanelTypePlayer {
 						p.target = target
 						return false, nil
 					}
@@ -90,7 +90,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 					pos := objanim.GetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
-					if pn.Type != field.PanelTypeEnemy {
+					if pn.Type != battlecommon.PanelTypeEnemy {
 						p.target = target
 						return false, nil
 					}

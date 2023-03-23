@@ -143,7 +143,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
 					e.targetPos,
-					field.PanelTypeEnemy,
+					battlecommon.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
 				) {
@@ -163,7 +163,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
 					next,
-					field.PanelTypeEnemy,
+					battlecommon.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
 				) {

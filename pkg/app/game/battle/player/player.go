@@ -386,7 +386,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&p.Pos, moveDirect, field.PanelTypePlayer, false, field.GetPanelInfo) {
+		if battlecommon.MoveObject(&p.Pos, moveDirect, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
 			p.act.SetAnim(battlecommon.PlayerActMove, 0)
 			p.MoveNum++
@@ -462,12 +462,12 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		anim.New(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&p.Pos, common.DirectRight, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
@@ -580,7 +580,7 @@ func (a *act) Process() bool {
 		}
 	case battlecommon.PlayerActMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(a.pPos, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
+			battlecommon.MoveObject(a.pPos, a.MoveDirect, battlecommon.PanelTypePlayer, true, field.GetPanelInfo)
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action

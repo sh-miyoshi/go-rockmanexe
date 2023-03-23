@@ -116,7 +116,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				e.targetPos,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {
@@ -139,7 +139,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				next,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {
@@ -157,7 +157,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			rnd := rand.Intn(3)
 			for i := 0; i < 3; i++ {
 				pos = common.Point{X: (rnd+i)%3 + 3, Y: pos.Y}
-				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 					e.targetPos = pos
 				}
 			}

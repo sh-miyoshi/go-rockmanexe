@@ -139,12 +139,12 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		anim.New(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectRight, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
@@ -215,7 +215,7 @@ func (s *Supporter) moveRandom() {
 	}
 
 	for _, direct := range candidates {
-		if battlecommon.MoveObject(&s.Pos, direct, field.PanelTypePlayer, false, field.GetPanelInfo) {
+		if battlecommon.MoveObject(&s.Pos, direct, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			s.act.MoveDirect = direct
 			s.act.SetAnim(battlecommon.PlayerActMove, 0)
 			return

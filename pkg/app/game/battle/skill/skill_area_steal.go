@@ -38,10 +38,10 @@ func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
 		state: areaStealStateBlackout,
 	}
 
-	if arg.TargetType == field.PanelTypePlayer {
-		res.myPanelType = field.PanelTypeEnemy
+	if arg.TargetType == battlecommon.PanelTypePlayer {
+		res.myPanelType = battlecommon.PanelTypeEnemy
 	} else {
-		res.myPanelType = field.PanelTypePlayer
+		res.myPanelType = battlecommon.PanelTypePlayer
 	}
 
 	return res
@@ -84,11 +84,11 @@ func (p *skillAreaSteal) Process() (bool, error) {
 			setChipNameDraw("エリアスチール")
 
 			// Target Lineを実行時の一番最初に設定する
-			if p.myPanelType == field.PanelTypePlayer {
+			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
 					for y := 0; y < battlecommon.FieldNum.Y; y++ {
 						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
-						if pn.Type != field.PanelTypePlayer {
+						if pn.Type != battlecommon.PanelTypePlayer {
 							p.targetLineX = x
 							return false, nil
 						}
@@ -98,7 +98,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
 					for y := 0; y < battlecommon.FieldNum.Y; y++ {
 						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
-						if pn.Type != field.PanelTypeEnemy {
+						if pn.Type != battlecommon.PanelTypeEnemy {
 							p.targetLineX = x
 							return false, nil
 						}

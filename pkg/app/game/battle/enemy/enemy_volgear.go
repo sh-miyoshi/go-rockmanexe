@@ -121,7 +121,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				next,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {

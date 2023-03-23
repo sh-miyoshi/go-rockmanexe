@@ -59,6 +59,13 @@ const (
 	PanelStatusMax
 )
 
+const (
+	PanelTypePlayer int = iota
+	PanelTypeEnemy
+
+	PanelTypeMax
+)
+
 type PanelInfo struct {
 	Type      int
 	ObjectID  string

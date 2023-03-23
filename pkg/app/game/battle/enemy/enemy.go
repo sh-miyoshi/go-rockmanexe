@@ -196,12 +196,12 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
