@@ -29,6 +29,8 @@ type Anim struct {
 	ObjectID string
 	Pos      common.Point
 	AnimType int
+
+	// TODO: IsReverse必要かも
 }
 
 // Client側に送られるデータ

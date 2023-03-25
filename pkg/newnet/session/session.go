@@ -6,7 +6,6 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 )
@@ -21,10 +20,8 @@ const (
 type GameLogic interface {
 	Init(clientIDs [2]string) error
 	AddPlayerObject(clientID string, param object.InitParam)
-	MoveObject(clientID string, moveInfo action.Move)
-	AddBuster(clientID string, busterInfo action.Buster)
-	UseChip(clientID string, chipInfo action.UseChip)
-	GetInfo() []byte
+	HandleAction(clientID string, act *pb.Request_Action) error
+	GetInfo(clientID string) []byte
 	UpdateGameStatus()
 }
 
@@ -190,23 +187,7 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 }
 
 func (s *Session) HandleAction(clientID string, act *pb.Request_Action) error {
-	switch act.GetType() {
-	case pb.Request_MOVE:
-		var move action.Move
-		move.Unmarshal(act.GetRawData())
-		s.gameHandler.MoveObject(clientID, move)
-	case pb.Request_BUSTER:
-		var buster action.Buster
-		buster.Unmarshal(act.GetRawData())
-		s.gameHandler.AddBuster(clientID, buster)
-	case pb.Request_CHIPUSE:
-		var chipInfo action.UseChip
-		chipInfo.Unmarshal(act.GetRawData())
-		s.gameHandler.UseChip(clientID, chipInfo)
-	default:
-		return fmt.Errorf("invalid action type %d is specified", act.GetType())
-	}
-	return nil
+	return s.gameHandler.HandleAction(clientID, act)
 }
 
 func (s *Session) changeState(next int) {
@@ -246,7 +227,7 @@ func (s *Session) publishGameInfo() {
 		err := c.dataStream.Send(&pb.Response{
 			Type: pb.Response_DATA,
 			Data: &pb.Response_RawData{
-				RawData: s.gameHandler.GetInfo(),
+				RawData: s.gameHandler.GetInfo(c.clientID),
 			},
 		})
 		if err != nil {

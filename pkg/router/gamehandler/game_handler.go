@@ -1,31 +1,42 @@
 package gamehandler
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
+type gameObject struct {
+	animObject        objanim.Anim
+	actionQueue       *pb.Request_Action
+	currentObjectType *int
+}
+
+type animInfo struct {
+	ownerClientID string
+	startCount    int
+}
+
 type GameHandler struct {
-	info        [2]gameinfo.GameInfo
-	animObjects map[string]objanim.Anim
-	gameCount   int
+	info      [2]gameinfo.GameInfo
+	objects   map[string]*gameObject // Key: clientID, Value: object情報
+	anims     map[string]animInfo    // Key: objectID, Value: anim情報
+	gameCount int
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
-		animObjects: make(map[string]objanim.Anim),
-		gameCount:   0,
+		objects:   make(map[string]*gameObject),
+		anims:     make(map[string]animInfo),
+		gameCount: 0,
 	}
 }
 
@@ -45,61 +56,46 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 }
 
 func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
-	//
-	g.animObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
+	var ginfo *gameinfo.GameInfo
+	for i := 0; i < len(g.info); i++ {
+		if g.info[i].ClientID == clientID {
+			ginfo = &g.info[i]
+		}
+	}
+
+	// Player Objectを作成
+	g.objects[clientID] = &gameObject{}
+	plyr := gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
 		Type:          gameobj.TypePlayerStand,
 		OwnerClientID: clientID,
 		HP:            param.HP,
-		Pos:           common.Point{X: x, Y: param.Y},
-		IsReverse:     clientID == g.info[i].ClientID,
-	}, &g.info[i])
-	objanim.New(g.animObjects[clientID])
+		Pos:           common.Point{X: param.X, Y: param.Y},
+		IsReverse:     false,
+	}, ginfo, g.objects[clientID].actionQueue)
+	g.objects[clientID].animObject = plyr
+	id := objanim.New(g.objects[clientID].animObject)
+	g.anims[id] = animInfo{
+		ownerClientID: clientID,
+		startCount:    g.gameCount,
+	}
+	plyr.SetCurrentObjectTypePointer(g.objects[clientID].currentObjectType)
+
 	g.updateGameInfo()
 }
 
-func (g *GameHandler) MoveObject(clientID string, moveInfo action.Move) {
-	g.playerObjects[clientID].AddMove(moveInfo)
+func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {
+	g.objects[clientID].actionQueue = act
+	return nil
 }
 
-func (g *GameHandler) AddBuster(clientID string, busterInfo action.Buster) {
-	g.playerObjects[clientID].AddBuster(busterInfo)
-}
-
-func (g *GameHandler) UseChip(clientID string, chipInfo action.UseChip) {
-	c := chip.Get(chipInfo.ChipID)
-	logger.Debug("Use chip: %+v", c)
-
-	var targetType int
-	if g.info.ReverseClientID == clientID {
-		if c.ForMe {
-			targetType = damage.TargetEnemy
-		} else {
-			targetType = damage.TargetPlayer
-		}
-	} else {
-		if c.ForMe {
-			targetType = damage.TargetPlayer
-		} else {
-			targetType = damage.TargetEnemy
+func (g *GameHandler) GetInfo(clientID string) []byte {
+	for i := 0; i < len(g.info); i++ {
+		if g.info[i].ClientID == clientID {
+			return g.info[i].Marshal()
 		}
 	}
-
-	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
-		AnimObjID:  chipInfo.AnimID,
-		OwnerID:    chipInfo.ChipUserClientID,
-		Power:      c.Power,
-		TargetType: targetType,
-
-		GameInfo: &g.info,
-	})
-	anim.New(s)
-
-	// TODO: player_act
-}
-
-func (g *GameHandler) GetInfo() []byte {
-	return g.info.Marshal()
+	return nil
 }
 
 func (g *GameHandler) UpdateGameStatus() {
@@ -117,39 +113,71 @@ func (g *GameHandler) UpdateGameStatus() {
 }
 
 func (g *GameHandler) updatePanelObject() {
-	// Cleanup at first
-	for y := 0; y < battlecommon.FieldNum.Y; y++ {
-		for x := 0; x < battlecommon.FieldNum.X; x++ {
-			g.info.Panels[x][y].ObjectID = ""
+	for i := 0; i < len(g.info); i++ {
+		// Cleanup at first
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			for x := 0; x < battlecommon.FieldNum.X; x++ {
+				g.info[i].Panels[x][y].ObjectID = ""
+			}
 		}
-	}
-	for _, obj := range g.info.Objects {
-		g.info.Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
+		for _, obj := range g.info[i].Objects {
+			g.info[i].Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
+		}
 	}
 }
 
 func (g *GameHandler) updateGameInfo() {
-	// Cleanup at first
-	g.info.Objects = []gameinfo.Object{}
-	g.info.Anims = []gameinfo.Anim{}
+	// TODO: Reverse設定とかはここでやる
 
 	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
-		g.info.Objects = append(g.info.Objects, gameinfo.Object{
-			ID:            obj.ObjID,
-			Type:          g.objInfo[obj.ObjID].Type,
-			OwnerClientID: g.objInfo[obj.ObjID].OwnerClientID,
-			HP:            obj.HP,
-			Pos:           obj.Pos,
-			ActCount:      g.gameCount - g.objInfo[obj.ObjID].StartCount,
-			IsReverse:     g.info.ReverseClientID == g.objInfo[obj.ObjID].OwnerClientID,
-		})
+		for i := 0; i < len(g.info); i++ {
+			// Cleanup at first
+			g.info[i].Objects = []gameinfo.Object{}
+
+			clientID := g.anims[obj.ObjID].ownerClientID
+			if clientID == g.info[i].ClientID {
+				// 自分のObject
+				g.info[i].Objects = append(g.info[i].Objects, gameinfo.Object{
+					ID:            obj.ObjID,
+					Type:          *g.objects[clientID].currentObjectType,
+					OwnerClientID: clientID,
+					HP:            obj.HP,
+					Pos:           obj.Pos,
+					ActCount:      g.gameCount - g.anims[obj.ObjID].startCount,
+					IsReverse:     false,
+				})
+			} else {
+				// 相手のObjectなのでReverseする
+				g.info[i].Objects = append(g.info[i].Objects, gameinfo.Object{
+					ID:            obj.ObjID,
+					Type:          *g.objects[clientID].currentObjectType,
+					OwnerClientID: clientID,
+					HP:            obj.HP,
+					Pos:           common.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
+					ActCount:      g.gameCount - g.anims[obj.ObjID].startCount,
+					IsReverse:     true,
+				})
+			}
+		}
 	}
+	//
+
 	for _, a := range anim.GetAll() {
-		g.info.Anims = append(g.info.Anims, gameinfo.Anim{
-			ObjectID: a.ObjID,
-			Pos:      a.Pos,
-			AnimType: a.AnimType,
-		})
+		for i := 0; i < len(g.info); i++ {
+			// Cleanup at first
+			g.info[i].Anims = []gameinfo.Anim{}
+
+			pos := a.Pos
+			if g.anims[a.ObjID].ownerClientID == g.info[i].ClientID {
+				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
+			}
+
+			g.info[i].Anims = append(g.info[i].Anims, gameinfo.Anim{
+				ObjectID: a.ObjID,
+				Pos:      pos,
+				AnimType: a.AnimType,
+			})
+		}
 	}
 
 	g.updatePanelObject()

@@ -1,6 +1,8 @@
 package object
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -8,23 +10,50 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
 type Player struct {
 	objectInfo gameinfo.Object
 	gameInfo   *gameinfo.GameInfo
+	nextAction *pb.Request_Action
 }
 
-func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo) *Player {
+func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actQueue *pb.Request_Action) *Player {
 	return &Player{
 		objectInfo: info,
 		gameInfo:   gameInfo,
+		nextAction: actQueue,
 	}
+}
+
+func (p *Player) SetCurrentObjectTypePointer(pt *int) {
+	pt = &p.objectInfo.Type
 }
 
 func (p *Player) Process() (bool, error) {
 	// TODO
+	if p.nextAction != nil {
+		switch p.nextAction.GetType() {
+		case pb.Request_MOVE:
+			var move action.Move
+			move.Unmarshal(p.nextAction.GetRawData())
+
+			p.addMove(move)
+		case pb.Request_BUSTER:
+			var buster action.Buster
+			buster.Unmarshal(p.nextAction.GetRawData())
+			p.addBuster(buster)
+		case pb.Request_CHIPUSE:
+			var chipInfo action.UseChip
+			chipInfo.Unmarshal(p.nextAction.GetRawData())
+			p.useChip(chipInfo)
+		default:
+			return false, fmt.Errorf("invalid action type %d is specified", p.nextAction.GetType())
+		}
+	}
+
 	return false, nil
 }
 
@@ -96,7 +125,7 @@ func (p *Player) MakeInvisible(count int) {
 	// TODO
 }
 
-func (p *Player) AddMove(moveInfo action.Move) {
+func (p *Player) addMove(moveInfo action.Move) {
 	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
@@ -107,7 +136,7 @@ func (p *Player) AddMove(moveInfo action.Move) {
 	}
 }
 
-func (p *Player) AddBuster(busterInfo action.Buster) {
+func (p *Player) addBuster(busterInfo action.Buster) {
 	// TODO: このタイミングで動作させず、アニメーションの追加のみにする
 
 	damageAdd := func(pos common.Point, power int, targetType int) {
@@ -129,4 +158,40 @@ func (p *Player) AddBuster(busterInfo action.Buster) {
 		pos := common.Point{X: x, Y: y}
 		damageAdd(pos, busterInfo.Power, damage.TargetEnemy)
 	}
+}
+
+func (p *Player) useChip(chipInfo action.UseChip) {
+	/*
+		TODO
+
+		c := chip.Get(chipInfo.ChipID)
+		logger.Debug("Use chip: %+v", c)
+
+		var targetType int
+		if g.info.ReverseClientID == clientID {
+			if c.ForMe {
+				targetType = damage.TargetEnemy
+			} else {
+				targetType = damage.TargetPlayer
+			}
+		} else {
+			if c.ForMe {
+				targetType = damage.TargetPlayer
+			} else {
+				targetType = damage.TargetEnemy
+			}
+		}
+
+		s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
+			AnimObjID:  chipInfo.AnimID,
+			OwnerID:    chipInfo.ChipUserClientID,
+			Power:      c.Power,
+			TargetType: targetType,
+
+			GameInfo: &g.info,
+		})
+		anim.New(s)
+
+		// TODO: player_act
+	*/
 }
