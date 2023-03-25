@@ -28,8 +28,8 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actQueue *pb.R
 	}
 }
 
-func (p *Player) SetCurrentObjectTypePointer(pt *int) {
-	pt = &p.objectInfo.Type
+func (p *Player) GetCurrentObjectTypePointer() *int {
+	return &p.objectInfo.Type
 }
 
 func (p *Player) Process() (bool, error) {

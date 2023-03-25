@@ -79,7 +79,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		ownerClientID: clientID,
 		startCount:    g.gameCount,
 	}
-	plyr.SetCurrentObjectTypePointer(g.objects[clientID].currentObjectType)
+	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
 
 	g.updateGameInfo()
 }
@@ -127,17 +127,13 @@ func (g *GameHandler) updatePanelObject() {
 }
 
 func (g *GameHandler) updateGameInfo() {
-	// TODO: Reverse設定とかはここでやる
-
+	objects := [len(g.info)][]gameinfo.Object{}
 	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
 		for i := 0; i < len(g.info); i++ {
-			// Cleanup at first
-			g.info[i].Objects = []gameinfo.Object{}
-
 			clientID := g.anims[obj.ObjID].ownerClientID
 			if clientID == g.info[i].ClientID {
 				// 自分のObject
-				g.info[i].Objects = append(g.info[i].Objects, gameinfo.Object{
+				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
 					Type:          *g.objects[clientID].currentObjectType,
 					OwnerClientID: clientID,
@@ -148,7 +144,7 @@ func (g *GameHandler) updateGameInfo() {
 				})
 			} else {
 				// 相手のObjectなのでReverseする
-				g.info[i].Objects = append(g.info[i].Objects, gameinfo.Object{
+				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
 					Type:          *g.objects[clientID].currentObjectType,
 					OwnerClientID: clientID,
@@ -160,19 +156,16 @@ func (g *GameHandler) updateGameInfo() {
 			}
 		}
 	}
-	//
 
+	anims := [len(g.info)][]gameinfo.Anim{}
 	for _, a := range anim.GetAll() {
 		for i := 0; i < len(g.info); i++ {
-			// Cleanup at first
-			g.info[i].Anims = []gameinfo.Anim{}
-
 			pos := a.Pos
 			if g.anims[a.ObjID].ownerClientID == g.info[i].ClientID {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 
-			g.info[i].Anims = append(g.info[i].Anims, gameinfo.Anim{
+			anims[i] = append(anims[i], gameinfo.Anim{
 				ObjectID: a.ObjID,
 				Pos:      pos,
 				AnimType: a.AnimType,
@@ -180,6 +173,11 @@ func (g *GameHandler) updateGameInfo() {
 		}
 	}
 
+	// TODO: lock
+	for i := 0; i < len(g.info); i++ {
+		g.info[i].Objects = objects[i]
+		g.info[i].Anims = anims[i]
+	}
 	g.updatePanelObject()
 	g.gameCount++
 }
