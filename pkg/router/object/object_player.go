@@ -39,12 +39,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 	// TODO: インビジブル関係
 
-	myType := damage.TargetPlayer
-	if p.isReverse() {
-		myType = damage.TargetEnemy
-	}
-
-	if dm.TargetType&myType != 0 {
+	if dm.TargetType&damage.TargetPlayer != 0 {
 		p.objectInfo.HP -= dm.Power
 		if p.objectInfo.HP < 0 {
 			p.objectInfo.HP = 0
@@ -94,9 +89,6 @@ func (p *Player) GetParam() objanim.Param {
 }
 
 func (p *Player) GetObjectType() int {
-	if p.isReverse() {
-		return objanim.ObjTypeEnemy
-	}
 	return objanim.ObjTypePlayer
 }
 
@@ -133,19 +125,8 @@ func (p *Player) AddBuster(busterInfo action.Buster) {
 	}
 
 	y := p.objectInfo.Pos.Y
-	if p.isReverse() {
-		for x := p.objectInfo.Pos.X - 1; x >= 0; x-- {
-			pos := common.Point{X: x, Y: y}
-			damageAdd(pos, busterInfo.Power, damage.TargetPlayer)
-		}
-	} else {
-		for x := p.objectInfo.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			pos := common.Point{X: x, Y: y}
-			damageAdd(pos, busterInfo.Power, damage.TargetEnemy)
-		}
+	for x := p.objectInfo.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
+		pos := common.Point{X: x, Y: y}
+		damageAdd(pos, busterInfo.Power, damage.TargetEnemy)
 	}
-}
-
-func (p *Player) isReverse() bool {
-	return p.gameInfo.ReverseClientID == p.objectInfo.OwnerClientID
 }

@@ -31,11 +31,12 @@ type Anim struct {
 	AnimType int
 }
 
+// Client側に送られるデータ
 type GameInfo struct {
-	Panels          [config.FieldNumX][config.FieldNumY]PanelInfo
-	Objects         []Object
-	Anims           []Anim
-	ReverseClientID string
+	Panels   [config.FieldNumX][config.FieldNumY]PanelInfo
+	Objects  []Object
+	Anims    []Anim
+	ClientID string
 }
 
 func (p *GameInfo) Marshal() []byte {
@@ -75,8 +76,13 @@ func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 }
 
 func (p *GameInfo) GetPanelType(clientID string) int {
-	if p.ReverseClientID == clientID {
-		return 1
+	if p.ClientID == clientID {
+		return battlecommon.PanelTypePlayer
 	}
-	return 0
+	return battlecommon.PanelTypeEnemy
+}
+
+// object animから情報を取得して自身の情報を更新する
+func (p *GameInfo) UpdateByAnimObject() {
+	// TODO
 }

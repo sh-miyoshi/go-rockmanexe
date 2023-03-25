@@ -16,24 +16,16 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
-type objectInfo struct {
-	OwnerClientID string
-	Type          int
-	StartCount    int
-}
-
 type GameHandler struct {
-	info          gameinfo.GameInfo
-	objInfo       map[string]*objectInfo
-	playerObjects map[string]*gameobj.Player
-	gameCount     int
+	info        [2]gameinfo.GameInfo
+	animObjects map[string]objanim.Anim
+	gameCount   int
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
-		objInfo:       make(map[string]*objectInfo),
-		playerObjects: make(map[string]*gameobj.Player),
-		gameCount:     0,
+		animObjects: make(map[string]objanim.Anim),
+		gameCount:   0,
 	}
 }
 
@@ -41,34 +33,28 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 	for y := 0; y < config.FieldNumY; y++ {
 		hx := config.FieldNumX / 2
 		for x := 0; x < hx; x++ {
-			g.info.Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
-			g.info.Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
+			g.info[0].ClientID = clientIDs[0]
+			g.info[0].Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
+			g.info[0].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
+			g.info[1].ClientID = clientIDs[1]
+			g.info[1].Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
+			g.info[1].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
 		}
 	}
-	g.info.ReverseClientID = clientIDs[1]
 	return nil
 }
 
 func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
-	x := param.X
-	if g.info.ReverseClientID == clientID {
-		x = battlecommon.FieldNum.X - x - 1
-	}
-
-	g.objInfo[param.ID] = &objectInfo{
-		OwnerClientID: clientID,
-		Type:          gameobj.TypePlayerStand,
-		StartCount:    g.gameCount,
-	}
-	g.playerObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
+	//
+	g.animObjects[clientID] = gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
-		Type:          g.objInfo[param.ID].Type,
+		Type:          gameobj.TypePlayerStand,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           common.Point{X: x, Y: param.Y},
-		IsReverse:     g.info.ReverseClientID == clientID,
-	}, &g.info)
-	objanim.New(g.playerObjects[clientID])
+		IsReverse:     clientID == g.info[i].ClientID,
+	}, &g.info[i])
+	objanim.New(g.animObjects[clientID])
 	g.updateGameInfo()
 }
 
