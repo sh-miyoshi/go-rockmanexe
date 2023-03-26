@@ -12,19 +12,20 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 )
 
 type Player struct {
-	objectInfo gameinfo.Object
-	gameInfo   *gameinfo.GameInfo
-	nextAction *pb.Request_Action
+	objectInfo    gameinfo.Object
+	gameInfo      *gameinfo.GameInfo
+	actionQueueID string
 }
 
-func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actQueue *pb.Request_Action) *Player {
+func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
 	return &Player{
-		objectInfo: info,
-		gameInfo:   gameInfo,
-		nextAction: actQueue,
+		objectInfo:    info,
+		gameInfo:      gameInfo,
+		actionQueueID: actionQueueID,
 	}
 }
 
@@ -33,24 +34,24 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
-	// TODO
-	if p.nextAction != nil {
-		switch p.nextAction.GetType() {
+	act := queue.Pop(p.actionQueueID)
+	if act != nil {
+		switch act.GetType() {
 		case pb.Request_MOVE:
 			var move action.Move
-			move.Unmarshal(p.nextAction.GetRawData())
+			move.Unmarshal(act.GetRawData())
 
 			p.addMove(move)
 		case pb.Request_BUSTER:
 			var buster action.Buster
-			buster.Unmarshal(p.nextAction.GetRawData())
+			buster.Unmarshal(act.GetRawData())
 			p.addBuster(buster)
 		case pb.Request_CHIPUSE:
 			var chipInfo action.UseChip
-			chipInfo.Unmarshal(p.nextAction.GetRawData())
+			chipInfo.Unmarshal(act.GetRawData())
 			p.useChip(chipInfo)
 		default:
-			return false, fmt.Errorf("invalid action type %d is specified", p.nextAction.GetType())
+			return false, fmt.Errorf("invalid action type %d is specified", act.GetType())
 		}
 	}
 

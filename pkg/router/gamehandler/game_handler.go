@@ -1,6 +1,7 @@
 package gamehandler
 
 import (
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -12,11 +13,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 )
 
 type gameObject struct {
 	animObject        objanim.Anim
-	actionQueue       *pb.Request_Action
+	actionQueueID     string
 	currentObjectType *int
 }
 
@@ -62,9 +64,15 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 			ginfo = &g.info[i]
 		}
 	}
+	if ginfo == nil {
+		logger.Error("cannot find game info for client %s", clientID)
+		return
+	}
 
 	// Player Objectを作成
-	g.objects[clientID] = &gameObject{}
+	g.objects[clientID] = &gameObject{
+		actionQueueID: uuid.New().String(),
+	}
 	plyr := gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
 		Type:          gameobj.TypePlayerStand,
@@ -72,7 +80,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		HP:            param.HP,
 		Pos:           common.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
-	}, ginfo, g.objects[clientID].actionQueue)
+	}, ginfo, g.objects[clientID].actionQueueID)
 	g.objects[clientID].animObject = plyr
 	id := objanim.New(g.objects[clientID].animObject)
 	g.anims[id] = animInfo{
@@ -85,7 +93,8 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 }
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {
-	g.objects[clientID].actionQueue = act
+	logger.Info("Got action %d from %s", act.GetType(), clientID)
+	queue.Push(g.objects[clientID].actionQueueID, act)
 	return nil
 }
 
