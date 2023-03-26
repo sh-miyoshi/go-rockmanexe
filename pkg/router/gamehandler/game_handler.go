@@ -90,6 +90,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
 
 	g.updateGameInfo()
+	logger.Info("Successfully add client %s with %+v", clientID, param)
 }
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {

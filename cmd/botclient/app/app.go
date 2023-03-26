@@ -35,16 +35,6 @@ func Init(clientID string, conn *netconn.NetConn) {
 }
 
 func Process() error {
-	obj := netobj.InitParam{
-		ID: playerInst.ID,
-		HP: playerInst.HP,
-		X:  playerInst.Pos.X,
-		Y:  playerInst.Pos.Y,
-	}
-	if err := connInst.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
-		return fmt.Errorf("failed to send init object param: %w", err)
-	}
-
 	fpsMgr := fps.Fps{TargetFPS: 60}
 
 	// Main loop
@@ -54,6 +44,16 @@ MAIN_LOOP:
 		case stateWaiting:
 			status := connInst.GetGameStatus()
 			if status == pb.Response_CHIPSELECTWAIT {
+				obj := netobj.InitParam{
+					ID: playerInst.ID,
+					HP: playerInst.HP,
+					X:  playerInst.Pos.X,
+					Y:  playerInst.Pos.Y,
+				}
+				if err := connInst.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
+					return fmt.Errorf("failed to send init object param: %w", err)
+				}
+
 				statusChange(stateOpening)
 			}
 		case stateOpening:
