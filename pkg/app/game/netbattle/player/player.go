@@ -8,9 +8,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 )
 
 type BattlePlayer struct {
@@ -130,6 +134,27 @@ func (p *BattlePlayer) LocalDraw() {
 
 func (p *BattlePlayer) Process() (bool, error) {
 	// TODO
+
+	// Move
+	moveDirect := -1
+	if inputs.CheckKey(inputs.KeyUp) == 1 {
+		moveDirect = common.DirectUp
+	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+		moveDirect = common.DirectDown
+	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+		moveDirect = common.DirectRight
+	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+		moveDirect = common.DirectLeft
+	}
+
+	if moveDirect >= 0 {
+		move := action.Move{
+			Type:   action.MoveTypeDirect,
+			Direct: moveDirect,
+		}
+		net.GetInst().SendAction(pb.Request_MOVE, move.Marshal())
+	}
+
 	return false, nil
 }
 

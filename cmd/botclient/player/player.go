@@ -78,6 +78,7 @@ func (p *Player) initActTable() {
 
 	p.actTable = []Act{
 		NewActWait(30),
+		NewActMove(0, 1, p.conn),
 		// NewActSkill(skill.SkillPlayerShockWave, &p.Object),
 		// NewActSkill(skill.SkillSpreadGun, &p.Object),
 		// NewActSkill(skill.SkillSword, &p.Object),
