@@ -68,7 +68,7 @@ func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 
 	pn := p.Panels[pos.X][pos.Y]
 	return battlecommon.PanelInfo{
-		Type:     p.GetPanelType(pn.OwnerClientID),
+		Type:     p.getPanelType(pn.OwnerClientID),
 		ObjectID: pn.ObjectID,
 
 		// TODO: 適切な値を入れる
@@ -77,14 +77,9 @@ func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 	}
 }
 
-func (p *GameInfo) GetPanelType(clientID string) int {
+func (p *GameInfo) getPanelType(clientID string) int {
 	if p.ClientID == clientID {
 		return battlecommon.PanelTypePlayer
 	}
 	return battlecommon.PanelTypeEnemy
-}
-
-// object animから情報を取得して自身の情報を更新する
-func (p *GameInfo) UpdateByAnimObject() {
-	// TODO
 }

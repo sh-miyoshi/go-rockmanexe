@@ -78,12 +78,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		// TODO: damage effect
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 				break
 			}
 		}
@@ -130,10 +130,10 @@ func (p *Player) addMove(moveInfo action.Move) {
 	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
-		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo)
+		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo)
 	case action.MoveTypeAbs:
 		target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
-		battlecommon.MoveObjectDirect(&p.objectInfo.Pos, target, p.gameInfo.GetPanelType(p.objectInfo.ID), true, p.gameInfo.GetPanelInfo)
+		battlecommon.MoveObjectDirect(&p.objectInfo.Pos, target, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo)
 	}
 }
 
