@@ -34,6 +34,9 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
+	// TODO: anim中ならanim処理だけを行う
+	p.objectInfo.Type = TypePlayerStand
+
 	act := queue.Pop(p.actionQueueID)
 	if act != nil {
 		switch act.GetType() {
@@ -128,6 +131,7 @@ func (p *Player) MakeInvisible(count int) {
 
 func (p *Player) addMove(moveInfo action.Move) {
 	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
+	p.objectInfo.Type = TypePlayerMove
 	switch moveInfo.Type {
 	case action.MoveTypeDirect:
 		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo)
@@ -154,6 +158,7 @@ func (p *Player) addBuster(busterInfo action.Buster) {
 		}
 	}
 
+	p.objectInfo.Type = TypePlayerBuster
 	y := p.objectInfo.Pos.Y
 	for x := p.objectInfo.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 		pos := common.Point{X: x, Y: y}

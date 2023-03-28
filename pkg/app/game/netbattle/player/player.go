@@ -10,6 +10,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -27,11 +28,16 @@ type BattlePlayer struct {
 	imgMinds      []int
 	imgMindFrame  int
 	imgCharge     [2][]int
+
+	chargeCount int
+	shotPower   int
 }
 
 func New(plyr *player.Player) (*BattlePlayer, error) {
 	res := &BattlePlayer{
-		objectID: uuid.New().String(),
+		objectID:    uuid.New().String(),
+		chargeCount: 0,
+		shotPower:   1,
 	}
 	for _, c := range plyr.ChipFolder {
 		res.chipFolder = append(res.chipFolder, c)
@@ -153,6 +159,31 @@ func (p *BattlePlayer) Process() (bool, error) {
 			Direct: moveDirect,
 		}
 		net.GetInst().SendAction(pb.Request_MOVE, move.Marshal())
+		return false, nil
+	}
+
+	// Rock buster
+	if inputs.CheckKey(inputs.KeyCancel) > 0 {
+		p.chargeCount++
+		if p.chargeCount == battlecommon.ChargeViewDelay {
+			sound.On(sound.SEBusterCharging)
+		}
+		if p.chargeCount == battlecommon.ChargeTime {
+			sound.On(sound.SEBusterCharged)
+		}
+	} else if p.chargeCount > 0 {
+		sound.On(sound.SEBusterShot)
+		charged := p.chargeCount > battlecommon.ChargeTime
+		power := p.shotPower
+		if charged {
+			power *= 10
+		}
+
+		buster := action.Buster{
+			Power: power,
+		}
+		net.GetInst().SendAction(pb.Request_BUSTER, buster.Marshal())
+		p.chargeCount = 0
 	}
 
 	return false, nil
