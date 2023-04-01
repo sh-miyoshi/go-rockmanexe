@@ -3,6 +3,7 @@ package object
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -13,6 +14,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
 type playerAct struct {
@@ -148,39 +150,25 @@ func (p *Player) MakeInvisible(count int) {
 }
 
 func (p *Player) useChip(chipInfo action.UseChip) {
-	/*
-		TODO
+	c := chip.Get(chipInfo.ChipID)
+	logger.Debug("Use chip: %+v", c)
+	if c.PlayerAct != -1 {
+		p.act.SetAnim(c.PlayerAct, nil)
+	}
+	target := damage.TargetEnemy
+	if c.ForMe {
+		target = damage.TargetPlayer
+	}
 
-		c := chip.Get(chipInfo.ChipID)
-		logger.Debug("Use chip: %+v", c)
+	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
+		AnimObjID:  chipInfo.AnimID,
+		OwnerID:    chipInfo.ChipUserClientID,
+		Power:      c.Power,
+		TargetType: target,
 
-		var targetType int
-		if g.info.ReverseClientID == clientID {
-			if c.ForMe {
-				targetType = damage.TargetEnemy
-			} else {
-				targetType = damage.TargetPlayer
-			}
-		} else {
-			if c.ForMe {
-				targetType = damage.TargetPlayer
-			} else {
-				targetType = damage.TargetEnemy
-			}
-		}
-
-		s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
-			AnimObjID:  chipInfo.AnimID,
-			OwnerID:    chipInfo.ChipUserClientID,
-			Power:      c.Power,
-			TargetType: targetType,
-
-			GameInfo: &g.info,
-		})
-		anim.New(s)
-
-		// TODO: player_act
-	*/
+		GameInfo: p.gameInfo,
+	})
+	anim.New(s)
 }
 
 // Process method returns true if processing now
@@ -234,6 +222,12 @@ func (a *playerAct) Process() bool {
 			a.count = 0
 			return false
 		}
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
+		// No special action
+		// TODO: 必要な分だけ待ってから処理終了にする
+		return false
+	default:
+		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.actType))
 	}
 
 	a.count++
