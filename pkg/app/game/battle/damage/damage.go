@@ -3,6 +3,7 @@ package damage
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -41,6 +42,7 @@ var (
 func New(dm Damage) string {
 	dm.ID = uuid.New().String()
 	damages[dm.ID] = &dm
+	logger.Debug("Add damage: %+v to damage manager", dm)
 	return dm.ID
 }
 

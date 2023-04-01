@@ -80,8 +80,11 @@ func MgrProcess(enableDamage, blackout bool) error {
 			}
 		}
 
-		for _, h := range hit {
-			damage.Remove(h)
+		if len(hit) > 0 {
+			logger.Debug("Hit damages: %+v", hit)
+			for _, h := range hit {
+				damage.Remove(h)
+			}
 		}
 
 		damage.MgrProcess()
