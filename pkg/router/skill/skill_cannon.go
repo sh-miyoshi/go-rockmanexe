@@ -51,6 +51,7 @@ func (p *cannon) Process() (bool, error) {
 		// Add damage
 		pos := objanim.GetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerID,
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,

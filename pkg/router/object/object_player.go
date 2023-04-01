@@ -18,11 +18,12 @@ import (
 )
 
 type playerAct struct {
-	actType      int
-	count        int
-	pPos         *common.Point
-	info         []byte
-	getPanelInfo func(pos common.Point) battlecommon.PanelInfo
+	actType       int
+	count         int
+	pPos          *common.Point
+	info          []byte
+	getPanelInfo  func(pos common.Point) battlecommon.PanelInfo
+	ownerClientID string
 }
 
 type Player struct {
@@ -38,7 +39,8 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID 
 		gameInfo:      gameInfo,
 		actionQueueID: actionQueueID,
 		act: playerAct{
-			actType: -1,
+			actType:       -1,
+			ownerClientID: info.OwnerClientID,
 		},
 	}
 	res.act.pPos = &res.objectInfo.Pos
@@ -90,44 +92,52 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
+	logger.Debug("callme")
+
 	// TODO: インビジブル関係
 
-	if dm.TargetType&damage.TargetPlayer != 0 {
-		p.objectInfo.HP -= dm.Power
-		if p.objectInfo.HP < 0 {
-			p.objectInfo.HP = 0
-		}
-		// TODO: HPMax
-		// TODO: damage effect
+	// 自分宛のダメージだがObjectが自分じゃない時は無視
+	if dm.TargetType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
+		return false
+	}
 
-		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
-				break
-			}
-		}
-		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
-				break
-			}
-		}
+	// 敵宛のダメージだがObjectが自分の時は無視
+	if dm.TargetType == damage.TargetEnemy && dm.OwnerClientID == p.objectInfo.OwnerClientID {
+		return false
+	}
 
-		if dm.Power <= 0 {
-			// Not damage, maybe recover or special anim
-			return true
+	p.objectInfo.HP -= dm.Power
+	if p.objectInfo.HP < 0 {
+		p.objectInfo.HP = 0
+	}
+	// TODO: HPMax
+	// TODO: damage effect
+
+	for i := 0; i < dm.PushLeft; i++ {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+			break
 		}
-
-		if !dm.BigDamage {
-			return true
+	}
+	for i := 0; i < dm.PushRight; i++ {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+			break
 		}
+	}
 
-		// TODO: sound
-
-		// TODO: Stop current animation
-		logger.Debug("Player damaged: %+v", *dm)
+	if dm.Power <= 0 {
+		// Not damage, maybe recover or special anim
 		return true
 	}
-	return false
 
+	if !dm.BigDamage {
+		return true
+	}
+
+	// TODO: sound
+
+	// TODO: Stop current animation
+	logger.Debug("Player damaged: %+v", *dm)
+	return true
 }
 
 func (p *Player) GetParam() objanim.Param {
@@ -202,6 +212,7 @@ func (a *playerAct) Process() bool {
 				if a.getPanelInfo(pos).ObjectID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					damage.New(damage.Damage{
+						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,
 						TTL:           1,

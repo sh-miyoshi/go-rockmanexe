@@ -19,6 +19,7 @@ const (
 )
 
 type Damage struct {
+	OwnerClientID string
 	ID            string
 	Pos           common.Point
 	Power         int
