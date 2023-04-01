@@ -66,6 +66,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 	}
 	if ginfo == nil {
 		logger.Error("cannot find game info for client %s", clientID)
+		// TODO: return error to client
 		return
 	}
 
