@@ -66,9 +66,6 @@ func main() {
 		X:  1,
 		Y:  1,
 	}
-	if err := conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
-		exitByError(err)
-	}
 
 	go runClient2()
 
@@ -89,6 +86,9 @@ MAIN_LOOP:
 		case stateWaiting:
 			status := conn.GetGameStatus()
 			if status == pb.Response_CHIPSELECTWAIT {
+				if err := conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
+					exitByError(err)
+				}
 				stateChange(&appStatus, stateChipSelect)
 			}
 		case stateChipSelect:
@@ -230,20 +230,19 @@ func runClient2() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	obj := netobj.InitParam{
-		ID: uuid.New().String(),
-		HP: 100,
-		X:  1,
-		Y:  1,
-	}
-	conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal())
-
 	appStatus := stateWaiting
 	for {
 		switch appStatus {
 		case stateWaiting:
 			status := conn.GetGameStatus()
 			if status == pb.Response_CHIPSELECTWAIT {
+				obj := netobj.InitParam{
+					ID: uuid.New().String(),
+					HP: 100,
+					X:  1,
+					Y:  1,
+				}
+				conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal())
 				appStatus = stateChipSelect
 			}
 		case stateChipSelect:
