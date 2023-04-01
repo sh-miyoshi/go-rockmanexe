@@ -65,9 +65,8 @@ func (p *Player) Process() (bool, error) {
 			p.objectInfo.Type = TypePlayerMove
 			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData())
 		case pb.Request_BUSTER:
-			var buster action.Buster
-			buster.Unmarshal(act.GetRawData())
-			p.addBuster(buster)
+			p.objectInfo.Type = TypePlayerBuster
+			p.act.SetAnim(battlecommon.PlayerActBuster, act.GetRawData())
 		case pb.Request_CHIPUSE:
 			var chipInfo action.UseChip
 			chipInfo.Unmarshal(act.GetRawData())
@@ -148,31 +147,6 @@ func (p *Player) MakeInvisible(count int) {
 	// TODO
 }
 
-func (p *Player) addBuster(busterInfo action.Buster) {
-	// TODO: このタイミングで動作させず、アニメーションの追加のみにする
-
-	damageAdd := func(pos common.Point, power int, targetType int) {
-		if p.gameInfo.GetPanelInfo(pos).ObjectID != "" {
-			logger.Debug("Rock buster damage set %d to (%d, %d)", busterInfo.Power, pos.X, pos.Y)
-			damage.New(damage.Damage{
-				Pos:           pos,
-				Power:         power,
-				TTL:           1,
-				TargetType:    targetType,
-				HitEffectType: 0, // TODO: 正しくセットする
-				DamageType:    damage.TypeNone,
-			})
-		}
-	}
-
-	p.objectInfo.Type = TypePlayerBuster
-	y := p.objectInfo.Pos.Y
-	for x := p.objectInfo.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-		pos := common.Point{X: x, Y: y}
-		damageAdd(pos, busterInfo.Power, damage.TargetEnemy)
-	}
-}
-
 func (p *Player) useChip(chipInfo action.UseChip) {
 	/*
 		TODO
@@ -225,6 +199,35 @@ func (a *playerAct) Process() bool {
 			case action.MoveTypeAbs:
 				target := common.Point{X: move.AbsPosX, Y: move.AbsPosY}
 				battlecommon.MoveObjectDirect(a.pPos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+			}
+
+			a.actType = -1
+			a.count = 0
+			return false
+		}
+	case battlecommon.PlayerActBuster:
+		if a.count == 1 {
+			var buster action.Buster
+			buster.Unmarshal(a.info)
+
+			damageAdd := func(pos common.Point, power int, targetType int) {
+				if a.getPanelInfo(pos).ObjectID != "" {
+					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
+					damage.New(damage.Damage{
+						Pos:           pos,
+						Power:         power,
+						TTL:           1,
+						TargetType:    targetType,
+						HitEffectType: 0, // TODO: 正しくセットする
+						DamageType:    damage.TypeNone,
+					})
+				}
+			}
+
+			y := a.pPos.Y
+			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
+				pos := common.Point{X: x, Y: y}
+				damageAdd(pos, buster.Power, damage.TargetEnemy)
 			}
 
 			a.actType = -1
