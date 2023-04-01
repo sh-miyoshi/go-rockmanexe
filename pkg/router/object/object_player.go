@@ -15,18 +15,34 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 )
 
+type playerAct struct {
+	actType      int
+	count        int
+	pPos         *common.Point
+	info         []byte
+	getPanelInfo func(pos common.Point) battlecommon.PanelInfo
+}
+
 type Player struct {
 	objectInfo    gameinfo.Object
 	gameInfo      *gameinfo.GameInfo
 	actionQueueID string
+	act           playerAct
 }
 
 func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
-	return &Player{
+	res := &Player{
 		objectInfo:    info,
 		gameInfo:      gameInfo,
 		actionQueueID: actionQueueID,
+		act: playerAct{
+			actType: -1,
+		},
 	}
+	res.act.pPos = &res.objectInfo.Pos
+	res.act.getPanelInfo = res.gameInfo.GetPanelInfo
+
+	return res
 }
 
 func (p *Player) GetCurrentObjectTypePointer() *int {
@@ -34,17 +50,20 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
-	// TODO: anim中ならanim処理だけを行う
+	// Action処理中
+	if p.act.Process() {
+		return false, nil
+	}
+
+	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
 	act := queue.Pop(p.actionQueueID)
 	if act != nil {
 		switch act.GetType() {
 		case pb.Request_MOVE:
-			var move action.Move
-			move.Unmarshal(act.GetRawData())
-
-			p.addMove(move)
+			p.objectInfo.Type = TypePlayerMove
+			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData())
 		case pb.Request_BUSTER:
 			var buster action.Buster
 			buster.Unmarshal(act.GetRawData())
@@ -129,18 +148,6 @@ func (p *Player) MakeInvisible(count int) {
 	// TODO
 }
 
-func (p *Player) addMove(moveInfo action.Move) {
-	// TODO: このタイミングで移動せず、アニメーションの追加のみにする
-	p.objectInfo.Type = TypePlayerMove
-	switch moveInfo.Type {
-	case action.MoveTypeDirect:
-		battlecommon.MoveObject(&p.objectInfo.Pos, moveInfo.Direct, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo)
-	case action.MoveTypeAbs:
-		target := common.Point{X: moveInfo.AbsPosX, Y: moveInfo.AbsPosY}
-		battlecommon.MoveObjectDirect(&p.objectInfo.Pos, target, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo)
-	}
-}
-
 func (p *Player) addBuster(busterInfo action.Buster) {
 	// TODO: このタイミングで動作させず、アニメーションの追加のみにする
 
@@ -200,4 +207,38 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 
 		// TODO: player_act
 	*/
+}
+
+// Process method returns true if processing now
+func (a *playerAct) Process() bool {
+	switch a.actType {
+	case -1: // No animation
+		return false
+	case battlecommon.PlayerActMove:
+		if a.count == 2 {
+			var move action.Move
+			move.Unmarshal(a.info)
+
+			switch move.Type {
+			case action.MoveTypeDirect:
+				battlecommon.MoveObject(a.pPos, move.Direct, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+			case action.MoveTypeAbs:
+				target := common.Point{X: move.AbsPosX, Y: move.AbsPosY}
+				battlecommon.MoveObjectDirect(a.pPos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+			}
+
+			a.actType = -1
+			a.count = 0
+			return false
+		}
+	}
+
+	a.count++
+	return true // processing now
+}
+
+func (a *playerAct) SetAnim(actType int, actInfo []byte) {
+	a.actType = actType
+	a.info = actInfo
+	a.count = 0
 }
