@@ -92,8 +92,6 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	logger.Debug("callme")
-
 	// TODO: インビジブル関係
 
 	// 自分宛のダメージだがObjectが自分じゃない時は無視
@@ -208,25 +206,30 @@ func (a *playerAct) Process() bool {
 			var buster action.Buster
 			buster.Unmarshal(a.info)
 
-			damageAdd := func(pos common.Point, power int, targetType int) {
+			damageAdd := func(pos common.Point, power int) bool {
 				if a.getPanelInfo(pos).ObjectID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
+					pos.X = battlecommon.FieldNum.X - pos.X - 1
 					damage.New(damage.Damage{
 						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,
 						TTL:           1,
-						TargetType:    targetType,
+						TargetType:    damage.TargetEnemy,
 						HitEffectType: 0, // TODO: 正しくセットする
 						DamageType:    damage.TypeNone,
 					})
+					return true
 				}
+				return false
 			}
 
 			y := a.pPos.Y
 			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				pos := common.Point{X: x, Y: y}
-				damageAdd(pos, buster.Power, damage.TargetEnemy)
+				if damageAdd(pos, buster.Power) {
+					break
+				}
 			}
 
 			a.actType = -1
