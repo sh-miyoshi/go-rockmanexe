@@ -66,6 +66,7 @@ func (p *cannon) Process() (bool, error) {
 				dm.Pos.X = x
 				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					logger.Debug("Add damage by cannon: %+v", dm)
+					dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
 					damage.New(dm)
 					break
 				}
@@ -75,6 +76,7 @@ func (p *cannon) Process() (bool, error) {
 				dm.Pos.X = x
 				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					logger.Debug("Add damage by cannon: %+v", dm)
+					dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
 					damage.New(dm)
 					break
 				}
