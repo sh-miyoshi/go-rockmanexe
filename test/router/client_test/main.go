@@ -165,8 +165,7 @@ MAIN_LOOP:
 			for i := 0; i < 10; i++ {
 				info := conn.GetGameInfo()
 				for _, obj := range info.Objects {
-					// TODO: idもチェックする
-					if obj.OwnerClientID != "tester1" && obj.HP == 59 {
+					if obj.OwnerClientID == "tester2" && obj.HP == 59 {
 						ok = true
 						logger.Info("Successfully damaged by use chip cannon")
 						break USE_CHIP_CHECK_LOOP
