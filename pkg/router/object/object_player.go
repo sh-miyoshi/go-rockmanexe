@@ -24,6 +24,7 @@ type playerAct struct {
 	info          []byte
 	getPanelInfo  func(pos common.Point) battlecommon.PanelInfo
 	ownerClientID string
+	endCount      int
 }
 
 type Player struct {
@@ -67,10 +68,10 @@ func (p *Player) Process() (bool, error) {
 		switch act.GetType() {
 		case pb.Request_MOVE:
 			p.objectInfo.Type = TypePlayerMove
-			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData())
+			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData(), 0)
 		case pb.Request_BUSTER:
 			p.objectInfo.Type = TypePlayerBuster
-			p.act.SetAnim(battlecommon.PlayerActBuster, act.GetRawData())
+			p.act.SetAnim(battlecommon.PlayerActBuster, act.GetRawData(), 0)
 		case pb.Request_CHIPUSE:
 			var chipInfo action.UseChip
 			chipInfo.Unmarshal(act.GetRawData())
@@ -160,9 +161,6 @@ func (p *Player) MakeInvisible(count int) {
 func (p *Player) useChip(chipInfo action.UseChip) {
 	c := chip.Get(chipInfo.ChipID)
 	logger.Debug("Use chip: %+v", c)
-	if c.PlayerAct != -1 {
-		p.act.SetAnim(c.PlayerAct, nil)
-	}
 	target := damage.TargetEnemy
 	if c.ForMe {
 		target = damage.TargetPlayer
@@ -177,10 +175,16 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		GameInfo: p.gameInfo,
 	})
 	anim.New(s)
+
+	if c.PlayerAct != -1 {
+		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())
+	}
 }
 
 // Process method returns true if processing now
 func (a *playerAct) Process() bool {
+	a.count++
+
 	switch a.actType {
 	case -1: // No animation
 		return false
@@ -238,18 +242,23 @@ func (a *playerAct) Process() bool {
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action
-		// TODO: 必要な分だけ待ってから処理終了にする
-		return false
+		if a.count >= a.endCount {
+			a.actType = -1
+			a.count = 0
+			a.endCount = 0
+			return false
+		}
+		return true
 	default:
 		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.actType))
 	}
 
-	a.count++
 	return true // processing now
 }
 
-func (a *playerAct) SetAnim(actType int, actInfo []byte) {
+func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 	a.actType = actType
 	a.info = actInfo
 	a.count = 0
+	a.endCount = endCount
 }

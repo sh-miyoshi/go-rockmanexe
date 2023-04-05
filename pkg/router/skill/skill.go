@@ -19,6 +19,7 @@ type SkillAnim interface {
 	anim.Anim
 
 	StopByOwner()
+	GetEndCount() int
 }
 
 func GetByChip(chipID int, arg Argument) SkillAnim {

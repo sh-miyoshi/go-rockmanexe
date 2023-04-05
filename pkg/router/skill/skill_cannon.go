@@ -84,12 +84,7 @@ func (p *cannon) Process() (bool, error) {
 		}
 	}
 
-	max := imgCannonBodyNum * delayCannonBody
-	if max < imgCannonAtkNum*delayCannonAtk+15 {
-		max = imgCannonAtkNum*delayCannonAtk + 15
-	}
-
-	if p.count > max {
+	if p.count > p.GetEndCount() {
 		return true, nil
 	}
 	return false, nil
@@ -104,4 +99,12 @@ func (p *cannon) GetParam() anim.Param {
 
 func (p *cannon) StopByOwner() {
 	anim.Delete(p.ID)
+}
+
+func (p *cannon) GetEndCount() int {
+	max := imgCannonBodyNum * delayCannonBody
+	if max < imgCannonAtkNum*delayCannonAtk+15 {
+		max = imgCannonAtkNum*delayCannonAtk + 15
+	}
+	return max
 }

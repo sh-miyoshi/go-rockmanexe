@@ -29,6 +29,7 @@ type BattlePlayer struct {
 	imgMindFrame  int
 	imgCharge     [2][]int
 
+	chipAnimID  string
 	chargeCount int
 	shotPower   int
 }
@@ -140,6 +141,33 @@ func (p *BattlePlayer) LocalDraw() {
 
 func (p *BattlePlayer) Process() (bool, error) {
 	// TODO
+
+	info := net.GetInst().GetGameInfo()
+	for _, anim := range info.Anims {
+		if anim.ObjectID == p.chipAnimID {
+			return false, nil // まだ処理中
+		}
+	}
+	p.chipAnimID = ""
+
+	// Chip Use
+	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if len(p.selectedChips) > 0 {
+			cid := p.selectedChips[0].ID
+			p.chipAnimID = uuid.New().String()
+			logger.Info("Use chip %d", cid)
+
+			chipInfo := action.UseChip{
+				AnimID:           p.chipAnimID,
+				ChipUserClientID: p.objectID,
+				ChipID:           cid,
+			}
+			net.GetInst().SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
+
+			p.selectedChips = p.selectedChips[1:]
+			return false, nil
+		}
+	}
 
 	// Move
 	moveDirect := -1
