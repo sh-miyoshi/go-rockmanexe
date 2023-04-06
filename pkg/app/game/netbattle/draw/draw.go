@@ -98,7 +98,10 @@ func Draw() {
 	ginfo := net.GetInst().GetGameInfo()
 	for _, obj := range ginfo.Objects {
 		pos := battlecommon.ViewPos(obj.Pos)
-		ino := 0 // debug
+		ino := obj.ActCount / imgDelays[obj.Type]
+		if ino >= len(images[obj.Type]) {
+			ino = len(images[obj.Type]) - 1
+		}
 		// TODO offset
 
 		opts := dxlib.DrawRotaGraphOption{}
