@@ -28,7 +28,7 @@ type Object struct {
 type Anim struct {
 	ObjectID string
 	Pos      common.Point
-	AnimType int
+	DrawType int
 
 	// TODO: IsReverse必要かも
 }
