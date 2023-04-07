@@ -53,6 +53,6 @@ func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.id,
 		Pos:      p.pos,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }

@@ -198,7 +198,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 func (p *flamePillarManager) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

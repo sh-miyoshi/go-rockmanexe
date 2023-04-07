@@ -169,7 +169,7 @@ func (e *enemyVolgear) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    e.pm.ObjectID,
 			Pos:      e.pm.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: e.pm.HP,
 	}
@@ -249,6 +249,6 @@ func (a *volgearAtk) Process() (bool, error) {
 func (a *volgearAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.objID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }

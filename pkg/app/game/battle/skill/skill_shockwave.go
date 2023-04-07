@@ -117,7 +117,7 @@ func (p *shockWave) Process() (bool, error) {
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

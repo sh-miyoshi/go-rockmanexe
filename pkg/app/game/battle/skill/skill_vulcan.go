@@ -108,7 +108,7 @@ func (p *vulcan) Process() (bool, error) {
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

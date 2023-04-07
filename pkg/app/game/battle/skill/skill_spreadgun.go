@@ -115,7 +115,7 @@ func (p *spreadGun) Process() (bool, error) {
 func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 
@@ -149,7 +149,7 @@ func (p *spreadHit) Process() (bool, error) {
 func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

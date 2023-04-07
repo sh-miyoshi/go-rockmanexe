@@ -109,7 +109,7 @@ func (p *cannon) Process() (bool, error) {
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

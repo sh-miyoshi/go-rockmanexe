@@ -86,7 +86,7 @@ func (p *aquamanShot) Process() (bool, error) {
 func (p *aquamanShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

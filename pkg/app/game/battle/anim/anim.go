@@ -9,18 +9,17 @@ import (
 )
 
 const (
-	AnimTypeObject int = iota + 1
-	AnimTypeSkill
-	AnimTypeEffect
+	DrawTypeObject int = iota + 1
+	DrawTypeSkill
+	DrawTypeEffect
 )
 
 type Param struct {
 	ObjID    string
 	Pos      common.Point
-	AnimType int
+	DrawType int
 }
 
-// Anim ...
 type Anim interface {
 	Process() (bool, error)
 	Draw()
@@ -107,7 +106,7 @@ func sortAnim() {
 		pm := anim.GetParam()
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.AnimType*100 + pm.Pos.Y*6 + pm.Pos.X,
+			Index: pm.DrawType*100 + pm.Pos.Y*6 + pm.Pos.X,
 		})
 	}
 

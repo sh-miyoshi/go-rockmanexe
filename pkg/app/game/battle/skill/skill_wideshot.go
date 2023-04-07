@@ -153,7 +153,7 @@ func (p *wideShot) Process() (bool, error) {
 func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

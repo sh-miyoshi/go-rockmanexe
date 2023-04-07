@@ -179,7 +179,7 @@ func (s *Supporter) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    s.ID,
 			Pos:      s.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: int(s.HP),
 	}

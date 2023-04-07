@@ -92,7 +92,7 @@ func (p *sword) Process() (bool, error) {
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

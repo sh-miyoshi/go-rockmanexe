@@ -89,7 +89,7 @@ func (p *miniBomb) Process() (bool, error) {
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

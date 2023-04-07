@@ -176,7 +176,7 @@ func (e *enemyMetall) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    e.pm.ObjectID,
 			Pos:      e.pm.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: e.pm.HP,
 	}
@@ -211,7 +211,7 @@ func (a *metallAtk) Process() (bool, error) {
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.id,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

@@ -122,7 +122,7 @@ func (p *heatShot) Process() (bool, error) {
 func (p *heatShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

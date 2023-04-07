@@ -503,7 +503,7 @@ func (p *BattlePlayer) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    p.ID,
 			Pos:      p.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: int(p.HP),
 	}

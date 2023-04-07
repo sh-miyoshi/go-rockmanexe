@@ -179,7 +179,7 @@ func (g *GameHandler) updateGameInfo() {
 			anims[i] = append(anims[i], gameinfo.Anim{
 				ObjectID: a.ObjID,
 				Pos:      pos,
-				AnimType: a.AnimType,
+				AnimType: a.DrawType,
 			})
 		}
 	}

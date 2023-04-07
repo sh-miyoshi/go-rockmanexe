@@ -39,7 +39,7 @@ func (p *invisible) Process() (bool, error) {
 func (p *invisible) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

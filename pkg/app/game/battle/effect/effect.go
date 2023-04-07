@@ -199,7 +199,7 @@ func (e *effect) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    e.ID,
 		Pos:      e.Pos,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 
@@ -214,6 +214,6 @@ func (e *noEffect) Draw() {
 func (e *noEffect) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    uuid.New().String(), // set dummy param
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }

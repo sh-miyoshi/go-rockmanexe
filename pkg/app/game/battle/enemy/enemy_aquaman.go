@@ -351,7 +351,7 @@ func (e *enemyAquaman) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    e.pm.ObjectID,
 			Pos:      e.pm.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: e.pm.HP,
 	}

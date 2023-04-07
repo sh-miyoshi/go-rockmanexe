@@ -135,7 +135,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 func (p *skillPanelSteal) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

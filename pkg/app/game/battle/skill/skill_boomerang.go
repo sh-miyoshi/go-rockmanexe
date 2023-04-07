@@ -170,7 +170,7 @@ func (p *boomerang) Process() (bool, error) {
 func (p *boomerang) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

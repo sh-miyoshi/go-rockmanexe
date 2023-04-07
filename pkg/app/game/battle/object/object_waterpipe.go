@@ -138,7 +138,7 @@ func (o *WaterPipe) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    o.pm.objectID,
 			Pos:      o.pm.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: o.pm.HP,
 	}

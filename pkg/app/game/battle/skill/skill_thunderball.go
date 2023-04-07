@@ -149,7 +149,7 @@ func (p *thunderBall) Process() (bool, error) {
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

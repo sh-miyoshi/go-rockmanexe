@@ -142,7 +142,7 @@ func (p *Player) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    p.objectInfo.ID,
 			Pos:      p.objectInfo.Pos,
-			AnimType: anim.AnimTypeObject,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: p.objectInfo.HP,
 	}
