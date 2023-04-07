@@ -20,7 +20,7 @@ import (
 type playerAct struct {
 	actType       int
 	count         int
-	pPos          *common.Point
+	pObject       *gameinfo.Object
 	info          []byte
 	getPanelInfo  func(pos common.Point) battlecommon.PanelInfo
 	ownerClientID string
@@ -44,7 +44,7 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID 
 			ownerClientID: info.OwnerClientID,
 		},
 	}
-	res.act.pPos = &res.objectInfo.Pos
+	res.act.pObject = &res.objectInfo
 	res.act.getPanelInfo = res.gameInfo.GetPanelInfo
 
 	return res
@@ -67,10 +67,8 @@ func (p *Player) Process() (bool, error) {
 	if act != nil {
 		switch act.GetType() {
 		case pb.Request_MOVE:
-			p.objectInfo.Type = TypePlayerMove
 			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData(), 0)
 		case pb.Request_BUSTER:
-			p.objectInfo.Type = TypePlayerBuster
 			p.act.SetAnim(battlecommon.PlayerActBuster, act.GetRawData(), 0)
 		case pb.Request_CHIPUSE:
 			var chipInfo action.UseChip
@@ -195,10 +193,10 @@ func (a *playerAct) Process() bool {
 
 			switch move.Type {
 			case action.MoveTypeDirect:
-				battlecommon.MoveObject(a.pPos, move.Direct, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+				battlecommon.MoveObject(&a.pObject.Pos, move.Direct, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
 			case action.MoveTypeAbs:
 				target := common.Point{X: move.AbsPosX, Y: move.AbsPosY}
-				battlecommon.MoveObjectDirect(a.pPos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+				battlecommon.MoveObjectDirect(&a.pObject.Pos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
 			}
 
 			a.actType = -1
@@ -228,8 +226,8 @@ func (a *playerAct) Process() bool {
 				return false
 			}
 
-			y := a.pPos.Y
-			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
+			y := a.pObject.Pos.Y
+			for x := a.pObject.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				pos := common.Point{X: x, Y: y}
 				if damageAdd(pos, buster.Power) {
 					break
@@ -261,4 +259,13 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 	a.info = actInfo
 	a.count = 0
 	a.endCount = endCount
+
+	switch actType {
+	case battlecommon.PlayerActMove:
+		a.pObject.Type = TypePlayerMove
+	case battlecommon.PlayerActBuster:
+		a.pObject.Type = TypePlayerBuster
+	case battlecommon.PlayerActCannon:
+		a.pObject.Type = TypePlayerCannon
+	}
 }
