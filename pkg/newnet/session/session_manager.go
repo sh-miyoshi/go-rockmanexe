@@ -41,7 +41,6 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		inst.sessions[sessionID] = newSession(sessionID, inst.gameHandler)
 		inst.sessions[sessionID].SetClient(clientID, stream)
 
-		// TODO init game info
 		go inst.sessions[sessionID].Run()
 		logger.Info("create new session %s for client %s", sessionID, clientID)
 	}

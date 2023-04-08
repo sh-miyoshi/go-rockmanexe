@@ -2,27 +2,38 @@
 
 ## ネットワーク対戦のリファクタリング
 
-- データは2面持っておいたほうがよさそう
-- アーキテクチャを変更
-  - Clientからデータを受け取る
-    - Serverから現状を返す
-  - Serverで全て計算
-- 全体
-  - main
-    - コネクション要求の受付
-    - Sessionを作る
+- Animの描画
+- スキル実装
+  - minibomb
+  - recover
+  - shockwave
+  - spreadgun
+  - sword
+  - thunderball
+  - vulcan
+  - wideshot
+- Effect
+- Sound
+- Object
+  - offset
+  - 自キャラ以外のHP
+- Panel Statusを反映
+- 自キャラ描画
+  - HP
+  - カスタムゲージ
+  - Mind Status
+- GameEnd時のsessionの状態
+- Action中からチップ選択への遷移
+- インビジ処理
+- 再試合
+- Playerが表示されるタイミングが遅い
+  - チップの選択時に表示されていてほしい
+
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
-- Clientから受け取るデータ
-  - いつどこでどんなアクションをしたか
-    - 移動
-    - チップを使う
-- 再試合
-- Playerが表示されるタイミングが遅い
-  - チップの選択時に表示されていてほしい
-- Move時のモーションが出てないかも
+  - router game handlerの予期せぬエラーのハンドリング
 
 ## v0.11でやりたいこと
 

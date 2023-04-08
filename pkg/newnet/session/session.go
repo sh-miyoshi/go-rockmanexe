@@ -45,13 +45,6 @@ type Session struct {
 	exitErr     *sessionError
 	fpsMgr      fps.Fps
 	state       int
-
-	// TODO
-	/*
-		go clientからデータを受け取る -> gameInfoに反映
-		go fpsごとにgameInfoの計算
-		go 一定時間ごとにclientに送信(※)
-	*/
 }
 
 func newSession(sessionID string, gameHandler GameLogic) *Session {

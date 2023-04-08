@@ -173,7 +173,6 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		GameInfo: p.gameInfo,
 	})
 	anim.New(s)
-	// TODO gamehander.AnimAdd(s.Get)
 
 	if c.PlayerAct != -1 {
 		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())
