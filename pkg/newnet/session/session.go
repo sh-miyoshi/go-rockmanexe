@@ -23,6 +23,7 @@ type GameLogic interface {
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
 	UpdateGameStatus()
+	IsGameEnd() bool
 }
 
 type sessionError struct {
@@ -131,7 +132,10 @@ MAIN_LOOP:
 			s.gameHandler.UpdateGameStatus()
 			s.publishGameInfo() // debug(送信頻度は要確認)
 
-			// TODO(game info情報を見て必要に応じてstateGameEndへ)
+			if s.gameHandler.IsGameEnd() {
+				s.publishStateToClient(pb.Response_GAMEEND)
+				s.changeState(stateGameEnd)
+			}
 		case stateGameEnd:
 			// TODO(未実装)
 		}

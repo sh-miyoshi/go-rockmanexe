@@ -123,6 +123,17 @@ func (g *GameHandler) UpdateGameStatus() {
 	g.updateGameInfo()
 }
 
+func (g *GameHandler) IsGameEnd() bool {
+	for _, obj := range g.objects {
+		// Note: 1対1以外の場合は追加の考慮が必要
+		if obj.animObject.GetParam().HP <= 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (g *GameHandler) updatePanelObject() {
 	for i := 0; i < len(g.info); i++ {
 		// Cleanup at first

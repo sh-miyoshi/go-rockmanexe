@@ -279,11 +279,6 @@ func runClient2() {
 			}
 		case stateMain:
 			time.Sleep(300 * time.Millisecond)
-
-			// 負けたことにする
-			// obj.HP = 0
-			// conn.SendObject(obj)
-			// conn.BulkSendData()
 			return
 		}
 	}
