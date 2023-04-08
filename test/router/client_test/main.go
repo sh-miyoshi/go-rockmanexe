@@ -177,9 +177,27 @@ MAIN_LOOP:
 				exitByError(fmt.Errorf("failed to use chip cannon: %+v", info))
 			}
 
-			stateChange(&appStatus, stateResult)
+			// Win to game
+			chipInfo = action.UseChip{
+				AnimID:           uuid.New().String(),
+				ChipUserClientID: obj.ID,
+				ChipID:           chip.IDMegaCannon,
+			}
+			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
 
-			// TODO check game end status
+			// Check game end status
+			ok = false
+			for i := 0; i < 10; i++ {
+				if conn.GetGameStatus() == pb.Response_GAMEEND {
+					ok = true
+					stateChange(&appStatus, stateResult)
+					break
+				}
+				time.Sleep(100 * time.Millisecond)
+			}
+			if !ok {
+				exitByError(fmt.Errorf("failed to go to result state: %+v", conn.GetGameStatus()))
+			}
 		case stateResult:
 			logger.Info("Successfully state change to result")
 			break MAIN_LOOP
