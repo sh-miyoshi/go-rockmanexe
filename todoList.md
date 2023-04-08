@@ -4,7 +4,6 @@
 
 - Animの描画
 - スキル実装
-  - minibomb
   - recover
   - shockwave
   - spreadgun

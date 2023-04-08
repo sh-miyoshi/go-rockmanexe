@@ -32,6 +32,8 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 		return newCannon(TypeHighCannon, arg)
 	case chip.IDMegaCannon:
 		return newCannon(TypeMegaCannon, arg)
+	case chip.IDMiniBomb:
+		return newMiniBomb(arg)
 	default:
 		panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
 	}
