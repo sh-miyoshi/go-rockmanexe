@@ -30,6 +30,7 @@ type Anim struct {
 	Pos      common.Point
 	DrawType int
 	AnimType int
+	ActCount int
 
 	// TODO: IsReverse必要かも
 }

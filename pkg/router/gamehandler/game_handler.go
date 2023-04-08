@@ -1,6 +1,8 @@
 package gamehandler
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -11,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	gameanim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
@@ -22,22 +25,15 @@ type gameObject struct {
 	currentObjectType *int
 }
 
-type animInfo struct {
-	ownerClientID string
-	startCount    int
-}
-
 type GameHandler struct {
 	info      [2]gameinfo.GameInfo
 	objects   map[string]*gameObject // Key: clientID, Value: object情報
-	anims     map[string]animInfo    // Key: objectID, Value: anim情報
 	gameCount int
 }
 
 func NewHandler() *GameHandler {
 	return &GameHandler{
 		objects:   make(map[string]*gameObject),
-		anims:     make(map[string]animInfo),
 		gameCount: 0,
 	}
 }
@@ -83,11 +79,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		IsReverse:     false,
 	}, ginfo, g.objects[clientID].actionQueueID)
 	g.objects[clientID].animObject = plyr
-	id := objanim.New(g.objects[clientID].animObject)
-	g.anims[id] = animInfo{
-		ownerClientID: clientID,
-		startCount:    g.gameCount,
-	}
+	objanim.New(g.objects[clientID].animObject)
 	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
 
 	g.updateGameInfo()
@@ -152,27 +144,30 @@ func (g *GameHandler) updateGameInfo() {
 	objects := [len(g.info)][]gameinfo.Object{}
 	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
 		for i := 0; i < len(g.info); i++ {
-			clientID := g.anims[obj.ObjID].ownerClientID
-			if clientID == g.info[i].ClientID {
+			var info gameobj.NetInfo
+			info.Unmarshal(obj.ExtraInfo)
+			startCount := time.Since(info.StartedAt).Seconds() / 60 // Note: FPSが60以外の時要調整
+
+			if info.OwnerClientID == g.info[i].ClientID {
 				// 自分のObject
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          *g.objects[clientID].currentObjectType,
-					OwnerClientID: clientID,
+					Type:          *g.objects[info.OwnerClientID].currentObjectType,
+					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           obj.Pos,
-					ActCount:      g.gameCount - g.anims[obj.ObjID].startCount,
+					ActCount:      g.gameCount - int(startCount),
 					IsReverse:     false,
 				})
 			} else {
 				// 相手のObjectなのでReverseする
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          *g.objects[clientID].currentObjectType,
-					OwnerClientID: clientID,
+					Type:          *g.objects[info.OwnerClientID].currentObjectType,
+					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           common.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
-					ActCount:      g.gameCount - g.anims[obj.ObjID].startCount,
+					ActCount:      g.gameCount - int(startCount),
 					IsReverse:     true,
 				})
 			}
@@ -182,8 +177,12 @@ func (g *GameHandler) updateGameInfo() {
 	anims := [len(g.info)][]gameinfo.Anim{}
 	for _, a := range anim.GetAll() {
 		for i := 0; i < len(g.info); i++ {
+			var info gameanim.NetInfo
+			info.Unmarshal(a.ExtraInfo)
+			startCount := time.Since(info.StartedAt).Seconds() / 60 // Note: FPSが60以外の時要調整
+
 			pos := a.Pos
-			if g.anims[a.ObjID].ownerClientID == g.info[i].ClientID {
+			if info.OwnerClientID == g.info[i].ClientID {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 
@@ -197,6 +196,7 @@ func (g *GameHandler) updateGameInfo() {
 				Pos:      pos,
 				DrawType: a.DrawType,
 				AnimType: animType,
+				ActCount: g.gameCount - int(startCount),
 			})
 		}
 	}
