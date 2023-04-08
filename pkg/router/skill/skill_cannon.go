@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
 const (
@@ -91,11 +92,20 @@ func (p *cannon) Process() (bool, error) {
 }
 
 func (p *cannon) GetParam() anim.Param {
-	// WIP: set anim type
+	animType := routeranim.TypeCannonNormal
+	switch p.Type {
+	case TypeNormalCannon:
+		animType = routeranim.TypeCannonNormal
+	case TypeHighCannon:
+		animType = routeranim.TypeCannonHigh
+	case TypeMegaCannon:
+		animType = routeranim.TypeCannonMega
+	}
 
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID:     p.ID,
+		DrawType:  anim.DrawTypeSkill,
+		ExtraInfo: []byte{byte(animType)},
 	}
 }
 

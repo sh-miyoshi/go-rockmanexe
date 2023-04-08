@@ -12,7 +12,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
@@ -141,10 +140,9 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 func (p *Player) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:     p.objectInfo.ID,
-			Pos:       p.objectInfo.Pos,
-			DrawType:  anim.DrawTypeObject,
-			ExtraInfo: []byte{byte(routeranim.TypeCannonNormal)},
+			ObjID:    p.objectInfo.ID,
+			Pos:      p.objectInfo.Pos,
+			DrawType: anim.DrawTypeObject,
 		},
 		HP: p.objectInfo.HP,
 	}
