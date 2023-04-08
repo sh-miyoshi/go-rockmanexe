@@ -176,10 +176,16 @@ func (g *GameHandler) updateGameInfo() {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 
+			animType := 0
+			if len(a.ExtraInfo) > 0 {
+				animType = int(a.ExtraInfo[0])
+			}
+
 			anims[i] = append(anims[i], gameinfo.Anim{
 				ObjectID: a.ObjID,
 				Pos:      pos,
 				DrawType: a.DrawType,
+				AnimType: animType,
 			})
 		}
 	}

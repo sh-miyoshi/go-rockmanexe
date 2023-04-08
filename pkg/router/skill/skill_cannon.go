@@ -91,6 +91,8 @@ func (p *cannon) Process() (bool, error) {
 }
 
 func (p *cannon) GetParam() anim.Param {
+	// WIP: set anim type
+
 	return anim.Param{
 		ObjID:    p.ID,
 		DrawType: anim.DrawTypeSkill,

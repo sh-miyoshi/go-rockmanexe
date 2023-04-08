@@ -29,6 +29,7 @@ type Anim struct {
 	ObjectID string
 	Pos      common.Point
 	DrawType int
+	AnimType int
 
 	// TODO: IsReverse必要かも
 }

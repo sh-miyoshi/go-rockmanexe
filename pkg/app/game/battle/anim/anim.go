@@ -18,6 +18,8 @@ type Param struct {
 	ObjID    string
 	Pos      common.Point
 	DrawType int
+
+	ExtraInfo []byte
 }
 
 type Anim interface {
