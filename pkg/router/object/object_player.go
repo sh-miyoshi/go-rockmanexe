@@ -31,6 +31,7 @@ type Player struct {
 	objectInfo    gameinfo.Object
 	gameInfo      *gameinfo.GameInfo
 	actionQueueID string
+	hpMax         int
 	act           playerAct
 }
 
@@ -39,6 +40,7 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID 
 		objectInfo:    info,
 		gameInfo:      gameInfo,
 		actionQueueID: actionQueueID,
+		hpMax:         info.HP,
 		act: playerAct{
 			actType:       -1,
 			ownerClientID: info.OwnerClientID,
@@ -107,7 +109,9 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	if p.objectInfo.HP < 0 {
 		p.objectInfo.HP = 0
 	}
-	// TODO: HPMax
+	if p.objectInfo.HP > p.hpMax {
+		p.objectInfo.HP = p.hpMax
+	}
 	// TODO: damage effect
 
 	for i := 0; i < dm.PushLeft; i++ {
