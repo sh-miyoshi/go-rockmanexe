@@ -3,7 +3,6 @@ package anim
 import (
 	"bytes"
 	"encoding/gob"
-	"time"
 )
 
 const (
@@ -17,7 +16,7 @@ const (
 
 type NetInfo struct {
 	AnimType      int
-	StartedAt     time.Time
+	ActCount      int
 	OwnerClientID string
 }
 

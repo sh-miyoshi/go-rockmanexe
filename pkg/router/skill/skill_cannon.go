@@ -1,8 +1,6 @@
 package skill
 
 import (
-	"time"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -32,16 +30,14 @@ type cannon struct {
 	Type int
 	Arg  Argument
 
-	count     int
-	startedAt time.Time
+	count int
 }
 
 func newCannon(cannonType int, arg Argument) *cannon {
 	return &cannon{
-		ID:        arg.AnimObjID,
-		Type:      cannonType,
-		Arg:       arg,
-		startedAt: time.Now(),
+		ID:   arg.AnimObjID,
+		Type: cannonType,
+		Arg:  arg,
 	}
 }
 
@@ -98,7 +94,7 @@ func (p *cannon) Process() (bool, error) {
 func (p *cannon) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerID,
-		StartedAt:     p.startedAt,
+		ActCount:      p.count,
 	}
 	switch p.Type {
 	case TypeNormalCannon:
@@ -108,6 +104,8 @@ func (p *cannon) GetParam() anim.Param {
 	case TypeMegaCannon:
 		info.AnimType = routeranim.TypeCannonMega
 	}
+
+	// TODO: pos
 
 	return anim.Param{
 		ObjID:     p.ID,

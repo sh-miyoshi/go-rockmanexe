@@ -3,7 +3,6 @@ package object
 import (
 	"bytes"
 	"encoding/gob"
-	"time"
 )
 
 const (
@@ -22,7 +21,7 @@ const (
 )
 
 type NetInfo struct {
-	StartedAt     time.Time
+	ActCount      int
 	OwnerClientID string
 }
 

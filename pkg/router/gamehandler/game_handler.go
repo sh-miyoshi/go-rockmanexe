@@ -1,8 +1,6 @@
 package gamehandler
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -146,7 +144,6 @@ func (g *GameHandler) updateGameInfo() {
 		for i := 0; i < len(g.info); i++ {
 			var info gameobj.NetInfo
 			info.Unmarshal(obj.ExtraInfo)
-			startCount := time.Since(info.StartedAt).Seconds() / 60 // Note: FPSが60以外の時要調整
 
 			if info.OwnerClientID == g.info[i].ClientID {
 				// 自分のObject
@@ -156,7 +153,7 @@ func (g *GameHandler) updateGameInfo() {
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           obj.Pos,
-					ActCount:      g.gameCount - int(startCount),
+					ActCount:      info.ActCount,
 					IsReverse:     false,
 				})
 			} else {
@@ -167,7 +164,7 @@ func (g *GameHandler) updateGameInfo() {
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           common.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
-					ActCount:      g.gameCount - int(startCount),
+					ActCount:      info.ActCount,
 					IsReverse:     true,
 				})
 			}
@@ -179,24 +176,18 @@ func (g *GameHandler) updateGameInfo() {
 		for i := 0; i < len(g.info); i++ {
 			var info gameanim.NetInfo
 			info.Unmarshal(a.ExtraInfo)
-			startCount := time.Since(info.StartedAt).Seconds() / 60 // Note: FPSが60以外の時要調整
 
 			pos := a.Pos
 			if info.OwnerClientID == g.info[i].ClientID {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 
-			animType := 0
-			if len(a.ExtraInfo) > 0 {
-				animType = int(a.ExtraInfo[0])
-			}
-
 			anims[i] = append(anims[i], gameinfo.Anim{
 				ObjectID: a.ObjID,
 				Pos:      pos,
 				DrawType: a.DrawType,
-				AnimType: animType,
-				ActCount: g.gameCount - int(startCount),
+				AnimType: info.AnimType,
+				ActCount: info.ActCount,
 			})
 		}
 	}

@@ -2,7 +2,6 @@ package object
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -34,7 +33,7 @@ type Player struct {
 	actionQueueID string
 	hpMax         int
 	act           playerAct
-	startedAt     time.Time
+	count         int
 }
 
 func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
@@ -47,7 +46,6 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID 
 			actType:       -1,
 			ownerClientID: info.OwnerClientID,
 		},
-		startedAt: time.Now(),
 	}
 	res.act.pObject = &res.objectInfo
 	res.act.getPanelInfo = res.gameInfo.GetPanelInfo
@@ -60,6 +58,8 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
+	p.count++
+
 	// Action処理中
 	if p.act.Process() {
 		return false, nil
@@ -146,7 +146,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 func (p *Player) GetParam() objanim.Param {
 	info := NetInfo{
-		StartedAt:     p.startedAt,
+		ActCount:      p.count,
 		OwnerClientID: p.gameInfo.ClientID,
 	}
 

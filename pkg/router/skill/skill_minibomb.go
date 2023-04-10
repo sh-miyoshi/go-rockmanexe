@@ -1,8 +1,6 @@
 package skill
 
 import (
-	"time"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -20,20 +18,18 @@ type miniBomb struct {
 	ID  string
 	Arg Argument
 
-	count     int
-	pos       common.Point
-	target    common.Point
-	startedAt time.Time
+	count  int
+	pos    common.Point
+	target common.Point
 }
 
 func newMiniBomb(arg Argument) *miniBomb {
 	pos := objanim.GetObjPos(arg.OwnerID)
 	return &miniBomb{
-		ID:        arg.AnimObjID,
-		Arg:       arg,
-		pos:       pos,
-		target:    common.Point{X: pos.X + 3, Y: pos.Y},
-		startedAt: time.Now(),
+		ID:     arg.AnimObjID,
+		Arg:    arg,
+		pos:    pos,
+		target: common.Point{X: pos.X + 3, Y: pos.Y},
 	}
 }
 
@@ -70,8 +66,10 @@ func (p *miniBomb) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeMiniBomb,
 		OwnerClientID: p.Arg.OwnerID,
-		StartedAt:     p.startedAt,
+		ActCount:      p.count,
 	}
+
+	// TODO: pos
 
 	return anim.Param{
 		ObjID:     p.ID,
