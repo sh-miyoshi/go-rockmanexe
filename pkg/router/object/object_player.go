@@ -178,10 +178,11 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 	}
 
 	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
-		AnimObjID:  chipInfo.AnimID,
-		OwnerID:    chipInfo.ChipUserClientID,
-		Power:      c.Power,
-		TargetType: target,
+		AnimObjID:     chipInfo.AnimID,
+		OwnerObjectID: p.objectInfo.ID,
+		OwnerClientID: chipInfo.ChipUserClientID,
+		Power:         c.Power,
+		TargetType:    target,
 
 		GameInfo: p.gameInfo,
 	})

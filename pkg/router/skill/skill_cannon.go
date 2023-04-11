@@ -50,9 +50,9 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		// Add damage
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
 		dm := damage.Damage{
-			OwnerClientID: p.Arg.OwnerID,
+			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
@@ -93,7 +93,7 @@ func (p *cannon) Process() (bool, error) {
 
 func (p *cannon) GetParam() anim.Param {
 	info := routeranim.NetInfo{
-		OwnerClientID: p.Arg.OwnerID,
+		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.count,
 	}
 	switch p.Type {
@@ -105,11 +105,10 @@ func (p *cannon) GetParam() anim.Param {
 		info.AnimType = routeranim.TypeCannonMega
 	}
 
-	// TODO: pos
-
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
+		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }

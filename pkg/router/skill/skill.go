@@ -9,10 +9,11 @@ import (
 )
 
 type Argument struct {
-	AnimObjID  string
-	OwnerID    string
-	Power      uint
-	TargetType int
+	AnimObjID     string
+	OwnerObjectID string
+	OwnerClientID string
+	Power         uint
+	TargetType    int
 
 	GameInfo *gameinfo.GameInfo
 }

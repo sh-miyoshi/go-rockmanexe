@@ -24,7 +24,7 @@ type miniBomb struct {
 }
 
 func newMiniBomb(arg Argument) *miniBomb {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := objanim.GetObjPos(arg.OwnerObjectID)
 	return &miniBomb{
 		ID:     arg.AnimObjID,
 		Arg:    arg,
@@ -48,7 +48,7 @@ func (p *miniBomb) Process() (bool, error) {
 
 		// TODO: effect
 		damage.New(damage.Damage{
-			OwnerClientID: p.Arg.OwnerID,
+			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
@@ -65,7 +65,7 @@ func (p *miniBomb) Process() (bool, error) {
 func (p *miniBomb) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeMiniBomb,
-		OwnerClientID: p.Arg.OwnerID,
+		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.count,
 	}
 
