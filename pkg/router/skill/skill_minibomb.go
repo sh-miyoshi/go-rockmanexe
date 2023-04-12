@@ -69,10 +69,9 @@ func (p *miniBomb) GetParam() anim.Param {
 		ActCount:      p.count,
 	}
 
-	// TODO: pos
-
 	return anim.Param{
 		ObjID:     p.ID,
+		Pos:       p.pos,
 		DrawType:  anim.DrawTypeSkill,
 		ExtraInfo: info.Marshal(),
 	}
