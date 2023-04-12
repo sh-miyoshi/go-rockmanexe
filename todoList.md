@@ -2,9 +2,7 @@
 
 ## ネットワーク対戦のリファクタリング
 
-- Animの描画
 - スキル実装
-  - recover
   - shockwave
   - spreadgun
   - sword

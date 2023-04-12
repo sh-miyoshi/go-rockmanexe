@@ -10,6 +10,7 @@ const (
 	TypeCannonHigh
 	TypeCannonMega
 	TypeMiniBomb
+	TypeRecover
 
 	TypeMax
 )
