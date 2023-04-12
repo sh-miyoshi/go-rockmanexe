@@ -33,7 +33,6 @@ type Player struct {
 	actionQueueID string
 	hpMax         int
 	act           playerAct
-	count         int
 }
 
 func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
@@ -58,8 +57,6 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
-	p.count++
-
 	// Action処理中
 	if p.act.Process() {
 		return false, nil
@@ -146,7 +143,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 func (p *Player) GetParam() objanim.Param {
 	info := NetInfo{
-		ActCount:      p.count,
+		ActCount:      p.act.count,
 		OwnerClientID: p.gameInfo.ClientID,
 	}
 
