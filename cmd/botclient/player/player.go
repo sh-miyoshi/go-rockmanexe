@@ -21,6 +21,7 @@ type Player struct {
 	currentActInterval int
 	actTable           []Act
 	conn               *netconn.NetConn
+	clientID           string
 }
 
 func New(clientID string, conn *netconn.NetConn) *Player {
@@ -31,6 +32,7 @@ func New(clientID string, conn *netconn.NetConn) *Player {
 		currentActNo:       0,
 		currentActInterval: 0,
 		conn:               conn,
+		clientID:           clientID,
 	}
 	res.initActTable()
 

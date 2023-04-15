@@ -110,20 +110,20 @@ func (a *ActBuster) Interval() int {
 }
 
 type ActSkill struct {
-	objID  string
-	chipID int
-	conn   *netconn.NetConn
-	count  int
-	id     string
+	clientID string
+	chipID   int
+	conn     *netconn.NetConn
+	count    int
+	id       string
 }
 
-func NewActSkill(chipID int, objID string, conn *netconn.NetConn) *ActSkill {
+func NewActSkill(chipID int, clientID string, conn *netconn.NetConn) *ActSkill {
 	return &ActSkill{
-		chipID: chipID,
-		objID:  objID,
-		conn:   conn,
-		count:  0,
-		id:     uuid.New().String(),
+		chipID:   chipID,
+		clientID: clientID,
+		conn:     conn,
+		count:    0,
+		id:       uuid.New().String(),
 	}
 }
 
@@ -131,7 +131,7 @@ func (a *ActSkill) Process() bool {
 	if a.count == 0 {
 		chipInfo := action.UseChip{
 			AnimID:           a.id,
-			ChipUserClientID: a.objID,
+			ChipUserClientID: a.clientID,
 			ChipID:           a.chipID,
 		}
 		a.conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
