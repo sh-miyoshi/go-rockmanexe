@@ -11,6 +11,7 @@ const (
 	TypeCannonMega
 	TypeMiniBomb
 	TypeRecover
+	TypeShockWave
 
 	TypeMax
 )

@@ -250,6 +250,8 @@ func (a *playerAct) Process() bool {
 			return false
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
+		// TODO set pick anim end count
+
 		// No special action
 		if a.count >= a.endCount {
 			a.actType = -1

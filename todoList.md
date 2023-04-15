@@ -3,7 +3,6 @@
 ## ネットワーク対戦のリファクタリング
 
 - スキル実装
-  - shockwave
   - spreadgun
   - sword
   - thunderball
@@ -25,6 +24,7 @@
 - 再試合
 - Playerが表示されるタイミングが遅い
   - チップの選択時に表示されていてほしい
+- ShockWave時にPlayer ObjectをPickにする
 
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う
