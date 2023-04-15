@@ -140,7 +140,7 @@ MAIN_LOOP:
 			for i := 0; i < 10; i++ {
 				info := conn.GetGameInfo()
 				for _, obj := range info.Objects {
-					if obj.OwnerClientID != "tester1" && obj.HP == 99 {
+					if obj.OwnerClientID == "tester2" && obj.HP == 99 {
 						ok = true
 						logger.Info("Successfully damaged by buster")
 						break BUSTER_CHECK_LOOP
@@ -156,7 +156,7 @@ MAIN_LOOP:
 			id := uuid.New().String()
 			chipInfo := action.UseChip{
 				AnimID:           id,
-				ChipUserClientID: obj.ID,
+				ChipUserClientID: "tester1",
 				ChipID:           chip.IDCannon,
 			}
 			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
@@ -180,7 +180,7 @@ MAIN_LOOP:
 			// Win to game
 			chipInfo = action.UseChip{
 				AnimID:           uuid.New().String(),
-				ChipUserClientID: obj.ID,
+				ChipUserClientID: "tester1",
 				ChipID:           chip.IDMegaCannon,
 			}
 			conn.SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
