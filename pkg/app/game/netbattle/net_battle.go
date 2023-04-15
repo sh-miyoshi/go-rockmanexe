@@ -87,7 +87,7 @@ func Init(plyr *player.Player) error {
 
 	obj := netobj.InitParam{
 		ID: inst.playerInst.GetObjectID(),
-		HP: 10,
+		HP: int(plyr.HP),
 		X:  1,
 		Y:  1,
 	}

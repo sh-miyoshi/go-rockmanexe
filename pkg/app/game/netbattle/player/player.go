@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -31,10 +32,10 @@ type BattlePlayer struct {
 	imgMinds      []int
 	imgMindFrame  int
 	imgCharge     [2][]int
-
-	chipAnimID  string
-	chargeCount int
-	shotPower   int
+	chipAnimID    string
+	chargeCount   int
+	shotPower     int
+	gaugeCount    int
 }
 
 func New(plyr *player.Player) (*BattlePlayer, error) {
@@ -42,6 +43,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		objectID:    uuid.New().String(),
 		chargeCount: 0,
 		shotPower:   1,
+		gaugeCount:  0,
 	}
 	for _, c := range plyr.ChipFolder {
 		res.chipFolder = append(res.chipFolder, c)
@@ -136,7 +138,25 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 	dxlib.DrawGraph(x, 40, p.imgMindFrame, true)
 	dxlib.DrawGraph(x, 40, p.imgMinds[battlecommon.PlayerMindStatusNormal], true) // TODO set mind status
 
-	// TODO: Show Custom Gauge
+	// Show Custom Gauge
+	if showGauge {
+		baseX := 5
+		if field.Is4x4Area() {
+			baseX = 80
+		}
+
+		if p.gaugeCount < battlecommon.GaugeMaxCount {
+			dxlib.DrawGraph(96+baseX, y, p.imgGaugeFrame, true)
+			const gaugeMaxSize = 256
+			size := int(gaugeMaxSize * p.gaugeCount / battlecommon.GaugeMaxCount)
+			dxlib.DrawBox(112+baseX, y+14, 112+baseX+size, y+16, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112+baseX, y+16, 112+baseX+size, y+24, dxlib.GetColor(231, 235, 255), true)
+			dxlib.DrawBox(112+baseX, y+24, 112+baseX+size, y+26, dxlib.GetColor(123, 154, 222), true)
+		} else {
+			i := (p.gaugeCount / 40) % 4
+			dxlib.DrawGraph(96+baseX, y, p.imgGaugeMax[i], true)
+		}
+	}
 }
 
 func (p *BattlePlayer) LocalDraw() {
@@ -144,7 +164,7 @@ func (p *BattlePlayer) LocalDraw() {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
-	// TODO
+	p.gaugeCount += 4 // TODO GaugeSpeed
 
 	info := net.GetInst().GetGameInfo()
 	for _, anim := range info.Anims {
@@ -153,6 +173,19 @@ func (p *BattlePlayer) Process() (bool, error) {
 		}
 	}
 	p.chipAnimID = ""
+
+	if p.gaugeCount >= battlecommon.GaugeMaxCount {
+		if p.gaugeCount == battlecommon.GaugeMaxCount {
+			sound.On(sound.SEGaugeMax)
+		}
+
+		// State change to chip select
+		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
+			p.gaugeCount = 0
+			// TODO: chip selectへ遷移
+			return false, nil
+		}
+	}
 
 	// Chip Use
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
