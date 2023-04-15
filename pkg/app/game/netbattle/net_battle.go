@@ -3,7 +3,6 @@ package netbattle
 import (
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -87,7 +86,7 @@ func Init(plyr *player.Player) error {
 	}
 
 	obj := netobj.InitParam{
-		ID: uuid.New().String(),
+		ID: inst.playerInst.GetObjectID(),
 		HP: 10,
 		X:  1,
 		Y:  1,

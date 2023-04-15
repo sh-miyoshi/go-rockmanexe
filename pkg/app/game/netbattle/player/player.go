@@ -7,6 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -16,6 +18,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
 type BattlePlayer struct {
@@ -126,7 +129,8 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show HP
 	dxlib.DrawGraph(x, y, p.imgHPFrame, true)
-	// TODO: draw hp
+	obj := p.getObject()
+	draw.Number(x+2, y+2, obj.HP, draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Mind Status
 	dxlib.DrawGraph(x, 40, p.imgMindFrame, true)
@@ -159,7 +163,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 			chipInfo := action.UseChip{
 				AnimID:           p.chipAnimID,
-				ChipUserClientID: p.objectID,
+				ChipUserClientID: config.Get().Net.ClientID,
 				ChipID:           cid,
 			}
 			net.GetInst().SendAction(pb.Request_CHIPUSE, chipInfo.Marshal())
@@ -246,4 +250,19 @@ func (p *BattlePlayer) UpdatePA() {
 func (p *BattlePlayer) IsDead() bool {
 	// TODO
 	return false
+}
+
+func (p *BattlePlayer) GetObjectID() string {
+	return p.objectID
+}
+
+func (p *BattlePlayer) getObject() gameinfo.Object {
+	objs := net.GetInst().GetGameInfo().Objects
+	for _, o := range objs {
+		if o.ID == p.objectID {
+			return o
+		}
+	}
+
+	return gameinfo.Object{}
 }
