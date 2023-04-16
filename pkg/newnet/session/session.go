@@ -174,7 +174,13 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 		}
 		return fmt.Errorf("no such client %s", clientID)
 	case pb.Request_GOCHIPSELECT:
-		panic("TODO: 未実装")
+		for i := range s.clients {
+			s.clients[i].chipSent = false
+		}
+
+		// Change game state to chpi select
+		s.changeState(stateChipSelectWait)
+		s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
 	case pb.Request_INITPARAMS:
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())

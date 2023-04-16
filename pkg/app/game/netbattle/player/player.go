@@ -182,7 +182,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
 			p.gaugeCount = 0
-			// TODO: chip selectへ遷移
+			net.GetInst().SendSignal(pb.Request_GOCHIPSELECT, nil)
 			return false, nil
 		}
 	}

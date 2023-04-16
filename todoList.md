@@ -13,9 +13,7 @@
 - Object
   - offset
   - 自キャラ以外のHP
-- Panel Statusを反映
 - GameEnd時のsessionの状態
-- Action中からチップ選択への遷移
 - インビジ処理
 - 再試合
 - Playerが表示されるタイミングが遅い
@@ -27,6 +25,7 @@
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
+  - Panel Statusを反映
 
 ## v0.11でやりたいこと
 
