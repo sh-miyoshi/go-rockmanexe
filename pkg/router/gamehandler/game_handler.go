@@ -178,7 +178,7 @@ func (g *GameHandler) updateGameInfo() {
 			info.Unmarshal(a.ExtraInfo)
 
 			pos := a.Pos
-			if info.OwnerClientID == g.info[i].ClientID {
+			if info.OwnerClientID != g.info[i].ClientID {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 

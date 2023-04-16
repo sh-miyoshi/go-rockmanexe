@@ -52,6 +52,7 @@ func (p *shockWave) Process() (bool, error) {
 		}
 
 		damage.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
