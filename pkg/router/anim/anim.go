@@ -14,6 +14,12 @@ const (
 	TypeShockWave
 	TypeSpreadGun
 	TypeSpreadHit
+	TypeSword
+	TypeWideSword
+	TypeLongSword
+	TypeThunderBall
+	TypeVulcan
+	TypeWideShot
 
 	TypeMax
 )
