@@ -9,6 +9,7 @@
     - 描画部実装
   - thunderball
   - vulcan
+    - 描画部実装
   - wideshot
 - Effect
 - Sound
