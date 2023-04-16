@@ -35,6 +35,7 @@ func (p *recover) Process() (bool, error) {
 	if p.count == 1 {
 		pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
 		damage.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),
 			TTL:           1,

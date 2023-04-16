@@ -46,7 +46,6 @@ func (p *miniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		// TODO: effect
 		damage.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.target,
