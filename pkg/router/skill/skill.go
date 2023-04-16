@@ -51,6 +51,8 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 		return newVulcan(3, arg)
 	case chip.IDThunderBall:
 		return newThunderBall(6, arg)
+	case chip.IDWideShot:
+		return newWideShot(arg)
 	default:
 		panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
 	}

@@ -8,9 +8,11 @@
   - sword
     - 描画部実装
   - thunderball
+    - 描画部実装
   - vulcan
     - 描画部実装
   - wideshot
+    - 描画部実装
 - Effect
 - Sound
 - Object
