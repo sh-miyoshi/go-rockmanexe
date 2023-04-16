@@ -6,7 +6,6 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
@@ -57,7 +56,7 @@ func (p *shockWave) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: 0, // TODO: 正しい値をセット
 			ShowHitArea:   true,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,

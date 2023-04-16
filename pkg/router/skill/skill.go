@@ -39,6 +39,8 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 		return newRecover(arg)
 	case chip.IDShockWave:
 		return newShockWave(arg)
+	case chip.IDSpreadGun:
+		return newSpreadGun(arg)
 	default:
 		panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
 	}

@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/oldnet/effect"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
@@ -40,7 +39,7 @@ func (p *recover) Process() (bool, error) {
 			Power:         -int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: 0, // TODO: 正しい値をセット
 			DamageType:    damage.TypeNone,
 		})
 	}
