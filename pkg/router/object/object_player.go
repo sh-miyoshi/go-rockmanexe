@@ -280,5 +280,9 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 		a.pObject.Type = TypePlayerBuster
 	case battlecommon.PlayerActCannon:
 		a.pObject.Type = TypePlayerCannon
+	case battlecommon.PlayerActShot:
+		a.pObject.Type = TypePlayerShot
+	default:
+		logger.Error("Invalid player act type %d was specified", actType)
 	}
 }

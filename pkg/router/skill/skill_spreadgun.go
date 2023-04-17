@@ -15,7 +15,6 @@ type spreadGun struct {
 	ID    string
 	Arg   Argument
 	count int
-	pos   common.Point
 }
 
 type spreadHit struct {
@@ -30,7 +29,6 @@ func newSpreadGun(arg Argument) *spreadGun {
 	return &spreadGun{
 		ID:  arg.AnimObjID,
 		Arg: arg,
-		pos: common.Point{X: -1, Y: -1},
 	}
 }
 
@@ -54,7 +52,6 @@ func (p *spreadGun) Process() (bool, error) {
 					HitEffectType: 0, // TODO: 正しい値をセット
 					DamageType:    damage.TypeNone,
 				})
-				p.pos = target
 
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
@@ -96,7 +93,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       p.pos,
+		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}

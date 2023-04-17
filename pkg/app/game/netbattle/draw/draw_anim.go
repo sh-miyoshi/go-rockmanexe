@@ -16,6 +16,8 @@ type animDraw struct {
 	drawMiniBombInst drawskill.DrawMiniBomb
 	drawRecover      drawskill.DrawRecover
 	drawShockWave    drawskill.DrawShockWave
+	drawSpreadGun    drawskill.DrawSpreadGun
+	drawSpreadHit    drawskill.DrawSpreadHit
 }
 
 func (d *animDraw) Init() error {
@@ -31,6 +33,12 @@ func (d *animDraw) Init() error {
 	if err := d.drawShockWave.Init(); err != nil {
 		return fmt.Errorf("draw shock wave init failed: %w", err)
 	}
+	if err := d.drawSpreadGun.Init(); err != nil {
+		return fmt.Errorf("draw spread gun init failed: %w", err)
+	}
+	if err := d.drawSpreadHit.Init(); err != nil {
+		return fmt.Errorf("draw spread hit init failed: %w", err)
+	}
 
 	return nil
 }
@@ -40,6 +48,8 @@ func (d *animDraw) End() {
 	d.drawMiniBombInst.End()
 	d.drawRecover.End()
 	d.drawShockWave.End()
+	d.drawSpreadGun.End()
+	d.drawSpreadHit.End()
 }
 
 func (d *animDraw) Draw() {
@@ -61,6 +71,10 @@ func (d *animDraw) Draw() {
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:
 			d.drawShockWave.Draw(pos, a.ActCount)
+		case anim.TypeSpreadGun:
+			d.drawSpreadGun.Draw(pos, a.ActCount)
+		case anim.TypeSpreadHit:
+			d.drawSpreadHit.Draw()
 		default:
 			common.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return
