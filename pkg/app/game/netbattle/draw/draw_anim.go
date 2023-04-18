@@ -74,7 +74,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:
-			d.drawSpreadHit.Draw()
+			d.drawSpreadHit.Draw(pos, a.ActCount)
 		default:
 			common.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

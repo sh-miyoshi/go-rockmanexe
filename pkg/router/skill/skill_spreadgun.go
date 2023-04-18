@@ -1,11 +1,14 @@
 package skill
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
@@ -39,40 +42,48 @@ func (p *spreadGun) Draw() {
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
-		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			target := common.Point{X: x, Y: pos.Y}
-			objs := objanim.GetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
-			if len(objs) > 0 {
-				// Hit
-				damage.New(damage.Damage{
-					Pos:           target,
-					Power:         int(p.Arg.Power),
-					TTL:           1,
-					TargetType:    p.Arg.TargetType,
-					HitEffectType: 0, // TODO: 正しい値をセット
-					DamageType:    damage.TypeNone,
-				})
+		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
+			Pos:           pos,
+			Power:         int(p.Arg.Power),
+			TTL:           1,
+			TargetType:    p.Arg.TargetType,
+			HitEffectType: 0, // TODO: 正しい値をセット
+			BigDamage:     true,
+			DamageType:    damage.TypeNone,
+		}
 
-				// Spreading
-				for sy := -1; sy <= 1; sy++ {
-					if pos.Y+sy < 0 || pos.Y+sy >= battlecommon.FieldNum.Y {
-						continue
-					}
-					for sx := -1; sx <= 1; sx++ {
-						if sy == 0 && sx == 0 {
+		if p.Arg.TargetType == damage.TargetEnemy {
+			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
+				dm.Pos.X = x
+				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+					logger.Debug("Add damage by spread gun: %+v", dm)
+					dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
+					damage.New(dm)
+
+					// Spreading
+					for sy := -1; sy <= 1; sy++ {
+						if pos.Y+sy < 0 || pos.Y+sy >= battlecommon.FieldNum.Y {
 							continue
 						}
-						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-							anim.New(&spreadHit{
-								Arg: p.Arg,
-								pos: common.Point{X: x + sx, Y: pos.Y + sy},
-							})
+						for sx := -1; sx <= 1; sx++ {
+							if sy == 0 && sx == 0 {
+								continue
+							}
+							if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
+								anim.New(&spreadHit{
+									Arg: p.Arg,
+									pos: common.Point{X: x + sx, Y: pos.Y + sy},
+								})
+							}
 						}
 					}
+					break
 				}
-
-				break
 			}
+		} else {
+			logger.Error("unexpected target type for spread gun: %+v", p.Arg)
+			return false, fmt.Errorf("unexpected target type")
 		}
 	}
 
@@ -127,7 +138,6 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		// TODO: add effect anim
 		damage.New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),

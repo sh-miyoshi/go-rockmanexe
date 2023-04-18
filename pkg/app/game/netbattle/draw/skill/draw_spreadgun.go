@@ -13,6 +13,7 @@ type DrawSpreadGun struct {
 }
 
 type DrawSpreadHit struct {
+	img []int
 }
 
 func (p *DrawSpreadGun) Init() error {
@@ -62,11 +63,24 @@ func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
 }
 
 func (p *DrawSpreadHit) Init() error {
+	p.img = make([]int, 6)
+	fname := common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, p.img); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
 	return nil
 }
 
 func (p *DrawSpreadHit) End() {
+	for i := 0; i < len(p.img); i++ {
+		dxlib.DeleteGraph(p.img[i])
+	}
+	p.img = []int{}
 }
 
-func (p *DrawSpreadHit) Draw() {
+func (p *DrawSpreadHit) Draw(viewPos common.Point, count int) {
+	if count < len(p.img) {
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+15, 1, 0, p.img[count], true)
+	}
 }
