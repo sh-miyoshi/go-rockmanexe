@@ -4,7 +4,7 @@
 
 - スキル実装
   - sword
-    - 描画部実装
+    - player act
   - thunderball
     - 描画部実装
   - vulcan
