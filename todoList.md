@@ -3,8 +3,6 @@
 ## ネットワーク対戦のリファクタリング
 
 - スキル実装
-  - sword
-    - player act
   - thunderball
     - 描画部実装
   - vulcan
