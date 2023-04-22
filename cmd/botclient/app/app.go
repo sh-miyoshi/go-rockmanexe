@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 const (

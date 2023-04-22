@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
 
 type PanelInfo struct {

@@ -8,11 +8,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
-	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
 
 const (

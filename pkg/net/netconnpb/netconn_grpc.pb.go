@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: pkg/newnet/netconnpb/netconn.proto
+// source: pkg/net/netconnpb/netconn.proto
 
 package netconnpb
 
@@ -131,5 +131,5 @@ var NetConn_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "pkg/newnet/netconnpb/netconn.proto",
+	Metadata: "pkg/net/netconnpb/netconn.proto",
 }

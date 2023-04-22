@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
 
 type AuthResponse struct {

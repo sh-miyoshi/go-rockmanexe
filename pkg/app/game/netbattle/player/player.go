@@ -17,8 +17,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/action"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 

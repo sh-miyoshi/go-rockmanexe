@@ -3,7 +3,7 @@ package net
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/newnetconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 )
 
 var (

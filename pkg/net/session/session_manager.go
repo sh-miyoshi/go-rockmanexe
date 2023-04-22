@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 )
 
 const (

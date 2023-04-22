@@ -16,8 +16,8 @@ protoc:
 	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\netconnpb\netconn.pb.go . && \
 	rd /s /q github.com
 protoc-linux:
-	protoc --go_out=. --go-grpc_out=. --go-grpc_opt require_unimplemented_servers=false ./pkg/newnet/netconnpb/netconn.proto && \
-	cp github.com/sh-miyoshi/go-rockmanexe/pkg/newnet/netconnpb/* ./pkg/newnet/netconnpb/ && \
+	protoc --go_out=. --go-grpc_out=. --go-grpc_opt require_unimplemented_servers=false ./pkg/net/netconnpb/netconn.proto && \
+	cp github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb/* ./pkg/net/netconnpb/ && \
 	rm -rf github.com
 docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
