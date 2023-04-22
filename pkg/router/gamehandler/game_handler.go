@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 	gameanim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
@@ -29,7 +30,7 @@ type GameHandler struct {
 	gameCount int
 }
 
-func NewHandler() *GameHandler {
+func NewHandler() session.GameLogic {
 	return &GameHandler{
 		objects:   make(map[string]*gameObject),
 		gameCount: 0,

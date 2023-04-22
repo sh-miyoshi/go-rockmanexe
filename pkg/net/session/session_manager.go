@@ -15,8 +15,8 @@ const (
 )
 
 type SessionManager struct {
-	sessions    map[string]*Session
-	gameHandler GameLogic
+	sessions          map[string]*Session
+	gameLogicGenerate func() GameLogic
 }
 
 var (
@@ -26,8 +26,8 @@ var (
 	errSendFailed = errors.New("data send failed")
 )
 
-func SetGameHandler(gameHandler GameLogic) {
-	inst.gameHandler = gameHandler
+func SetLogicGenerator(g func() GameLogic) {
+	inst.gameLogicGenerate = g
 }
 
 func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
@@ -38,7 +38,8 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 		}
 		logger.Info("set new client %s to session %s", clientID, sessionID)
 	} else {
-		inst.sessions[sessionID] = newSession(sessionID, inst.gameHandler)
+		handler := inst.gameLogicGenerate()
+		inst.sessions[sessionID] = newSession(sessionID, handler)
 		inst.sessions[sessionID].SetClient(clientID, stream)
 
 		go inst.sessions[sessionID].Run()

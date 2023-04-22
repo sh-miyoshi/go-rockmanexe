@@ -43,8 +43,7 @@ func main() {
 		logger.Error("Failed to listen data stream: %v", err)
 		return
 	}
-	h := gamehandler.NewHandler()
-	session.SetGameHandler(h)
+	session.SetLogicGenerator(gamehandler.NewHandler)
 
 	go session.ManagerExec()
 
