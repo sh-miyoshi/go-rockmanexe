@@ -14,7 +14,6 @@ const (
 	stateConnectWait int = iota
 	stateChipSelectWait
 	stateActing
-	stateGameEnd
 )
 
 type GameLogic interface {
@@ -127,13 +126,12 @@ MAIN_LOOP:
 			s.gameHandler.UpdateGameStatus()
 			s.publishGameInfo() // debug(送信頻度は要確認)
 
+			// Game End
 			if s.gameHandler.IsGameEnd() {
 				s.publishStateToClient(pb.Response_GAMEEND)
-				s.changeState(stateGameEnd)
+				s.exitErr = &sessionError{}
+				return
 			}
-		case stateGameEnd:
-			// TODO(未実装)
-			// 全てのclientがいなくなるか、一定時間経つと終了
 		}
 	}
 }
