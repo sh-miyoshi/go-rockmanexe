@@ -29,12 +29,6 @@ const (
 	streamAddr = "localhost:16283"
 )
 
-// テスト内容
-//   1. 同時通信
-//     tester1, tester2
-//     tester3, tester4
-//   2. 再接続
-
 func main() {
 	logger.InitLogger(true, "")
 
@@ -50,7 +44,13 @@ func main() {
 	wg.Wait()
 	logger.Info("Successfully finished multiple sessions")
 
-	// TODO
+	//   2. 再接続
+	time.Sleep(1 * time.Second)
+	wg.Add(2)
+	go runClient("tester1", &wg, true)
+	go runClient("tester2", &wg, false)
+	wg.Wait()
+	logger.Info("Successfully finished second time session")
 
 	// 終了処理をできるように若干待つ
 	time.Sleep(1 * time.Second)
