@@ -158,7 +158,7 @@ func (g *GameHandler) updateGameInfo() {
 					ActCount:      info.ActCount,
 					IsReverse:     false,
 				})
-			} else {
+			} else if _, ok := g.objects[info.OwnerClientID]; ok {
 				// 相手のObjectなのでReverseする
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
