@@ -163,17 +163,6 @@ func (s *Session) End() {
 	}
 }
 
-func (s *Session) EndClient(clientID string) {
-	for i := 0; i < len(s.clients); i++ {
-		if s.clients[i].clientID == clientID {
-			// 初期化
-			s.clients[i] = SessionClient{}
-			return
-		}
-	}
-	logger.Error("no such client %s in session %+v", clientID, s)
-}
-
 func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error {
 	switch signal.GetType() {
 	case pb.Request_CHIPSELECT:

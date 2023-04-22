@@ -53,21 +53,6 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 	return nil
 }
 
-func EndClient(sessionID, clientID string) {
-	if sessionID == "" || clientID == "" {
-		return
-	}
-	logger.Info("Client %s is end at session %s", clientID, sessionID)
-
-	s, ok := inst.sessions[sessionID]
-	if ok {
-		s.EndClient(clientID)
-		logger.Info("Successfully end client")
-	} else {
-		logger.Error("no such session")
-	}
-}
-
 func GetSession(sessionID string) *Session {
 	s, ok := inst.sessions[sessionID]
 	if !ok {
