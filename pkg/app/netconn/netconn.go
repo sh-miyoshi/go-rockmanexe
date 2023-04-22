@@ -48,15 +48,14 @@ type NetConn struct {
 }
 
 func New(conf Config) *NetConn {
-	res := &NetConn{}
-
-	res.config = conf
-	res.connectStatus = ConnectStatus{
-		Status: ConnStateWaiting,
-		Error:  nil,
+	return &NetConn{
+		config:     conf,
+		gameStatus: pb.Response_CONNECTWAIT,
+		connectStatus: ConnectStatus{
+			Status: ConnStateWaiting,
+			Error:  nil,
+		},
 	}
-
-	return res
 }
 
 func (n *NetConn) GetConnStatus() ConnectStatus {

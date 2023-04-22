@@ -48,6 +48,7 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 			g.info[1].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
 		}
 	}
+	logger.Info("Successfully initalized game handler")
 	return nil
 }
 
