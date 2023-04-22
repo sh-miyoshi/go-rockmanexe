@@ -20,7 +20,6 @@
 - Playerが表示されるタイミングが遅い
   - チップの選択時に表示されていてほしい
 - ShockWave時にPlayer ObjectをPickにする
-- newnetのrename
 
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う
