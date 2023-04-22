@@ -3,6 +3,7 @@ package session
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -17,6 +18,7 @@ const (
 type SessionManager struct {
 	sessions          map[string]*Session
 	gameLogicGenerate func() GameLogic
+	mu                sync.Mutex
 }
 
 var (
@@ -31,6 +33,9 @@ func SetLogicGenerator(g func() GameLogic) {
 }
 
 func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
+	inst.mu.Lock()
+	defer inst.mu.Unlock()
+
 	s, ok := inst.sessions[sessionID]
 	if ok {
 		if err := s.SetClient(clientID, stream); err != nil {
