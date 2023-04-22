@@ -78,6 +78,8 @@ MAIN_LOOP:
 			return
 		}
 
+		s.fpsMgr.Wait()
+
 		now := time.Now()
 
 		// check session expires
@@ -131,9 +133,8 @@ MAIN_LOOP:
 			}
 		case stateGameEnd:
 			// TODO(未実装)
+			// 全てのclientがいなくなるか、一定時間経つと終了
 		}
-
-		s.fpsMgr.Wait()
 	}
 }
 
@@ -160,6 +161,17 @@ func (s *Session) End() {
 		}
 		logger.Error("Got error in session %s: %+v", s.id, s.exitErr.reason)
 	}
+}
+
+func (s *Session) EndClient(clientID string) {
+	for i := 0; i < len(s.clients); i++ {
+		if s.clients[i].clientID == clientID {
+			// 初期化
+			s.clients[i] = SessionClient{}
+			return
+		}
+	}
+	logger.Error("no such client %s in session %+v", clientID, s)
 }
 
 func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error {

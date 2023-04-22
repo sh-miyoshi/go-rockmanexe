@@ -10,6 +10,8 @@ import (
 )
 
 type NetConn struct {
+	sessionID string
+	clientID  string
 }
 
 func New() *NetConn {
@@ -17,6 +19,8 @@ func New() *NetConn {
 }
 
 func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
+	defer session.EndClient(n.sessionID, n.clientID)
+
 	for {
 		msg, err := stream.Recv()
 		if err != nil {
@@ -34,21 +38,29 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 			continue
 		}
 
-		sessionID := msg.GetSessionID()
-		s := session.GetSession(sessionID)
+		sid := msg.GetSessionID()
+		cid := msg.GetClientID()
+		if n.clientID == "" && n.sessionID == "" {
+			n.sessionID = sid
+			n.clientID = cid
+		} else if cid != n.clientID || sid != n.sessionID {
+			return fmt.Errorf("got different session or client id from (%s:%s) to (%s:%s)", n.sessionID, n.clientID, sid, cid)
+		}
+
+		s := session.GetSession(sid)
 		if s == nil {
-			logger.Info("No such session: %s", sessionID)
-			return fmt.Errorf("failed to get session info for %s", sessionID)
+			logger.Info("No such session: %s", sid)
+			return fmt.Errorf("failed to get session info for %s", sid)
 		}
 
 		switch msg.GetType() {
 		case pb.Request_SENDSIGNAL:
-			if err := s.HandleSignal(msg.GetClientID(), msg.GetSignal()); err != nil {
+			if err := s.HandleSignal(n.clientID, msg.GetSignal()); err != nil {
 				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
 				return fmt.Errorf("failed to send signal: %w", err)
 			}
 		case pb.Request_ACTION:
-			if err := s.HandleAction(msg.GetClientID(), msg.GetAct()); err != nil {
+			if err := s.HandleAction(n.clientID, msg.GetAct()); err != nil {
 				logger.Error("Failed to handle action %v: %+v", msg.GetAct(), err)
 				return fmt.Errorf("failed to handle action: %w", err)
 			}
