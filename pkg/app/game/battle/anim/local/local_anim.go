@@ -8,7 +8,7 @@ var (
 
 func AnimMgrProcess() error {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	return animInst.Process()
@@ -16,7 +16,7 @@ func AnimMgrProcess() error {
 
 func AnimMgrDraw() {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	animInst.MgrDraw()
@@ -24,7 +24,7 @@ func AnimMgrDraw() {
 
 func New(a anim.Anim) string {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	return animInst.New(a)
@@ -32,7 +32,7 @@ func New(a anim.Anim) string {
 
 func IsProcessing(animID string) bool {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	return animInst.IsProcessing(animID)
@@ -40,7 +40,7 @@ func IsProcessing(animID string) bool {
 
 func Cleanup() {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	animInst.Cleanup()
@@ -48,7 +48,7 @@ func Cleanup() {
 
 func Delete(animID string) {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	animInst.Delete(animID)
@@ -56,7 +56,7 @@ func Delete(animID string) {
 
 func GetAll() []anim.Param {
 	if animInst == nil {
-		animInst = anim.New()
+		animInst = anim.NewManager()
 	}
 
 	return animInst.GetAll()

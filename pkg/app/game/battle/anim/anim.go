@@ -33,7 +33,7 @@ type AnimManager struct {
 	sortedAnimIDs []string
 }
 
-func New() *AnimManager {
+func NewManager() *AnimManager {
 	return &AnimManager{
 		anims: make(map[string]Anim),
 	}

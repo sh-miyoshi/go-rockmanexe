@@ -12,7 +12,7 @@ var (
 
 func NewManager(clientIDs [2]string) string {
 	id := uuid.New().String()
-	managers[id] = anim.New()
+	managers[id] = anim.NewManager()
 	for i := 0; i < len(clientIDs); i++ {
 		clientMgrMap[clientIDs[i]] = id
 	}
