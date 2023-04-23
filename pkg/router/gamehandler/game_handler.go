@@ -49,8 +49,16 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 			g.info[1].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
 		}
 	}
-	logger.Info("Successfully initalized game handler")
+	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil
+}
+
+func (g *GameHandler) Cleanup() {
+	for clientID, obj := range g.objects {
+		damage.RemoveForClient(clientID)
+		queue.Delete(obj.actionQueueID)
+	}
+	// TODO: remove data from anim, objanim
 }
 
 func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
@@ -148,6 +156,7 @@ func (g *GameHandler) updateGameInfo() {
 			info.Unmarshal(obj.ExtraInfo)
 
 			if info.OwnerClientID == g.info[i].ClientID {
+				logger.Debug("g.objects: %+v", g.objects)
 				// 自分のObject
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,

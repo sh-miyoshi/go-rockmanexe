@@ -21,3 +21,7 @@ func Pop(id string) *pb.Request_Action {
 	allActionQueues[id] = acts[1:]
 	return res
 }
+
+func Delete(id string) {
+	delete(allActionQueues, id)
+}

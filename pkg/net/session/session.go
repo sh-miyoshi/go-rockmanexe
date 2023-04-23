@@ -23,6 +23,7 @@ type GameLogic interface {
 	GetInfo(clientID string) []byte
 	UpdateGameStatus()
 	IsGameEnd() bool
+	Cleanup()
 }
 
 type sessionError struct {
@@ -129,6 +130,7 @@ MAIN_LOOP:
 			// Game End
 			if s.gameHandler.IsGameEnd() {
 				s.publishStateToClient(pb.Response_GAMEEND)
+				s.gameHandler.Cleanup()
 				s.exitErr = &sessionError{}
 				return
 			}

@@ -73,6 +73,14 @@ func Remove(id string) {
 	delete(damages, id)
 }
 
+func RemoveForClient(clientID string) {
+	for id, d := range damages {
+		if d.OwnerClientID == clientID {
+			delete(damages, id)
+		}
+	}
+}
+
 func RemoveAll() {
 	damages = make(map[string]*Damage)
 }
