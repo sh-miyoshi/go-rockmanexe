@@ -40,3 +40,6 @@ jobs:
       - name: Client Test
         working-directory: ./test/router/client_test
         run: go run main.go
+      - name: Connection Test
+        working-directory: ./test/router/conn_test
+        run: go run main.go

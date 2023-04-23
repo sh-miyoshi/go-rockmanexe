@@ -16,7 +16,6 @@
   - 自キャラ以外のHP
 - GameEnd時のsessionの状態
 - インビジ処理
-- 再試合
 - Playerが表示されるタイミングが遅い
   - チップの選択時に表示されていてほしい
 - ShockWave時にPlayer ObjectをPickにする
