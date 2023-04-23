@@ -54,7 +54,7 @@ func AnimDelete(animID string) {
 	animInst.Delete(animID)
 }
 
-func GetAll() []anim.Param {
+func AnimGetAll() []anim.Param {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
