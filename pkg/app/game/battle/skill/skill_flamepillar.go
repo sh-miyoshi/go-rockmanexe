@@ -6,6 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -203,7 +204,7 @@ func (p *flamePillarManager) GetParam() anim.Param {
 }
 
 func (p *flamePillarManager) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }
 
 func (p *flamePillar) Draw() {

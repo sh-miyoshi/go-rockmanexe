@@ -288,6 +288,6 @@ func (p *tmpskill) GetParam() anim.Param {
 }
 
 func (p *tmpskill) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }
 */

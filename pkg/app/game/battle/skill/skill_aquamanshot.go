@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -56,7 +57,7 @@ func (p *aquamanShot) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEWaterLanding)
-		anim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
+		localanim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -67,7 +68,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			DamageType:    damage.TypeWater,
 		})
 		target := common.Point{X: p.target.X - 1, Y: p.target.Y}
-		anim.New(effect.Get(effect.TypeWaterBomb, target, 0))
+		localanim.New(effect.Get(effect.TypeWaterBomb, target, 0))
 		damage.New(damage.Damage{
 			Pos:           target,
 			Power:         int(p.Arg.Power),

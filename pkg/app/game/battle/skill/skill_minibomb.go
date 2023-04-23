@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -71,7 +72,7 @@ func (p *miniBomb) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEExplode)
-		anim.New(effect.Get(effect.TypeExplode, p.target, 0))
+		localanim.New(effect.Get(effect.TypeExplode, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -95,6 +96,6 @@ func (p *miniBomb) GetParam() anim.Param {
 
 func (p *miniBomb) StopByOwner() {
 	if p.count < 5 {
-		anim.Delete(p.ID)
+		localanim.Delete(p.ID)
 	}
 }

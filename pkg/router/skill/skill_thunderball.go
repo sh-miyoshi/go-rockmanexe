@@ -144,7 +144,7 @@ func (p *thunderBall) GetParam() anim.Param {
 }
 
 func (p *thunderBall) StopByOwner() {
-	anim.Delete(p.ID)
+	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *thunderBall) GetEndCount() int {

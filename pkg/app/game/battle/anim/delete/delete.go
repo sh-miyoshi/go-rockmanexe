@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -23,7 +24,7 @@ func New(image int, pos common.Point, isPlayer bool) {
 		sound.On(sound.SEEnemyDeleted)
 	}
 
-	anim.New(&deleteAction{
+	localanim.New(&deleteAction{
 		id:    uuid.New().String(),
 		image: image,
 		pos:   pos,

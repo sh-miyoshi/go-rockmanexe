@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -78,7 +79,7 @@ func (e *enemyMetall) Process() (bool, error) {
 			img = &e.atk.images[e.atk.GetImageNo()]
 		}
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
@@ -97,7 +98,7 @@ func (e *enemyMetall) Process() (bool, error) {
 
 	if e.atkID != "" {
 		// Anim end
-		if !anim.IsProcessing(e.atkID) {
+		if !localanim.IsProcessing(e.atkID) {
 			metallActQueue = metallActQueue[1:]
 			metallActQueue = append(metallActQueue, e.pm.ObjectID)
 
@@ -125,7 +126,7 @@ func (e *enemyMetall) Process() (bool, error) {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = anim.New(&e.atk)
+			e.atkID = localanim.New(&e.atk)
 			e.moveFailedCount = 0
 		} else {
 			// Move
@@ -198,7 +199,7 @@ func (a *metallAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		anim.New(skill.Get(skill.SkillShockWave, skill.Argument{
+		localanim.New(skill.Get(skill.SkillShockWave, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

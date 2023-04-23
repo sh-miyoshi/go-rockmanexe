@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
@@ -183,7 +184,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 
 		GameInfo: p.gameInfo,
 	})
-	anim.New(s)
+	routeranim.New(chipInfo.ChipUserClientID, s)
 
 	if c.PlayerAct != -1 {
 		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())

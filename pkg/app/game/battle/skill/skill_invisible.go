@@ -2,6 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
@@ -44,5 +45,5 @@ func (p *invisible) GetParam() anim.Param {
 }
 
 func (p *invisible) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }

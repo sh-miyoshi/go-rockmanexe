@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -90,7 +91,7 @@ func (p *heatShot) Process() (bool, error) {
 				}
 
 				for _, t := range targets {
-					anim.New(effect.Get(effect.TypeHeatHit, t, 0))
+					localanim.New(effect.Get(effect.TypeHeatHit, t, 0))
 					damage.New(damage.Damage{
 						Pos:           t,
 						Power:         int(p.Arg.Power),
@@ -128,6 +129,6 @@ func (p *heatShot) GetParam() anim.Param {
 
 func (p *heatShot) StopByOwner() {
 	if p.count < heatShotAtkDelay {
-		anim.Delete(p.ID)
+		localanim.Delete(p.ID)
 	}
 }

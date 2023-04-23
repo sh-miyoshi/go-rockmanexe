@@ -101,7 +101,7 @@ func (p *vulcan) GetParam() anim.Param {
 }
 
 func (p *vulcan) StopByOwner() {
-	anim.Delete(p.ID)
+	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *vulcan) GetEndCount() int {

@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -82,7 +83,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -96,11 +97,11 @@ func (e *enemyVolgear) Process() (bool, error) {
 		if e.atkID == volgearAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
 			e.atk.Init()
-			e.atkID = anim.New(&e.atk)
+			e.atkID = localanim.New(&e.atk)
 		}
 
 		// Anim end
-		if !anim.IsProcessing(e.atkID) {
+		if !localanim.IsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = volgearInitWait
 		}
@@ -229,14 +230,14 @@ func (a *volgearAtk) Process() (bool, error) {
 	}
 
 	if a.atkID != "" {
-		if !anim.IsProcessing(a.atkID) {
+		if !localanim.IsProcessing(a.atkID) {
 			a.endCount = delayVolgearAtk * 3
 			return false, nil
 		}
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = anim.New(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+		a.atkID = localanim.New(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

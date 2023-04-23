@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -106,7 +107,7 @@ func (s *Supporter) Process() (bool, error) {
 			Power:      c.Power,
 			TargetType: target,
 		})
-		s.act.skillID = anim.New(s.act.skillInst)
+		s.act.skillID = localanim.New(s.act.skillInst)
 		s.setAction(60, supporterStatusMove)
 	case supporterStatusShot:
 		s.act.ShotPower = s.ShotPower
@@ -136,7 +137,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		} else {
 			s.HP = uint(hp)
 		}
-		anim.New(effect.Get(dm.HitEffectType, s.Pos, 5))
+		localanim.New(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
@@ -161,7 +162,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if anim.IsProcessing(s.act.skillID) {
+		if localanim.IsProcessing(s.act.skillID) {
 			s.act.skillInst.StopByOwner()
 		}
 		s.act.skillID = ""

@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -75,10 +76,10 @@ func (p *vulcan) Process() (bool, error) {
 						BigDamage:     lastAtk,
 						DamageType:    damage.TypeNone,
 					})
-					anim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
+					localanim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
-						anim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
+						localanim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
 						damage.New(damage.Damage{
 							Pos:           target,
 							Power:         int(p.Arg.Power),
@@ -113,5 +114,5 @@ func (p *vulcan) GetParam() anim.Param {
 }
 
 func (p *vulcan) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }

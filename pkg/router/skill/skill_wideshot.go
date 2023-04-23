@@ -114,7 +114,7 @@ func (p *wideShot) GetParam() anim.Param {
 }
 
 func (p *wideShot) StopByOwner() {
-	anim.Delete(p.ID)
+	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *wideShot) GetEndCount() int {

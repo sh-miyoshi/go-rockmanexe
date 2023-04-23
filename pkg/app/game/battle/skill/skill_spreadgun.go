@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -86,7 +87,7 @@ func (p *spreadGun) Process() (bool, error) {
 							continue
 						}
 						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-							anim.New(&spreadHit{
+							localanim.New(&spreadHit{
 								Arg: p.Arg,
 								pos: common.Point{X: x + sx, Y: pos.Y + sy},
 							})
@@ -121,7 +122,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 func (p *spreadGun) StopByOwner() {
 	if p.count < 5 {
-		anim.Delete(p.ID)
+		localanim.Delete(p.ID)
 	}
 }
 
@@ -131,7 +132,7 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		anim.New(effect.Get(effect.TypeSpreadHit, p.pos, 5))
+		localanim.New(effect.Get(effect.TypeSpreadHit, p.pos, 5))
 		damage.New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
@@ -154,5 +155,5 @@ func (p *spreadHit) GetParam() anim.Param {
 }
 
 func (p *spreadHit) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }

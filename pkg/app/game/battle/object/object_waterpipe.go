@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -127,7 +128,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&target != 0 {
 		o.pm.HP--
-		anim.New(effect.Get(effect.TypeBlock, o.pm.Pos, 5))
+		localanim.New(effect.Get(effect.TypeBlock, o.pm.Pos, 5))
 	}
 
 	return false

@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -95,7 +96,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -238,7 +239,7 @@ func (a *boomerAtk) Init() {
 
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
-		a.atkID = anim.New(skill.Get(
+		a.atkID = localanim.New(skill.Get(
 			skill.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
@@ -250,5 +251,5 @@ func (a *boomerAtk) Process() bool {
 
 	a.count++
 
-	return !anim.IsProcessing(a.atkID)
+	return !localanim.IsProcessing(a.atkID)
 }

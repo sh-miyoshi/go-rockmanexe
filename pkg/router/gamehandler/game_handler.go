@@ -3,7 +3,6 @@ package gamehandler
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -12,7 +11,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
-	gameanim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
@@ -28,6 +27,7 @@ type GameHandler struct {
 	info      [2]gameinfo.GameInfo
 	objects   map[string]*gameObject // Key: clientID, Value: object情報
 	gameCount int
+	animMgrID string
 }
 
 func NewHandler() session.GameLogic {
@@ -49,6 +49,8 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 			g.info[1].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
 		}
 	}
+	g.animMgrID = routeranim.NewManager(clientIDs)
+
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil
 }
@@ -110,7 +112,7 @@ func (g *GameHandler) GetInfo(clientID string) []byte {
 }
 
 func (g *GameHandler) UpdateGameStatus() {
-	if err := anim.MgrProcess(); err != nil {
+	if err := routeranim.MgrProcess(g.animMgrID); err != nil {
 		logger.Error("Failed to manage animation: %+v", err)
 		// TODO: 処理を終了する
 	}
@@ -183,9 +185,9 @@ func (g *GameHandler) updateGameInfo() {
 	}
 
 	anims := [len(g.info)][]gameinfo.Anim{}
-	for _, a := range anim.GetAll() {
+	for _, a := range routeranim.GetAll(g.animMgrID) {
 		for i := 0; i < len(g.info); i++ {
-			var info gameanim.NetInfo
+			var info routeranim.NetInfo
 			info.Unmarshal(a.ExtraInfo)
 
 			pos := a.Pos

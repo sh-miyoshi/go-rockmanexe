@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -152,7 +153,7 @@ func (p *skillAreaSteal) GetParam() anim.Param {
 }
 
 func (p *skillAreaSteal) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.Delete(p.ID)
 }
 
 func (p *skillAreaSteal) setState(next int) {

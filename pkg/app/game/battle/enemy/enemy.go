@@ -5,7 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -190,7 +190,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			anim.New(effect.Get(effect.TypeExclamation, pm.Pos, 0))
+			localanim.New(effect.Get(effect.TypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power
@@ -206,7 +206,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 			}
 		}
 
-		anim.New(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		localanim.New(effect.Get(dm.HitEffectType, pm.Pos, 5))
 		return true
 	}
 	return false

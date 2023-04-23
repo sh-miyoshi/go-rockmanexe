@@ -71,7 +71,7 @@ func (p *spreadGun) Process() (bool, error) {
 								continue
 							}
 							if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-								anim.New(&spreadHit{
+								routeranim.New(p.Arg.OwnerClientID, &spreadHit{
 									Arg: p.Arg,
 									pos: common.Point{X: x + sx, Y: pos.Y + sy},
 								})
@@ -112,7 +112,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 func (p *spreadGun) StopByOwner() {
 	if p.count < 5 {
-		anim.Delete(p.ID)
+		routeranim.Delete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 

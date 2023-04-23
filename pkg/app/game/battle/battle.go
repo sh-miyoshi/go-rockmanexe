@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
@@ -117,7 +117,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 // End ...
 func End() {
 	field.ResetSet4x4Area()
-	anim.Cleanup()
+	localanim.Cleanup()
 	objanim.Cleanup()
 	damage.RemoveAll()
 	field.End()
@@ -250,7 +250,7 @@ func Process() error {
 
 	if isRunAnim {
 		// TODO(blackout中はエフェクトもとめておく？)
-		if err := anim.MgrProcess(); err != nil {
+		if err := localanim.AnimMgrProcess(); err != nil {
 			return fmt.Errorf("failed to handle animation: %w", err)
 		}
 	}
@@ -263,7 +263,7 @@ func Process() error {
 func Draw() {
 	field.Draw()
 	objanim.MgrDraw()
-	anim.MgrDraw()
+	localanim.AnimMgrDraw()
 
 	drawEnemyNames()
 	field.DrawBlackout()

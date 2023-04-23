@@ -114,7 +114,7 @@ func (p *cannon) GetParam() anim.Param {
 }
 
 func (p *cannon) StopByOwner() {
-	anim.Delete(p.ID)
+	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *cannon) GetEndCount() int {
