@@ -2,10 +2,10 @@ package player
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg//netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 )
 
 type Act interface {
