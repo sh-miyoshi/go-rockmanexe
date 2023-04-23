@@ -57,7 +57,7 @@ func (p *aquamanShot) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEWaterLanding)
-		localanim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
+		localanim.AnimNew(effect.Get(effect.TypeWaterBomb, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -68,7 +68,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			DamageType:    damage.TypeWater,
 		})
 		target := common.Point{X: p.target.X - 1, Y: p.target.Y}
-		localanim.New(effect.Get(effect.TypeWaterBomb, target, 0))
+		localanim.AnimNew(effect.Get(effect.TypeWaterBomb, target, 0))
 		damage.New(damage.Damage{
 			Pos:           target,
 			Power:         int(p.Arg.Power),

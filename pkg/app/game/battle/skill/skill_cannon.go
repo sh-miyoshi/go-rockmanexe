@@ -115,5 +115,5 @@ func (p *cannon) GetParam() anim.Param {
 }
 
 func (p *cannon) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

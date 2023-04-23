@@ -72,5 +72,5 @@ func (p *crack) GetParam() anim.Param {
 }
 
 func (p *crack) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

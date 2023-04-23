@@ -96,7 +96,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -239,7 +239,7 @@ func (a *boomerAtk) Init() {
 
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
-		a.atkID = localanim.New(skill.Get(
+		a.atkID = localanim.AnimNew(skill.Get(
 			skill.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
@@ -251,5 +251,5 @@ func (a *boomerAtk) Process() bool {
 
 	a.count++
 
-	return !localanim.IsProcessing(a.atkID)
+	return !localanim.AnimIsProcessing(a.atkID)
 }

@@ -98,5 +98,5 @@ func (p *sword) GetParam() anim.Param {
 }
 
 func (p *sword) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

@@ -91,7 +91,7 @@ func (p *heatShot) Process() (bool, error) {
 				}
 
 				for _, t := range targets {
-					localanim.New(effect.Get(effect.TypeHeatHit, t, 0))
+					localanim.AnimNew(effect.Get(effect.TypeHeatHit, t, 0))
 					damage.New(damage.Damage{
 						Pos:           t,
 						Power:         int(p.Arg.Power),
@@ -129,6 +129,6 @@ func (p *heatShot) GetParam() anim.Param {
 
 func (p *heatShot) StopByOwner() {
 	if p.count < heatShotAtkDelay {
-		localanim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

@@ -111,7 +111,7 @@ func (e *enemyLark) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -218,7 +218,7 @@ func (a *larkAtk) SetAttack() {
 
 func (a *larkAtk) Process() {
 	if a.count == 1*delayLarkAtk {
-		localanim.New(skill.Get(
+		localanim.AnimNew(skill.Get(
 			skill.SkillWideShot,
 			skill.Argument{
 				OwnerID:    a.ownerID,

@@ -413,7 +413,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 				Power:      c.Power,
 				TargetType: target,
 			})
-			p.act.skillID = localanim.New(p.act.skillInst)
+			p.act.skillID = localanim.AnimNew(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -460,7 +460,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		} else {
 			p.HP = uint(hp)
 		}
-		localanim.New(effect.Get(dm.HitEffectType, p.Pos, 5))
+		localanim.AnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
@@ -485,7 +485,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(sound.SEDamaged)
 
 		// Stop current animation
-		if localanim.IsProcessing(p.act.skillID) {
+		if localanim.AnimIsProcessing(p.act.skillID) {
 			p.act.skillInst.StopByOwner()
 		}
 		p.act.skillID = ""

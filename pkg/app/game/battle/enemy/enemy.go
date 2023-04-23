@@ -190,7 +190,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			localanim.New(effect.Get(effect.TypeExclamation, pm.Pos, 0))
+			localanim.AnimNew(effect.Get(effect.TypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power
@@ -206,7 +206,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 			}
 		}
 
-		localanim.New(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		localanim.AnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
 		return true
 	}
 	return false

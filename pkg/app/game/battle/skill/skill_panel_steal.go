@@ -141,7 +141,7 @@ func (p *skillPanelSteal) GetParam() anim.Param {
 }
 
 func (p *skillPanelSteal) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 
 func (p *skillPanelSteal) setState(next int) {

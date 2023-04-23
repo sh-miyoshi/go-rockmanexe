@@ -124,6 +124,6 @@ func (p *shockWave) GetParam() anim.Param {
 
 func (p *shockWave) StopByOwner() {
 	if p.count <= p.InitWait {
-		localanim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

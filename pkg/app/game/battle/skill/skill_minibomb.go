@@ -72,7 +72,7 @@ func (p *miniBomb) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEExplode)
-		localanim.New(effect.Get(effect.TypeExplode, p.target, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -96,6 +96,6 @@ func (p *miniBomb) GetParam() anim.Param {
 
 func (p *miniBomb) StopByOwner() {
 	if p.count < 5 {
-		localanim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

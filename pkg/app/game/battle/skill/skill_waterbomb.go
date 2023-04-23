@@ -83,7 +83,7 @@ func (p *waterBomb) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEWaterLanding)
-		localanim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
+		localanim.AnimNew(effect.Get(effect.TypeWaterBomb, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -108,6 +108,6 @@ func (p *waterBomb) GetParam() anim.Param {
 
 func (p *waterBomb) StopByOwner() {
 	if p.count < 5 {
-		localanim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

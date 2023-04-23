@@ -39,7 +39,7 @@ func (e *enemyTarget) End() {
 func (e *enemyTarget) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		deleteanim.New(e.image, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}

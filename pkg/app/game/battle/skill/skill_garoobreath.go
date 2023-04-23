@@ -106,5 +106,5 @@ func (p *garooBreath) GetParam() anim.Param {
 }
 
 func (p *garooBreath) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

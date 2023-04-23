@@ -22,7 +22,7 @@ func AnimMgrDraw() {
 	animInst.MgrDraw()
 }
 
-func New(a anim.Anim) string {
+func AnimNew(a anim.Anim) string {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
@@ -30,7 +30,7 @@ func New(a anim.Anim) string {
 	return animInst.New(a)
 }
 
-func IsProcessing(animID string) bool {
+func AnimIsProcessing(animID string) bool {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
@@ -38,7 +38,7 @@ func IsProcessing(animID string) bool {
 	return animInst.IsProcessing(animID)
 }
 
-func Cleanup() {
+func AnimCleanup() {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
@@ -46,7 +46,7 @@ func Cleanup() {
 	animInst.Cleanup()
 }
 
-func Delete(animID string) {
+func AnimDelete(animID string) {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}

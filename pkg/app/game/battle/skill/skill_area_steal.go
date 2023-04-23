@@ -153,7 +153,7 @@ func (p *skillAreaSteal) GetParam() anim.Param {
 }
 
 func (p *skillAreaSteal) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 
 func (p *skillAreaSteal) setState(next int) {

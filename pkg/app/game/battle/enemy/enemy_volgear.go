@@ -83,7 +83,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -97,11 +97,11 @@ func (e *enemyVolgear) Process() (bool, error) {
 		if e.atkID == volgearAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
 			e.atk.Init()
-			e.atkID = localanim.New(&e.atk)
+			e.atkID = localanim.AnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !localanim.IsProcessing(e.atkID) {
+		if !localanim.AnimIsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = volgearInitWait
 		}
@@ -230,14 +230,14 @@ func (a *volgearAtk) Process() (bool, error) {
 	}
 
 	if a.atkID != "" {
-		if !localanim.IsProcessing(a.atkID) {
+		if !localanim.AnimIsProcessing(a.atkID) {
 			a.endCount = delayVolgearAtk * 3
 			return false, nil
 		}
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = localanim.New(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+		a.atkID = localanim.AnimNew(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

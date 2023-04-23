@@ -160,6 +160,6 @@ func (p *wideShot) GetParam() anim.Param {
 
 func (p *wideShot) StopByOwner() {
 	if p.state != wideShotStateMove {
-		localanim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

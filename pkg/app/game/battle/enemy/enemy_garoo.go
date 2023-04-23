@@ -84,7 +84,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -97,11 +97,11 @@ func (e *enemyGaroo) Process() (bool, error) {
 	if e.atkID != "" {
 		if e.atkID == garooAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = localanim.New(&e.atk)
+			e.atkID = localanim.AnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !localanim.IsProcessing(e.atkID) {
+		if !localanim.AnimIsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = garooInitWait
 		}
@@ -233,7 +233,7 @@ func (a *garooAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayGarooAtk*4 {
-		localanim.New(skill.Get(skill.SkillGarooBreath, skill.Argument{
+		localanim.AnimNew(skill.Get(skill.SkillGarooBreath, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

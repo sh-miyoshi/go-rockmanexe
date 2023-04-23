@@ -204,7 +204,7 @@ func (p *flamePillarManager) GetParam() anim.Param {
 }
 
 func (p *flamePillarManager) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 
 func (p *flamePillar) Draw() {

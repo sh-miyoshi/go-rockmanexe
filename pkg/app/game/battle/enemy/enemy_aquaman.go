@@ -110,7 +110,7 @@ func (e *enemyAquaman) End() {
 	}
 
 	for _, id := range e.waterPipeObjIDs {
-		localanim.Delete(id)
+		localanim.AnimDelete(id)
 	}
 	e.waterPipeObjIDs = []string{}
 }
@@ -120,7 +120,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -213,14 +213,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 
 		if e.count == 0 {
-			e.actID = localanim.New(skill.Get(skill.SkillAquamanShot, skill.Argument{
+			e.actID = localanim.AnimNew(skill.Get(skill.SkillAquamanShot, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,
 			}))
 		}
 
-		if !localanim.IsProcessing(e.actID) {
+		if !localanim.AnimIsProcessing(e.actID) {
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
 			e.nextState = aquamanActTypeMove
@@ -238,7 +238,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeBomb:
 		if e.count == 3*aquamanDelays[aquamanActTypeBomb] {
 			// ボム登録
-			localanim.New(skill.Get(skill.SkillWaterBomb, skill.Argument{
+			localanim.AnimNew(skill.Get(skill.SkillWaterBomb, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,

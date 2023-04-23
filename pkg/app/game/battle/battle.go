@@ -117,7 +117,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 // End ...
 func End() {
 	field.ResetSet4x4Area()
-	localanim.Cleanup()
+	localanim.AnimCleanup()
 	objanim.Cleanup()
 	damage.RemoveAll()
 	field.End()
