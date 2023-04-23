@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -31,7 +30,7 @@ type shockWave struct {
 }
 
 func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	res := &shockWave{
 		ID:     objID,
 		Arg:    arg,
@@ -68,7 +67,7 @@ func (p *shockWave) Draw() {
 	if p.ShowPick {
 		n = (p.count / delayPick)
 		if n < len(imgPick) {
-			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			view := battlecommon.ViewPos(pos)
 			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], true)
 		}

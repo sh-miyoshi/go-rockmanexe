@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -31,7 +32,7 @@ type thunderBall struct {
 }
 
 func newThunderBall(objID string, arg Argument) *thunderBall {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	x := pos.X + 1
 	if arg.TargetType == damage.TargetPlayer {
 		x = pos.X - 1
@@ -118,7 +119,7 @@ func (p *thunderBall) Process() (bool, error) {
 			objType = objanim.ObjTypeEnemy
 		}
 
-		objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+		objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
 			if p.Arg.TargetType == damage.TargetPlayer {

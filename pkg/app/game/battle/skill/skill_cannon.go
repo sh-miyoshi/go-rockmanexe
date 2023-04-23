@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -43,7 +42,7 @@ func newCannon(objID string, cannonType int, arg Argument) *cannon {
 }
 
 func (p *cannon) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delayCannonBody
@@ -66,7 +65,7 @@ func (p *cannon) Process() (bool, error) {
 
 	if p.count == 20 {
 		sound.On(sound.SECannon)
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			Pos:           pos,
 			Power:         int(p.Arg.Power),

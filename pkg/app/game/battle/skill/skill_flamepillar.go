@@ -65,7 +65,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 	case flamePillarTypeRandom:
 		common.SetError("TODO: not implemented yet")
 	case flamePillarTypeTracking:
-		pos := objanim.GetObjPos(arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 		if res.isPlayer {
 			pos.X++
 		} else {
@@ -78,7 +78,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			point: pos,
 		})
 	case flamePillarTypeLine:
-		posX := objanim.GetObjPos(arg.OwnerID).X
+		posX := localanim.ObjAnimGetObjPos(arg.OwnerID).X
 		if res.isPlayer {
 			posX += 2
 		} else {
@@ -109,7 +109,7 @@ func (p *flamePillarManager) Draw() {
 				imageNo = len(imgFlameLineBody) - 1
 			}
 
-			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			view := battlecommon.ViewPos(pos)
 
 			// Show body
@@ -151,7 +151,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 			if p.Arg.TargetType == damage.TargetEnemy {
 				objType = objanim.ObjTypeEnemy
 			}
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 			if len(objs) > 0 {
 				sort.Slice(objs, func(i, j int) bool {
 					return objs[i].Pos.X < objs[j].Pos.X

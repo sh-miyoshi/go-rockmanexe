@@ -184,7 +184,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 
 		GameInfo: p.gameInfo,
 	})
-	routeranim.New(chipInfo.ChipUserClientID, s)
+	routeranim.AnimNew(chipInfo.ChipUserClientID, s)
 
 	if c.PlayerAct != -1 {
 		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())

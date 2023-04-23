@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -68,7 +67,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	if err != nil {
 		return fmt.Errorf("battle player init failed: %w", err)
 	}
-	objanim.New(playerInst)
+	localanim.ObjAnimNew(playerInst)
 
 	enemyList = []enemy.EnemyParam{}
 	for _, e := range enemies {
@@ -81,7 +80,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 			if err != nil {
 				return fmt.Errorf("battle supporter init failed: %w", err)
 			}
-			objanim.New(supporter)
+			localanim.ObjAnimNew(supporter)
 		} else {
 			enemyList = append(enemyList, e)
 		}
@@ -118,7 +117,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 func End() {
 	field.ResetSet4x4Area()
 	localanim.AnimCleanup()
-	objanim.Cleanup()
+	localanim.ObjAnimCleanup()
 	damage.RemoveAll()
 	field.End()
 	playerInst.End()
@@ -186,7 +185,7 @@ func Process() error {
 		isRunAnim = true
 		gameCount++
 
-		if err := objanim.MgrProcess(true, field.IsBlackout()); err != nil {
+		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
 			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
@@ -224,7 +223,7 @@ func Process() error {
 			}
 		}
 
-		if err := objanim.MgrProcess(false, field.IsBlackout()); err != nil {
+		if err := localanim.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
 			return fmt.Errorf("failed to handle object animation: %w", err)
 		}
 
@@ -262,7 +261,7 @@ func Process() error {
 // Draw ...
 func Draw() {
 	field.Draw()
-	objanim.MgrDraw()
+	localanim.ObjAnimMgrDraw()
 	localanim.AnimMgrDraw()
 
 	drawEnemyNames()

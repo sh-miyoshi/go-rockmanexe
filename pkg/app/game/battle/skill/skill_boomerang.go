@@ -3,7 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -44,7 +44,7 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 	if arg.TargetType == damage.TargetPlayer {
 		// 敵の攻撃
 		sx = battlecommon.FieldNum.X - 2
-		sy = objanim.GetObjPos(arg.OwnerID).Y
+		sy = localanim.ObjAnimGetObjPos(arg.OwnerID).Y
 		if sy == battlecommon.FieldNum.Y-1 {
 			act = boomerangActTypeClockwise
 		}

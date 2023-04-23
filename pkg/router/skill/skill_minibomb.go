@@ -3,7 +3,6 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
@@ -24,7 +23,7 @@ type miniBomb struct {
 }
 
 func newMiniBomb(arg Argument) *miniBomb {
-	pos := objanim.GetObjPos(arg.OwnerObjectID)
+	pos := routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID)
 	return &miniBomb{
 		ID:     arg.AnimObjID,
 		Arg:    arg,
@@ -78,7 +77,7 @@ func (p *miniBomb) GetParam() anim.Param {
 
 func (p *miniBomb) StopByOwner() {
 	if p.count < 5 {
-		routeranim.Delete(p.Arg.OwnerClientID, p.ID)
+		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 

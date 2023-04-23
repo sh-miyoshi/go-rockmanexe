@@ -43,18 +43,25 @@ type Anim interface {
 	MakeInvisible(count int)
 }
 
-var (
-	anims         = map[string]Anim{}
-	sortedAnimIDs = []string{}
-	activeAnimIDs = []string{}
+type AnimManager struct {
+	anims         map[string]Anim
+	sortedAnimIDs []string
+	activeAnimIDs []string
+}
 
+var (
 	FilterAll = Filter{ObjType: ObjTypeAll}
 )
 
-// MgrProcess ...
-func MgrProcess(enableDamage, blackout bool) error {
-	for id, anim := range anims {
-		if blackout && !slice.Contains(activeAnimIDs, id) {
+func NewManager() *AnimManager {
+	return &AnimManager{
+		anims: make(map[string]Anim),
+	}
+}
+
+func (am *AnimManager) Process(enableDamage, blackout bool) error {
+	for id, anim := range am.anims {
+		if blackout && !slice.Contains(am.activeAnimIDs, id) {
 			continue
 		}
 
@@ -64,14 +71,14 @@ func MgrProcess(enableDamage, blackout bool) error {
 		}
 
 		if end {
-			Delete(id)
+			am.Delete(id)
 		}
 	}
 
 	// Damage Process
 	if enableDamage {
 		hit := []string{}
-		for _, anim := range anims {
+		for _, anim := range am.anims {
 			pm := anim.GetParam()
 			if dm := damage.Get(pm.Pos); dm != nil {
 				if anim.DamageProc(dm) {
@@ -90,54 +97,51 @@ func MgrProcess(enableDamage, blackout bool) error {
 		damage.MgrProcess()
 	}
 
-	sortAnim()
+	am.sortAnim()
 
 	return nil
 }
 
-// MgrDraw ...
-func MgrDraw() {
-	for _, id := range sortedAnimIDs {
-		anims[id].Draw()
+func (am *AnimManager) Draw() {
+	for _, id := range am.sortedAnimIDs {
+		am.anims[id].Draw()
 	}
 }
 
-// New ...
-func New(anim Anim) string {
+func (am *AnimManager) New(anim Anim) string {
 	id := anim.GetParam().ObjID
 	if id == "" {
 		id = uuid.New().String()
 	}
 
-	anims[id] = anim
-	sortAnim()
+	am.anims[id] = anim
+	am.sortAnim()
 	return id
 }
 
-// IsProcessing ...
-func IsProcessing(animID string) bool {
-	_, exists := anims[animID]
+func (am *AnimManager) IsProcessing(animID string) bool {
+	_, exists := am.anims[animID]
 	return exists
 }
 
-func Cleanup() {
-	anims = map[string]Anim{}
-	sortedAnimIDs = []string{}
-	activeAnimIDs = []string{}
+func (am *AnimManager) Cleanup() {
+	am.anims = map[string]Anim{}
+	am.sortedAnimIDs = []string{}
+	am.activeAnimIDs = []string{}
 }
 
-func Delete(animID string) {
-	delete(anims, animID)
-	for i, sid := range sortedAnimIDs {
+func (am *AnimManager) Delete(animID string) {
+	delete(am.anims, animID)
+	for i, sid := range am.sortedAnimIDs {
 		if sid == animID {
-			sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
+			am.sortedAnimIDs = append(am.sortedAnimIDs[:i], am.sortedAnimIDs[i+1:]...)
 			break
 		}
 	}
 }
 
-func GetObjPos(objID string) common.Point {
-	for _, anim := range anims {
+func (am *AnimManager) GetObjPos(objID string) common.Point {
+	for _, anim := range am.anims {
 		pm := anim.GetParam()
 		if pm.ObjID == objID {
 			return pm.Pos
@@ -147,10 +151,10 @@ func GetObjPos(objID string) common.Point {
 	return common.Point{X: -1, Y: -1}
 }
 
-func GetObjs(filter Filter) []Param {
+func (am *AnimManager) GetObjs(filter Filter) []Param {
 	res := []Param{}
 
-	for _, anim := range anims {
+	for _, anim := range am.anims {
 		pm := anim.GetParam()
 		if filter.ObjID != "" && pm.ObjID != filter.ObjID {
 			continue
@@ -167,19 +171,19 @@ func GetObjs(filter Filter) []Param {
 	return res
 }
 
-func AddActiveAnim(id string) {
-	activeAnimIDs = append(activeAnimIDs, id)
+func (am *AnimManager) AddActiveAnim(id string) {
+	am.activeAnimIDs = append(am.activeAnimIDs, id)
 }
 
-func MakeInvisible(id string, count int) {
-	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, anims)
-	if _, ok := anims[id]; ok {
-		anims[id].MakeInvisible(count)
+func (am *AnimManager) MakeInvisible(id string, count int) {
+	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, am.anims)
+	if _, ok := am.anims[id]; ok {
+		am.anims[id].MakeInvisible(count)
 	}
 }
 
-func ExistsObject(pos common.Point) string {
-	objs := GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
+func (am *AnimManager) ExistsObject(pos common.Point) string {
+	objs := am.GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
 	if len(objs) > 0 {
 		return objs[0].ObjID
 	}
@@ -187,16 +191,16 @@ func ExistsObject(pos common.Point) string {
 	return ""
 }
 
-func sortAnim() {
+func (am *AnimManager) sortAnim() {
 	type sortParam struct {
 		Index int
 		ID    string
 	}
 	sortAnims := []sortParam{}
-	for id, anim := range anims {
+	for id, anim := range am.anims {
 		pm := anim.GetParam()
 		index := pm.Pos.Y*6 + pm.Pos.X
-		if slice.Contains(activeAnimIDs, id) {
+		if slice.Contains(am.activeAnimIDs, id) {
 			index += 100
 		}
 
@@ -210,8 +214,8 @@ func sortAnim() {
 		return sortAnims[i].Index < sortAnims[j].Index
 	})
 
-	sortedAnimIDs = []string{}
+	am.sortedAnimIDs = []string{}
 	for _, a := range sortAnims {
-		sortedAnimIDs = append(sortedAnimIDs, a.ID)
+		am.sortedAnimIDs = append(am.sortedAnimIDs, a.ID)
 	}
 }

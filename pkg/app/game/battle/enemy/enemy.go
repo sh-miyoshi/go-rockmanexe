@@ -73,7 +73,7 @@ func Init(playerID string, enemyList []EnemyParam) error {
 		e.PlayerID = playerID
 		e.ActNo = i
 		obj := getObject(e.CharID, e)
-		objID := objanim.New(obj)
+		objID := localanim.ObjAnimNew(obj)
 		enemies[objID] = obj
 	}
 
@@ -95,7 +95,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !objanim.IsProcessing(id) {
+		if !localanim.ObjAnimIsProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}

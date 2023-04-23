@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -36,7 +37,7 @@ func newAquaman(objID string, arg Argument) (*aquaman, error) {
 		ID:    objID,
 		Arg:   arg,
 		state: aquamanStateInit,
-		pos:   objanim.GetObjPos(arg.OwnerID),
+		pos:   localanim.ObjAnimGetObjPos(arg.OwnerID),
 	}
 
 	fname := common.ImagePath + "battle/character/アクアマン_stand.png"
@@ -103,14 +104,14 @@ func (p *aquaman) Process() (bool, error) {
 			if err := obj.Init(p.ID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			p.atkID = objanim.New(obj)
-			objanim.AddActiveAnim(p.atkID)
+			p.atkID = localanim.ObjAnimNew(obj)
+			localanim.ObjAnimAddActiveAnim(p.atkID)
 
 			p.setState(aquamanStateAttack)
 			return false, nil
 		}
 	case aquamanStateAttack:
-		if !objanim.IsProcessing(p.atkID) {
+		if !localanim.ObjAnimIsProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
 			p.end()
 			return true, nil

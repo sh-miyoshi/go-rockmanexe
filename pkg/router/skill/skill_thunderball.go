@@ -28,7 +28,7 @@ const (
 )
 
 func newThunderBall(max int, arg Argument) *thunderBall {
-	pos := objanim.GetObjPos(arg.OwnerObjectID)
+	pos := routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID)
 	x := pos.X + 1
 	if arg.TargetType == damage.TargetPlayer {
 		x = pos.X - 1
@@ -98,7 +98,7 @@ func (p *thunderBall) Process() (bool, error) {
 			objType = objanim.ObjTypeEnemy
 		}
 
-		objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+		objs := routeranim.ObjAnimGetObjs(p.Arg.OwnerClientID, objanim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
 			if p.Arg.TargetType == damage.TargetPlayer {
@@ -138,13 +138,13 @@ func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
+		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }
 
 func (p *thunderBall) StopByOwner() {
-	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
+	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *thunderBall) GetEndCount() int {

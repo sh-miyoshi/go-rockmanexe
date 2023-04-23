@@ -149,7 +149,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 		}
 		e.moveNum--
 		if e.moveNum <= 0 {
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			pos := common.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				pos = objs[0].Pos

@@ -121,7 +121,7 @@ func (e *enemyMetall) Process() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		pos := objanim.GetObjPos(e.pm.PlayerID)
+		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
 		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0

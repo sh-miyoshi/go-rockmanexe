@@ -3,7 +3,6 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
@@ -26,7 +25,7 @@ func newShockWave(arg Argument) *shockWave {
 	return &shockWave{
 		ID:  arg.AnimObjID,
 		Arg: arg,
-		pos: objanim.GetObjPos(arg.OwnerObjectID),
+		pos: routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID),
 	}
 }
 

@@ -3,7 +3,6 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
@@ -40,7 +39,7 @@ func (p *vulcan) Process() (bool, error) {
 	if p.count >= delayVulcan*1 {
 		if p.count%(delayVulcan*5) == delayVulcan*1 {
 			// Add damage
-			pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
+			pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
@@ -95,13 +94,13 @@ func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
+		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }
 
 func (p *vulcan) StopByOwner() {
-	routeranim.Delete(p.Arg.OwnerClientID, p.ID)
+	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 }
 
 func (p *vulcan) GetEndCount() int {

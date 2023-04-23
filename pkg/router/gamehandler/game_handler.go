@@ -89,7 +89,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 		IsReverse:     false,
 	}, ginfo, g.objects[clientID].actionQueueID)
 	g.objects[clientID].animObject = plyr
-	objanim.New(g.objects[clientID].animObject)
+	routeranim.ObjAnimNew(clientID, g.objects[clientID].animObject)
 	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
 
 	g.updateGameInfo()
@@ -114,10 +114,6 @@ func (g *GameHandler) GetInfo(clientID string) []byte {
 func (g *GameHandler) UpdateGameStatus() {
 	if err := routeranim.MgrProcess(g.animMgrID); err != nil {
 		logger.Error("Failed to manage animation: %+v", err)
-		// TODO: 処理を終了する
-	}
-	if err := objanim.MgrProcess(true, false); err != nil {
-		logger.Error("Failed to manage object animation: %+v", err)
 		// TODO: 処理を終了する
 	}
 	damage.MgrProcess()
@@ -152,7 +148,7 @@ func (g *GameHandler) updatePanelObject() {
 
 func (g *GameHandler) updateGameInfo() {
 	objects := [len(g.info)][]gameinfo.Object{}
-	for _, obj := range objanim.GetObjs(objanim.FilterAll) {
+	for _, obj := range routeranim.ObjAnimGetObjs(g.info[0].ClientID, objanim.FilterAll) {
 		for i := 0; i < len(g.info); i++ {
 			var info gameobj.NetInfo
 			info.Unmarshal(obj.ExtraInfo)
@@ -185,7 +181,7 @@ func (g *GameHandler) updateGameInfo() {
 	}
 
 	anims := [len(g.info)][]gameinfo.Anim{}
-	for _, a := range routeranim.GetAll(g.animMgrID) {
+	for _, a := range routeranim.AnimGetAll(g.animMgrID) {
 		for i := 0; i < len(g.info); i++ {
 			var info routeranim.NetInfo
 			info.Unmarshal(a.ExtraInfo)

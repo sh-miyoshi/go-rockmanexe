@@ -261,7 +261,7 @@ func newTmpSkill(objID string, arg Argument) *tmpskill {
 }
 
 func (p *tmpskill) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.GetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delay

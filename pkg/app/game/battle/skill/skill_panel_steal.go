@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -78,7 +77,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			// Target位置を実行時の一番最初に設定する
 			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
-					pos := objanim.GetObjPos(p.Arg.OwnerID)
+					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
 					if pn.Type != battlecommon.PanelTypePlayer {
@@ -88,7 +87,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 				}
 			} else {
 				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
-					pos := objanim.GetObjPos(p.Arg.OwnerID)
+					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
 					if pn.Type != battlecommon.PanelTypeEnemy {

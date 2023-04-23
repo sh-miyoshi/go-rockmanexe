@@ -197,7 +197,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeShot:
 		if e.count == 0 {
 			// Move to attack position
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			t := common.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				t = objs[0].Pos
@@ -277,13 +277,13 @@ func (e *enemyAquaman) Process() (bool, error) {
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 			obj = &object.WaterPipe{}
 			pm.Pos.Y = battlecommon.FieldNum.Y - 1
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 		}
 
 		if e.count == 50 {
@@ -376,7 +376,7 @@ func (e *enemyAquaman) getCurrentImagePointer() *int {
 
 func (e *enemyAquaman) pipeExists() bool {
 	for _, id := range e.waterPipeObjIDs {
-		if objanim.IsProcessing(id) {
+		if localanim.ObjAnimIsProcessing(id) {
 			return true
 		}
 	}

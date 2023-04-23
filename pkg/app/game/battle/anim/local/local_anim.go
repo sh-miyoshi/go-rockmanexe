@@ -1,9 +1,14 @@
 package localanim
 
-import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+)
 
 var (
-	animInst *anim.AnimManager
+	animInst    *anim.AnimManager
+	objanimInst *objanim.AnimManager
 )
 
 func AnimMgrProcess() error {
@@ -60,4 +65,92 @@ func AnimGetAll() []anim.Param {
 	}
 
 	return animInst.GetAll()
+}
+
+func ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.Process(enableDamage, blackout)
+}
+
+func ObjAnimMgrDraw() {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.Draw()
+}
+
+func ObjAnimNew(anim objanim.Anim) string {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.New(anim)
+}
+
+func ObjAnimIsProcessing(animID string) bool {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.IsProcessing(animID)
+}
+
+func ObjAnimCleanup() {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.Cleanup()
+}
+
+func ObjAnimDelete(animID string) {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.Delete(animID)
+}
+
+func ObjAnimGetObjPos(objID string) common.Point {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.GetObjPos(objID)
+}
+
+func ObjAnimGetObjs(filter objanim.Filter) []objanim.Param {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.GetObjs(filter)
+}
+
+func ObjAnimAddActiveAnim(id string) {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.AddActiveAnim(id)
+}
+
+func ObjAnimMakeInvisible(id string, count int) {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.MakeInvisible(id, count)
+}
+
+func ObjAnimExistsObject(pos common.Point) string {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.ExistsObject(pos)
 }

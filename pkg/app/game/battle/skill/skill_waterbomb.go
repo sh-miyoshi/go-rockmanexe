@@ -28,14 +28,14 @@ type waterBomb struct {
 }
 
 func newWaterBomb(objID string, arg Argument) *waterBomb {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	t := common.Point{X: pos.X + 3, Y: pos.Y}
 	objType := objanim.ObjTypePlayer
 	if arg.TargetType == damage.TargetEnemy {
 		objType = objanim.ObjTypeEnemy
 	}
 
-	objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+	objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 	if len(objs) > 0 {
 		t = objs[0].Pos
 	}

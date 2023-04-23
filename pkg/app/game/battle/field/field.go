@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -151,7 +152,7 @@ func Update() {
 		}
 	}
 
-	objs := objanim.GetObjs(objanim.FilterAll)
+	objs := localanim.ObjAnimGetObjs(objanim.FilterAll)
 	for _, obj := range objs {
 		panels[obj.Pos.X][obj.Pos.Y].info.ObjectID = obj.ObjID
 		if panels[obj.Pos.X][obj.Pos.Y].info.Status == tmpPanelStatusCrack {
@@ -194,7 +195,7 @@ func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 	}
 
 	// Update objectID to latest
-	panels[pos.X][pos.Y].info.ObjectID = objanim.ExistsObject(pos)
+	panels[pos.X][pos.Y].info.ObjectID = localanim.ObjAnimExistsObject(pos)
 
 	return panels[pos.X][pos.Y].info
 }

@@ -43,7 +43,7 @@ func (p *spreadGun) Draw() {
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], true)
 	}
@@ -51,7 +51,7 @@ func (p *spreadGun) Draw() {
 	// Show atk
 	n = (p.count - 4) / delaySpreadGun
 	if n >= 0 && n < len(imgSpreadGunAtk) {
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], true)
 	}
@@ -61,10 +61,10 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		sound.On(sound.SEGun)
 
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
-			objs := objanim.GetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
 			if len(objs) > 0 {
 				// Hit
 				sound.On(sound.SESpreadHit)

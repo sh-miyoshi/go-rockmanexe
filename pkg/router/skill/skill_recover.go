@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
@@ -32,7 +31,7 @@ func (p *recover) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
+		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 		damage.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
@@ -59,7 +58,7 @@ func (p *recover) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
+		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}

@@ -1,36 +1,28 @@
 package anim
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 )
 
 var (
-	managers     = make(map[string]*anim.AnimManager)
-	clientMgrMap = make(map[string]string) // Key: clientID, Value: managerID
+	animManagers     = make(map[string]*anim.AnimManager)
+	objanimManagers  = make(map[string]*objanim.AnimManager)
+	clientAnimMgrMap = make(map[string]string) // Key: clientID, Value: animManagerID
 )
 
 func NewManager(clientIDs [2]string) string {
 	id := uuid.New().String()
-	managers[id] = anim.NewManager()
+	animManagers[id] = anim.NewManager()
+	objanimManagers[id] = objanim.NewManager()
 	for i := 0; i < len(clientIDs); i++ {
-		clientMgrMap[clientIDs[i]] = id
+		clientAnimMgrMap[clientIDs[i]] = id
 	}
 	return id
-}
-
-func New(clientID string, a anim.Anim) string {
-	mgrID := clientMgrMap[clientID]
-	return managers[mgrID].New(a)
-}
-
-func Delete(clientID string, animID string) {
-	mgrID := clientMgrMap[clientID]
-	managers[mgrID].Delete(animID)
-}
-
-func GetAll(mgrID string) []anim.Param {
-	return managers[mgrID].GetAll()
 }
 
 func MgrProcess(mgrID string) error {
@@ -38,5 +30,42 @@ func MgrProcess(mgrID string) error {
 		return nil
 	}
 
-	return managers[mgrID].Process()
+	if err := animManagers[mgrID].Process(); err != nil {
+		return fmt.Errorf("anim manage process failed: %w", err)
+	}
+
+	if err := objanimManagers[mgrID].Process(true, false); err != nil {
+		return fmt.Errorf("objanim manage process failed: %w", err)
+	}
+
+	return nil
+}
+
+func AnimNew(clientID string, a anim.Anim) string {
+	mgrID := clientAnimMgrMap[clientID]
+	return animManagers[mgrID].New(a)
+}
+
+func AnimDelete(clientID string, animID string) {
+	mgrID := clientAnimMgrMap[clientID]
+	animManagers[mgrID].Delete(animID)
+}
+
+func AnimGetAll(mgrID string) []anim.Param {
+	return animManagers[mgrID].GetAll()
+}
+
+func ObjAnimNew(clientID string, a objanim.Anim) string {
+	mgrID := clientAnimMgrMap[clientID]
+	return objanimManagers[mgrID].New(a)
+}
+
+func ObjAnimGetObjs(clientID string, filter objanim.Filter) []objanim.Param {
+	mgrID := clientAnimMgrMap[clientID]
+	return objanimManagers[mgrID].GetObjs(filter)
+}
+
+func ObjAnimGetObjPos(clientID string, objID string) common.Point {
+	mgrID := clientAnimMgrMap[clientID]
+	return objanimManagers[mgrID].GetObjPos(objID)
 }

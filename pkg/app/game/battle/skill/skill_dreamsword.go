@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -27,7 +26,7 @@ func newDreamSword(objID string, arg Argument) *dreamSword {
 }
 
 func (p *dreamSword) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
@@ -44,7 +43,7 @@ func (p *dreamSword) Process() (bool, error) {
 
 		for x := 1; x <= 2; x++ {
 			for y := -1; y <= 1; y++ {
-				pos := objanim.GetObjPos(p.Arg.OwnerID)
+				pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 				dm := damage.Damage{
 					Power:         int(p.Arg.Power),
 					TTL:           1,

@@ -4,7 +4,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -37,7 +36,7 @@ func newVulcan(objID string, arg Argument) *vulcan {
 }
 
 func (p *vulcan) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	// Show body
@@ -60,7 +59,7 @@ func (p *vulcan) Process() (bool, error) {
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times

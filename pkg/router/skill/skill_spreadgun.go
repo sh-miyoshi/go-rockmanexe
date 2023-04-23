@@ -5,7 +5,6 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -41,7 +40,7 @@ func (p *spreadGun) Draw() {
 
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
-		pos := objanim.GetObjPos(p.Arg.OwnerObjectID)
+		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 		dm := damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
@@ -71,7 +70,7 @@ func (p *spreadGun) Process() (bool, error) {
 								continue
 							}
 							if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-								routeranim.New(p.Arg.OwnerClientID, &spreadHit{
+								routeranim.AnimNew(p.Arg.OwnerClientID, &spreadHit{
 									Arg: p.Arg,
 									pos: common.Point{X: x + sx, Y: pos.Y + sy},
 								})
@@ -104,7 +103,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       objanim.GetObjPos(p.Arg.OwnerObjectID),
+		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}
@@ -112,7 +111,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 func (p *spreadGun) StopByOwner() {
 	if p.count < 5 {
-		routeranim.Delete(p.Arg.OwnerClientID, p.ID)
+		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 
