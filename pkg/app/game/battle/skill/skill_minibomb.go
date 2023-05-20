@@ -71,13 +71,13 @@ func (p *miniBomb) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEExplode)
-		localanim.AnimNew(effect.Get(effect.TypeExplode, p.target, 0))
+		localanim.AnimNew(effect.Get(battlecommon.EffectTypeExplode, p.target, 0))
 		damage.New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: battlecommon.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		})

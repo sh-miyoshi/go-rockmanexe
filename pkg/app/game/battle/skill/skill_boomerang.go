@@ -6,7 +6,6 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -93,7 +92,7 @@ func (p *boomerang) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeSpreadHit,
+			HitEffectType: battlecommon.EffectTypeSpreadHit,
 			ShowHitArea:   false,
 			DamageType:    damage.TypeWood,
 		})

@@ -7,7 +7,6 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -107,7 +106,7 @@ func (p *thunderBall) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: battlecommon.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
 			DamageType:    damage.TypeElec,

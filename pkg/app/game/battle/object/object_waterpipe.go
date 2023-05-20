@@ -128,7 +128,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&target != 0 {
 		o.pm.HP--
-		localanim.AnimNew(effect.Get(effect.TypeBlock, o.pm.Pos, 5))
+		localanim.AnimNew(effect.Get(battlecommon.EffectTypeBlock, o.pm.Pos, 5))
 	}
 
 	return false
@@ -214,7 +214,7 @@ func (a *WaterPipeAtk) Process() {
 			Power:         a.pm.Power,
 			TTL:           6 * delayWaterPipeAttack,
 			TargetType:    target,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: battlecommon.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		}

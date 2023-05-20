@@ -72,7 +72,7 @@ func (p *heatShot) Process() (bool, error) {
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeHeatHit,
+					HitEffectType: battlecommon.EffectTypeHeatHit,
 					DamageType:    damage.TypeFire,
 				})
 
@@ -90,13 +90,13 @@ func (p *heatShot) Process() (bool, error) {
 				}
 
 				for _, t := range targets {
-					localanim.AnimNew(effect.Get(effect.TypeHeatHit, t, 0))
+					localanim.AnimNew(effect.Get(battlecommon.EffectTypeHeatHit, t, 0))
 					damage.New(damage.Damage{
 						Pos:           t,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
-						HitEffectType: effect.TypeNone,
+						HitEffectType: battlecommon.EffectTypeNone,
 						DamageType:    damage.TypeFire,
 					})
 				}
