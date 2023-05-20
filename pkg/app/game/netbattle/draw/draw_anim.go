@@ -20,6 +20,7 @@ type animDraw struct {
 	drawSpreadHit    drawskill.DrawSpreadHit
 	drawSword        drawskill.DrawSword
 	drawVulcan       drawskill.DrawVulcan
+	drawWideShot     drawskill.DrawWideShot
 }
 
 func (d *animDraw) Init() error {
@@ -47,6 +48,9 @@ func (d *animDraw) Init() error {
 	if err := d.drawVulcan.Init(); err != nil {
 		return fmt.Errorf("draw vulcan init failed: %w", err)
 	}
+	if err := d.drawWideShot.Init(); err != nil {
+		return fmt.Errorf("draw wide shot init failed: %w", err)
+	}
 
 	return nil
 }
@@ -60,6 +64,7 @@ func (d *animDraw) End() {
 	d.drawSpreadHit.End()
 	d.drawSword.End()
 	d.drawVulcan.End()
+	d.drawWideShot.End()
 }
 
 func (d *animDraw) Draw() {
@@ -93,6 +98,8 @@ func (d *animDraw) Draw() {
 			d.drawSword.Draw(skill.TypeLongSword, pos, a.ActCount)
 		case anim.TypeVulcan:
 			d.drawVulcan.Draw(pos, a.ActCount)
+		case anim.TypeWideShot:
+			d.drawWideShot.Draw(a.Pos, a.ActCount)
 		default:
 			common.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

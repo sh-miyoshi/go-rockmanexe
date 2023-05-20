@@ -32,6 +32,7 @@ func newWideShot(arg Argument) *wideShot {
 	return &wideShot{
 		ID:  arg.AnimObjID,
 		Arg: arg,
+		pos: routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID),
 	}
 }
 
@@ -40,14 +41,15 @@ func (p *wideShot) Draw() {
 }
 
 func (p *wideShot) Process() (bool, error) {
-	for _, did := range p.damageID {
-		if did != "" {
-			if !damage.Exists(did) && p.count%wideShotNextStepCount != 0 {
-				// attack hit to target
-				return true, nil
-			}
-		}
-	}
+	// TODO
+	// for _, did := range p.damageID {
+	// 	if did != "" {
+	// 		if !damage.Exists(did) && p.count%wideShotNextStepCount != 0 {
+	// 			// attack hit to target
+	// 			return true, nil
+	// 		}
+	// 	}
+	// }
 
 	switch p.state {
 	case wideShotStateBegin:
@@ -101,7 +103,7 @@ func (p *wideShot) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		AnimType:      routeranim.TypeWideShot,
-		ActCount:      p.count,
+		ActCount:      p.state*1000 + p.count,
 	}
 
 	return anim.Param{

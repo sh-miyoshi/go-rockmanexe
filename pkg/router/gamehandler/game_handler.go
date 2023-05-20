@@ -154,7 +154,6 @@ func (g *GameHandler) updateGameInfo() {
 			info.Unmarshal(obj.ExtraInfo)
 
 			if info.OwnerClientID == g.info[i].ClientID {
-				logger.Debug("g.objects: %+v", g.objects)
 				// 自分のObject
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,

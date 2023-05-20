@@ -5,10 +5,8 @@
 - スキル実装
   - thunderball
     - 描画部実装
-  - vulcan
-    - 描画部実装
   - wideshot
-    - 描画部実装
+    - ダメージ時に削除する(現在反転が効いてない)
 - Effect
 - Sound
 - Object
