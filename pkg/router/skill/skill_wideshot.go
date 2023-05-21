@@ -86,7 +86,7 @@ func (p *wideShot) Process() (bool, error) {
 					Power:         int(p.Arg.Power),
 					TTL:           wideShotNextStepCount,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: 0, // TODO: 正しい値をセット
+					HitEffectType: battlecommon.EffectTypeNone,
 					BigDamage:     true,
 					DamageType:    damage.TypeWater,
 				})

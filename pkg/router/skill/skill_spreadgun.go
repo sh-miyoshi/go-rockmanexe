@@ -47,7 +47,7 @@ func (p *spreadGun) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: 0, // TODO: 正しい値をセット
+			HitEffectType: battlecommon.EffectTypeHitBig,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}
@@ -142,7 +142,7 @@ func (p *spreadHit) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: 0, // TODO: 正しい値をセット
+			HitEffectType: battlecommon.EffectTypeNone,
 			DamageType:    damage.TypeNone,
 		})
 

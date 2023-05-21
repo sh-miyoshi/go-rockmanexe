@@ -18,7 +18,8 @@ type Move struct {
 }
 
 type Buster struct {
-	Power int
+	Power     int
+	IsCharged bool
 }
 
 type UseChip struct {

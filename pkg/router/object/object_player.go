@@ -224,13 +224,18 @@ func (a *playerAct) Process() bool {
 				if a.getPanelInfo(pos).ObjectID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					pos.X = battlecommon.FieldNum.X - pos.X - 1
+					eff := battlecommon.EffectTypeHitSmall
+					if buster.IsCharged {
+						eff = battlecommon.EffectTypeHitBig
+					}
+
 					damage.New(damage.Damage{
 						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,
 						TTL:           1,
 						TargetType:    damage.TargetEnemy,
-						HitEffectType: 0, // TODO: 正しくセットする
+						HitEffectType: eff,
 						DamageType:    damage.TypeNone,
 					})
 					return true

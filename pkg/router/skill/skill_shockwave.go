@@ -55,7 +55,7 @@ func (p *shockWave) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: 0, // TODO: 正しい値をセット
+			HitEffectType: battlecommon.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,

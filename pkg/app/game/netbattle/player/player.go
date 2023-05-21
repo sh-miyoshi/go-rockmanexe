@@ -245,7 +245,8 @@ func (p *BattlePlayer) Process() (bool, error) {
 		}
 
 		buster := action.Buster{
-			Power: power,
+			Power:     power,
+			IsCharged: charged,
 		}
 		net.GetInst().SendAction(pb.Request_BUSTER, buster.Marshal())
 		p.chargeCount = 0
