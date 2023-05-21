@@ -60,7 +60,7 @@ func (g *GameHandler) Cleanup() {
 		damage.RemoveForClient(clientID)
 		queue.Delete(obj.actionQueueID)
 	}
-	// TODO: remove data from anim, objanim
+	routeranim.Cleanup(g.animMgrID)
 }
 
 func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {

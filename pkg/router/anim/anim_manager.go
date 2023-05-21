@@ -25,6 +25,13 @@ func NewManager(clientIDs [2]string) string {
 	return id
 }
 
+func Cleanup(mgrID string) {
+	animManagers[mgrID].Cleanup()
+	objanimManagers[mgrID].Cleanup()
+	delete(animManagers, mgrID)
+	delete(objanimManagers, mgrID)
+}
+
 func MgrProcess(mgrID string) error {
 	if mgrID == "" {
 		return nil
