@@ -55,7 +55,7 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 			return fmt.Errorf("invalid message type: %v", msg.GetType())
 		}
 
-		// TODO return current status
+		// TODO_Next return current status
 	}
 }
 

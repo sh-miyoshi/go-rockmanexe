@@ -166,7 +166,7 @@ func (s *Session) End() {
 func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error {
 	switch signal.GetType() {
 	case pb.Request_CHIPSELECT:
-		// TODO(rawDataから選択したchipを取得)
+		// TODO_Next rawDataから選択したchipを取得、検証用データにする
 		for i, c := range s.clients {
 			if c.clientID == clientID {
 				s.clients[i].chipSent = true

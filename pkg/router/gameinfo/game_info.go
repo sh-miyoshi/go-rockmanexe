@@ -72,7 +72,7 @@ func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
 		Type:     p.getPanelType(pn.OwnerClientID),
 		ObjectID: pn.ObjectID,
 
-		// TODO: 適切な値を入れる
+		// TODO_Next: 適切な値を入れる
 		Status:    battlecommon.PanelStatusNormal,
 		HoleCount: 0,
 	}
