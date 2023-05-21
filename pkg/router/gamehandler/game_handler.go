@@ -1,6 +1,8 @@
 package gamehandler
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -63,7 +65,7 @@ func (g *GameHandler) Cleanup() {
 	routeranim.Cleanup(g.animMgrID)
 }
 
-func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
+func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) error {
 	var ginfo *gameinfo.GameInfo
 	for i := 0; i < len(g.info); i++ {
 		if g.info[i].ClientID == clientID {
@@ -72,8 +74,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 	}
 	if ginfo == nil {
 		logger.Error("cannot find game info for client %s", clientID)
-		// TODO: return error to client
-		return
+		return fmt.Errorf("failed to find game info, it maybe called this point before Init())")
 	}
 
 	// Player Objectを作成
@@ -94,6 +95,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) {
 
 	g.updateGameInfo()
 	logger.Info("Successfully add client %s with %+v", clientID, param)
+	return nil
 }
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {

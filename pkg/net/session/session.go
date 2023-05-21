@@ -18,7 +18,7 @@ const (
 
 type GameLogic interface {
 	Init(clientIDs [2]string) error
-	AddPlayerObject(clientID string, param object.InitParam)
+	AddPlayerObject(clientID string, param object.InitParam) error
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
 	UpdateGameStatus()
@@ -185,7 +185,9 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 	case pb.Request_INITPARAMS:
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())
-		s.gameHandler.AddPlayerObject(clientID, obj)
+		if err := s.gameHandler.AddPlayerObject(clientID, obj); err != nil {
+			return fmt.Errorf("failed to add player object: %w", err)
+		}
 	}
 	return nil
 }
