@@ -10,9 +10,7 @@
 - Effect
 - Sound
 - Object
-  - offset
   - 自キャラ以外のHP
-- GameEnd時のsessionの状態
 - インビジ処理
 - Playerが表示されるタイミングが遅い
   - チップの選択時に表示されていてほしい
