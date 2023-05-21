@@ -22,7 +22,6 @@ type Object struct {
 	Pos           common.Point
 	ActCount      int
 	IsReverse     bool
-	// TODO(他にも必要だと思うが都度追加していく)
 }
 
 type Anim struct {
