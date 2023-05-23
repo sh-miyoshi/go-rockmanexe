@@ -17,7 +17,6 @@ const (
 	TypeSword
 	TypeWideSword
 	TypeLongSword
-	TypeThunderBall
 	TypeVulcan
 	TypeWideShot
 
