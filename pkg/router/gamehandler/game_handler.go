@@ -162,6 +162,7 @@ func (g *GameHandler) updateGameInfo() {
 					Pos:           obj.Pos,
 					ActCount:      info.ActCount,
 					IsReverse:     false,
+					IsInvincible:  info.IsInvincible,
 				})
 			} else if _, ok := g.objects[info.OwnerClientID]; ok {
 				// 相手のObjectなのでReverseする
@@ -173,6 +174,7 @@ func (g *GameHandler) updateGameInfo() {
 					Pos:           common.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
 					ActCount:      info.ActCount,
 					IsReverse:     true,
+					IsInvincible:  info.IsInvincible,
 				})
 			}
 		}

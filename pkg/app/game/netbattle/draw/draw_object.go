@@ -103,6 +103,12 @@ func (d *objectDraw) End() {
 func (d *objectDraw) Draw() {
 	ginfo := net.GetInst().GetGameInfo()
 	for _, obj := range ginfo.Objects {
+		if obj.IsInvincible {
+			if obj.ActCount/5%2 != 0 {
+				continue
+			}
+		}
+
 		pos := battlecommon.ViewPos(obj.Pos)
 		ino := obj.ActCount / d.imgDelays[obj.Type]
 		if ino >= len(d.images[obj.Type]) {

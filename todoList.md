@@ -2,11 +2,10 @@
 
 ## ネットワーク対戦のリファクタリング
 
-- インビジ処理
-  - インビジ中の描画
 - Effect
 - Sound
 - ShockWave時にPlayer ObjectをPickにする
+- ダメージ時にノックバックモーション
 
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う

@@ -62,9 +62,6 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 func (p *Player) Process() (bool, error) {
 	if p.invincibleCount > 0 {
 		p.invincibleCount--
-		p.objectInfo.IsInvincible = true
-	} else {
-		p.objectInfo.IsInvincible = false
 	}
 
 	// Action処理中
@@ -160,6 +157,7 @@ func (p *Player) GetParam() objanim.Param {
 	info := NetInfo{
 		ActCount:      p.act.count,
 		OwnerClientID: p.gameInfo.ClientID,
+		IsInvincible:  p.invincibleCount > 0,
 	}
 
 	return objanim.Param{

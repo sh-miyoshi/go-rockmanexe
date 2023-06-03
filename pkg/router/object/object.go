@@ -23,6 +23,7 @@ const (
 type NetInfo struct {
 	ActCount      int
 	OwnerClientID string
+	IsInvincible  bool
 }
 
 func (p *NetInfo) Marshal() []byte {
