@@ -2,17 +2,12 @@
 
 ## ネットワーク対戦のリファクタリング
 
-- スキル実装
-  - wideshot
-    - ダメージ時に削除する(現在反転が効いてない)
 - インビジ処理
   - インビジ中の描画
 - Effect
 - Sound
 - Object
   - 自キャラ以外のHP
-- Playerが表示されるタイミングが遅い
-  - チップの選択時に表示されていてほしい
 - ShockWave時にPlayer ObjectをPickにする
 
 - 後回し
@@ -21,6 +16,7 @@
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
   - Panel Statusを反映
+  - Thunder Ballの実装
 
 ## v0.11でやりたいこと
 

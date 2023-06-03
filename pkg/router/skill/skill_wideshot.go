@@ -41,15 +41,14 @@ func (p *wideShot) Draw() {
 }
 
 func (p *wideShot) Process() (bool, error) {
-	// TODO
-	// for _, did := range p.damageID {
-	// 	if did != "" {
-	// 		if !damage.Exists(did) && p.count%wideShotNextStepCount != 0 {
-	// 			// attack hit to target
-	// 			return true, nil
-	// 		}
-	// 	}
-	// }
+	for _, did := range p.damageID {
+		if did != "" {
+			if !routeranim.DamageManager(p.Arg.OwnerClientID).Exists(did) && p.count%wideShotNextStepCount != 0 {
+				// attack hit to target
+				return true, nil
+			}
+		}
+	}
 
 	switch p.state {
 	case wideShotStateBegin:
@@ -76,13 +75,16 @@ func (p *wideShot) Process() (bool, error) {
 			}
 
 			for i := -1; i <= 1; i++ {
+				// ダメージでは反転させる
+				x := battlecommon.FieldNum.X - p.pos.X - 1
 				y := p.pos.Y + i
 				if y < 0 || y >= battlecommon.FieldNum.Y {
 					continue
 				}
 
 				p.damageID[i+1] = routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
-					Pos:           common.Point{X: p.pos.X, Y: y},
+					OwnerClientID: p.Arg.OwnerClientID,
+					Pos:           common.Point{X: x, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           wideShotNextStepCount,
 					TargetType:    p.Arg.TargetType,
