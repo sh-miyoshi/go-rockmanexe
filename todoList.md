@@ -5,11 +5,12 @@
 - スキル実装
   - wideshot
     - ダメージ時に削除する(現在反転が効いてない)
+- インビジ処理
+  - インビジ中の描画
 - Effect
 - Sound
 - Object
   - 自キャラ以外のHP
-- インビジ処理
 - Playerが表示されるタイミングが遅い
   - チップの選択時に表示されていてほしい
 - ShockWave時にPlayer ObjectをPickにする
