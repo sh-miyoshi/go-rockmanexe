@@ -6,7 +6,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 type DrawWideShot struct {
@@ -76,8 +75,6 @@ func (p *DrawWideShot) Draw(pos common.Point, count int) {
 		if count == 0 {
 			return
 		}
-
-		logger.Debug("count: %d", count)
 
 		n := (count / delayWideShot)
 
