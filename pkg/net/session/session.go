@@ -111,6 +111,7 @@ MAIN_LOOP:
 			}
 			s.changeState(stateChipSelectWait)
 			s.publishStateToClient(pb.Response_CHIPSELECTWAIT)
+			s.publishGameInfo()
 		case stateChipSelectWait:
 			for _, c := range s.clients {
 				if !c.chipSent {
