@@ -446,7 +446,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	// Recover系は使えるようにする
+	// インビジ中は無効、ただしRecover系は使えるようにする
 	if p.invincibleCount > 0 && dm.Power >= 0 {
 		return false
 	}

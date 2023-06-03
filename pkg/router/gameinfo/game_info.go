@@ -22,6 +22,7 @@ type Object struct {
 	Pos           common.Point
 	ActCount      int
 	IsReverse     bool
+	IsInvincible  bool
 }
 
 type Anim struct {

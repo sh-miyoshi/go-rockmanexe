@@ -29,11 +29,12 @@ type playerAct struct {
 }
 
 type Player struct {
-	objectInfo    gameinfo.Object
-	gameInfo      *gameinfo.GameInfo
-	actionQueueID string
-	hpMax         int
-	act           playerAct
+	objectInfo      gameinfo.Object
+	gameInfo        *gameinfo.GameInfo
+	actionQueueID   string
+	hpMax           int
+	act             playerAct
+	invincibleCount int
 }
 
 func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
@@ -46,6 +47,7 @@ func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID 
 			actType:       -1,
 			ownerClientID: info.OwnerClientID,
 		},
+		invincibleCount: 0,
 	}
 	res.act.pObject = &res.objectInfo
 	res.act.getPanelInfo = res.gameInfo.GetPanelInfo
@@ -58,6 +60,13 @@ func (p *Player) GetCurrentObjectTypePointer() *int {
 }
 
 func (p *Player) Process() (bool, error) {
+	if p.invincibleCount > 0 {
+		p.invincibleCount--
+		p.objectInfo.IsInvincible = true
+	} else {
+		p.objectInfo.IsInvincible = false
+	}
+
 	// Action処理中
 	if p.act.Process() {
 		return false, nil
@@ -94,7 +103,11 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	// TODO: インビジブル関係
+	// インビジ中は無効、ただしRecover系は使えるようにする
+	if p.invincibleCount > 0 && dm.Power >= 0 {
+		logger.Debug("got damage, but the object is in invincible")
+		return false
+	}
 
 	// 自分宛のダメージだがObjectが自分じゃない時は無視
 	if dm.TargetType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
@@ -138,6 +151,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	// TODO: sound
 
 	// TODO: Stop current animation
+	p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 	logger.Debug("Player damaged: %+v", *dm)
 	return true
 }
@@ -164,7 +178,7 @@ func (p *Player) GetObjectType() int {
 }
 
 func (p *Player) MakeInvisible(count int) {
-	// TODO
+	p.invincibleCount = count
 }
 
 func (p *Player) useChip(chipInfo action.UseChip) {

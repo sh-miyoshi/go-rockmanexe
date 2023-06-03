@@ -2,6 +2,8 @@ api_addr: "http://localhost:3000"
 data_stream_addr: "0.0.0.0:16283"
 log:
   debug_log: true
-  file: ""
+  file: "router.log"
 acceptable_version: ""
 chip_file_path: "../../data/chipList.yaml"
+debug:
+  invincible_count: 0 # テスト用にインビジブルを無効化する
