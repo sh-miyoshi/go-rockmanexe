@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -11,12 +12,15 @@ import (
 )
 
 type objectDraw struct {
-	images    [object.TypeMax][]int
-	imgDelays [object.TypeMax]int
+	images         [object.TypeMax][]int
+	imgDelays      [object.TypeMax]int
+	playerObjectID string
 }
 
-func (d *objectDraw) Init() error {
+func (d *objectDraw) Init(playerObjectID string) error {
 	d.imgDelays = [object.TypeMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3} // debug
+
+	d.playerObjectID = playerObjectID
 
 	fname := common.ImagePath + "battle/character/player_move.png"
 	d.images[object.TypePlayerMove] = make([]int, 4)
@@ -113,5 +117,15 @@ func (d *objectDraw) Draw() {
 		}
 
 		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, d.images[obj.Type][ino], true, opts)
+
+		// draw hp
+		if obj.ID != d.playerObjectID {
+			if obj.HP > 0 {
+				draw.Number(pos.X, pos.Y+40, obj.HP, draw.NumberOption{
+					Color:    draw.NumberColorWhiteSmall,
+					Centered: true,
+				})
+			}
+		}
 	}
 }

@@ -9,8 +9,8 @@ var (
 	animDrawInst animDraw
 )
 
-func Init() error {
-	if err := objDrawInst.Init(); err != nil {
+func Init(playerObjectID string) error {
+	if err := objDrawInst.Init(playerObjectID); err != nil {
 		return fmt.Errorf("object draw init failed: %w", err)
 	}
 

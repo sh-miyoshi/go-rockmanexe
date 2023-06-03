@@ -81,7 +81,7 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
-	if err = draw.Init(); err != nil {
+	if err = draw.Init(inst.playerInst.GetObjectID()); err != nil {
 		return err
 	}
 

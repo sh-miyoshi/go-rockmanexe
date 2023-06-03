@@ -6,8 +6,6 @@
   - インビジ中の描画
 - Effect
 - Sound
-- Object
-  - 自キャラ以外のHP
 - ShockWave時にPlayer ObjectをPickにする
 
 - 後回し
