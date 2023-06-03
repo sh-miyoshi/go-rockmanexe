@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 )
 
 var (
@@ -75,4 +76,9 @@ func ObjAnimGetObjs(clientID string, filter objanim.Filter) []objanim.Param {
 func ObjAnimGetObjPos(clientID string, objID string) common.Point {
 	mgrID := clientAnimMgrMap[clientID]
 	return objanimManagers[mgrID].GetObjPos(objID)
+}
+
+func DamageManager(clientID string) *damage.DamageManager {
+	mgrID := clientAnimMgrMap[clientID]
+	return objanimManagers[mgrID].DamageManager()
 }

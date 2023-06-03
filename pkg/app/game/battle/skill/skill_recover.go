@@ -40,7 +40,7 @@ func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(sound.SERecover)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		damage.New(damage.Damage{
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),
 			TTL:           1,

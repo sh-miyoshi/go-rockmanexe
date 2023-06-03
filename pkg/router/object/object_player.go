@@ -243,7 +243,7 @@ func (a *playerAct) Process() bool {
 						eff = battlecommon.EffectTypeHitBig
 					}
 
-					damage.New(damage.Damage{
+					routeranim.DamageManager(a.ownerClientID).New(damage.Damage{
 						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,

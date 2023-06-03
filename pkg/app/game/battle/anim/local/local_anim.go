@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 )
 
 var (
@@ -153,4 +154,12 @@ func ObjAnimExistsObject(pos common.Point) string {
 	}
 
 	return objanimInst.ExistsObject(pos)
+}
+
+func DamageManager() *damage.DamageManager {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	return objanimInst.DamageManager()
 }

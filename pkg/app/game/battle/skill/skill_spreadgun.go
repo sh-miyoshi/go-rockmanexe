@@ -69,7 +69,7 @@ func (p *spreadGun) Process() (bool, error) {
 				// Hit
 				sound.On(sound.SESpreadHit)
 
-				damage.New(damage.Damage{
+				localanim.DamageManager().New(damage.Damage{
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
@@ -133,7 +133,7 @@ func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
 		localanim.AnimNew(effect.Get(battlecommon.EffectTypeSpreadHit, p.pos, 5))
-		damage.New(damage.Damage{
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,

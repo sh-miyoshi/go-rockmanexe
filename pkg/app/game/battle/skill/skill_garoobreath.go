@@ -63,7 +63,7 @@ func (p *garooBreath) Draw() {
 func (p *garooBreath) Process() (bool, error) {
 	if p.count%garooBreathNextStepCount/2 == 0 {
 		// Finish if hit
-		if p.damageID != "" && !damage.Exists(p.damageID) {
+		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
@@ -73,7 +73,7 @@ func (p *garooBreath) Process() (bool, error) {
 		p.prev = p.pos
 		p.pos = p.next
 
-		p.damageID = damage.New(damage.Damage{
+		p.damageID = localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           garooBreathNextStepCount + 1,

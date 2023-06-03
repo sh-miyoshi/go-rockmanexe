@@ -245,7 +245,7 @@ func (p *flamePillar) Process() (bool, error) {
 
 		if p.count == 3*delayFlamePillar {
 			// Add damage
-			damage.New(damage.Damage{
+			localanim.DamageManager().New(damage.Damage{
 				Pos:         p.point,
 				Power:       int(p.Arg.Power),
 				TTL:         7 * delayFlamePillar,

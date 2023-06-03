@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -58,8 +57,7 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 }
 
 func (g *GameHandler) Cleanup() {
-	for clientID, obj := range g.objects {
-		damage.RemoveForClient(clientID)
+	for _, obj := range g.objects {
 		queue.Delete(obj.actionQueueID)
 	}
 	routeranim.Cleanup(g.animMgrID)
@@ -118,7 +116,6 @@ func (g *GameHandler) UpdateGameStatus() {
 		logger.Error("Failed to manage animation: %+v", err)
 		// TODO: 処理を終了する
 	}
-	damage.MgrProcess()
 
 	g.updateGameInfo()
 }

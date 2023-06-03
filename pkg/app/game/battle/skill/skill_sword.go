@@ -66,19 +66,19 @@ func (p *sword) Process() (bool, error) {
 
 		dm.Pos.X = pos.X + 1
 		dm.Pos.Y = pos.Y
-		damage.New(dm)
+		localanim.DamageManager().New(dm)
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
 			dm.Pos.Y = pos.Y - 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.Y = pos.Y + 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		case TypeLongSword:
 			dm.Pos.X = pos.X + 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 

@@ -91,7 +91,7 @@ func (p *wideShot) Draw() {
 func (p *wideShot) Process() (bool, error) {
 	for _, did := range p.damageID {
 		if did != "" {
-			if !damage.Exists(did) && p.count%p.NextStepCount != 0 {
+			if !localanim.DamageManager().Exists(did) && p.count%p.NextStepCount != 0 {
 				// attack hit to target
 				return true, nil
 			}
@@ -132,7 +132,7 @@ func (p *wideShot) Process() (bool, error) {
 					continue
 				}
 
-				p.damageID[i+1] = damage.New(damage.Damage{
+				p.damageID[i+1] = localanim.DamageManager().New(damage.Damage{
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,

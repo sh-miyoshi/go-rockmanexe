@@ -81,7 +81,7 @@ func (p *wideShot) Process() (bool, error) {
 					continue
 				}
 
-				p.damageID[i+1] = damage.New(damage.Damage{
+				p.damageID[i+1] = routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           wideShotNextStepCount,

@@ -79,7 +79,7 @@ func (p *cannon) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
-					damage.New(dm)
+					localanim.DamageManager().New(dm)
 					break
 				}
 			}
@@ -87,7 +87,7 @@ func (p *cannon) Process() (bool, error) {
 			for x := pos.X - 1; x >= 0; x-- {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
-					damage.New(dm)
+					localanim.DamageManager().New(dm)
 					break
 				}
 			}

@@ -66,7 +66,7 @@ func (p *vulcan) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
 				if field.GetPanelInfo(target).ObjectID != "" {
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           target,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
@@ -79,7 +79,7 @@ func (p *vulcan) Process() (bool, error) {
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
 						localanim.AnimNew(effect.Get(battlecommon.EffectTypeVulcanHit2, target, 20))
-						damage.New(damage.Damage{
+						localanim.DamageManager().New(damage.Damage{
 							Pos:           target,
 							Power:         int(p.Arg.Power),
 							TTL:           1,

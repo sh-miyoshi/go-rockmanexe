@@ -45,7 +45,7 @@ func (p *miniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		damage.New(damage.Damage{
+		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),

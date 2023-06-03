@@ -67,7 +67,7 @@ func (p *heatShot) Process() (bool, error) {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
 				// Hit
-				damage.New(damage.Damage{
+				localanim.DamageManager().New(damage.Damage{
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
@@ -91,7 +91,7 @@ func (p *heatShot) Process() (bool, error) {
 
 				for _, t := range targets {
 					localanim.AnimNew(effect.Get(battlecommon.EffectTypeHeatHit, t, 0))
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           t,
 						Power:         int(p.Arg.Power),
 						TTL:           1,

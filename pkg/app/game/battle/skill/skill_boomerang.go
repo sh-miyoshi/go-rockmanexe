@@ -87,7 +87,7 @@ func (p *boomerang) Process() (bool, error) {
 		p.prev = p.pos
 		p.pos = p.next
 
-		damage.New(damage.Damage{
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,

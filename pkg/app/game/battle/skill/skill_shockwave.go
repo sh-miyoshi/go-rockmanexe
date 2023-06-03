@@ -94,7 +94,7 @@ func (p *shockWave) Process() (bool, error) {
 		}
 
 		sound.On(sound.SEShockWave)
-		damage.New(damage.Damage{
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,

@@ -10,7 +10,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -118,7 +117,6 @@ func End() {
 	field.ResetSet4x4Area()
 	localanim.AnimCleanup()
 	localanim.ObjAnimCleanup()
-	damage.RemoveAll()
 	field.End()
 	playerInst.End()
 	skill.End()

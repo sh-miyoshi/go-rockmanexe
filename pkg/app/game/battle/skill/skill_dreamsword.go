@@ -52,7 +52,7 @@ func (p *dreamSword) Process() (bool, error) {
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
 					DamageType:    damage.TypeNone,
 				}
-				damage.New(dm)
+				localanim.DamageManager().New(dm)
 			}
 		}
 	}

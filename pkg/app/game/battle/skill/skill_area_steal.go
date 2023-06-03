@@ -122,7 +122,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 				pn := field.GetPanelInfo(pos)
 				if pn.ObjectID != "" {
 					// ダメージ
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           pos,
 						Power:         10,
 						TTL:           1,

@@ -72,7 +72,7 @@ func (p *thunderBall) Process() (bool, error) {
 
 	if p.count%thunderBallNextStepCount == 2 {
 		if p.damageID != "" {
-			if !damage.Exists(p.damageID) {
+			if !localanim.DamageManager().Exists(p.damageID) {
 				// attack hit to target
 				return true, nil
 			}
@@ -101,7 +101,7 @@ func (p *thunderBall) Process() (bool, error) {
 			return true, nil
 		}
 
-		p.damageID = damage.New(damage.Damage{
+		p.damageID = localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,

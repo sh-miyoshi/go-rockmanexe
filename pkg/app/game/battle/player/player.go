@@ -567,7 +567,7 @@ func (a *act) Process() bool {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				pos := common.Point{X: x, Y: y}
 				if field.GetPanelInfo(pos).ObjectID != "" {
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           pos,
 						Power:         int(s),
 						TTL:           1,

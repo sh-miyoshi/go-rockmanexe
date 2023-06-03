@@ -221,14 +221,14 @@ func (a *WaterPipeAtk) Process() {
 
 		if a.pm.xFlip {
 			dm.Pos.X = a.pm.Pos.X + 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X + 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		} else {
 			dm.Pos.X = a.pm.Pos.X - 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X - 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 

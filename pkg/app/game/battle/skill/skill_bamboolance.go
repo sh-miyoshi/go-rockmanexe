@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -61,7 +62,7 @@ func (p *bambooLance) Process() (bool, error) {
 		}
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			dm.Pos.Y = y
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 

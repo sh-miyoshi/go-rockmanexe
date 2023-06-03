@@ -47,6 +47,7 @@ type AnimManager struct {
 	anims         map[string]Anim
 	sortedAnimIDs []string
 	activeAnimIDs []string
+	dmMgr         *damage.DamageManager
 }
 
 var (
@@ -56,6 +57,7 @@ var (
 func NewManager() *AnimManager {
 	return &AnimManager{
 		anims: make(map[string]Anim),
+		dmMgr: damage.NewManager(),
 	}
 }
 
@@ -80,7 +82,7 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 		hit := []string{}
 		for _, anim := range am.anims {
 			pm := anim.GetParam()
-			if dm := damage.Get(pm.Pos); dm != nil {
+			if dm := am.dmMgr.Get(pm.Pos); dm != nil {
 				if anim.DamageProc(dm) {
 					hit = append(hit, dm.ID)
 				}
@@ -90,11 +92,11 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 		if len(hit) > 0 {
 			logger.Debug("Hit damages: %+v", hit)
 			for _, h := range hit {
-				damage.Remove(h)
+				am.dmMgr.Remove(h)
 			}
 		}
 
-		damage.MgrProcess()
+		am.dmMgr.Process()
 	}
 
 	am.sortAnim()
@@ -128,6 +130,7 @@ func (am *AnimManager) Cleanup() {
 	am.anims = map[string]Anim{}
 	am.sortedAnimIDs = []string{}
 	am.activeAnimIDs = []string{}
+	am.dmMgr.RemoveAll()
 }
 
 func (am *AnimManager) Delete(animID string) {
@@ -189,6 +192,10 @@ func (am *AnimManager) ExistsObject(pos common.Point) string {
 	}
 
 	return ""
+}
+
+func (am *AnimManager) DamageManager() *damage.DamageManager {
+	return am.dmMgr
 }
 
 func (am *AnimManager) sortAnim() {

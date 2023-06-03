@@ -49,7 +49,7 @@ func (p *shockWave) Process() (bool, error) {
 			return true, nil
 		}
 
-		damage.New(damage.Damage{
+		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
