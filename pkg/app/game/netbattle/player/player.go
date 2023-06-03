@@ -282,8 +282,8 @@ func (p *BattlePlayer) UpdatePA() {
 }
 
 func (p *BattlePlayer) IsDead() bool {
-	// TODO
-	return false
+	obj := p.getObject()
+	return obj.HP <= 0
 }
 
 func (p *BattlePlayer) GetObjectID() string {
