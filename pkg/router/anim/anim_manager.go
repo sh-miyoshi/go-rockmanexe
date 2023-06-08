@@ -63,6 +63,11 @@ func AnimGetAll(mgrID string) []anim.Param {
 	return animManagers[mgrID].GetAll()
 }
 
+func AnimIsProcessing(clientID string, animID string) bool {
+	mgrID := clientAnimMgrMap[clientID]
+	return animManagers[mgrID].IsProcessing(animID)
+}
+
 func ObjAnimNew(clientID string, a objanim.Anim) string {
 	mgrID := clientAnimMgrMap[clientID]
 	return objanimManagers[mgrID].New(a)

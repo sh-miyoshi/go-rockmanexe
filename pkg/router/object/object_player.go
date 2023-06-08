@@ -35,6 +35,8 @@ type Player struct {
 	hpMax           int
 	act             playerAct
 	invincibleCount int
+	skillID         string
+	skillInst       skill.SkillAnim
 }
 
 func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
@@ -147,7 +149,13 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 	// TODO: sound
 
-	// TODO: Stop current animation
+	// Stop current animation
+	if routeranim.AnimIsProcessing(p.gameInfo.ClientID, p.skillID) {
+		p.skillInst.StopByOwner()
+	}
+	p.skillID = ""
+	p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
+
 	p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 	logger.Debug("Player damaged: %+v", *dm)
 	return true
@@ -196,7 +204,8 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 
 		GameInfo: p.gameInfo,
 	})
-	routeranim.AnimNew(chipInfo.ChipUserClientID, s)
+	p.skillID = routeranim.AnimNew(chipInfo.ChipUserClientID, s)
+	p.skillInst = s
 
 	if c.PlayerAct != -1 {
 		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())
@@ -302,6 +311,8 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 		a.pObject.Type = TypePlayerShot
 	case battlecommon.PlayerActSword:
 		a.pObject.Type = TypePlayerSword
+	case battlecommon.PlayerActDamage:
+		a.pObject.Type = TypePlayerDamaged
 	default:
 		logger.Error("Invalid player act type %d was specified", actType)
 	}
