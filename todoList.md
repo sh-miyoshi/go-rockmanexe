@@ -4,7 +4,7 @@
 
 - Effect
 - Sound
-- ShockWave時にPlayer ObjectをPickにする
+- ダメージチェック
 
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う

@@ -18,7 +18,18 @@ type objectDraw struct {
 }
 
 func (d *objectDraw) Init(playerObjectID string) error {
-	d.imgDelays = [object.TypeMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3} // debug
+	d.imgDelays = [object.TypeMax]int{
+		1, // TypePlayerStand
+		2, // TypePlayerBomb
+		2, // TypePlayerBuster
+		6, // TypePlayerCannon
+		3, // TypePlayerDamaged
+		4, // TypePlayerMove
+		1, // TypePlayerShot
+		4, // TypePlayerSword
+		3, // TypePlayerThrow
+		4, // TypePlayerPick
+	} // debug
 
 	d.playerObjectID = playerObjectID
 
@@ -74,9 +85,9 @@ func (d *objectDraw) Init(playerObjectID string) error {
 		return fmt.Errorf("failed to load player buster image: %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/character/player_pick.png"
+	fname = common.ImagePath + "battle/character/player_pick_2.png"
 	d.images[object.TypePlayerPick] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, d.images[object.TypePlayerPick]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 140, 124, d.images[object.TypePlayerPick]); res == -1 {
 		return fmt.Errorf("failed to load player pick image: %s", fname)
 	}
 	d.images[object.TypePlayerPick][4] = d.images[object.TypePlayerPick][3]

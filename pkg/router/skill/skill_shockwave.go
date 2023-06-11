@@ -49,9 +49,10 @@ func (p *shockWave) Process() (bool, error) {
 			return true, nil
 		}
 
+		x := battlecommon.FieldNum.X - p.pos.X - 1
 		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           p.pos,
+			Pos:           common.Point{X: x, Y: p.pos.Y},
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
 			TargetType:    p.Arg.TargetType,
@@ -87,5 +88,5 @@ func (p *shockWave) StopByOwner() {
 }
 
 func (p *shockWave) GetEndCount() int {
-	return 0
+	return 6 * 4
 }
