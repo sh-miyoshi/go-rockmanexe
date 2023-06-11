@@ -49,10 +49,9 @@ func (p *shockWave) Process() (bool, error) {
 			return true, nil
 		}
 
-		x := battlecommon.FieldNum.X - p.pos.X - 1
-		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
+		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           common.Point{X: x, Y: p.pos.Y},
+			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
 			TargetType:    p.Arg.TargetType,

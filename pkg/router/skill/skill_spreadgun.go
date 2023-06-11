@@ -57,8 +57,7 @@ func (p *spreadGun) Process() (bool, error) {
 				dm.Pos.X = x
 				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
 					logger.Debug("Add damage by spread gun: %+v", dm)
-					dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
-					routeranim.DamageManager(p.Arg.OwnerClientID).New(dm)
+					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 
 					// Spreading
 					for sy := -1; sy <= 1; sy++ {
@@ -137,7 +136,7 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
+		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,

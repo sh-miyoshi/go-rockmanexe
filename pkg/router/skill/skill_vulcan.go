@@ -46,7 +46,7 @@ func (p *vulcan) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
 				if p.Arg.GameInfo.GetPanelInfo(target).ObjectID != "" {
-					routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
+					routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 						Pos:           target,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
@@ -59,7 +59,7 @@ func (p *vulcan) Process() (bool, error) {
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
 						// TODO: add anim effect
-						routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
+						routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 							Pos:           target,
 							Power:         int(p.Arg.Power),
 							TTL:           1,

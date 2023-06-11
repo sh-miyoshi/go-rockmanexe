@@ -244,13 +244,12 @@ func (a *playerAct) Process() bool {
 			damageAdd := func(pos common.Point, power int) bool {
 				if a.getPanelInfo(pos).ObjectID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
-					pos.X = battlecommon.FieldNum.X - pos.X - 1
 					eff := battlecommon.EffectTypeHitSmall
 					if buster.IsCharged {
 						eff = battlecommon.EffectTypeHitBig
 					}
 
-					routeranim.DamageManager(a.ownerClientID).New(damage.Damage{
+					routeranim.DamageNew(a.ownerClientID, damage.Damage{
 						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,

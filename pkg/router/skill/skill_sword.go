@@ -56,19 +56,19 @@ func (p *sword) Process() (bool, error) {
 
 		dm.Pos.X = pos.X + 1
 		dm.Pos.Y = pos.Y
-		routeranim.DamageManager(p.Arg.OwnerClientID).New(dm)
+		routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
 			dm.Pos.Y = pos.Y - 1
-			routeranim.DamageManager(p.Arg.OwnerClientID).New(dm)
+			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 			dm.Pos.Y = pos.Y + 1
-			routeranim.DamageManager(p.Arg.OwnerClientID).New(dm)
+			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 		case TypeLongSword:
 			dm.Pos.X = pos.X + 2
-			routeranim.DamageManager(p.Arg.OwnerClientID).New(dm)
+			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 		}
 	}
 

@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 )
 
@@ -86,4 +87,12 @@ func ObjAnimGetObjPos(clientID string, objID string) common.Point {
 func DamageManager(clientID string) *damage.DamageManager {
 	mgrID := clientAnimMgrMap[clientID]
 	return objanimManagers[mgrID].DamageManager()
+}
+
+func DamageNew(clientID string, dm damage.Damage) string {
+	if dm.TargetType == damage.TargetEnemy {
+		// ダメージでは反転させる
+		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
+	}
+	return DamageManager(clientID).New(dm)
 }

@@ -33,7 +33,7 @@ func (p *recover) Process() (bool, error) {
 
 	if p.count == 1 {
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
-		routeranim.DamageManager(p.Arg.OwnerClientID).New(damage.Damage{
+		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),

@@ -4,7 +4,6 @@
 
 - Effect
 - Sound
-- ダメージチェック
 
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う
