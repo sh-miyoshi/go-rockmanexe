@@ -75,8 +75,10 @@ func (p *Player) Process() (bool, error) {
 	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
-	act := queue.Pop(p.actionQueueID)
-	if act != nil {
+	tact := queue.Pop(p.actionQueueID)
+	if tact != nil {
+		act := tact.(*pb.Request_Action)
+
 		switch act.GetType() {
 		case pb.Request_MOVE:
 			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData(), 0)
