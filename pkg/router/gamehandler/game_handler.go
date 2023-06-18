@@ -20,7 +20,7 @@ import (
 
 type gameObject struct {
 	animObject        objanim.Anim
-	actionQueueID     string
+	queueIDs          [queue.TypeMax]string
 	currentObjectType *int
 }
 
@@ -58,7 +58,9 @@ func (g *GameHandler) Init(clientIDs [2]string) error {
 
 func (g *GameHandler) Cleanup() {
 	for _, obj := range g.objects {
-		queue.Delete(obj.actionQueueID)
+		for i := 0; i < len(obj.queueIDs); i++ {
+			queue.Delete(obj.queueIDs[i])
+		}
 	}
 	routeranim.Cleanup(g.animMgrID)
 }
@@ -76,8 +78,9 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 	}
 
 	// Player Objectを作成
-	g.objects[clientID] = &gameObject{
-		actionQueueID: uuid.New().String(),
+	g.objects[clientID] = &gameObject{}
+	for i := 0; i < queue.TypeMax; i++ {
+		g.objects[clientID].queueIDs[i] = uuid.NewString()
 	}
 	plyr := gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
@@ -86,7 +89,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 		HP:            param.HP,
 		Pos:           common.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
-	}, ginfo, g.objects[clientID].actionQueueID)
+	}, ginfo, g.objects[clientID].queueIDs)
 	g.objects[clientID].animObject = plyr
 	routeranim.ObjAnimNew(clientID, g.objects[clientID].animObject)
 	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
@@ -98,7 +101,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {
 	logger.Info("Got action %d from %s", act.GetType(), clientID)
-	queue.Push(g.objects[clientID].actionQueueID, act)
+	queue.Push(g.objects[clientID].queueIDs[queue.TypeAction], act)
 	return nil
 }
 

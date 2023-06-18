@@ -1,5 +1,12 @@
 package queue
 
+const (
+	TypeAction int = iota
+	TypeEffect
+
+	TypeMax
+)
+
 var (
 	allQueues = make(map[string][]interface{})
 )

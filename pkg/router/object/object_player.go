@@ -32,7 +32,7 @@ type playerAct struct {
 type Player struct {
 	objectInfo      gameinfo.Object
 	gameInfo        *gameinfo.GameInfo
-	actionQueueID   string
+	queueIDs        [queue.TypeMax]string
 	hpMax           int
 	act             playerAct
 	invincibleCount int
@@ -40,12 +40,12 @@ type Player struct {
 	skillInst       skill.SkillAnim
 }
 
-func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, actionQueueID string) *Player {
+func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, queueIDs [queue.TypeMax]string) *Player {
 	res := &Player{
-		objectInfo:    info,
-		gameInfo:      gameInfo,
-		actionQueueID: actionQueueID,
-		hpMax:         info.HP,
+		objectInfo: info,
+		gameInfo:   gameInfo,
+		queueIDs:   queueIDs,
+		hpMax:      info.HP,
 		act: playerAct{
 			actType:       -1,
 			ownerClientID: info.OwnerClientID,
@@ -75,7 +75,7 @@ func (p *Player) Process() (bool, error) {
 	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
-	tact := queue.Pop(p.actionQueueID)
+	tact := queue.Pop(p.queueIDs[queue.TypeAction])
 	if tact != nil {
 		act := tact.(*pb.Request_Action)
 
