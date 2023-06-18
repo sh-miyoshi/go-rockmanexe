@@ -7,8 +7,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
@@ -107,10 +109,12 @@ func End() {
 		inst.fieldInst.End()
 	}
 	draw.End()
+	localanim.AnimCleanup()
 }
 
 func Process() error {
 	inst.gameCount++
+	isRunAnim := false
 
 	// TODO: Sound process
 
@@ -166,6 +170,7 @@ func Process() error {
 			return nil
 		}
 	case stateMain:
+		isRunAnim = true
 		done, err := inst.playerInst.Process()
 		if err != nil {
 			return fmt.Errorf("player process failed: %w", err)
@@ -174,6 +179,8 @@ func Process() error {
 			stateChange(stateResult)
 			return nil
 		}
+
+		handleEffect()
 
 		status := inst.conn.GetGameStatus()
 		switch status {
@@ -185,6 +192,7 @@ func Process() error {
 			return nil
 		}
 	case stateResult:
+		isRunAnim = true
 		if inst.stateCount == 0 {
 			net.GetInst().Disconnect()
 
@@ -209,6 +217,13 @@ func Process() error {
 		}
 	}
 
+	if isRunAnim {
+		// TODO(blackout中はエフェクトもとめておく？)
+		if err := localanim.AnimMgrProcess(); err != nil {
+			return fmt.Errorf("failed to handle animation: %w", err)
+		}
+	}
+
 	inst.stateCount++
 	return nil
 }
@@ -217,6 +232,8 @@ func Draw() {
 	inst.fieldInst.Draw()
 	inst.playerInst.LocalDraw()
 	draw.Draw()
+
+	localanim.AnimMgrDraw()
 
 	switch inst.state {
 	case stateWaiting:
@@ -256,4 +273,12 @@ func stateChange(nextState int) {
 	}
 	inst.state = nextState
 	inst.stateCount = 0
+}
+
+func handleEffect() {
+	g := net.GetInst().GetGameInfo()
+	for _, e := range g.Effects {
+		logger.Debug("draw effect %v", e)
+		localanim.AnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
+	}
 }

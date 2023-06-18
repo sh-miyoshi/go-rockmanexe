@@ -35,11 +35,19 @@ type Anim struct {
 	// TODO: IsReverse必要かも
 }
 
+type Effect struct {
+	ID        string
+	Pos       common.Point
+	Type      int
+	RandRange int
+}
+
 // Client側に送られるデータ
 type GameInfo struct {
 	Panels   [config.FieldNumX][config.FieldNumY]PanelInfo
 	Objects  []Object
 	Anims    []Anim
+	Effects  []Effect
 	ClientID string
 }
 

@@ -3,6 +3,7 @@ package object
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -125,7 +126,17 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	if p.objectInfo.HP > p.hpMax {
 		p.objectInfo.HP = p.hpMax
 	}
-	// TODO: damage effect
+	if dm.HitEffectType != battlecommon.EffectTypeNone {
+		logger.Debug("Add effect %v", dm.HitEffectType)
+
+		// TODO 両方のGameInfoに入れる
+		p.gameInfo.Effects = append(p.gameInfo.Effects, gameinfo.Effect{
+			ID:        uuid.New().String(),
+			Pos:       p.objectInfo.Pos,
+			Type:      dm.HitEffectType,
+			RandRange: 5,
+		})
+	}
 
 	for i := 0; i < dm.PushLeft; i++ {
 		if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
@@ -276,8 +287,6 @@ func (a *playerAct) Process() bool {
 			return false
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
-		// TODO set pick anim end count
-
 		// No special action
 		if a.count >= a.endCount {
 			a.actType = -1
@@ -314,6 +323,8 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 		a.pObject.Type = TypePlayerDamaged
 	case battlecommon.PlayerActPick:
 		a.pObject.Type = TypePlayerPick
+	case battlecommon.PlayerActBomb:
+		a.pObject.Type = TypePlayerBomb
 	default:
 		logger.Error("Invalid player act type %d was specified", actType)
 	}

@@ -105,7 +105,10 @@ func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) erro
 func (g *GameHandler) GetInfo(clientID string) []byte {
 	for i := 0; i < len(g.info); i++ {
 		if g.info[i].ClientID == clientID {
-			return g.info[i].Marshal()
+			res := g.info[i].Marshal()
+			// debug: 取得するたびにクリアされるので冪等性はないがいったんあきらめる
+			g.info[i].Effects = []gameinfo.Effect{}
+			return res
 		}
 	}
 	return nil
