@@ -1,27 +1,23 @@
 package queue
 
-import (
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-)
-
 var (
-	allActionQueues = make(map[string][]*pb.Request_Action)
+	allQueues = make(map[string][]interface{})
 )
 
-func Push(id string, act *pb.Request_Action) {
-	allActionQueues[id] = append(allActionQueues[id], act)
+func Push(id string, info interface{}) {
+	allQueues[id] = append(allQueues[id], info)
 }
 
-func Pop(id string) *pb.Request_Action {
-	acts, ok := allActionQueues[id]
+func Pop(id string) interface{} {
+	acts, ok := allQueues[id]
 	if !ok || len(acts) == 0 {
 		return nil
 	}
 	res := acts[0]
-	allActionQueues[id] = acts[1:]
+	allQueues[id] = acts[1:]
 	return res
 }
 
 func Delete(id string) {
-	delete(allActionQueues, id)
+	delete(allQueues, id)
 }
