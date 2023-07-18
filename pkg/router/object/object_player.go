@@ -131,12 +131,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	if dm.HitEffectType != battlecommon.EffectTypeNone {
 		logger.Debug("Add effect %v", dm.HitEffectType)
 
-		// TODO 両方のGameInfoに入れる
-		p.gameInfo.Effects = append(p.gameInfo.Effects, gameinfo.Effect{
-			ID:        uuid.New().String(),
-			Pos:       p.objectInfo.Pos,
-			Type:      dm.HitEffectType,
-			RandRange: 5,
+		queue.Push(p.queueIDs[queue.TypeEffect], &gameinfo.Effect{
+			ID:            uuid.New().String(),
+			OwnerClientID: p.gameInfo.ClientID,
+			Pos:           p.objectInfo.Pos,
+			Type:          dm.HitEffectType,
+			RandRange:     5,
 		})
 	}
 

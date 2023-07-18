@@ -108,10 +108,7 @@ func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) erro
 func (g *GameHandler) GetInfo(clientID string) []byte {
 	for i := 0; i < len(g.info); i++ {
 		if g.info[i].ClientID == clientID {
-			res := g.info[i].Marshal()
-			// debug: 取得するたびにクリアされるので冪等性はないがいったんあきらめる
-			g.info[i].Effects = []gameinfo.Effect{}
-			return res
+			return g.info[i].Marshal()
 		}
 	}
 	return nil
@@ -204,6 +201,23 @@ func (g *GameHandler) updateGameInfo() {
 				AnimType: info.AnimType,
 				ActCount: info.ActCount,
 			})
+		}
+	}
+
+	effects := []gameinfo.Effect{}
+	for _, o := range g.objects {
+		for _, e := range queue.PopAll(o.queueIDs[queue.TypeEffect]) {
+			effects = append(effects, *e.(*gameinfo.Effect))
+		}
+	}
+
+	for i := 0; i < len(g.info); i++ {
+		g.info[i].Effects = []gameinfo.Effect{}
+		for _, e := range effects {
+			if g.info[i].ClientID != e.OwnerClientID {
+				e.Pos.X = battlecommon.FieldNum.X - e.Pos.X - 1
+			}
+			g.info[i].Effects = append(g.info[i].Effects, e)
 		}
 	}
 

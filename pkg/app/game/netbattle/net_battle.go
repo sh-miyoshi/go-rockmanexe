@@ -87,6 +87,10 @@ func Init(plyr *player.Player) error {
 		return err
 	}
 
+	if err := effect.Init(); err != nil {
+		return fmt.Errorf("effect init failed: %w", err)
+	}
+
 	obj := netobj.InitParam{
 		ID: inst.playerInst.GetObjectID(),
 		HP: int(plyr.HP),
@@ -278,7 +282,6 @@ func stateChange(nextState int) {
 func handleEffect() {
 	g := net.GetInst().GetGameInfo()
 	for _, e := range g.Effects {
-		logger.Debug("draw effect %v", e)
 		localanim.AnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
 	}
 }

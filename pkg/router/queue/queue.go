@@ -25,6 +25,20 @@ func Pop(id string) interface{} {
 	return res
 }
 
+func PopAll(id string) []interface{} {
+	res := []interface{}{}
+	for {
+		v := Pop(id)
+		if v == nil {
+			break
+		} else {
+			res = append(res, v)
+		}
+	}
+
+	return res
+}
+
 func Delete(id string) {
 	delete(allQueues, id)
 }

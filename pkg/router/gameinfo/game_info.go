@@ -36,10 +36,11 @@ type Anim struct {
 }
 
 type Effect struct {
-	ID        string
-	Pos       common.Point
-	Type      int
-	RandRange int
+	ID            string
+	Pos           common.Point
+	Type          int
+	RandRange     int
+	OwnerClientID string
 }
 
 // Client側に送られるデータ
