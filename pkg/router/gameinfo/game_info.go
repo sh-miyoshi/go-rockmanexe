@@ -31,8 +31,6 @@ type Anim struct {
 	DrawType int
 	AnimType int
 	ActCount int
-
-	// TODO: IsReverse必要かも
 }
 
 type Effect struct {

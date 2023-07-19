@@ -160,7 +160,6 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) LocalDraw() {
-	// TODO
 }
 
 func (p *BattlePlayer) Process() (bool, error) {

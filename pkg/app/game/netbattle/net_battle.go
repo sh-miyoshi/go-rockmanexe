@@ -120,8 +120,6 @@ func Process() error {
 	inst.gameCount++
 	isRunAnim := false
 
-	// TODO: Sound process
-
 	switch inst.state {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()

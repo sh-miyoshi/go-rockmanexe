@@ -125,7 +125,6 @@ func (d *objectDraw) Draw() {
 		if ino >= len(d.images[obj.Type]) {
 			ino = len(d.images[obj.Type]) - 1
 		}
-		// TODO offset
 
 		opts := dxlib.DrawRotaGraphOption{}
 		if obj.IsReverse {
