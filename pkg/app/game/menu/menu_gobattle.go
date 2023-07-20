@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -255,22 +256,22 @@ func goBattleProcess() bool {
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
-		sound.On(sound.SECancel)
+		sound.On(resources.SECancel)
 		stateChange(stateTop)
 		return false
 	}
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		sound.On(sound.SEGoBattle)
+		sound.On(resources.SEGoBattle)
 		goBattleWaitCount++
 		return false
 	}
 
 	if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 		if goBattleCursor > 0 {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			goBattleCursor--
 		} else if goBattleScroll > 0 {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			goBattleScroll--
 		}
 	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
@@ -280,10 +281,10 @@ func goBattleProcess() bool {
 		}
 
 		if goBattleCursor < n {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			goBattleCursor++
 		} else if goBattleScroll < len(goBattleSelectData)-goBattleListShowMax {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			goBattleScroll++
 		}
 	}

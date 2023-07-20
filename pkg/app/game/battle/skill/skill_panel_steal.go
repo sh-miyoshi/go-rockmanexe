@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -69,7 +70,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 	switch p.state {
 	case areaStealStateBlackout:
 		if p.count == 1 {
-			sound.On(sound.SEAreaSteal)
+			sound.On(resources.SEAreaSteal)
 			field.SetBlackoutCount(90)
 			setChipNameDraw("パネルスチール")
 
@@ -101,7 +102,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 		}
 	case areaStealStateActing:
 		if p.count == 15 {
-			sound.On(sound.SEAreaStealHit)
+			sound.On(resources.SEAreaStealHit)
 			p.setState(areaStealStateHit)
 		}
 	case areaStealStateHit:

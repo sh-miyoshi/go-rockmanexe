@@ -5,6 +5,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -38,7 +39,7 @@ func (p *recover) Draw() {
 
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
-		sound.On(sound.SERecover)
+		sound.On(resources.SERecover)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		localanim.DamageManager().New(damage.Damage{
 			Pos:           pos,

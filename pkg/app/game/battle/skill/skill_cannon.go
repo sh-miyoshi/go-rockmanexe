@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -63,7 +64,7 @@ func (p *cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
-		sound.On(sound.SECannon)
+		sound.On(resources.SECannon)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			Pos:           pos,

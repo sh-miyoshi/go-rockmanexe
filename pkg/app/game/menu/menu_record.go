@@ -3,6 +3,7 @@ package menu
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 )
@@ -23,7 +24,7 @@ func (r *menuRecord) End() {
 
 func (r *menuRecord) Process() {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
-		sound.On(sound.SECancel)
+		sound.On(resources.SECancel)
 		stateChange(stateTop)
 	}
 }

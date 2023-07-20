@@ -10,6 +10,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -162,7 +163,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 	queue.Push(p.queueIDs[queue.TypeSound], &gameinfo.Sound{
 		ID:   uuid.New().String(),
-		Type: 26, // TODO: sound.SEDamaged
+		Type: int(resources.SEDamaged),
 	})
 
 	// Stop current animation

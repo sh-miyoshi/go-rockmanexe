@@ -5,6 +5,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -52,7 +53,7 @@ func (p *crack) Process() (bool, error) {
 	p.count++
 
 	if p.count > 5 {
-		sound.On(sound.SEPanelBreak)
+		sound.On(resources.SEPanelBreak)
 		for _, pos := range p.attackPos {
 			field.PanelBreak(pos)
 		}

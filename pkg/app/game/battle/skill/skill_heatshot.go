@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -60,7 +61,7 @@ func (p *heatShot) Draw() {
 
 func (p *heatShot) Process() (bool, error) {
 	if p.count == heatShotAtkDelay {
-		sound.On(sound.SEGun)
+		sound.On(resources.SEGun)
 
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {

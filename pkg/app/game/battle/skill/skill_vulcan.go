@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -55,7 +56,7 @@ func (p *vulcan) Process() (bool, error) {
 	p.count++
 	if p.count >= delayVulcan*1 {
 		if p.count%(delayVulcan*5) == delayVulcan*1 {
-			sound.On(sound.SEGun)
+			sound.On(resources.SEGun)
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
@@ -90,7 +91,7 @@ func (p *vulcan) Process() (bool, error) {
 						})
 					}
 					hit = true
-					sound.On(sound.SECannonHit)
+					sound.On(resources.SECannonHit)
 					break
 				}
 			}

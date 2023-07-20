@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -19,9 +20,9 @@ type deleteAction struct {
 
 func New(image int, pos common.Point, isPlayer bool) {
 	if isPlayer {
-		sound.On(sound.SEPlayerDeleted)
+		sound.On(resources.SEPlayerDeleted)
 	} else {
-		sound.On(sound.SEEnemyDeleted)
+		sound.On(resources.SEEnemyDeleted)
 	}
 
 	localanim.AnimNew(&deleteAction{

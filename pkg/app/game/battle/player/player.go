@@ -21,6 +21,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -363,7 +364,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.GaugeCount >= battlecommon.GaugeMaxCount {
 		if p.GaugeCount == battlecommon.GaugeMaxCount {
-			sound.On(sound.SEGaugeMax)
+			sound.On(resources.SEGaugeMax)
 		}
 
 		// State change to chip select
@@ -425,13 +426,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		p.ChargeCount++
 		if p.ChargeCount == battlecommon.ChargeViewDelay {
-			sound.On(sound.SEBusterCharging)
+			sound.On(resources.SEBusterCharging)
 		}
 		if p.ChargeCount == battlecommon.ChargeTime {
-			sound.On(sound.SEBusterCharged)
+			sound.On(resources.SEBusterCharged)
 		}
 	} else if p.ChargeCount > 0 {
-		sound.On(sound.SEBusterShot)
+		sound.On(resources.SEBusterShot)
 		p.act.Charged = p.ChargeCount > battlecommon.ChargeTime
 		p.act.ShotPower = p.ShotPower
 		p.act.SetAnim(battlecommon.PlayerActBuster, 0)
@@ -482,7 +483,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		sound.On(sound.SEDamaged)
+		sound.On(resources.SEDamaged)
 
 		// Stop current animation
 		if localanim.AnimIsProcessing(p.act.skillID) {

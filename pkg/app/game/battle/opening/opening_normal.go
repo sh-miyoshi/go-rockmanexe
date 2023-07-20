@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -51,7 +52,7 @@ func (n *Normal) Process() bool {
 	}
 
 	if n.count == 0 {
-		sound.On(sound.SEEnemyAppear)
+		sound.On(resources.SEEnemyAppear)
 	}
 
 	n.count++

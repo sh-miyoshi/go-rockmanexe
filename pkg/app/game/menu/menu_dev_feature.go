@@ -5,6 +5,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -57,7 +58,7 @@ func (t *menuDevFeature) Process() error {
 	}
 
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		sound.On(sound.SEMenuEnter)
+		sound.On(resources.SEMenuEnter)
 		switch t.pointer {
 		case devFeatureSelectMapMove:
 			return ErrGoMap
@@ -97,12 +98,12 @@ func (t *menuDevFeature) Process() error {
 	}
 	if inputs.CheckKey(inputs.KeyUp) == 1 {
 		if t.pointer > 0 {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			t.pointer--
 		}
 	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
 		if t.pointer < devFeatureSelectMax-1 {
-			sound.On(sound.SECursorMove)
+			sound.On(resources.SECursorMove)
 			t.pointer++
 		}
 	}

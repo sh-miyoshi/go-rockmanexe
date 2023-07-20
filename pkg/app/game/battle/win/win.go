@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -123,12 +124,12 @@ func Process() bool {
 	case stateFrameIn:
 		if count > 60 {
 			stateChange(stateResult)
-			sound.On(sound.SEGotItem)
+			sound.On(resources.SEGotItem)
 			return false
 		}
 	case stateResult:
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			sound.On(sound.SESelect)
+			sound.On(resources.SESelect)
 			return true
 		}
 	}

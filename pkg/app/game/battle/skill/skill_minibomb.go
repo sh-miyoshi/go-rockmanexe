@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -61,7 +62,7 @@ func (p *miniBomb) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		sound.On(sound.SEBombThrow)
+		sound.On(resources.SEBombThrow)
 	}
 
 	if p.count == miniBombEndCount {
@@ -70,7 +71,7 @@ func (p *miniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		sound.On(sound.SEExplode)
+		sound.On(resources.SEExplode)
 		localanim.AnimNew(effect.Get(battlecommon.EffectTypeExplode, p.target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.target,

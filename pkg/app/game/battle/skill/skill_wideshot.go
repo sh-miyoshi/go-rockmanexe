@@ -6,6 +6,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -101,7 +102,7 @@ func (p *wideShot) Process() (bool, error) {
 	switch p.state {
 	case wideShotStateBegin:
 		if p.count == 0 {
-			sound.On(sound.SEWideShot)
+			sound.On(resources.SEWideShot)
 		}
 
 		max := len(imgWideShotBody)

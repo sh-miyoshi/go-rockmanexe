@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -159,7 +160,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		sound.On(sound.SEDamaged)
+		sound.On(resources.SEDamaged)
 
 		// Stop current animation
 		if localanim.AnimIsProcessing(s.act.skillID) {

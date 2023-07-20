@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -42,7 +43,7 @@ func (p *aquamanShot) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		sound.On(sound.SEBombThrow)
+		sound.On(resources.SEBombThrow)
 	}
 
 	const size = 120
@@ -55,7 +56,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			return true, nil
 		}
 
-		sound.On(sound.SEWaterLanding)
+		sound.On(resources.SEWaterLanding)
 		localanim.AnimNew(effect.Get(battlecommon.EffectTypeWaterBomb, p.target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.target,

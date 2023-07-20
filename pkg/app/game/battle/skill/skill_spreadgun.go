@@ -8,6 +8,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -59,7 +60,7 @@ func (p *spreadGun) Draw() {
 
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
-		sound.On(sound.SEGun)
+		sound.On(resources.SEGun)
 
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
@@ -67,7 +68,7 @@ func (p *spreadGun) Process() (bool, error) {
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
 			if len(objs) > 0 {
 				// Hit
-				sound.On(sound.SESpreadHit)
+				sound.On(resources.SESpreadHit)
 
 				localanim.DamageManager().New(damage.Damage{
 					Pos:           target,

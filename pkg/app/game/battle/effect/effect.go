@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -20,7 +21,7 @@ const (
 
 var (
 	images [battlecommon.EffectTypeMax][]int
-	sounds [battlecommon.EffectTypeMax]sound.SEType
+	sounds [battlecommon.EffectTypeMax]resources.SEType
 )
 
 type effect struct {
@@ -102,11 +103,11 @@ func Init() error {
 	for i := 0; i < battlecommon.EffectTypeMax; i++ {
 		sounds[i] = -1
 	}
-	sounds[battlecommon.EffectTypeCannonHit] = sound.SECannonHit
-	sounds[battlecommon.EffectTypeHitSmall] = sound.SEBusterHit
-	sounds[battlecommon.EffectTypeHitBig] = sound.SEBusterHit
-	sounds[battlecommon.EffectTypeBlock] = sound.SEBlock
-	sounds[battlecommon.EffectTypeHeatHit] = sound.SEExplode
+	sounds[battlecommon.EffectTypeCannonHit] = resources.SECannonHit
+	sounds[battlecommon.EffectTypeHitSmall] = resources.SEBusterHit
+	sounds[battlecommon.EffectTypeHitBig] = resources.SEBusterHit
+	sounds[battlecommon.EffectTypeBlock] = resources.SEBlock
+	sounds[battlecommon.EffectTypeHeatHit] = resources.SEExplode
 	// TODO add exclamation se
 
 	return nil

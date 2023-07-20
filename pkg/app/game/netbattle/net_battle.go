@@ -20,6 +20,7 @@ import (
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -289,7 +290,7 @@ func handleEffect() {
 func handleSound() {
 	inst := net.GetInst()
 	for _, s := range inst.GetGameInfo().Sounds {
-		sound.On(sound.SEType(s.Type))
+		sound.On(resources.SEType(s.Type))
 	}
 	inst.CleanupSounds()
 }

@@ -8,6 +8,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -67,7 +68,7 @@ func (p *thunderBall) Draw() {
 
 func (p *thunderBall) Process() (bool, error) {
 	if p.count == 0 {
-		sound.On(sound.SEThunderBall)
+		sound.On(resources.SEThunderBall)
 	}
 
 	if p.count%thunderBallNextStepCount == 2 {

@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -175,7 +176,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.gaugeCount >= battlecommon.GaugeMaxCount {
 		if p.gaugeCount == battlecommon.GaugeMaxCount {
-			sound.On(sound.SEGaugeMax)
+			sound.On(resources.SEGaugeMax)
 		}
 
 		// State change to chip select
@@ -230,13 +231,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		p.chargeCount++
 		if p.chargeCount == battlecommon.ChargeViewDelay {
-			sound.On(sound.SEBusterCharging)
+			sound.On(resources.SEBusterCharging)
 		}
 		if p.chargeCount == battlecommon.ChargeTime {
-			sound.On(sound.SEBusterCharged)
+			sound.On(resources.SEBusterCharged)
 		}
 	} else if p.chargeCount > 0 {
-		sound.On(sound.SEBusterShot)
+		sound.On(resources.SEBusterShot)
 		charged := p.chargeCount > battlecommon.ChargeTime
 		power := p.shotPower
 		if charged {
