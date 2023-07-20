@@ -41,12 +41,18 @@ type Effect struct {
 	OwnerClientID string
 }
 
+type Sound struct {
+	ID   string
+	Type int
+}
+
 // Client側に送られるデータ
 type GameInfo struct {
 	Panels   [config.FieldNumX][config.FieldNumY]PanelInfo
 	Objects  []Object
 	Anims    []Anim
 	Effects  []Effect
+	Sounds   []Sound
 	ClientID string
 }
 

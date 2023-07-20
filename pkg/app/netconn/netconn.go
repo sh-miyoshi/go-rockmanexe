@@ -97,6 +97,12 @@ func (n *NetConn) GetGameInfo() gameinfo.GameInfo {
 	return n.gameInfo
 }
 
+func (n *NetConn) CleanupSounds() {
+	n.gameInfoMu.Lock()
+	n.gameInfo.Sounds = []gameinfo.Sound{}
+	n.gameInfoMu.Unlock()
+}
+
 func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) error {
 	return n.dataStream.Send(&pb.Request{
 		SessionID: n.sessionID,

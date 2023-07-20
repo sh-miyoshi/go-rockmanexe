@@ -120,6 +120,8 @@ func Process() error {
 	inst.gameCount++
 	isRunAnim := false
 
+	handleSound()
+
 	switch inst.state {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()
@@ -282,4 +284,12 @@ func handleEffect() {
 	for _, e := range g.Effects {
 		localanim.AnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
 	}
+}
+
+func handleSound() {
+	inst := net.GetInst()
+	for _, s := range inst.GetGameInfo().Sounds {
+		sound.On(sound.SEType(s.Type))
+	}
+	inst.CleanupSounds()
 }

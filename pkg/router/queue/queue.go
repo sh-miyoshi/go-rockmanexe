@@ -3,6 +3,7 @@ package queue
 const (
 	TypeAction int = iota
 	TypeEffect
+	TypeSound
 
 	TypeMax
 )

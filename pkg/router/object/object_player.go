@@ -160,7 +160,10 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return true
 	}
 
-	// TODO: sound
+	queue.Push(p.queueIDs[queue.TypeSound], &gameinfo.Sound{
+		ID:   uuid.New().String(),
+		Type: 26, // TODO: sound.SEDamaged
+	})
 
 	// Stop current animation
 	if routeranim.AnimIsProcessing(p.gameInfo.ClientID, p.skillID) {

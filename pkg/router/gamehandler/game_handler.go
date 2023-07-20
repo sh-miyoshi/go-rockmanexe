@@ -211,13 +211,10 @@ func (g *GameHandler) updateGameInfo() {
 		}
 	}
 
-	for i := 0; i < len(g.info); i++ {
-		g.info[i].Effects = []gameinfo.Effect{}
-		for _, e := range effects {
-			if g.info[i].ClientID != e.OwnerClientID {
-				e.Pos.X = battlecommon.FieldNum.X - e.Pos.X - 1
-			}
-			g.info[i].Effects = append(g.info[i].Effects, e)
+	sounds := []gameinfo.Sound{}
+	for _, o := range g.objects {
+		for _, s := range queue.PopAll(o.queueIDs[queue.TypeSound]) {
+			sounds = append(sounds, *s.(*gameinfo.Sound))
 		}
 	}
 
@@ -225,6 +222,16 @@ func (g *GameHandler) updateGameInfo() {
 	for i := 0; i < len(g.info); i++ {
 		g.info[i].Objects = objects[i]
 		g.info[i].Anims = anims[i]
+
+		g.info[i].Effects = []gameinfo.Effect{}
+		for _, e := range effects {
+			if g.info[i].ClientID != e.OwnerClientID {
+				e.Pos.X = battlecommon.FieldNum.X - e.Pos.X - 1
+			}
+			g.info[i].Effects = append(g.info[i].Effects, e)
+		}
+
+		g.info[i].Sounds = append([]gameinfo.Sound{}, sounds...)
 	}
 	g.updatePanelObject()
 	g.gameCount++
