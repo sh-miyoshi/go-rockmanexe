@@ -11,7 +11,7 @@ res:
 	move .\data\private\sounds.dxa ".\data\"
 	git add .\data\images.dxa .\data\sounds.dxa
 protoc:
-	cd pkg/oldnet/netconnpb && \
+	cd pkg/net/netconnpb && \
 	protoc --go_out=plugins=grpc:. *.proto && \
 	move .\github.com\sh-miyoshi\go-rockmanexe\pkg\net\netconnpb\netconn.pb.go . && \
 	rd /s /q github.com
