@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
@@ -47,7 +48,7 @@ func (p *spreadGun) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeHitBig,
+			HitEffectType: resources.EffectTypeHitBig,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}
@@ -141,7 +142,7 @@ func (p *spreadHit) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			DamageType:    damage.TypeNone,
 		})
 

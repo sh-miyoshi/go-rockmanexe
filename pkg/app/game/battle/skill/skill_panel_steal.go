@@ -116,7 +116,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 					Power:         10,
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: battlecommon.EffectTypeNone,
+					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     false,
 					DamageType:    damage.TypeNone,
 				})

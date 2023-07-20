@@ -84,13 +84,13 @@ func (p *waterBomb) Process() (bool, error) {
 		}
 
 		sound.On(resources.SEWaterLanding)
-		localanim.AnimNew(effect.Get(battlecommon.EffectTypeWaterBomb, p.target, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		})

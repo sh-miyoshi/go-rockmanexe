@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
@@ -54,7 +55,7 @@ func (p *vulcan) Process() (bool, error) {
 						Power:         int(p.Arg.Power),
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
-						HitEffectType: battlecommon.EffectTypeSpreadHit,
+						HitEffectType: resources.EffectTypeSpreadHit,
 						BigDamage:     lastAtk,
 						DamageType:    damage.TypeNone,
 					})
@@ -62,7 +63,7 @@ func (p *vulcan) Process() (bool, error) {
 						ID:            uuid.New().String(),
 						OwnerClientID: p.Arg.GameInfo.ClientID,
 						Pos:           target,
-						Type:          battlecommon.EffectTypeVulcanHit1,
+						Type:          resources.EffectTypeVulcanHit1,
 						RandRange:     20,
 					})
 
@@ -72,7 +73,7 @@ func (p *vulcan) Process() (bool, error) {
 							ID:            uuid.New().String(),
 							OwnerClientID: p.Arg.GameInfo.ClientID,
 							Pos:           target,
-							Type:          battlecommon.EffectTypeVulcanHit2,
+							Type:          resources.EffectTypeVulcanHit2,
 							RandRange:     20,
 						})
 
@@ -81,7 +82,7 @@ func (p *vulcan) Process() (bool, error) {
 							Power:         int(p.Arg.Power),
 							TTL:           1,
 							TargetType:    p.Arg.TargetType,
-							HitEffectType: battlecommon.EffectTypeNone,
+							HitEffectType: resources.EffectTypeNone,
 							BigDamage:     lastAtk,
 							DamageType:    damage.TypeNone,
 						})

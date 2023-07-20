@@ -58,7 +58,7 @@ func (p *sword) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}

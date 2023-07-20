@@ -72,20 +72,20 @@ func (p *vulcan) Process() (bool, error) {
 						Power:         int(p.Arg.Power),
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
-						HitEffectType: battlecommon.EffectTypeSpreadHit,
+						HitEffectType: resources.EffectTypeSpreadHit,
 						BigDamage:     lastAtk,
 						DamageType:    damage.TypeNone,
 					})
-					localanim.AnimNew(effect.Get(battlecommon.EffectTypeVulcanHit1, target, 20))
+					localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit1, target, 20))
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
-						localanim.AnimNew(effect.Get(battlecommon.EffectTypeVulcanHit2, target, 20))
+						localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit2, target, 20))
 						localanim.DamageManager().New(damage.Damage{
 							Pos:           target,
 							Power:         int(p.Arg.Power),
 							TTL:           1,
 							TargetType:    p.Arg.TargetType,
-							HitEffectType: battlecommon.EffectTypeNone,
+							HitEffectType: resources.EffectTypeNone,
 							BigDamage:     lastAtk,
 							DamageType:    damage.TypeNone,
 						})

@@ -6,6 +6,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -54,7 +55,7 @@ func (p *bambooLance) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           5,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeBambooHit,
+			HitEffectType: resources.EffectTypeBambooHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 			PushLeft:      1,

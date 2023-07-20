@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -190,7 +191,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			localanim.AnimNew(effect.Get(battlecommon.EffectTypeExclamation, pm.Pos, 0))
+			localanim.AnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power

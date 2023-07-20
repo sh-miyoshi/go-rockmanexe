@@ -6,6 +6,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -78,7 +79,7 @@ func (p *garooBreath) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           garooBreathNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeHeatHit,
+			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 			DamageType:    damage.TypeFire,

@@ -20,8 +20,8 @@ const (
 )
 
 var (
-	images [battlecommon.EffectTypeMax][]int
-	sounds [battlecommon.EffectTypeMax]resources.SEType
+	images [resources.EffectTypeMax][]int
+	sounds [resources.EffectTypeMax]resources.SEType
 )
 
 type effect struct {
@@ -38,29 +38,29 @@ type effect struct {
 type noEffect struct{}
 
 func Init() error {
-	images[battlecommon.EffectTypeHitSmall] = make([]int, 4)
+	images[resources.EffectTypeHitSmall] = make([]int, 4)
 	fname := common.ImagePath + "battle/effect/hit_small.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[battlecommon.EffectTypeHitSmall]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[resources.EffectTypeHitSmall]); res == -1 {
 		return fmt.Errorf("failed to load hit small effect image %s", fname)
 	}
-	images[battlecommon.EffectTypeHitBig] = make([]int, 6)
+	images[resources.EffectTypeHitBig] = make([]int, 6)
 	fname = common.ImagePath + "battle/effect/hit_big.png"
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[battlecommon.EffectTypeHitBig]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[resources.EffectTypeHitBig]); res == -1 {
 		return fmt.Errorf("failed to load hit big effect image %s", fname)
 	}
-	images[battlecommon.EffectTypeExplode] = make([]int, 16)
+	images[resources.EffectTypeExplode] = make([]int, 16)
 	fname = common.ImagePath + "battle/effect/explode.png"
-	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[battlecommon.EffectTypeExplode]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[resources.EffectTypeExplode]); res == -1 {
 		return fmt.Errorf("failed to load explode effect image %s", fname)
 	}
-	images[battlecommon.EffectTypeCannonHit] = make([]int, 7)
+	images[resources.EffectTypeCannonHit] = make([]int, 7)
 	fname = common.ImagePath + "battle/effect/cannon_hit.png"
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[battlecommon.EffectTypeCannonHit]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[resources.EffectTypeCannonHit]); res == -1 {
 		return fmt.Errorf("failed to load cannon hit effect image %s", fname)
 	}
-	images[battlecommon.EffectTypeSpreadHit] = make([]int, 6)
+	images[resources.EffectTypeSpreadHit] = make([]int, 6)
 	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[battlecommon.EffectTypeSpreadHit]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[resources.EffectTypeSpreadHit]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	tmp := make([]int, 8)
@@ -68,46 +68,46 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	images[battlecommon.EffectTypeVulcanHit1] = []int{}
-	images[battlecommon.EffectTypeVulcanHit2] = []int{}
+	images[resources.EffectTypeVulcanHit1] = []int{}
+	images[resources.EffectTypeVulcanHit2] = []int{}
 	for i := 0; i < 4; i++ {
-		images[battlecommon.EffectTypeVulcanHit1] = append(images[battlecommon.EffectTypeVulcanHit1], tmp[i])
-		images[battlecommon.EffectTypeVulcanHit2] = append(images[battlecommon.EffectTypeVulcanHit2], tmp[i+4])
+		images[resources.EffectTypeVulcanHit1] = append(images[resources.EffectTypeVulcanHit1], tmp[i])
+		images[resources.EffectTypeVulcanHit2] = append(images[resources.EffectTypeVulcanHit2], tmp[i+4])
 	}
-	images[battlecommon.EffectTypeWaterBomb] = make([]int, 12)
+	images[resources.EffectTypeWaterBomb] = make([]int, 12)
 	fname = common.ImagePath + "battle/effect/water_bomb.png"
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, images[battlecommon.EffectTypeWaterBomb]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, images[resources.EffectTypeWaterBomb]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 7; i < 12; i++ {
-		images[battlecommon.EffectTypeWaterBomb][i] = images[battlecommon.EffectTypeWaterBomb][6]
+		images[resources.EffectTypeWaterBomb][i] = images[resources.EffectTypeWaterBomb][6]
 	}
 
-	images[battlecommon.EffectTypeBlock] = make([]int, 4)
+	images[resources.EffectTypeBlock] = make([]int, 4)
 	fname = common.ImagePath + "battle/effect/block.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[battlecommon.EffectTypeBlock]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[resources.EffectTypeBlock]); res == -1 {
 		return fmt.Errorf("failed to load block effect image %s", fname)
 	}
 
-	images[battlecommon.EffectTypeBambooHit] = append([]int{}, images[battlecommon.EffectTypeSpreadHit]...)
-	images[battlecommon.EffectTypeHeatHit] = append([]int{}, images[battlecommon.EffectTypeCannonHit]...)
-	images[battlecommon.EffectTypeExclamation] = make([]int, 6)
+	images[resources.EffectTypeBambooHit] = append([]int{}, images[resources.EffectTypeSpreadHit]...)
+	images[resources.EffectTypeHeatHit] = append([]int{}, images[resources.EffectTypeCannonHit]...)
+	images[resources.EffectTypeExclamation] = make([]int, 6)
 	fname = common.ImagePath + "battle/effect/exclamation.png"
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 104, 102, images[battlecommon.EffectTypeExclamation]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 104, 102, images[resources.EffectTypeExclamation]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 3; i < 6; i++ {
-		images[battlecommon.EffectTypeExclamation][i] = images[battlecommon.EffectTypeExclamation][2]
+		images[resources.EffectTypeExclamation][i] = images[resources.EffectTypeExclamation][2]
 	}
 
-	for i := 0; i < battlecommon.EffectTypeMax; i++ {
+	for i := 0; i < resources.EffectTypeMax; i++ {
 		sounds[i] = -1
 	}
-	sounds[battlecommon.EffectTypeCannonHit] = resources.SECannonHit
-	sounds[battlecommon.EffectTypeHitSmall] = resources.SEBusterHit
-	sounds[battlecommon.EffectTypeHitBig] = resources.SEBusterHit
-	sounds[battlecommon.EffectTypeBlock] = resources.SEBlock
-	sounds[battlecommon.EffectTypeHeatHit] = resources.SEExplode
+	sounds[resources.EffectTypeCannonHit] = resources.SECannonHit
+	sounds[resources.EffectTypeHitSmall] = resources.SEBusterHit
+	sounds[resources.EffectTypeHitBig] = resources.SEBusterHit
+	sounds[resources.EffectTypeBlock] = resources.SEBlock
+	sounds[resources.EffectTypeHeatHit] = resources.SEExplode
 	// TODO add exclamation se
 
 	return nil
@@ -138,17 +138,17 @@ func Get(typ int, pos common.Point, randRange int) anim.Anim {
 	}
 
 	switch typ {
-	case battlecommon.EffectTypeNone:
+	case resources.EffectTypeNone:
 		return &noEffect{}
-	case battlecommon.EffectTypeExplode:
+	case resources.EffectTypeExplode:
 		res.delay = explodeDelay
-	case battlecommon.EffectTypeVulcanHit1:
+	case resources.EffectTypeVulcanHit1:
 		res.ofs.Y -= 30
-	case battlecommon.EffectTypeVulcanHit2:
+	case resources.EffectTypeVulcanHit2:
 		res.ofs.Y -= 10
-	case battlecommon.EffectTypeWaterBomb:
+	case resources.EffectTypeWaterBomb:
 		res.delay = waterBombDelay
-	case battlecommon.EffectTypeExclamation:
+	case resources.EffectTypeExclamation:
 		res.delay = exclamationDelay
 		res.ofs.Y -= 40
 	}

@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -39,7 +40,7 @@ func (e *enemyTarget) End() {
 func (e *enemyTarget) Process() (bool, error) {
 	if e.pm.HP <= 0 {
 		deleteanim.New(e.image, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(battlecommon.EffectTypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}

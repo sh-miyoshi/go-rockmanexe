@@ -75,7 +75,7 @@ func (p *spreadGun) Process() (bool, error) {
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: battlecommon.EffectTypeHitBig,
+					HitEffectType: resources.EffectTypeHitBig,
 					DamageType:    damage.TypeNone,
 				})
 				// Spreading
@@ -133,13 +133,13 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		localanim.AnimNew(effect.Get(battlecommon.EffectTypeSpreadHit, p.pos, 5))
+		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.pos, 5))
 		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			DamageType:    damage.TypeNone,
 		})
 

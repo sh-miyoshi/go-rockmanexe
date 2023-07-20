@@ -557,10 +557,10 @@ func (a *act) Process() bool {
 	case battlecommon.PlayerActBuster:
 		if a.count == 1 {
 			s := a.ShotPower
-			eff := battlecommon.EffectTypeHitSmall
+			eff := resources.EffectTypeHitSmall
 			if a.Charged {
 				s *= 10
-				eff = battlecommon.EffectTypeHitBig
+				eff = resources.EffectTypeHitBig
 			}
 
 			y := a.pPos.Y

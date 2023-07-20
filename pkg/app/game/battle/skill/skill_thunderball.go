@@ -107,7 +107,7 @@ func (p *thunderBall) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
 			DamageType:    damage.TypeElec,

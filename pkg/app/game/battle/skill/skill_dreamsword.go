@@ -48,7 +48,7 @@ func (p *dreamSword) Process() (bool, error) {
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: battlecommon.EffectTypeNone,
+					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
 					DamageType:    damage.TypeNone,

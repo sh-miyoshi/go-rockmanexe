@@ -93,7 +93,7 @@ func (p *boomerang) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeSpreadHit,
+			HitEffectType: resources.EffectTypeSpreadHit,
 			ShowHitArea:   false,
 			DamageType:    damage.TypeWood,
 		})

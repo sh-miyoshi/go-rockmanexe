@@ -129,7 +129,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	if p.objectInfo.HP > p.hpMax {
 		p.objectInfo.HP = p.hpMax
 	}
-	if dm.HitEffectType != battlecommon.EffectTypeNone {
+	if dm.HitEffectType != resources.EffectTypeNone {
 		logger.Debug("Add effect %v", dm.HitEffectType)
 
 		queue.Push(p.queueIDs[queue.TypeEffect], &gameinfo.Effect{
@@ -262,9 +262,9 @@ func (a *playerAct) Process() bool {
 			damageAdd := func(pos common.Point, power int) bool {
 				if a.getPanelInfo(pos).ObjectID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
-					eff := battlecommon.EffectTypeHitSmall
+					eff := resources.EffectTypeHitSmall
 					if buster.IsCharged {
-						eff = battlecommon.EffectTypeHitBig
+						eff = resources.EffectTypeHitBig
 					}
 
 					routeranim.DamageNew(a.ownerClientID, damage.Damage{

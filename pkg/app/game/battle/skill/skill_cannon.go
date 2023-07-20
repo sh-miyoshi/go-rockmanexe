@@ -71,7 +71,7 @@ func (p *cannon) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: battlecommon.EffectTypeCannonHit,
+			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}
