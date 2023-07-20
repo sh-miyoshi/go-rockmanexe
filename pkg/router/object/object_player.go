@@ -216,6 +216,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		TargetType:    target,
 
 		GameInfo: p.gameInfo,
+		QueueIDs: p.queueIDs[:],
 	})
 	p.skillID = routeranim.AnimNew(chipInfo.ChipUserClientID, s)
 	p.skillInst = s

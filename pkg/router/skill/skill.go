@@ -16,6 +16,7 @@ type Argument struct {
 	TargetType    int
 
 	GameInfo *gameinfo.GameInfo
+	QueueIDs []string
 }
 
 type SkillAnim interface {
