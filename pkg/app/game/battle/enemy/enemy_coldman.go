@@ -2,6 +2,7 @@ package enemy
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -12,6 +13,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -33,15 +35,21 @@ var (
 )
 
 type enemyColdman struct {
-	pm     EnemyParam
-	images [coldmanActTypeMax][]int
-	count  int
-	state  int
+	pm        EnemyParam
+	images    [coldmanActTypeMax][]int
+	count     int
+	state     int
+	nextState int
+	waitCount int
+	moveNum   int
 }
 
 func (e *enemyColdman) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = coldmanActTypeStand
+	e.waitCount = 60
+	e.nextState = coldmanActTypeMove
+	e.moveNum = rand.Intn(2) + 2
 
 	// Load Images
 	name, ext := GetStandImageFile(IDColdman)
@@ -113,11 +121,30 @@ func (e *enemyColdman) Process() (bool, error) {
 	}
 
 	switch e.state {
+	case coldmanActTypeStand:
+		e.waitCount--
+		if e.waitCount <= 0 {
+			e.state = e.nextState
+			e.count = 0
+			return false, nil
+		}
+	case coldmanActTypeMove:
+		if e.count == 2*coldmanDelays[coldmanActTypeMove] {
+			e.moveRandom()
+
+			e.waitCount = 60
+			e.state = coldmanActTypeStand
+			e.moveNum--
+			if e.moveNum <= 0 {
+				// TODO next action
+				e.moveNum = rand.Intn(2) + 2
+			}
+		}
 	case coldmanActTypeDamage:
 		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
-			// e.waitCount = 20
+			e.waitCount = 20
 			e.state = coldmanActTypeStand
-			// e.nextState = coldmanActTypeMove
+			e.nextState = coldmanActTypeMove
 			e.count = 0
 			return false, nil
 		}
@@ -197,4 +224,24 @@ func (e *enemyColdman) getCurrentImagePointer() *int {
 		n = len(e.images[e.state]) - 1
 	}
 	return &e.images[e.state][n]
+}
+
+func (e *enemyColdman) moveRandom() {
+	// 移動先は最後列のどこか
+	x := battlecommon.FieldNum.X - 1
+	for i := 0; i < 10; i++ {
+		next := common.Point{
+			X: x,
+			Y: rand.Intn(battlecommon.FieldNum.Y),
+		}
+		if battlecommon.MoveObjectDirect(
+			&e.pm.Pos,
+			next,
+			battlecommon.PanelTypeEnemy,
+			true,
+			field.GetPanelInfo,
+		) {
+			return
+		}
+	}
 }
