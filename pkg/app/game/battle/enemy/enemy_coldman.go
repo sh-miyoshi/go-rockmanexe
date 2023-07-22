@@ -28,6 +28,10 @@ const (
 	coldmanActTypeMax
 )
 
+var (
+	coldmanDelays = [coldmanActTypeMax]int{1, 1, 2, 1, 1, 1, 5}
+)
+
 type enemyColdman struct {
 	pm     EnemyParam
 	images [coldmanActTypeMax][]int
@@ -104,6 +108,20 @@ func (e *enemyColdman) Process() (bool, error) {
 	}
 
 	// Enemy Logic
+	if e.pm.InvincibleCount > 0 {
+		e.pm.InvincibleCount--
+	}
+
+	switch e.state {
+	case coldmanActTypeDamage:
+		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
+			// e.waitCount = 20
+			e.state = coldmanActTypeStand
+			// e.nextState = coldmanActTypeMove
+			e.count = 0
+			return false, nil
+		}
+	}
 
 	e.count++
 	return false, nil
@@ -140,7 +158,18 @@ func (e *enemyColdman) Draw() {
 }
 
 func (e *enemyColdman) DamageProc(dm *damage.Damage) bool {
-	return damageProc(dm, &e.pm)
+	if damageProc(dm, &e.pm) {
+		if !dm.BigDamage {
+			return true
+		}
+
+		e.state = coldmanActTypeDamage
+		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		e.count = 0
+		return true
+	}
+
+	return false
 }
 
 func (e *enemyColdman) GetParam() objanim.Param {
@@ -163,7 +192,7 @@ func (e *enemyColdman) MakeInvisible(count int) {
 }
 
 func (e *enemyColdman) getCurrentImagePointer() *int {
-	n := (e.count / aquamanDelays[e.state])
+	n := (e.count / coldmanDelays[e.state])
 	if n >= len(e.images[e.state]) {
 		n = len(e.images[e.state]) - 1
 	}
