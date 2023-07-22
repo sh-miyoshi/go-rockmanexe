@@ -33,7 +33,7 @@ jobs:
           ./fakeserver &
           cd ../../cmd/router
           go build
-          ./router &
+          ./router --config ../../test/router/router_config.yaml &
       - name: API Test
         working-directory: ./test/router
         run: ./api_test.sh

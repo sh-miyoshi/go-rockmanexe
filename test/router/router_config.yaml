@@ -5,5 +5,5 @@ log:
   file: "router.log"
 acceptable_version: ""
 chip_file_path: "../../data/chipList.yaml"
-# debug:
-#   invincible_count: 120
+debug:
+  invincible_count: 0 # テスト用にインビジブルを無効化する
