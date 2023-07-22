@@ -33,7 +33,7 @@ const (
 )
 
 var (
-	coldmanDelays = [coldmanActTypeMax]int{1, 1, 2, 1, 1, 1, 5}
+	coldmanDelays = [coldmanActTypeMax]int{1, 1, 2, 7, 1, 1, 5}
 )
 
 type enemyColdman struct {
@@ -195,9 +195,12 @@ func (e *enemyColdman) Process() (bool, error) {
 				pos := localanim.ObjAnimGetObjPos(id)
 				if pos.Y == playerPos.Y {
 					e.targetCubeID = id
-					e.targetPos = common.Point{X: pos.X + 1, Y: pos.Y}
-					e.state = coldmanActTypeMove
-					e.nextState = coldmanActTypeIceShoot
+					targetPos := common.Point{X: pos.X + 1, Y: pos.Y}
+					if !targetPos.Equal(e.pm.Pos) {
+						e.targetPos = targetPos
+						e.state = coldmanActTypeMove
+						e.nextState = coldmanActTypeIceShoot
+					}
 					return false, nil
 				}
 			}
@@ -210,9 +213,18 @@ func (e *enemyColdman) Process() (bool, error) {
 			return false, nil
 		}
 
-		// TODO: PUSH
+		if e.count == 3*coldmanDelays[coldmanActTypeIceShoot] {
+			e.targetCubeID = ""
+			// TODO: PUSH
+		}
 
-		panic("not implemented yet")
+		if e.count == 6*coldmanDelays[coldmanActTypeIceShoot] {
+			e.waitCount = 20
+			e.state = coldmanActTypeStand
+			e.nextState = coldmanActTypeMove
+			e.count = 0
+			return false, nil
+		}
 	case coldmanActTypeBodyBlow:
 		panic("not implemented yet")
 	case coldmanActTypeBless:
@@ -337,7 +349,7 @@ func (e *enemyColdman) createCube() error {
 	// パターン1: 真ん中, 縦一列
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		pm := object.ObjectParam{
-			Pos:           common.Point{X: 2, Y: y},
+			Pos:           common.Point{X: 4, Y: y},
 			HP:            200,
 			OnwerCharType: objanim.ObjTypeEnemy,
 		}
