@@ -79,7 +79,6 @@ var (
 	imgMindFrame  int
 )
 
-// New ...
 func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
