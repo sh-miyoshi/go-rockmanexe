@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -148,6 +149,7 @@ func (e *enemyColdman) Process() (bool, error) {
 	case coldmanActTypeIceCreate:
 		if e.count == 0 {
 			field.SetBlackoutCount(90)
+			skill.SetChipNameDraw("アイスキューブ", false)
 
 			if err := e.createCube(); err != nil {
 				return false, nil

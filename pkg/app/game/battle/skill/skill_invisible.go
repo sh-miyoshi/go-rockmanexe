@@ -30,7 +30,7 @@ func (p *invisible) Process() (bool, error) {
 	if p.count == 1 {
 		field.SetBlackoutCount(showTm)
 		localanim.ObjAnimMakeInvisible(p.Arg.OwnerID, 6*60)
-		setChipNameDraw("インビジブル")
+		SetChipNameDraw("インビジブル", true)
 	}
 
 	return p.count > showTm, nil

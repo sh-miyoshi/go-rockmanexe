@@ -82,7 +82,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 		if p.count == 1 {
 			sound.On(resources.SEAreaSteal)
 			field.SetBlackoutCount(90)
-			setChipNameDraw("エリアスチール")
+			SetChipNameDraw("エリアスチール", true)
 
 			// Target Lineを実行時の一番最初に設定する
 			if p.myPanelType == battlecommon.PanelTypePlayer {
