@@ -49,11 +49,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	for _, c := range plyr.ChipFolder {
 		res.chipFolder = append(res.chipFolder, c)
 	}
-	// Shuffle folder
-	for i := 0; i < 10; i++ {
-		for j := 0; j < len(res.chipFolder); j++ {
-			n := rand.Intn(len(res.chipFolder))
-			res.chipFolder[j], res.chipFolder[n] = res.chipFolder[n], res.chipFolder[j]
+	if !config.Get().Debug.UseDebugFolder {
+		// Shuffle folder
+		for i := 0; i < 10; i++ {
+			for j := 0; j < len(res.chipFolder); j++ {
+				n := rand.Intn(len(res.chipFolder))
+				res.chipFolder[j], res.chipFolder[n] = res.chipFolder[n], res.chipFolder[j]
+			}
 		}
 	}
 	logger.Debug("Player info: %+v", res)
