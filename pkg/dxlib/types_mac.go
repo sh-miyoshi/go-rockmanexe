@@ -19,8 +19,9 @@ type DrawRotaGraphOption struct {
 	ReverseYFlag *int32
 }
 
+// TODO: 正しい値を入れる
+
 const (
-	// TODO: 正しい値を入れる
 	DX_BLENDMODE_INVSRC  = 0
 	DX_BLENDMODE_ADD     = 0
 	DX_BLENDMODE_NOBLEND = 0
@@ -30,6 +31,8 @@ const (
 	DX_PLAYTYPE_BACK = 0
 
 	DX_FONTTYPE_EDGE = 0
+
+	DX_SCREEN_BACK = 0
 )
 
 const (
@@ -38,14 +41,19 @@ const (
 )
 
 const (
-	// TODO: 正しい値を入れる
-	KEY_INPUT_Z     = 0
-	KEY_INPUT_X     = 0
-	KEY_INPUT_LEFT  = 0
-	KEY_INPUT_RIGHT = 0
-	KEY_INPUT_UP    = 0
-	KEY_INPUT_DOWN  = 0
-	KEY_INPUT_A     = 0
-	KEY_INPUT_S     = 0
-	KEY_INPUT_D     = 0
+	KEY_INPUT_Z      = 0
+	KEY_INPUT_X      = 0
+	KEY_INPUT_LEFT   = 0
+	KEY_INPUT_RIGHT  = 0
+	KEY_INPUT_UP     = 0
+	KEY_INPUT_DOWN   = 0
+	KEY_INPUT_A      = 0
+	KEY_INPUT_S      = 0
+	KEY_INPUT_D      = 0
+	KEY_INPUT_ESCAPE = 0
+)
+
+const (
+	DX_INPUT_PAD1 = 0
+	DX_INPUT_KEY  = 0
 )

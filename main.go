@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/sh-miyoshi/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -17,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -77,7 +77,7 @@ func main() {
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
 	dxlib.SetWindowSizeChangeEnableFlag(dxlib.FALSE, dxlib.FALSE)
-	dxlib.SetGraphMode(int32(common.MaxScreenSize.X), int32(common.MaxScreenSize.Y))
+	dxlib.SetGraphMode(common.MaxScreenSize.X, common.MaxScreenSize.Y)
 	dxlib.SetWindowSize(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
 
 	dxlib.DxLib_Init()
@@ -116,7 +116,7 @@ MAIN:
 
 		fpsMgr.Wait()
 		if config.Get().Debug.ShowDebugData {
-			dxlib.DrawFormatString(int32(common.ScreenSize.X-60), 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+			dxlib.DrawFormatString(common.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
 		}
 	}
 

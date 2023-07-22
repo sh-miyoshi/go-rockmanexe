@@ -19,6 +19,10 @@ func StringPtr(a string) *string {
 	return &a
 }
 
+func Init(dllFile string) {
+	panic("not implemented yet")
+}
+
 func LoadGraph(fname string) int {
 	if disabled {
 		return 0
@@ -252,5 +256,65 @@ func SetWindowSize(width int32, height int32) {
 }
 
 func GetJoypadInputState(inputType int32) int32 {
+	panic("not implemented yet")
+}
+
+func SetDoubleStartValidFlag(flag int32) int32 {
+	panic("not implemented yet")
+}
+
+func SetAlwaysRunFlag(flag int32) int32 {
+	panic("not implemented yet")
+}
+
+func SetOutApplicationLogValidFlag(flag int32) int32 {
+	panic("not implemented yet")
+}
+
+func AddFontFile(fontFilePath string) *int32 {
+	panic("not implemented yet")
+}
+
+func ChangeWindowMode(flag int32) int32 {
+	panic("not implemented yet")
+}
+
+func SetWindowSizeChangeEnableFlag(flag int32, fitScreen int32) int32 {
+	panic("not implemented yet")
+}
+
+func SetGraphMode(sizeX int, sizeY int) {
+	panic("not implemented yet")
+}
+
+func DxLib_Init() {
+	panic("not implemented yet")
+}
+
+func SetDrawScreen(drawScreen int32) int32 {
+	panic("not implemented yet")
+}
+
+func ScreenFlip() int32 {
+	panic("not implemented yet")
+}
+
+func ProcessMessage() int32 {
+	panic("not implemented yet")
+}
+
+func ClearDrawScreen() int32 {
+	panic("not implemented yet")
+}
+
+func CheckHitKey(keyCode int32) int32 {
+	panic("not implemented yet")
+}
+
+func WaitKey() {
+	panic("not implemented yet")
+}
+
+func DxLib_End() {
 	panic("not implemented yet")
 }
