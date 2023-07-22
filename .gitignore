@@ -4,6 +4,7 @@ tmp/
 save.dat
 *.log
 secrets
+*.out
 
 .DS_Store
 .vscode/
