@@ -4,6 +4,9 @@ all:
 dev:
 	go build -o rockman.exe
 	rockman.exe --config data/config_debug.yaml
+dev-mac:
+	go build -tags=mac -o rockman.out
+	./rockman.out --config data/config_debug.yaml
 res:
 	.\tmp\DXArchive\DxaEncode.exe .\data\private\images
 	move .\data\private\images.dxa ".\data\"
