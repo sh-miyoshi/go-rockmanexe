@@ -1,3 +1,6 @@
+//go:build !mac
+// +build !mac
+
 package dxlib
 
 import (
@@ -18,6 +21,10 @@ func Int32Ptr(a int32) *int32 {
 
 func StringPtr(a string) *string {
 	return &a
+}
+
+func Init(dllFile string) {
+	dxlib.Init(dllFile)
 }
 
 func LoadGraph(fname string) int {
@@ -288,4 +295,68 @@ func SetWindowSize(width int32, height int32) {
 	}
 
 	dxlib.SetWindowSize(width, height)
+}
+
+func GetJoypadInputState(inputType int32) int32 {
+	return dxlib.GetJoypadInputState(inputType)
+}
+
+func SetDoubleStartValidFlag(flag int32) int32 {
+	return dxlib.SetDoubleStartValidFlag(flag)
+}
+
+func SetAlwaysRunFlag(flag int32) int32 {
+	return dxlib.SetAlwaysRunFlag(flag)
+}
+
+func SetOutApplicationLogValidFlag(flag int32) int32 {
+	return dxlib.SetOutApplicationLogValidFlag(flag)
+}
+
+func AddFontFile(fontFilePath string) *int32 {
+	return dxlib.AddFontFile(fontFilePath)
+}
+
+func ChangeWindowMode(flag int32) int32 {
+	return dxlib.ChangeWindowMode(flag)
+}
+
+func SetWindowSizeChangeEnableFlag(flag int32, fitScreen int32) int32 {
+	return dxlib.SetWindowSizeChangeEnableFlag(flag, fitScreen)
+}
+
+func SetGraphMode(sizeX int, sizeY int) {
+	dxlib.SetGraphMode(int32(sizeX), int32(sizeY))
+}
+
+func DxLib_Init() {
+	dxlib.DxLib_Init()
+}
+
+func SetDrawScreen(drawScreen int32) int32 {
+	return dxlib.SetDrawScreen(drawScreen)
+}
+
+func ScreenFlip() int32 {
+	return dxlib.ScreenFlip()
+}
+
+func ProcessMessage() int32 {
+	return dxlib.ProcessMessage()
+}
+
+func ClearDrawScreen() int32 {
+	return dxlib.ClearDrawScreen()
+}
+
+func CheckHitKey(keyCode int32) int32 {
+	return dxlib.CheckHitKey(keyCode)
+}
+
+func WaitKey() {
+	dxlib.WaitKey()
+}
+
+func DxLib_End() {
+	dxlib.DxLib_End()
 }

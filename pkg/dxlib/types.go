@@ -1,3 +1,6 @@
+//go:build !mac
+// +build !mac
+
 package dxlib
 
 import "github.com/sh-miyoshi/dxlib"
@@ -28,6 +31,8 @@ const (
 	DX_PLAYTYPE_BACK = dxlib.DX_PLAYTYPE_BACK
 
 	DX_FONTTYPE_EDGE = dxlib.DX_FONTTYPE_EDGE
+
+	DX_SCREEN_BACK = dxlib.DX_SCREEN_BACK
 )
 
 const (
@@ -36,13 +41,19 @@ const (
 )
 
 const (
-	KEY_INPUT_Z     = dxlib.KEY_INPUT_Z
-	KEY_INPUT_X     = dxlib.KEY_INPUT_X
-	KEY_INPUT_LEFT  = dxlib.KEY_INPUT_LEFT
-	KEY_INPUT_RIGHT = dxlib.KEY_INPUT_RIGHT
-	KEY_INPUT_UP    = dxlib.KEY_INPUT_UP
-	KEY_INPUT_DOWN  = dxlib.KEY_INPUT_DOWN
-	KEY_INPUT_A     = dxlib.KEY_INPUT_A
-	KEY_INPUT_S     = dxlib.KEY_INPUT_S
-	KEY_INPUT_D     = dxlib.KEY_INPUT_D
+	KEY_INPUT_Z      = dxlib.KEY_INPUT_Z
+	KEY_INPUT_X      = dxlib.KEY_INPUT_X
+	KEY_INPUT_LEFT   = dxlib.KEY_INPUT_LEFT
+	KEY_INPUT_RIGHT  = dxlib.KEY_INPUT_RIGHT
+	KEY_INPUT_UP     = dxlib.KEY_INPUT_UP
+	KEY_INPUT_DOWN   = dxlib.KEY_INPUT_DOWN
+	KEY_INPUT_A      = dxlib.KEY_INPUT_A
+	KEY_INPUT_S      = dxlib.KEY_INPUT_S
+	KEY_INPUT_D      = dxlib.KEY_INPUT_D
+	KEY_INPUT_ESCAPE = dxlib.KEY_INPUT_ESCAPE
+)
+
+const (
+	DX_INPUT_PAD1 = dxlib.DX_INPUT_PAD1
+	DX_INPUT_KEY  = dxlib.DX_INPUT_KEY
 )
