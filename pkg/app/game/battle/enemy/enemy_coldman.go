@@ -147,14 +147,19 @@ func (e *enemyColdman) Process() (bool, error) {
 			}
 		}
 	case coldmanActTypeIceCreate:
-		if e.count == 0 {
-			field.SetBlackoutCount(90)
-			skill.SetChipNameDraw("アイスキューブ", false)
+		field.SetBlackoutCount(90)
+		skill.SetChipNameDraw("アイスキューブ", false)
 
-			if err := e.createCube(); err != nil {
-				return false, nil
-			}
+		if err := e.createCube(); err != nil {
+			return false, err
 		}
+
+		e.moveNum = rand.Intn(2) + 2
+		e.waitCount = 60
+		e.state = coldmanActTypeStand
+		e.nextState = coldmanActTypeMove
+		e.count = 0
+		return false, nil
 	case coldmanActTypeIceShoot:
 		panic("not implemented yet")
 	case coldmanActTypeBodyBlow:
@@ -268,6 +273,14 @@ func (e *enemyColdman) moveRandom() {
 }
 
 func (e *enemyColdman) createCube() error {
+	// 前のアイスキューブがあるなら削除する
+	if len(e.cubeIDs) > 0 {
+		for _, id := range e.cubeIDs {
+			localanim.ObjAnimDelete(id)
+		}
+		e.cubeIDs = []string{}
+	}
+
 	pm := object.ObjectParam{
 		Pos:           common.Point{X: 4, Y: 1}, // TODO(特定のパターンで3個生成)
 		HP:            200,
