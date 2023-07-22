@@ -49,3 +49,8 @@ const (
 	KEY_INPUT_S     = dxlib.KEY_INPUT_S
 	KEY_INPUT_D     = dxlib.KEY_INPUT_D
 )
+
+const (
+	DX_INPUT_PAD1 = dxlib.DX_INPUT_PAD1
+	DX_INPUT_KEY  = dxlib.DX_INPUT_KEY
+)

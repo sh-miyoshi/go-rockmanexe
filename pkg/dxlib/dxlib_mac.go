@@ -250,3 +250,7 @@ func SetWindowSize(width int32, height int32) {
 
 	panic("not implemented yet")
 }
+
+func GetJoypadInputState(inputType int32) int32 {
+	panic("not implemented yet")
+}

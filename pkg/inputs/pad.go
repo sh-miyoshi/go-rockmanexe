@@ -1,6 +1,6 @@
 package inputs
 
-import "github.com/sh-miyoshi/dxlib"
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 
 const padButtonNum = 28
 

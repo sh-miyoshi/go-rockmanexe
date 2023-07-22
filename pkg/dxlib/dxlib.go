@@ -292,3 +292,7 @@ func SetWindowSize(width int32, height int32) {
 
 	dxlib.SetWindowSize(width, height)
 }
+
+func GetJoypadInputState(inputType int32) int32 {
+	return dxlib.GetJoypadInputState(inputType)
+}
