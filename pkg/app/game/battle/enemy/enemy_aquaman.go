@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -15,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -109,7 +111,7 @@ func (e *enemyAquaman) End() {
 	}
 
 	for _, id := range e.waterPipeObjIDs {
-		anim.Delete(id)
+		localanim.AnimDelete(id)
 	}
 	e.waterPipeObjIDs = []string{}
 }
@@ -119,7 +121,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -143,7 +145,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
 					e.targetPos,
-					field.PanelTypeEnemy,
+					battlecommon.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
 				) {
@@ -163,7 +165,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				if battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
 					next,
-					field.PanelTypeEnemy,
+					battlecommon.PanelTypeEnemy,
 					true,
 					field.GetPanelInfo,
 				) {
@@ -196,7 +198,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeShot:
 		if e.count == 0 {
 			// Move to attack position
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			t := common.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				t = objs[0].Pos
@@ -212,14 +214,14 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 
 		if e.count == 0 {
-			e.actID = anim.New(skill.Get(skill.SkillAquamanShot, skill.Argument{
+			e.actID = localanim.AnimNew(skill.Get(skill.SkillAquamanShot, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,
 			}))
 		}
 
-		if !anim.IsProcessing(e.actID) {
+		if !localanim.AnimIsProcessing(e.actID) {
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
 			e.nextState = aquamanActTypeMove
@@ -237,7 +239,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeBomb:
 		if e.count == 3*aquamanDelays[aquamanActTypeBomb] {
 			// ボム登録
-			anim.New(skill.Get(skill.SkillWaterBomb, skill.Argument{
+			localanim.AnimNew(skill.Get(skill.SkillWaterBomb, skill.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,
@@ -276,13 +278,13 @@ func (e *enemyAquaman) Process() (bool, error) {
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 			obj = &object.WaterPipe{}
 			pm.Pos.Y = battlecommon.FieldNum.Y - 1
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 				return false, fmt.Errorf("water pipe create failed: %w", err)
 			}
-			e.waterPipeObjIDs = append(e.waterPipeObjIDs, objanim.New(obj))
+			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 		}
 
 		if e.count == 50 {
@@ -346,11 +348,14 @@ func (e *enemyAquaman) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (e *enemyAquaman) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyAquaman) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -372,7 +377,7 @@ func (e *enemyAquaman) getCurrentImagePointer() *int {
 
 func (e *enemyAquaman) pipeExists() bool {
 	for _, id := range e.waterPipeObjIDs {
-		if objanim.IsProcessing(id) {
+		if localanim.ObjAnimIsProcessing(id) {
 			return true
 		}
 	}

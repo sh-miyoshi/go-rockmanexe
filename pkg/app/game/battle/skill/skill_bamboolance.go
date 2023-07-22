@@ -3,9 +3,10 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -54,7 +55,7 @@ func (p *bambooLance) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TTL:           5,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeBambooHit,
+			HitEffectType: resources.EffectTypeBambooHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 			PushLeft:      1,
@@ -62,7 +63,7 @@ func (p *bambooLance) Process() (bool, error) {
 		}
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			dm.Pos.Y = y
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 
@@ -76,7 +77,7 @@ func (p *bambooLance) Process() (bool, error) {
 func (p *bambooLance) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

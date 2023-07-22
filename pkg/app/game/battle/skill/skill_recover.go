@@ -2,10 +2,10 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -31,7 +31,7 @@ func newRecover(objID string, arg Argument) *recover {
 func (p *recover) Draw() {
 	n := (p.count / delayRecover) % len(imgRecover)
 	if n >= 0 {
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], true)
 	}
@@ -39,14 +39,14 @@ func (p *recover) Draw() {
 
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
-		sound.On(sound.SERecover)
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
-		damage.New(damage.Damage{
+		sound.On(resources.SERecover)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			DamageType:    damage.TypeNone,
 		})
 	}
@@ -62,7 +62,7 @@ func (p *recover) Process() (bool, error) {
 func (p *recover) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

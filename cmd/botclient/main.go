@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/app"
-	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -28,21 +28,22 @@ func main() {
 	}
 
 	logger.InitLogger(true, logfile)
-	app.Init(clientID)
 
 	clientKey := "testtest"
-	netconn.Init(netconn.Config{
+	connInst := netconn.New(netconn.Config{
 		StreamAddr:     streamAddr,
 		ClientID:       clientID,
 		ClientKey:      clientKey,
 		ProgramVersion: "botclient",
 		Insecure:       true,
 	})
-	netconn.GetInst().ConnectRequest()
+	connInst.ConnectRequest()
+
+	app.Init(clientID, connInst)
 
 	// Waiting connection
 	for {
-		st := netconn.GetInst().GetConnStatus()
+		st := connInst.GetConnStatus()
 		if st.Status == netconn.ConnStateOK {
 			break
 		}

@@ -9,12 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -82,7 +84,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -96,11 +98,11 @@ func (e *enemyVolgear) Process() (bool, error) {
 		if e.atkID == volgearAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
 			e.atk.Init()
-			e.atkID = anim.New(&e.atk)
+			e.atkID = localanim.AnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !anim.IsProcessing(e.atkID) {
+		if !localanim.AnimIsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = volgearInitWait
 		}
@@ -121,7 +123,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				next,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {
@@ -164,11 +166,14 @@ func (e *enemyVolgear) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyVolgear) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyVolgear) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -226,14 +231,14 @@ func (a *volgearAtk) Process() (bool, error) {
 	}
 
 	if a.atkID != "" {
-		if !anim.IsProcessing(a.atkID) {
+		if !localanim.AnimIsProcessing(a.atkID) {
 			a.endCount = delayVolgearAtk * 3
 			return false, nil
 		}
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = anim.New(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+		a.atkID = localanim.AnimNew(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
@@ -246,6 +251,6 @@ func (a *volgearAtk) Process() (bool, error) {
 func (a *volgearAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.objID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }

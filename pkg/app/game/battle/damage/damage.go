@@ -1,8 +1,11 @@
 package damage
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -19,6 +22,7 @@ const (
 )
 
 type Damage struct {
+	OwnerClientID string
 	ID            string
 	Pos           common.Point
 	Power         int
@@ -33,45 +37,8 @@ type Damage struct {
 	// TODO: のけぞり(単体), インビジ貫通
 }
 
-var (
-	damages = make(map[string]*Damage)
-)
-
-func New(dm Damage) string {
-	dm.ID = uuid.New().String()
-	damages[dm.ID] = &dm
-	return dm.ID
-}
-
-func MgrProcess() {
-	for id, d := range damages {
-		d.TTL--
-		if d.TTL <= 0 {
-			delete(damages, id)
-		}
-	}
-}
-
-func Get(pos common.Point) *Damage {
-	for _, d := range damages {
-		if d.Pos.X == pos.X && d.Pos.Y == pos.Y {
-			return d
-		}
-	}
-	return nil
-}
-
-func Exists(id string) bool {
-	_, ok := damages[id]
-	return ok
-}
-
-func Remove(id string) {
-	delete(damages, id)
-}
-
-func RemoveAll() {
-	damages = make(map[string]*Damage)
+type DamageManager struct {
+	damages map[string]*Damage
 }
 
 func IsWeakness(charType int, dm Damage) bool {
@@ -86,4 +53,57 @@ func IsWeakness(charType int, dm Damage) bool {
 		return dm.DamageType == TypeFire
 	}
 	return false
+}
+
+func NewManager() *DamageManager {
+	return &DamageManager{
+		damages: make(map[string]*Damage),
+	}
+}
+
+func (m *DamageManager) New(dm Damage) string {
+	dm.ID = uuid.New().String()
+	m.damages[dm.ID] = &dm
+	logger.Debug("Add damage: %+v to damage manager", dm)
+	return dm.ID
+}
+
+func (m *DamageManager) Process() {
+	for id, d := range m.damages {
+		d.TTL--
+		if d.TTL <= 0 {
+			delete(m.damages, id)
+		}
+	}
+}
+
+func (m *DamageManager) Get(pos common.Point) *Damage {
+	for _, d := range m.damages {
+		if d.Pos.X == pos.X && d.Pos.Y == pos.Y {
+			return d
+		}
+	}
+	return nil
+}
+
+func (m *DamageManager) Exists(id string) bool {
+	_, ok := m.damages[id]
+	return ok
+}
+
+func (m *DamageManager) Remove(id string) {
+	delete(m.damages, id)
+}
+
+func (m *DamageManager) RemoveAll() {
+	m.damages = make(map[string]*Damage)
+}
+
+func (m *DamageManager) PrintAllData() {
+	msg := "current damages: { "
+	for id, d := range m.damages {
+		msg += fmt.Sprintf("%s: %+v, ", id, *d)
+	}
+	msg += " }"
+	logger.Debug(msg)
 }

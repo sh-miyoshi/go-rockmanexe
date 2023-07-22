@@ -3,11 +3,11 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -42,7 +42,7 @@ func newCannon(objID string, cannonType int, arg Argument) *cannon {
 }
 
 func (p *cannon) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delayCannonBody
@@ -64,14 +64,14 @@ func (p *cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
-		sound.On(sound.SECannon)
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		sound.On(resources.SECannon)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeCannonHit,
+			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}
@@ -80,7 +80,7 @@ func (p *cannon) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
-					damage.New(dm)
+					localanim.DamageManager().New(dm)
 					break
 				}
 			}
@@ -88,7 +88,7 @@ func (p *cannon) Process() (bool, error) {
 			for x := pos.X - 1; x >= 0; x-- {
 				dm.Pos.X = x
 				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
-					damage.New(dm)
+					localanim.DamageManager().New(dm)
 					break
 				}
 			}
@@ -109,10 +109,10 @@ func (p *cannon) Process() (bool, error) {
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *cannon) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

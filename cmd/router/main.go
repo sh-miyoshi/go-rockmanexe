@@ -6,10 +6,13 @@ import (
 	"net"
 	"os"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconn"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gamehandler"
 	"google.golang.org/grpc"
 )
 
@@ -27,6 +30,12 @@ func main() {
 	c := config.Get()
 	logger.InitLogger(c.Log.DebugLog, c.Log.FileName)
 
+	// Init Chip Info
+	if err := chip.Init(c.ChipFilePath); err != nil {
+		logger.Error("Failed to initialize chip info: %+v", err)
+		return
+	}
+
 	// Listen data connection
 	logger.Info("start data stream with %s", c.DataStreamAddr)
 	listen, err := net.Listen("tcp", c.DataStreamAddr)
@@ -34,6 +43,9 @@ func main() {
 		logger.Error("Failed to listen data stream: %v", err)
 		return
 	}
+	session.SetLogicGenerator(gamehandler.NewHandler)
+
+	go session.ManagerExec()
 
 	s := grpc.NewServer()
 	pb.RegisterNetConnServer(s, netconn.New())

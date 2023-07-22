@@ -6,15 +6,10 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -39,14 +34,6 @@ type ConnectStatus struct {
 	Error  error
 }
 
-type sendObject struct {
-	objects       map[string]object.Object
-	removeObjects []object.Object
-	damages       []damage.Damage
-	effects       []effect.Effect
-	sounds        []sound.Sound
-}
-
 type NetConn struct {
 	config        Config
 	conn          *grpc.ClientConn
@@ -55,29 +42,20 @@ type NetConn struct {
 	sessionID     string
 	allUserIDs    []string
 
-	gameStatus pb.Data_Status
-	gameInfo   session.GameInfo
+	gameStatus pb.Response_Status
+	gameInfo   gameinfo.GameInfo
 	gameInfoMu sync.Mutex
-	sendInfo   sendObject
 }
 
-var (
-	inst NetConn
-)
-
-func Init(conf Config) {
-	inst.config = conf
-	inst.connectStatus = ConnectStatus{
-		Status: ConnStateWaiting,
-		Error:  nil,
+func New(conf Config) *NetConn {
+	return &NetConn{
+		config:     conf,
+		gameStatus: pb.Response_CONNECTWAIT,
+		connectStatus: ConnectStatus{
+			Status: ConnStateWaiting,
+			Error:  nil,
+		},
 	}
-	inst.sendInfo = sendObject{
-		objects: make(map[string]object.Object),
-	}
-}
-
-func GetInst() *NetConn {
-	return &inst
 }
 
 func (n *NetConn) GetConnStatus() ConnectStatus {
@@ -111,184 +89,39 @@ func (n *NetConn) Disconnect() {
 	}
 }
 
-func (n *NetConn) GetGameStatus() pb.Data_Status {
+func (n *NetConn) GetGameStatus() pb.Response_Status {
 	return n.gameStatus
 }
 
-func (n *NetConn) GetGameInfo() session.GameInfo {
+func (n *NetConn) GetGameInfo() gameinfo.GameInfo {
 	return n.gameInfo
 }
 
-func (n *NetConn) SendSignal(signal pb.Action_SignalType) error {
-	return n.dataStream.Send(&pb.Action{
+func (n *NetConn) CleanupSounds() {
+	n.gameInfoMu.Lock()
+	n.gameInfo.Sounds = []gameinfo.Sound{}
+	n.gameInfoMu.Unlock()
+}
+
+func (n *NetConn) SendSignal(signalType pb.Request_SignalType, data []byte) error {
+	return n.dataStream.Send(&pb.Request{
 		SessionID: n.sessionID,
 		ClientID:  n.config.ClientID,
-		Type:      pb.Action_SENDSIGNAL,
-		Data:      &pb.Action_Signal{Signal: signal},
+		Type:      pb.Request_SENDSIGNAL,
+		Data:      &pb.Request_Signal_{Signal: &pb.Request_Signal{Type: signalType, RawData: data}},
 	})
 }
 
-func (n *NetConn) SendObject(obj object.Object) {
-	obj.ClientID = n.config.ClientID
-	n.sendInfo.objects[obj.ID] = obj
-}
-
-func (n *NetConn) RemoveObject(objID string) {
-	obj := object.Object{
-		ID: objID,
-	}
-	n.sendInfo.removeObjects = append(n.sendInfo.removeObjects, obj)
-}
-
-func (n *NetConn) AddDamage(dm damage.Damage) {
-	dm.ClientID = n.config.ClientID
-	n.sendInfo.damages = append(n.sendInfo.damages, dm)
-}
-
-func (n *NetConn) RemoveDamage(id string) {
-	n.gameInfoMu.Lock()
-	defer n.gameInfoMu.Unlock()
-
-	for i, dm := range n.gameInfo.HitDamages {
-		if dm.ID == id {
-			n.gameInfo.HitDamages = append(n.gameInfo.HitDamages[:i], n.gameInfo.HitDamages[i+1:]...)
-			return
-		}
-	}
-}
-
-func (n *NetConn) SendEffect(eff effect.Effect) {
-	eff.ClientID = n.config.ClientID
-	n.sendInfo.effects = append(n.sendInfo.effects, eff)
-}
-
-func (n *NetConn) RemoveEffect(id string) {
-	n.gameInfoMu.Lock()
-	defer n.gameInfoMu.Unlock()
-
-	for i, eff := range n.gameInfo.Effects {
-		if eff.ID == id {
-			n.gameInfo.Effects = append(n.gameInfo.Effects[:i], n.gameInfo.Effects[i+1:]...)
-			return
-		}
-	}
-}
-
-func (n *NetConn) AddSound(seType int) {
-	se := sound.Sound{
-		ClientID: n.config.ClientID,
-		SEType:   seType,
-	}
-	n.sendInfo.sounds = append(n.sendInfo.sounds, se)
-}
-
-func (n *NetConn) BulkSendData() error {
-	if n.gameStatus == pb.Data_GAMEEND {
-		return nil
-	}
-
-	// TODO 一度の通信で送る
-
-	// Send objects
-	for _, obj := range n.sendInfo.objects {
-		req := &pb.Action{
-			SessionID: n.sessionID,
-			ClientID:  n.config.ClientID,
-			Type:      pb.Action_UPDATEOBJECT,
-			Data: &pb.Action_ObjectInfo{
-				ObjectInfo: object.Marshal(obj),
-			},
-		}
-
-		if err := n.dataStream.Send(req); err != nil {
-			return fmt.Errorf("send object failed: %w", err)
-		}
-	}
-
-	// Send remove objects
-	for _, obj := range n.sendInfo.removeObjects {
-		req := &pb.Action{
-			SessionID: n.sessionID,
-			ClientID:  n.config.ClientID,
-			Type:      pb.Action_REMOVEOBJECT,
-			Data: &pb.Action_ObjectInfo{
-				ObjectInfo: object.Marshal(obj),
-			},
-		}
-
-		if err := n.dataStream.Send(req); err != nil {
-			return fmt.Errorf("remove object failed: %w", err)
-		}
-	}
-
-	// Send damages
-	if len(n.sendInfo.damages) > 0 {
-		req := &pb.Action{
-			SessionID: n.sessionID,
-			ClientID:  n.config.ClientID,
-			Type:      pb.Action_ADDDAMAGE,
-			Data: &pb.Action_DamageInfo{
-				DamageInfo: damage.Marshal(n.sendInfo.damages),
-			},
-		}
-
-		if err := n.dataStream.Send(req); err != nil {
-			return fmt.Errorf("send damage failed: %w", err)
-		}
-	}
-
-	// Send effects
-	for _, eff := range n.sendInfo.effects {
-		req := &pb.Action{
-			SessionID: n.sessionID,
-			ClientID:  n.config.ClientID,
-			Type:      pb.Action_ADDEFFECT,
-			Data: &pb.Action_Effect{
-				Effect: effect.Marshal(eff),
-			},
-		}
-
-		if err := n.dataStream.Send(req); err != nil {
-			return fmt.Errorf("add effect failed: %w", err)
-		}
-	}
-
-	// Send sounds
-	for _, s := range n.sendInfo.sounds {
-		req := &pb.Action{
-			SessionID: n.sessionID,
-			ClientID:  n.config.ClientID,
-			Type:      pb.Action_ADDSOUND,
-			Data: &pb.Action_Sound{
-				Sound: sound.Marshal(s),
-			},
-		}
-
-		if err := n.dataStream.Send(req); err != nil {
-			return fmt.Errorf("add sound failed: %w", err)
-		}
-	}
-
-	n.sendInfo.Init()
-	return nil
-}
-
-func (n *NetConn) UpdateDataCount() {
-	n.gameInfoMu.Lock()
-	defer n.gameInfoMu.Unlock()
-	for i, obj := range n.gameInfo.Objects {
-		if obj.Count == 0 {
-			tm := n.gameInfo.CurrentTime.Sub(obj.BaseTime)
-			obj.Count = int(tm * 60 / time.Second)
-		} else {
-			obj.Count++
-		}
-		n.gameInfo.Objects[i] = obj
-	}
-	for i, eff := range n.gameInfo.Effects {
-		eff.Count++
-		n.gameInfo.Effects[i] = eff
-	}
+func (n *NetConn) SendAction(actType pb.Request_ActionType, data []byte) error {
+	return n.dataStream.Send(&pb.Request{
+		SessionID: n.sessionID,
+		ClientID:  n.config.ClientID,
+		Type:      pb.Request_ACTION,
+		Data: &pb.Request_Act{Act: &pb.Request_Action{
+			Type:    actType,
+			RawData: data,
+		}},
+	})
 }
 
 func (n *NetConn) GetOpponentUserID() string {
@@ -307,13 +140,6 @@ func (n *NetConn) GetOpponentUserID() string {
 
 	logger.Error("Failed to get opponent user id in %v", n.allUserIDs)
 	return ""
-}
-
-func (n *NetConn) ClearSounds() {
-	n.gameInfoMu.Lock()
-	defer n.gameInfoMu.Unlock()
-
-	n.gameInfo.Sounds = []sound.Sound{}
 }
 
 func (n *NetConn) connect() error {
@@ -362,20 +188,14 @@ func (n *NetConn) dataRecv() {
 		}
 
 		switch data.Type {
-		case pb.Data_UPDATESTATUS:
+		case pb.Response_UPDATESTATUS:
 			logger.Debug("got status update data: %+v", data)
 			n.gameStatus = data.GetStatus()
-		case pb.Data_DATA:
-			var receivedInfo session.GameInfo
-			b := data.GetRawData()
-			receivedInfo.Unmarshal(b)
+		case pb.Response_DATA:
+			var info gameinfo.GameInfo
+			info.Unmarshal(data.GetRawData())
 			n.gameInfoMu.Lock()
-			n.gameInfo.CurrentTime = receivedInfo.CurrentTime
-			n.gameInfo.Objects = receivedInfo.Objects
-			n.gameInfo.Panels = receivedInfo.Panels
-			n.gameInfo.Effects = append(n.gameInfo.Effects, receivedInfo.Effects...)
-			n.gameInfo.HitDamages = append(n.gameInfo.HitDamages, receivedInfo.HitDamages...)
-			n.gameInfo.Sounds = append(n.gameInfo.Sounds, receivedInfo.Sounds...)
+			n.gameInfo = info
 			n.gameInfoMu.Unlock()
 		default:
 			n.connectStatus = ConnectStatus{
@@ -401,23 +221,15 @@ func newConn(conf Config) (*grpc.ClientConn, error) {
 	return grpc.Dial(conf.StreamAddr, opts...)
 }
 
-func makeAuthReq(id, key, version string) *pb.Action {
-	return &pb.Action{
-		Type: pb.Action_AUTHENTICATE,
-		Data: &pb.Action_Req{
-			Req: &pb.Action_AuthRequest{
+func makeAuthReq(id, key, version string) *pb.Request {
+	return &pb.Request{
+		Type: pb.Request_AUTHENTICATE,
+		Data: &pb.Request_Req{
+			Req: &pb.Request_AuthRequest{
 				Id:      id,
 				Key:     key,
 				Version: version,
 			},
 		},
 	}
-}
-
-func (o *sendObject) Init() {
-	o.objects = make(map[string]object.Object)
-	o.removeObjects = []object.Object{}
-	o.damages = []damage.Damage{}
-	o.effects = []effect.Effect{}
-	o.sounds = []sound.Sound{}
 }

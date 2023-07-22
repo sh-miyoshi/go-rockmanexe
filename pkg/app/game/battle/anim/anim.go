@@ -9,96 +9,110 @@ import (
 )
 
 const (
-	AnimTypeObject int = iota + 1
-	AnimTypeSkill
-	AnimTypeEffect
+	DrawTypeObject int = iota + 1
+	DrawTypeSkill
+	DrawTypeEffect
 )
 
 type Param struct {
 	ObjID    string
 	Pos      common.Point
-	AnimType int
+	DrawType int
+
+	ExtraInfo []byte
 }
 
-// Anim ...
 type Anim interface {
 	Process() (bool, error)
 	Draw()
 	GetParam() Param
 }
 
-var (
-	anims         = map[string]Anim{}
-	sortedAnimIDs = []string{}
-)
+type AnimManager struct {
+	anims         map[string]Anim
+	sortedAnimIDs []string
+}
 
-func MgrProcess() error {
-	for id, anim := range anims {
+func NewManager() *AnimManager {
+	return &AnimManager{
+		anims: make(map[string]Anim),
+	}
+}
+
+func (am *AnimManager) Process() error {
+	for id, anim := range am.anims {
 		end, err := anim.Process()
 		if err != nil {
 			return fmt.Errorf("Anim process failed: %w", err)
 		}
 
 		if end {
-			Delete(id)
+			am.Delete(id)
 		}
 	}
 
-	sortAnim()
+	am.sortAnim()
 
 	return nil
 }
 
-func MgrDraw() {
-	for _, id := range sortedAnimIDs {
-		anims[id].Draw()
+func (am *AnimManager) MgrDraw() {
+	for _, id := range am.sortedAnimIDs {
+		am.anims[id].Draw()
 	}
 }
 
-// New ...
-func New(anim Anim) string {
+func (am *AnimManager) New(anim Anim) string {
 	id := uuid.New().String()
-	anims[id] = anim
-	sortAnim()
+	am.anims[id] = anim
+	am.sortAnim()
 	return id
 }
 
-// IsProcessing ...
-func IsProcessing(animID string) bool {
-	_, exists := anims[animID]
+func (am *AnimManager) IsProcessing(animID string) bool {
+	_, exists := am.anims[animID]
 	return exists
 }
 
-func Cleanup() {
-	anims = map[string]Anim{}
-	sortedAnimIDs = []string{}
+func (am *AnimManager) Cleanup() {
+	am.anims = map[string]Anim{}
+	am.sortedAnimIDs = []string{}
 }
 
-func Delete(animID string) {
-	if _, ok := anims[animID]; !ok {
+func (am *AnimManager) Delete(animID string) {
+	if _, ok := am.anims[animID]; !ok {
 		return
 	}
 
-	delete(anims, animID)
-	for i, sid := range sortedAnimIDs {
+	delete(am.anims, animID)
+	for i, sid := range am.sortedAnimIDs {
 		if sid == animID {
-			sortedAnimIDs = append(sortedAnimIDs[:i], sortedAnimIDs[i+1:]...)
+			am.sortedAnimIDs = append(am.sortedAnimIDs[:i], am.sortedAnimIDs[i+1:]...)
 			break
 		}
 	}
 }
 
-func sortAnim() {
+func (am *AnimManager) GetAll() []Param {
+	res := []Param{}
+	for _, anim := range am.anims {
+		res = append(res, anim.GetParam())
+	}
+
+	return res
+}
+
+func (am *AnimManager) sortAnim() {
 	type sortParam struct {
 		Index int
 		ID    string
 	}
 	sortAnims := []sortParam{}
-	for id, anim := range anims {
+	for id, anim := range am.anims {
 		pm := anim.GetParam()
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.AnimType*100 + pm.Pos.Y*6 + pm.Pos.X,
+			Index: pm.DrawType*100 + pm.Pos.Y*6 + pm.Pos.X,
 		})
 	}
 
@@ -106,8 +120,8 @@ func sortAnim() {
 		return sortAnims[i].Index < sortAnims[j].Index
 	})
 
-	sortedAnimIDs = []string{}
+	am.sortedAnimIDs = []string{}
 	for _, a := range sortAnims {
-		sortedAnimIDs = append(sortedAnimIDs, a.ID)
+		am.sortedAnimIDs = append(am.sortedAnimIDs, a.ID)
 	}
 }

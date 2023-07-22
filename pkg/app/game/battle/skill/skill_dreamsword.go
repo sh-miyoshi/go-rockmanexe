@@ -3,10 +3,10 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -26,7 +26,7 @@ func newDreamSword(objID string, arg Argument) *dreamSword {
 }
 
 func (p *dreamSword) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
@@ -39,21 +39,21 @@ func (p *dreamSword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*delaySword {
-		sound.On(sound.SEDreamSword)
+		sound.On(resources.SEDreamSword)
 
 		for x := 1; x <= 2; x++ {
 			for y := -1; y <= 1; y++ {
-				pos := objanim.GetObjPos(p.Arg.OwnerID)
+				pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 				dm := damage.Damage{
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeNone,
+					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
 					DamageType:    damage.TypeNone,
 				}
-				damage.New(dm)
+				localanim.DamageManager().New(dm)
 			}
 		}
 	}
@@ -67,10 +67,10 @@ func (p *dreamSword) Process() (bool, error) {
 func (p *dreamSword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *dreamSword) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

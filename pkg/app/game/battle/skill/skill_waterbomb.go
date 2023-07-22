@@ -3,11 +3,13 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -27,14 +29,14 @@ type waterBomb struct {
 }
 
 func newWaterBomb(objID string, arg Argument) *waterBomb {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	t := common.Point{X: pos.X + 3, Y: pos.Y}
 	objType := objanim.ObjTypePlayer
 	if arg.TargetType == damage.TargetEnemy {
 		objType = objanim.ObjTypeEnemy
 	}
 
-	objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+	objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 	if len(objs) > 0 {
 		t = objs[0].Pos
 	}
@@ -72,7 +74,7 @@ func (p *waterBomb) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		sound.On(sound.SEBombThrow)
+		sound.On(resources.SEBombThrow)
 	}
 
 	if p.count == waterBombEndCount {
@@ -81,14 +83,14 @@ func (p *waterBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		sound.On(sound.SEWaterLanding)
-		anim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
-		damage.New(damage.Damage{
+		sound.On(resources.SEWaterLanding)
+		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		})
@@ -101,12 +103,12 @@ func (p *waterBomb) Process() (bool, error) {
 func (p *waterBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *waterBomb) StopByOwner() {
 	if p.count < 5 {
-		anim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

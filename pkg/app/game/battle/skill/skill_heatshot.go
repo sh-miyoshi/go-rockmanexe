@@ -3,11 +3,12 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -44,7 +45,7 @@ func (p *heatShot) Draw() {
 
 	// Show body
 	if n < len(imgHeatShotBody) {
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgHeatShotBody[n], true)
 	}
@@ -52,7 +53,7 @@ func (p *heatShot) Draw() {
 	// Show atk
 	n = (p.count - 4) / delayHeatShot
 	if n >= 0 && n < len(imgHeatShotAtk) {
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgHeatShotAtk[n], true)
 	}
@@ -60,19 +61,19 @@ func (p *heatShot) Draw() {
 
 func (p *heatShot) Process() (bool, error) {
 	if p.count == heatShotAtkDelay {
-		sound.On(sound.SEGun)
+		sound.On(resources.SEGun)
 
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
 				// Hit
-				damage.New(damage.Damage{
+				localanim.DamageManager().New(damage.Damage{
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeHeatHit,
+					HitEffectType: resources.EffectTypeHeatHit,
 					DamageType:    damage.TypeFire,
 				})
 
@@ -90,13 +91,13 @@ func (p *heatShot) Process() (bool, error) {
 				}
 
 				for _, t := range targets {
-					anim.New(effect.Get(effect.TypeHeatHit, t, 0))
-					damage.New(damage.Damage{
+					localanim.AnimNew(effect.Get(resources.EffectTypeHeatHit, t, 0))
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           t,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
-						HitEffectType: effect.TypeNone,
+						HitEffectType: resources.EffectTypeNone,
 						DamageType:    damage.TypeFire,
 					})
 				}
@@ -122,12 +123,12 @@ func (p *heatShot) Process() (bool, error) {
 func (p *heatShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 
 func (p *heatShot) StopByOwner() {
 	if p.count < heatShotAtkDelay {
-		anim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }

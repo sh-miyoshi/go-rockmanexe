@@ -3,10 +3,10 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -44,7 +44,7 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 	if arg.TargetType == damage.TargetPlayer {
 		// 敵の攻撃
 		sx = battlecommon.FieldNum.X - 2
-		sy = objanim.GetObjPos(arg.OwnerID).Y
+		sy = localanim.ObjAnimGetObjPos(arg.OwnerID).Y
 		if sy == battlecommon.FieldNum.Y-1 {
 			act = boomerangActTypeClockwise
 		}
@@ -80,7 +80,7 @@ func (p *boomerang) Draw() {
 
 func (p *boomerang) Process() (bool, error) {
 	if p.count == 0 {
-		sound.On(sound.SEBoomerangThrow)
+		sound.On(resources.SEBoomerangThrow)
 	}
 
 	if p.count%boomerangNextStepCount == 0 {
@@ -88,12 +88,12 @@ func (p *boomerang) Process() (bool, error) {
 		p.prev = p.pos
 		p.pos = p.next
 
-		damage.New(damage.Damage{
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeSpreadHit,
+			HitEffectType: resources.EffectTypeSpreadHit,
 			ShowHitArea:   false,
 			DamageType:    damage.TypeWood,
 		})
@@ -170,7 +170,7 @@ func (p *boomerang) Process() (bool, error) {
 func (p *boomerang) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

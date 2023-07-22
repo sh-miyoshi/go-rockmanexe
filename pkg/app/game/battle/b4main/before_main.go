@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -110,11 +111,11 @@ func (b *BeforeMain) Process() bool {
 		}
 
 		if b.count == b.paShowTime {
-			sound.On(sound.SEPACreated)
+			sound.On(resources.SEPACreated)
 			b.waitTime = 60
 		}
 		if b.count < b.paShowTime-20 && b.count > initShowDelay && b.count%showChipDelay == 0 {
-			sound.On(sound.SEPAPrepare)
+			sound.On(resources.SEPAPrepare)
 		}
 
 		return false

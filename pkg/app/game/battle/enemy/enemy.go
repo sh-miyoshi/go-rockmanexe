@@ -5,12 +5,13 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -73,7 +74,7 @@ func Init(playerID string, enemyList []EnemyParam) error {
 		e.PlayerID = playerID
 		e.ActNo = i
 		obj := getObject(e.CharID, e)
-		objID := objanim.New(obj)
+		objID := localanim.ObjAnimNew(obj)
 		enemies[objID] = obj
 	}
 
@@ -95,7 +96,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !objanim.IsProcessing(id) {
+		if !localanim.ObjAnimIsProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}
@@ -190,23 +191,23 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			anim.New(effect.Get(effect.TypeExclamation, pm.Pos, 0))
+			localanim.AnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
 
-		anim.New(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		localanim.AnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
 		return true
 	}
 	return false
@@ -252,11 +253,14 @@ func (e *enemy) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemy) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemy) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 

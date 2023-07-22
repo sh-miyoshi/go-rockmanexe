@@ -7,11 +7,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -95,7 +97,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -194,11 +196,14 @@ func (e *enemyBoomer) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyBoomer) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyBoomer) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -235,7 +240,7 @@ func (a *boomerAtk) Init() {
 
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
-		a.atkID = anim.New(skill.Get(
+		a.atkID = localanim.AnimNew(skill.Get(
 			skill.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
@@ -247,5 +252,5 @@ func (a *boomerAtk) Process() bool {
 
 	a.count++
 
-	return !anim.IsProcessing(a.atkID)
+	return !localanim.AnimIsProcessing(a.atkID)
 }

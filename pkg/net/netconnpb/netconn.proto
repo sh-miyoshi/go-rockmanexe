@@ -4,54 +4,56 @@ package netconn;
 option go_package = "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb";
 
 service NetConn {
-    rpc TransData(stream Action) returns (stream Data) {}
+    rpc TransData(stream Request) returns (stream Response) {}
 }
 
-message Action {
+message Request {
+    enum MsgType {
+        AUTHENTICATE = 0;
+        SENDSIGNAL = 1;
+        ACTION = 2;
+    }
+
+    enum SignalType {
+        CHIPSELECT = 0;
+        GOCHIPSELECT = 1;
+        INITPARAMS = 2;
+    }
+
+    enum ActionType {
+        MOVE = 0;
+        BUSTER = 1;
+        CHIPUSE = 2;
+    }
+
+    string sessionID = 1;
+    string clientID = 2;
+    MsgType type = 3;
+
+    oneof data {
+        AuthRequest req = 4;
+        Signal signal = 5;
+        Action act = 6;
+    }
+
     message AuthRequest {
         string id = 1;
         string key = 2;
         string version = 3;
     }
 
-    enum ActionType {
-        AUTHENTICATE = 0;
-        UPDATEOBJECT = 1;
-        REMOVEOBJECT = 2;
-        ADDDAMAGE = 4;
-        ADDEFFECT = 5;
-        SENDSIGNAL = 6;
-        ADDSOUND = 7;
+    message Action {
+        ActionType type = 1;
+        bytes rawData = 2;
     }
 
-    enum SignalType {
-        CHIPSEND = 0;
-        GOCHIPSELECT = 1;
-        PLAYERDEAD = 2;
-    }
-
-    string sessionID = 1;
-    string clientID = 2;
-    ActionType type = 3;
-
-    oneof data {
-        AuthRequest req = 4;
-        bytes objectInfo = 5;
-        bytes damageInfo = 7;
-        bytes effect = 8;
-        SignalType signal = 9;
-        bytes sound = 10;
+    message Signal {
+        SignalType type = 1;
+        bytes rawData = 2;
     }
 }
 
-message Data {
-    message AuthResponse {
-        bool success = 1;
-        string errMsg = 2;
-        string sessionID = 3;
-        repeated string allUserIDs = 4;
-    }
-
+message Response {
     enum MsgType {
         AUTHRESPONSE = 0;
         UPDATESTATUS = 1;
@@ -63,6 +65,13 @@ message Data {
         CHIPSELECTWAIT = 1;
         ACTING = 2;
         GAMEEND = 3;
+    }
+
+    message AuthResponse {
+        bool success = 1;
+        string errMsg = 2;
+        string sessionID = 3;
+        repeated string allUserIDs = 4;
     }
 
     MsgType type = 1;

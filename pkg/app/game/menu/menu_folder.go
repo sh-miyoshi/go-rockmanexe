@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -101,7 +102,7 @@ func (f *menuFolder) End() {
 func (f *menuFolder) Process() {
 	if f.msg != "" {
 		if inputs.CheckKey(inputs.KeyEnter) == 1 || inputs.CheckKey(inputs.KeyCancel) == 1 {
-			sound.On(sound.SECancel)
+			sound.On(resources.SECancel)
 			f.msg = ""
 		}
 		return
@@ -114,23 +115,23 @@ func (f *menuFolder) Process() {
 		sel := c*player.FolderSize + f.scroll[c] + f.pointer[c]
 
 		if f.currentWindow == folderWindowTypeBackPack && f.listNum[f.currentWindow] == 0 {
-			sound.On(sound.SEDenied)
+			sound.On(resources.SEDenied)
 			return
 		}
 
 		if f.selected == -1 {
 			// First select
 			f.selected = sel
-			sound.On(sound.SESelect)
+			sound.On(resources.SESelect)
 		} else {
 			if err := f.exchange(f.selected, sel); err != nil {
-				sound.On(sound.SEDenied)
+				sound.On(resources.SEDenied)
 				logger.Info("Failed to exchange chip: %v", err)
 				f.msg = err.Error()
 				return
 			}
 
-			sound.On(sound.SESelect)
+			sound.On(resources.SESelect)
 			f.selected = -1
 		}
 	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
@@ -139,14 +140,14 @@ func (f *menuFolder) Process() {
 		} else {
 			f.selected = -1
 		}
-		sound.On(sound.SECancel)
+		sound.On(resources.SECancel)
 	} else {
 		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 			if f.pointer[f.currentWindow] > 0 {
-				sound.On(sound.SECursorMove)
+				sound.On(resources.SECursorMove)
 				f.pointer[f.currentWindow]--
 			} else if f.scroll[f.currentWindow] > 0 {
-				sound.On(sound.SECursorMove)
+				sound.On(resources.SECursorMove)
 				f.scroll[f.currentWindow]--
 			}
 		} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
@@ -156,21 +157,21 @@ func (f *menuFolder) Process() {
 			}
 
 			if f.pointer[f.currentWindow] < n {
-				sound.On(sound.SECursorMove)
+				sound.On(resources.SECursorMove)
 				f.pointer[f.currentWindow]++
 			} else if f.scroll[f.currentWindow] < f.listNum[f.currentWindow]-folderShowNum {
-				sound.On(sound.SECursorMove)
+				sound.On(resources.SECursorMove)
 				f.scroll[f.currentWindow]++
 			}
 		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
 			if f.currentWindow == folderWindowTypeBackPack {
 				f.currentWindow = folderWindowTypeFolder
-				sound.On(sound.SEWindowChange)
+				sound.On(resources.SEWindowChange)
 			}
 		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 			if f.currentWindow == folderWindowTypeFolder {
 				f.currentWindow = folderWindowTypeBackPack
-				sound.On(sound.SEWindowChange)
+				sound.On(resources.SEWindowChange)
 			}
 		}
 	}

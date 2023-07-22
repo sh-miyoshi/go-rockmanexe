@@ -3,8 +3,9 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
@@ -28,7 +29,7 @@ func newCrack(objID string, crackType int, arg Argument) *crack {
 		Arg: arg,
 	}
 
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 
 	switch crackType {
 	case crackType1:
@@ -52,7 +53,7 @@ func (p *crack) Process() (bool, error) {
 	p.count++
 
 	if p.count > 5 {
-		sound.On(sound.SEPanelBreak)
+		sound.On(resources.SEPanelBreak)
 		for _, pos := range p.attackPos {
 			field.PanelBreak(pos)
 		}
@@ -66,10 +67,10 @@ func (p *crack) Process() (bool, error) {
 func (p *crack) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *crack) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

@@ -7,12 +7,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -110,7 +112,7 @@ func (e *enemyLark) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -142,7 +144,7 @@ func (e *enemyLark) Process() (bool, error) {
 		// 次の移動地点を決定
 		e.moveCount++
 		t := common.Point{X: e.movePoint[np][0], Y: e.movePoint[np][1]}
-		if battlecommon.MoveObjectDirect(&e.pm.Pos, t, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, t, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 			e.next = t
 		}
 		return false, nil
@@ -150,7 +152,7 @@ func (e *enemyLark) Process() (bool, error) {
 	if cnt == 0 {
 		// 実際に移動
 		e.prev = e.pm.Pos
-		if battlecommon.MoveObjectDirect(&e.pm.Pos, e.next, field.PanelTypeEnemy, true, field.GetPanelInfo) {
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, e.next, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 			e.movePointer = np
 		}
 	}
@@ -191,11 +193,14 @@ func (e *enemyLark) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyLark) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyLark) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -214,7 +219,7 @@ func (a *larkAtk) SetAttack() {
 
 func (a *larkAtk) Process() {
 	if a.count == 1*delayLarkAtk {
-		anim.New(skill.Get(
+		localanim.AnimNew(skill.Get(
 			skill.SkillWideShot,
 			skill.Argument{
 				OwnerID:    a.ownerID,

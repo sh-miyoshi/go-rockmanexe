@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
@@ -29,7 +29,7 @@ func (p *invisible) Process() (bool, error) {
 	showTm := 60
 	if p.count == 1 {
 		field.SetBlackoutCount(showTm)
-		objanim.MakeInvisible(p.Arg.OwnerID, 6*60)
+		localanim.ObjAnimMakeInvisible(p.Arg.OwnerID, 6*60)
 		setChipNameDraw("インビジブル")
 	}
 
@@ -39,10 +39,10 @@ func (p *invisible) Process() (bool, error) {
 func (p *invisible) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *invisible) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

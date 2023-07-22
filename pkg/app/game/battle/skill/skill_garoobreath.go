@@ -3,10 +3,10 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -28,7 +28,7 @@ type garooBreath struct {
 }
 
 func newGarooBreath(objID string, arg Argument) *garooBreath {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	vx := 1
 	if arg.TargetType == damage.TargetPlayer {
 		vx = -1
@@ -64,7 +64,7 @@ func (p *garooBreath) Draw() {
 func (p *garooBreath) Process() (bool, error) {
 	if p.count%garooBreathNextStepCount/2 == 0 {
 		// Finish if hit
-		if p.damageID != "" && !damage.Exists(p.damageID) {
+		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
@@ -74,12 +74,12 @@ func (p *garooBreath) Process() (bool, error) {
 		p.prev = p.pos
 		p.pos = p.next
 
-		p.damageID = damage.New(damage.Damage{
+		p.damageID = localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           garooBreathNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeHeatHit,
+			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 			DamageType:    damage.TypeFire,
@@ -100,10 +100,10 @@ func (p *garooBreath) Process() (bool, error) {
 func (p *garooBreath) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *garooBreath) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

@@ -6,11 +6,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -72,7 +74,7 @@ func (o *WaterPipe) Process() (bool, error) {
 	o.count++
 
 	if o.count == 1 {
-		sound.On(sound.SEObjectCreate)
+		sound.On(resources.SEObjectCreate)
 
 		pn := field.GetPanelInfo(o.pm.Pos)
 		if pn.Status == battlecommon.PanelStatusHole {
@@ -127,17 +129,20 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&target != 0 {
 		o.pm.HP--
-		anim.New(effect.Get(effect.TypeBlock, o.pm.Pos, 5))
+		localanim.AnimNew(effect.Get(resources.EffectTypeBlock, o.pm.Pos, 5))
 	}
 
 	return false
 }
 
-func (o *WaterPipe) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    o.pm.objectID,
-		Pos:      o.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (o *WaterPipe) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    o.pm.objectID,
+			Pos:      o.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: o.pm.HP,
 	}
 }
 
@@ -196,7 +201,7 @@ func (a *WaterPipeAtk) Process() {
 	a.count++
 
 	if a.count == 1 {
-		sound.On(sound.SEWaterpipeAttack)
+		sound.On(resources.SEWaterpipeAttack)
 	}
 
 	if a.count == 7*delayWaterPipeAttack-2 {
@@ -210,21 +215,21 @@ func (a *WaterPipeAtk) Process() {
 			Power:         a.pm.Power,
 			TTL:           6 * delayWaterPipeAttack,
 			TargetType:    target,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		}
 
 		if a.pm.xFlip {
 			dm.Pos.X = a.pm.Pos.X + 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X + 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		} else {
 			dm.Pos.X = a.pm.Pos.X - 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X - 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 

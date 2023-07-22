@@ -3,11 +3,12 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -31,7 +32,7 @@ type thunderBall struct {
 }
 
 func newThunderBall(objID string, arg Argument) *thunderBall {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	x := pos.X + 1
 	if arg.TargetType == damage.TargetPlayer {
 		x = pos.X - 1
@@ -67,12 +68,12 @@ func (p *thunderBall) Draw() {
 
 func (p *thunderBall) Process() (bool, error) {
 	if p.count == 0 {
-		sound.On(sound.SEThunderBall)
+		sound.On(resources.SEThunderBall)
 	}
 
 	if p.count%thunderBallNextStepCount == 2 {
 		if p.damageID != "" {
-			if !damage.Exists(p.damageID) {
+			if !localanim.DamageManager().Exists(p.damageID) {
 				// attack hit to target
 				return true, nil
 			}
@@ -101,12 +102,12 @@ func (p *thunderBall) Process() (bool, error) {
 			return true, nil
 		}
 
-		p.damageID = damage.New(damage.Damage{
+		p.damageID = localanim.DamageManager().New(damage.Damage{
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
 			DamageType:    damage.TypeElec,
@@ -118,7 +119,7 @@ func (p *thunderBall) Process() (bool, error) {
 			objType = objanim.ObjTypeEnemy
 		}
 
-		objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+		objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 		if len(objs) == 0 {
 			// no target
 			if p.Arg.TargetType == damage.TargetPlayer {
@@ -149,7 +150,7 @@ func (p *thunderBall) Process() (bool, error) {
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

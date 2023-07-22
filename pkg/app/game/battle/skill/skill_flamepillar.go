@@ -6,10 +6,12 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -64,7 +66,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 	case flamePillarTypeRandom:
 		common.SetError("TODO: not implemented yet")
 	case flamePillarTypeTracking:
-		pos := objanim.GetObjPos(arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 		if res.isPlayer {
 			pos.X++
 		} else {
@@ -77,7 +79,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			point: pos,
 		})
 	case flamePillarTypeLine:
-		posX := objanim.GetObjPos(arg.OwnerID).X
+		posX := localanim.ObjAnimGetObjPos(arg.OwnerID).X
 		if res.isPlayer {
 			posX += 2
 		} else {
@@ -108,7 +110,7 @@ func (p *flamePillarManager) Draw() {
 				imageNo = len(imgFlameLineBody) - 1
 			}
 
-			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			view := battlecommon.ViewPos(pos)
 
 			// Show body
@@ -150,7 +152,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 			if p.Arg.TargetType == damage.TargetEnemy {
 				objType = objanim.ObjTypeEnemy
 			}
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objType})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
 			if len(objs) > 0 {
 				sort.Slice(objs, func(i, j int) bool {
 					return objs[i].Pos.X < objs[j].Pos.X
@@ -198,12 +200,12 @@ func (p *flamePillarManager) Process() (bool, error) {
 func (p *flamePillarManager) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *flamePillarManager) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 
 func (p *flamePillar) Draw() {
@@ -239,12 +241,12 @@ func (p *flamePillar) Process() (bool, error) {
 				return true, nil
 			}
 
-			sound.On(sound.SEFlameAttack)
+			sound.On(resources.SEFlameAttack)
 		}
 
 		if p.count == 3*delayFlamePillar {
 			// Add damage
-			damage.New(damage.Damage{
+			localanim.DamageManager().New(damage.Damage{
 				Pos:         p.point,
 				Power:       int(p.Arg.Power),
 				TTL:         7 * delayFlamePillar,

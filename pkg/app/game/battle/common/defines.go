@@ -3,10 +3,13 @@ package common
 import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 
 const (
-	GaugeMaxCount               = 1200
-	ChargeTime                  = 180 // TODO 変数化
+	GaugeMaxCount   = 1200
+	ChargeTime      = 180 // TODO 変数化
+	ChargeViewDelay = 20
+)
+
+var (
 	PlayerDefaultInvincibleTime = 120
-	ChargeViewDelay             = 20
 )
 
 const (
@@ -57,6 +60,13 @@ const (
 	PanelStatusHole
 
 	PanelStatusMax
+)
+
+const (
+	PanelTypePlayer int = iota
+	PanelTypeEnemy
+
+	PanelTypeMax
 )
 
 type PanelInfo struct {

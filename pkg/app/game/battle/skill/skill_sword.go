@@ -2,10 +2,10 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -39,7 +39,7 @@ func newSword(objID string, swordType int, arg Argument) *sword {
 }
 
 func (p *sword) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := (p.count - 5) / delaySword
@@ -52,34 +52,34 @@ func (p *sword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*delaySword {
-		sound.On(sound.SESword)
+		sound.On(resources.SESword)
 
 		dm := damage.Damage{
 			Power:         int(p.Arg.Power),
 			TTL:           1,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeNone,
 		}
 
-		pos := objanim.GetObjPos(p.Arg.OwnerID)
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 
 		dm.Pos.X = pos.X + 1
 		dm.Pos.Y = pos.Y
-		damage.New(dm)
+		localanim.DamageManager().New(dm)
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
 			dm.Pos.Y = pos.Y - 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 			dm.Pos.Y = pos.Y + 1
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		case TypeLongSword:
 			dm.Pos.X = pos.X + 2
-			damage.New(dm)
+			localanim.DamageManager().New(dm)
 		}
 	}
 
@@ -92,10 +92,10 @@ func (p *sword) Process() (bool, error) {
 func (p *sword) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *sword) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

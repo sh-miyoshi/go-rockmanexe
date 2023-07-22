@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -20,6 +21,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -362,7 +364,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	if p.GaugeCount >= battlecommon.GaugeMaxCount {
 		if p.GaugeCount == battlecommon.GaugeMaxCount {
-			sound.On(sound.SEGaugeMax)
+			sound.On(resources.SEGaugeMax)
 		}
 
 		// State change to chip select
@@ -386,7 +388,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 	}
 
 	if moveDirect >= 0 {
-		if battlecommon.MoveObject(&p.Pos, moveDirect, field.PanelTypePlayer, false, field.GetPanelInfo) {
+		if battlecommon.MoveObject(&p.Pos, moveDirect, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
 			p.act.SetAnim(battlecommon.PlayerActMove, 0)
 			p.MoveNum++
@@ -412,7 +414,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 				Power:      c.Power,
 				TargetType: target,
 			})
-			p.act.skillID = anim.New(p.act.skillInst)
+			p.act.skillID = localanim.AnimNew(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -424,13 +426,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 	if inputs.CheckKey(inputs.KeyCancel) > 0 {
 		p.ChargeCount++
 		if p.ChargeCount == battlecommon.ChargeViewDelay {
-			sound.On(sound.SEBusterCharging)
+			sound.On(resources.SEBusterCharging)
 		}
 		if p.ChargeCount == battlecommon.ChargeTime {
-			sound.On(sound.SEBusterCharged)
+			sound.On(resources.SEBusterCharged)
 		}
 	} else if p.ChargeCount > 0 {
-		sound.On(sound.SEBusterShot)
+		sound.On(resources.SEBusterShot)
 		p.act.Charged = p.ChargeCount > battlecommon.ChargeTime
 		p.act.ShotPower = p.ShotPower
 		p.act.SetAnim(battlecommon.PlayerActBuster, 0)
@@ -445,7 +447,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	// Recover系は使えるようにする
+	// インビジ中は無効、ただしRecover系は使えるようにする
 	if p.invincibleCount > 0 && dm.Power >= 0 {
 		return false
 	}
@@ -459,15 +461,15 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		} else {
 			p.HP = uint(hp)
 		}
-		anim.New(effect.Get(dm.HitEffectType, p.Pos, 5))
+		localanim.AnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&p.Pos, common.DirectRight, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&p.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
@@ -481,10 +483,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		sound.On(sound.SEDamaged)
+		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if anim.IsProcessing(p.act.skillID) {
+		if localanim.AnimIsProcessing(p.act.skillID) {
 			p.act.skillInst.StopByOwner()
 		}
 		p.act.skillID = ""
@@ -498,11 +500,14 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (p *BattlePlayer) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    p.ID,
-		Pos:      p.Pos,
-		AnimType: anim.AnimTypeObject,
+func (p *BattlePlayer) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    p.ID,
+			Pos:      p.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: int(p.HP),
 	}
 }
 
@@ -552,10 +557,10 @@ func (a *act) Process() bool {
 	case battlecommon.PlayerActBuster:
 		if a.count == 1 {
 			s := a.ShotPower
-			eff := effect.TypeHitSmall
+			eff := resources.EffectTypeHitSmall
 			if a.Charged {
 				s *= 10
-				eff = effect.TypeHitBig
+				eff = resources.EffectTypeHitBig
 			}
 
 			y := a.pPos.Y
@@ -563,7 +568,7 @@ func (a *act) Process() bool {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				pos := common.Point{X: x, Y: y}
 				if field.GetPanelInfo(pos).ObjectID != "" {
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           pos,
 						Power:         int(s),
 						TTL:           1,
@@ -577,7 +582,7 @@ func (a *act) Process() bool {
 		}
 	case battlecommon.PlayerActMove:
 		if a.count == 2 {
-			battlecommon.MoveObject(a.pPos, a.MoveDirect, field.PanelTypePlayer, true, field.GetPanelInfo)
+			battlecommon.MoveObject(a.pPos, a.MoveDirect, battlecommon.PanelTypePlayer, true, field.GetPanelInfo)
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action

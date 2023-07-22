@@ -1,138 +1,147 @@
 package draw
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 )
 
-func drawObject(images [object.TypeMax][]int, obj object.Object, opt Option) {
-	view := battlecommon.ViewPos(common.Point{X: obj.X, Y: obj.Y})
-	imgNo := obj.Count / object.ImageDelays[obj.Type]
-	dxopts := dxlib.DrawRotaGraphOption{}
+type objectDraw struct {
+	images         [object.TypeMax][]int
+	imgDelays      [object.TypeMax]int
+	playerObjectID string
+}
 
-	if opt.Reverse {
-		flag := int32(dxlib.TRUE)
-		dxopts.ReverseXFlag = &flag
-		obj.ViewOfsX *= -1
+func (d *objectDraw) Init(playerObjectID string) error {
+	d.imgDelays = [object.TypeMax]int{
+		1, // TypePlayerStand
+		2, // TypePlayerBomb
+		2, // TypePlayerBuster
+		6, // TypePlayerCannon
+		3, // TypePlayerDamaged
+		4, // TypePlayerMove
+		1, // TypePlayerShot
+		4, // TypePlayerSword
+		3, // TypePlayerThrow
+		4, // TypePlayerPick
+	} // debug
+
+	d.playerObjectID = playerObjectID
+
+	fname := common.ImagePath + "battle/character/player_move.png"
+	d.images[object.TypePlayerMove] = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, d.images[object.TypePlayerMove]); res == -1 {
+		return fmt.Errorf("failed to load player move image: %s", fname)
 	}
 
-	view.X += obj.ViewOfsX
-	view.Y += obj.ViewOfsY
+	d.images[object.TypePlayerStand] = make([]int, 1)
+	d.images[object.TypePlayerStand][0] = d.images[object.TypePlayerMove][0]
 
-	// Special object draw
-	switch obj.Type {
-	case object.TypeVulcan:
-		objectVulcan(images[obj.Type], view, imgNo, dxopts)
-	case object.TypeWideShotMove:
-		objectWideShotMove(images[obj.Type], view, obj, dxopts)
-	case object.TypeThunderBall:
-		objectThunderBall(images[obj.Type], view, obj, dxopts)
-	case object.TypeMiniBomb:
-		objectMiniBomb(images[obj.Type], view, obj, dxopts)
-	default:
-		if obj.Invincible {
-			if cnt := obj.Count / 5 % 2; cnt == 0 {
-				return
+	fname = common.ImagePath + "battle/character/player_damaged.png"
+	d.images[object.TypePlayerDamaged] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, d.images[object.TypePlayerDamaged]); res == -1 {
+		return fmt.Errorf("failed to load player damage image: %s", fname)
+	}
+	// 1 -> 2,3  2-4 3-5
+	d.images[object.TypePlayerDamaged][4] = d.images[object.TypePlayerDamaged][2]
+	d.images[object.TypePlayerDamaged][5] = d.images[object.TypePlayerDamaged][3]
+	d.images[object.TypePlayerDamaged][2] = d.images[object.TypePlayerDamaged][1]
+	d.images[object.TypePlayerDamaged][3] = d.images[object.TypePlayerDamaged][1]
+
+	fname = common.ImagePath + "battle/character/player_shot.png"
+	d.images[object.TypePlayerShot] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, d.images[object.TypePlayerShot]); res == -1 {
+		return fmt.Errorf("failed to load player shot image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_cannon.png"
+	d.images[object.TypePlayerCannon] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, d.images[object.TypePlayerCannon]); res == -1 {
+		return fmt.Errorf("failed to load player cannon image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_sword.png"
+	d.images[object.TypePlayerSword] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, d.images[object.TypePlayerSword]); res == -1 {
+		return fmt.Errorf("failed to load player sword image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_bomb.png"
+	d.images[object.TypePlayerBomb] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, d.images[object.TypePlayerBomb]); res == -1 {
+		return fmt.Errorf("failed to load player bomb image: %s", fname)
+	}
+	d.images[object.TypePlayerBomb][5] = d.images[object.TypePlayerBomb][4]
+	d.images[object.TypePlayerBomb][6] = d.images[object.TypePlayerBomb][4]
+
+	fname = common.ImagePath + "battle/character/player_buster.png"
+	d.images[object.TypePlayerBuster] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, d.images[object.TypePlayerBuster]); res == -1 {
+		return fmt.Errorf("failed to load player buster image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/player_pick_2.png"
+	d.images[object.TypePlayerPick] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 140, 124, d.images[object.TypePlayerPick]); res == -1 {
+		return fmt.Errorf("failed to load player pick image: %s", fname)
+	}
+	d.images[object.TypePlayerPick][4] = d.images[object.TypePlayerPick][3]
+	d.images[object.TypePlayerPick][5] = d.images[object.TypePlayerPick][3]
+
+	fname = common.ImagePath + "battle/character/player_throw.png"
+	d.images[object.TypePlayerThrow] = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, d.images[object.TypePlayerThrow]); res == -1 {
+		return fmt.Errorf("failed to load player throw image: %s", fname)
+	}
+
+	return nil
+}
+
+func (d *objectDraw) End() {
+	for i := 0; i < object.TypeMax; i++ {
+		for j := 0; j < len(d.images[i]); j++ {
+			dxlib.DeleteGraph(d.images[i][j])
+		}
+		d.images[i] = []int{}
+	}
+}
+
+func (d *objectDraw) Draw() {
+	ginfo := net.GetInst().GetGameInfo()
+	for _, obj := range ginfo.Objects {
+		if obj.IsInvincible {
+			if obj.ActCount/5%2 != 0 {
+				continue
 			}
 		}
 
-		if imgNo >= len(images[obj.Type]) {
-			imgNo = len(images[obj.Type]) - 1
+		pos := battlecommon.ViewPos(obj.Pos)
+		ino := obj.ActCount / d.imgDelays[obj.Type]
+		if ino >= len(d.images[obj.Type]) {
+			ino = len(d.images[obj.Type]) - 1
 		}
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, images[obj.Type][imgNo], true, dxopts)
-	}
 
-	// Show HP
-	if opt.ViewHP > 0 {
-		appdraw.Number(view.X, view.Y+40, opt.ViewHP, appdraw.NumberOption{
-			Color:    appdraw.NumberColorWhiteSmall,
-			Centered: true,
-		})
-	}
+		opts := dxlib.DrawRotaGraphOption{}
+		if obj.IsReverse {
+			rev := int32(dxlib.TRUE)
+			opts.ReverseXFlag = &rev
+		}
 
-	if len(obj.Chips) > 0 && opt.ViewChip {
-		x := battlecommon.PanelSize.X*obj.X + battlecommon.PanelSize.X/2 - 18
-		y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Y - 83
-		dxlib.DrawBox(x-1, y-1, x+29, y+29, 0x000000, false)
-		dxlib.DrawGraph(x, y, opt.ImgUnknownIcon, true)
-	}
-}
+		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, d.images[obj.Type][ino], true, opts)
 
-func objectVulcan(images []int, viewPos common.Point, imgNo int, dxopts dxlib.DrawRotaGraphOption) {
-	if imgNo > 2 {
-		imgNo /= 5 // slow down animation
-	}
-
-	ofsBody := 50
-	ofsAtk := 100
-	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
-		ofsBody *= -1
-		ofsAtk *= -1
-	}
-
-	// Show body
-	no := imgNo
-	if no > 2 {
-		no = no % 2
-	}
-
-	dxlib.DrawRotaGraph(viewPos.X+ofsBody, viewPos.Y-18, 1, 0, images[no], true, dxopts)
-	// Show attack
-	if imgNo != 0 {
-		if imgNo%2 == 0 {
-			dxlib.DrawRotaGraph(viewPos.X+ofsAtk, viewPos.Y-10, 1, 0, images[3], true, dxopts)
-		} else {
-			dxlib.DrawRotaGraph(viewPos.X+ofsAtk, viewPos.Y-15, 1, 0, images[3], true, dxopts)
+		// draw hp
+		if obj.ID != d.playerObjectID {
+			if obj.HP > 0 {
+				draw.Number(pos.X, pos.Y+40, obj.HP, draw.NumberOption{
+					Color:    draw.NumberColorWhiteSmall,
+					Centered: true,
+				})
+			}
 		}
 	}
-}
-
-func objectWideShotMove(images []int, viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
-	if obj.Speed == 0 {
-		common.SetError("ワイドショット描画のためのSpeedが0です")
-		return
-	}
-
-	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(images)
-	ofsx := battlecommon.PanelSize.X * obj.Count / obj.Speed
-	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
-		ofsx *= -1
-	}
-
-	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y, 1, 0, images[imgNo], true, dxopts)
-}
-
-func objectThunderBall(images []int, viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
-	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(images)
-
-	if obj.Count >= obj.Speed {
-		// Skip drawing because the position is updated in Process method and return unexpected value
-		return
-	}
-
-	cnt := obj.Count % obj.Speed
-	ofsx := battlecommon.GetOffset(obj.TargetX, obj.X, obj.PrevX, cnt, obj.Speed, battlecommon.PanelSize.X)
-	ofsy := battlecommon.GetOffset(obj.TargetY, obj.Y, obj.PrevY, cnt, obj.Speed, battlecommon.PanelSize.Y)
-
-	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+25+ofsy, 1, 0, images[imgNo], true)
-}
-
-func objectMiniBomb(images []int, viewPos common.Point, obj object.Object, dxopts dxlib.DrawRotaGraphOption) {
-	imgNo := (obj.Count / object.ImageDelays[obj.Type]) % len(images)
-
-	// y = ax^2 + bx + c
-	// (0,0), (d/2, ymax), (d, 0)
-	size := battlecommon.PanelSize.X * 3
-	ofsx := size * obj.Count / obj.Speed
-	const ymax = 100
-	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
-
-	if dxopts.ReverseXFlag != nil && *dxopts.ReverseXFlag == dxlib.TRUE {
-		ofsx *= -1
-	}
-
-	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1, 0, images[imgNo], true, dxopts)
 }

@@ -8,12 +8,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -87,7 +89,7 @@ func (e *enemyBilly) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -113,7 +115,7 @@ func (e *enemyBilly) Process() (bool, error) {
 			// try 20 times to move
 			for i := 0; i < 20; i++ {
 				e.act.MoveDirect = 1 << rand.Intn(4)
-				if battlecommon.MoveObject(&e.pm.Pos, e.act.MoveDirect, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+				if battlecommon.MoveObject(&e.pm.Pos, e.act.MoveDirect, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 					break
 				}
 			}
@@ -153,11 +155,14 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyBilly) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyBilly) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -201,7 +206,7 @@ func (a *billyAct) Process() bool {
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			anim.New(skill.Get(skill.SkillThunderBall, skill.Argument{
+			localanim.AnimNew(skill.Get(skill.SkillThunderBall, skill.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
@@ -209,7 +214,7 @@ func (a *billyAct) Process() bool {
 		}
 	case billyActMove:
 		if a.count == 4*delayBillyMove {
-			battlecommon.MoveObject(a.pPos, a.MoveDirect, field.PanelTypeEnemy, true, field.GetPanelInfo)
+			battlecommon.MoveObject(a.pPos, a.MoveDirect, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 		}
 	}
 

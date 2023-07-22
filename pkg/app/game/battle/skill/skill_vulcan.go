@@ -3,11 +3,12 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -36,7 +37,7 @@ func newVulcan(objID string, arg Argument) *vulcan {
 }
 
 func (p *vulcan) Draw() {
-	pos := objanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	// Show body
@@ -55,42 +56,42 @@ func (p *vulcan) Process() (bool, error) {
 	p.count++
 	if p.count >= delayVulcan*1 {
 		if p.count%(delayVulcan*5) == delayVulcan*1 {
-			sound.On(sound.SEGun)
+			sound.On(resources.SEGun)
 
 			p.imageNo = p.imageNo%2 + 1
 			// Add damage
-			pos := objanim.GetObjPos(p.Arg.OwnerID)
+			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
 				if field.GetPanelInfo(target).ObjectID != "" {
-					damage.New(damage.Damage{
+					localanim.DamageManager().New(damage.Damage{
 						Pos:           target,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
 						TargetType:    p.Arg.TargetType,
-						HitEffectType: effect.TypeSpreadHit,
+						HitEffectType: resources.EffectTypeSpreadHit,
 						BigDamage:     lastAtk,
 						DamageType:    damage.TypeNone,
 					})
-					anim.New(effect.Get(effect.TypeVulcanHit1, target, 20))
+					localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit1, target, 20))
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
-						anim.New(effect.Get(effect.TypeVulcanHit2, target, 20))
-						damage.New(damage.Damage{
+						localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit2, target, 20))
+						localanim.DamageManager().New(damage.Damage{
 							Pos:           target,
 							Power:         int(p.Arg.Power),
 							TTL:           1,
 							TargetType:    p.Arg.TargetType,
-							HitEffectType: effect.TypeNone,
+							HitEffectType: resources.EffectTypeNone,
 							BigDamage:     lastAtk,
 							DamageType:    damage.TypeNone,
 						})
 					}
 					hit = true
-					sound.On(sound.SECannonHit)
+					sound.On(resources.SECannonHit)
 					break
 				}
 			}
@@ -108,10 +109,10 @@ func (p *vulcan) Process() (bool, error) {
 func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 
 func (p *vulcan) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }

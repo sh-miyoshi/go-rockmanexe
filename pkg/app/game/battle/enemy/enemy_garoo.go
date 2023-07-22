@@ -9,12 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -83,7 +85,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -96,11 +98,11 @@ func (e *enemyGaroo) Process() (bool, error) {
 	if e.atkID != "" {
 		if e.atkID == garooAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = anim.New(&e.atk)
+			e.atkID = localanim.AnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !anim.IsProcessing(e.atkID) {
+		if !localanim.AnimIsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = garooInitWait
 		}
@@ -116,7 +118,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				e.targetPos,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {
@@ -139,7 +141,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			if battlecommon.MoveObjectDirect(
 				&e.pm.Pos,
 				next,
-				field.PanelTypeEnemy,
+				battlecommon.PanelTypeEnemy,
 				true,
 				field.GetPanelInfo,
 			) {
@@ -148,7 +150,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 		}
 		e.moveNum--
 		if e.moveNum <= 0 {
-			objs := objanim.GetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			pos := common.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				pos = objs[0].Pos
@@ -157,7 +159,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 			rnd := rand.Intn(3)
 			for i := 0; i < 3; i++ {
 				pos = common.Point{X: (rnd+i)%3 + 3, Y: pos.Y}
-				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, field.PanelTypeEnemy, false, field.GetPanelInfo) {
+				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 					e.targetPos = pos
 				}
 			}
@@ -192,11 +194,14 @@ func (e *enemyGaroo) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyGaroo) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyGaroo) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -229,7 +234,7 @@ func (a *garooAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayGarooAtk*4 {
-		anim.New(skill.Get(skill.SkillGarooBreath, skill.Argument{
+		localanim.AnimNew(skill.Get(skill.SkillGarooBreath, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
@@ -242,6 +247,6 @@ func (a *garooAtk) Process() (bool, error) {
 func (a *garooAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.id,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }

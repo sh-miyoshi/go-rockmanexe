@@ -3,11 +3,11 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -33,10 +33,10 @@ func newPanelSteal(objID string, arg Argument) *skillPanelSteal {
 		state: areaStealStateBlackout,
 	}
 
-	if arg.TargetType == field.PanelTypePlayer {
-		res.myPanelType = field.PanelTypeEnemy
+	if arg.TargetType == battlecommon.PanelTypePlayer {
+		res.myPanelType = battlecommon.PanelTypeEnemy
 	} else {
-		res.myPanelType = field.PanelTypePlayer
+		res.myPanelType = battlecommon.PanelTypePlayer
 	}
 
 	return res
@@ -70,27 +70,27 @@ func (p *skillPanelSteal) Process() (bool, error) {
 	switch p.state {
 	case areaStealStateBlackout:
 		if p.count == 1 {
-			sound.On(sound.SEAreaSteal)
+			sound.On(resources.SEAreaSteal)
 			field.SetBlackoutCount(90)
 			setChipNameDraw("パネルスチール")
 
 			// Target位置を実行時の一番最初に設定する
-			if p.myPanelType == field.PanelTypePlayer {
+			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
-					pos := objanim.GetObjPos(p.Arg.OwnerID)
+					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
-					if pn.Type != field.PanelTypePlayer {
+					if pn.Type != battlecommon.PanelTypePlayer {
 						p.target = target
 						return false, nil
 					}
 				}
 			} else {
 				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
-					pos := objanim.GetObjPos(p.Arg.OwnerID)
+					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 					target := common.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
-					if pn.Type != field.PanelTypeEnemy {
+					if pn.Type != battlecommon.PanelTypeEnemy {
 						p.target = target
 						return false, nil
 					}
@@ -102,7 +102,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 		}
 	case areaStealStateActing:
 		if p.count == 15 {
-			sound.On(sound.SEAreaStealHit)
+			sound.On(resources.SEAreaStealHit)
 			p.setState(areaStealStateHit)
 		}
 	case areaStealStateHit:
@@ -111,12 +111,12 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			pn := field.GetPanelInfo(p.target)
 			if pn.ObjectID != "" {
 				// ダメージ
-				damage.New(damage.Damage{
+				localanim.DamageManager().New(damage.Damage{
 					Pos:           p.target,
 					Power:         10,
 					TTL:           1,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeNone,
+					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     false,
 					DamageType:    damage.TypeNone,
 				})
@@ -135,12 +135,12 @@ func (p *skillPanelSteal) Process() (bool, error) {
 func (p *skillPanelSteal) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *skillPanelSteal) StopByOwner() {
-	anim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 
 func (p *skillPanelSteal) setState(next int) {

@@ -8,12 +8,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -78,7 +80,7 @@ func (e *enemyMetall) Process() (bool, error) {
 			img = &e.atk.images[e.atk.GetImageNo()]
 		}
 		deleteanim.New(*img, e.pm.Pos, false)
-		anim.New(effect.Get(effect.TypeExplode, e.pm.Pos, 0))
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
@@ -97,7 +99,7 @@ func (e *enemyMetall) Process() (bool, error) {
 
 	if e.atkID != "" {
 		// Anim end
-		if !anim.IsProcessing(e.atkID) {
+		if !localanim.AnimIsProcessing(e.atkID) {
 			metallActQueue = metallActQueue[1:]
 			metallActQueue = append(metallActQueue, e.pm.ObjectID)
 
@@ -120,20 +122,20 @@ func (e *enemyMetall) Process() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		pos := objanim.GetObjPos(e.pm.PlayerID)
+		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
 		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = anim.New(&e.atk)
+			e.atkID = localanim.AnimNew(&e.atk)
 			e.moveFailedCount = 0
 		} else {
 			// Move
 			moved := false
 			if pos.Y > e.pm.Pos.Y {
-				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectDown, field.PanelTypeEnemy, true, field.GetPanelInfo)
+				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectDown, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 			} else {
-				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectUp, field.PanelTypeEnemy, true, field.GetPanelInfo)
+				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectUp, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 			}
 			if moved {
 				e.moveFailedCount = 0
@@ -171,11 +173,14 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) bool {
 	return damageProc(dm, &e.pm)
 }
 
-func (e *enemyMetall) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    e.pm.ObjectID,
-		Pos:      e.pm.Pos,
-		AnimType: anim.AnimTypeObject,
+func (e *enemyMetall) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    e.pm.ObjectID,
+			Pos:      e.pm.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: e.pm.HP,
 	}
 }
 
@@ -195,7 +200,7 @@ func (a *metallAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		anim.New(skill.Get(skill.SkillShockWave, skill.Argument{
+		localanim.AnimNew(skill.Get(skill.SkillShockWave, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
@@ -208,7 +213,7 @@ func (a *metallAtk) Process() (bool, error) {
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    a.id,
-		AnimType: anim.AnimTypeEffect,
+		DrawType: anim.DrawTypeEffect,
 	}
 }
 

@@ -11,7 +11,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.17
+          go-version: 1.18
       - name: Build
         run: go build -v ./...
       - name: Test
@@ -25,7 +25,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.17
+          go-version: 1.18
       - name: Run server
         run: |
           cd cmd/fakeserver
@@ -34,6 +34,12 @@ jobs:
           cd ../../cmd/router
           go build
           ./router &
-      - name: Test
+      - name: API Test
         working-directory: ./test/router
         run: ./api_test.sh
+      - name: Client Test
+        working-directory: ./test/router/client_test
+        run: go run main.go
+      - name: Connection Test
+        working-directory: ./test/router/conn_test
+        run: go run main.go

@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -120,7 +121,7 @@ func Process() error {
 		}
 
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			sound.On(sound.SETitleEnter)
+			sound.On(resources.SETitleEnter)
 			waiting++
 		} else if inputs.CheckKey(inputs.KeyUp) == 1 && cursor > 0 {
 			cursor--

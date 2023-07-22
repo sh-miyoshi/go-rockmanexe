@@ -7,12 +7,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -106,7 +108,7 @@ func (s *Supporter) Process() (bool, error) {
 			Power:      c.Power,
 			TargetType: target,
 		})
-		s.act.skillID = anim.New(s.act.skillInst)
+		s.act.skillID = localanim.AnimNew(s.act.skillInst)
 		s.setAction(60, supporterStatusMove)
 	case supporterStatusShot:
 		s.act.ShotPower = s.ShotPower
@@ -136,15 +138,15 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		} else {
 			s.HP = uint(hp)
 		}
-		anim.New(effect.Get(dm.HitEffectType, s.Pos, 5))
+		localanim.AnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectRight, field.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
@@ -158,10 +160,10 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		sound.On(sound.SEDamaged)
+		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if anim.IsProcessing(s.act.skillID) {
+		if localanim.AnimIsProcessing(s.act.skillID) {
 			s.act.skillInst.StopByOwner()
 		}
 		s.act.skillID = ""
@@ -174,11 +176,14 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 	return false
 }
 
-func (s *Supporter) GetParam() anim.Param {
-	return anim.Param{
-		ObjID:    s.ID,
-		Pos:      s.Pos,
-		AnimType: anim.AnimTypeObject,
+func (s *Supporter) GetParam() objanim.Param {
+	return objanim.Param{
+		Param: anim.Param{
+			ObjID:    s.ID,
+			Pos:      s.Pos,
+			DrawType: anim.DrawTypeObject,
+		},
+		HP: int(s.HP),
 	}
 }
 
@@ -212,7 +217,7 @@ func (s *Supporter) moveRandom() {
 	}
 
 	for _, direct := range candidates {
-		if battlecommon.MoveObject(&s.Pos, direct, field.PanelTypePlayer, false, field.GetPanelInfo) {
+		if battlecommon.MoveObject(&s.Pos, direct, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			s.act.MoveDirect = direct
 			s.act.SetAnim(battlecommon.PlayerActMove, 0)
 			return

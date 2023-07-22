@@ -4,111 +4,61 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
-type SEType int
-
-const (
-	SENone SEType = iota // required no SE as 0
-	SETitleEnter
-	SECursorMove
-	SEMenuEnter
-	SEDenied
-	SECancel
-	SEGoBattle
-	SEEnemyAppear
-	SEChipSelectOpen
-	SESelect
-	SEChipSelectEnd
-	SEGaugeMax
-	SECannon
-	SEBusterCharging
-	SEBusterCharged
-	SEBusterShot
-	SECannonHit
-	SEExplode
-	SEBusterHit
-	SESword
-	SERecover
-	SEShockWave
-	SEGun
-	SESpreadHit
-	SEBombThrow
-	SEPlayerDeleted
-	SEDamaged
-	SEEnemyDeleted
-	SEGotItem
-	SEWindowChange
-	SEThunderBall
-	SEWideShot
-	SEBoomerangThrow
-	SEWaterLanding
-	SEBlock
-	SEObjectCreate
-	SEWaterpipeAttack
-	SEPanelBreak
-	SEPAPrepare
-	SEPACreated
-	SEDreamSword
-	SEFlameAttack
-	SEAreaSteal
-	SEAreaStealHit
-
-	seMax
-)
-
 var (
-	soundEffects = [seMax]int{}
+	soundEffects = [resources.SEMax]int{}
 )
 
 func Init() error {
 	basePath := common.SoundPath + "se/"
 
-	soundEffects[SENone] = 0
-	soundEffects[SETitleEnter] = dxlib.LoadSoundMem(basePath + "title_enter.mp3")
-	soundEffects[SECursorMove] = dxlib.LoadSoundMem(basePath + "cursor_move.mp3")
-	soundEffects[SEMenuEnter] = dxlib.LoadSoundMem(basePath + "menu_enter.mp3")
-	soundEffects[SEDenied] = dxlib.LoadSoundMem(basePath + "denied.mp3")
-	soundEffects[SECancel] = dxlib.LoadSoundMem(basePath + "cancel.mp3")
-	soundEffects[SEGoBattle] = dxlib.LoadSoundMem(basePath + "go_battle.mp3")
-	soundEffects[SEEnemyAppear] = dxlib.LoadSoundMem(basePath + "enemy_appear.mp3")
-	soundEffects[SEChipSelectOpen] = dxlib.LoadSoundMem(basePath + "chip_select_open.mp3")
-	soundEffects[SESelect] = dxlib.LoadSoundMem(basePath + "select.mp3")
-	soundEffects[SEChipSelectEnd] = dxlib.LoadSoundMem(basePath + "chip_select_end.mp3")
-	soundEffects[SEGaugeMax] = dxlib.LoadSoundMem(basePath + "gauge_max.mp3")
-	soundEffects[SECannon] = dxlib.LoadSoundMem(basePath + "cannon.mp3")
-	soundEffects[SEBusterCharging] = dxlib.LoadSoundMem(basePath + "buster_charging.mp3")
-	soundEffects[SEBusterCharged] = dxlib.LoadSoundMem(basePath + "buster_charged.mp3")
-	soundEffects[SEBusterShot] = dxlib.LoadSoundMem(basePath + "buster_shot.wav")
-	soundEffects[SECannonHit] = dxlib.LoadSoundMem(basePath + "cannon_hit.mp3")
-	soundEffects[SEExplode] = dxlib.LoadSoundMem(basePath + "bomb_explode.mp3")
-	soundEffects[SEBusterHit] = dxlib.LoadSoundMem(basePath + "shot_hit.wav")
-	soundEffects[SESword] = dxlib.LoadSoundMem(basePath + "sword.mp3")
-	soundEffects[SERecover] = dxlib.LoadSoundMem(basePath + "recover.mp3")
-	soundEffects[SEShockWave] = dxlib.LoadSoundMem(basePath + "shock_wave.mp3")
-	soundEffects[SEGun] = dxlib.LoadSoundMem(basePath + "gun.mp3")
-	soundEffects[SESpreadHit] = dxlib.LoadSoundMem(basePath + "shot_hit.wav")
-	soundEffects[SEBombThrow] = dxlib.LoadSoundMem(basePath + "bomb_throw.mp3")
-	soundEffects[SEPlayerDeleted] = dxlib.LoadSoundMem(basePath + "player_deleted.mp3")
-	soundEffects[SEDamaged] = dxlib.LoadSoundMem(basePath + "damaged.mp3")
-	soundEffects[SEEnemyDeleted] = dxlib.LoadSoundMem(basePath + "enemy_deleted.mp3")
-	soundEffects[SEGotItem] = dxlib.LoadSoundMem(basePath + "got_item.mp3")
-	soundEffects[SEWindowChange] = dxlib.LoadSoundMem(basePath + "window_change.mp3")
-	soundEffects[SEThunderBall] = dxlib.LoadSoundMem(basePath + "thunder_ball.mp3")
-	soundEffects[SEWideShot] = dxlib.LoadSoundMem(basePath + "wide_shot.mp3")
-	soundEffects[SEBoomerangThrow] = dxlib.LoadSoundMem(basePath + "boomerang_throw.mp3")
-	soundEffects[SEWaterLanding] = dxlib.LoadSoundMem(basePath + "water_landing.mp3")
-	soundEffects[SEBlock] = dxlib.LoadSoundMem(basePath + "block.mp3")
-	soundEffects[SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
-	soundEffects[SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
-	soundEffects[SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
-	soundEffects[SEPAPrepare] = dxlib.LoadSoundMem(basePath + "pa_prepare.mp3")
-	soundEffects[SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
-	soundEffects[SEDreamSword] = dxlib.LoadSoundMem(basePath + "dream_sword.mp3")
-	soundEffects[SEFlameAttack] = dxlib.LoadSoundMem(basePath + "flame_attack.wav")
-	soundEffects[SEAreaSteal] = dxlib.LoadSoundMem(basePath + "area_steal.mp3")
-	soundEffects[SEAreaStealHit] = dxlib.LoadSoundMem(basePath + "area_steal_hit.mp3")
+	soundEffects[resources.SENone] = 0
+	soundEffects[resources.SETitleEnter] = dxlib.LoadSoundMem(basePath + "title_enter.mp3")
+	soundEffects[resources.SECursorMove] = dxlib.LoadSoundMem(basePath + "cursor_move.mp3")
+	soundEffects[resources.SEMenuEnter] = dxlib.LoadSoundMem(basePath + "menu_enter.mp3")
+	soundEffects[resources.SEDenied] = dxlib.LoadSoundMem(basePath + "denied.mp3")
+	soundEffects[resources.SECancel] = dxlib.LoadSoundMem(basePath + "cancel.mp3")
+	soundEffects[resources.SEGoBattle] = dxlib.LoadSoundMem(basePath + "go_battle.mp3")
+	soundEffects[resources.SEEnemyAppear] = dxlib.LoadSoundMem(basePath + "enemy_appear.mp3")
+	soundEffects[resources.SEChipSelectOpen] = dxlib.LoadSoundMem(basePath + "chip_select_open.mp3")
+	soundEffects[resources.SESelect] = dxlib.LoadSoundMem(basePath + "select.mp3")
+	soundEffects[resources.SEChipSelectEnd] = dxlib.LoadSoundMem(basePath + "chip_select_end.mp3")
+	soundEffects[resources.SEGaugeMax] = dxlib.LoadSoundMem(basePath + "gauge_max.mp3")
+	soundEffects[resources.SECannon] = dxlib.LoadSoundMem(basePath + "cannon.mp3")
+	soundEffects[resources.SEBusterCharging] = dxlib.LoadSoundMem(basePath + "buster_charging.mp3")
+	soundEffects[resources.SEBusterCharged] = dxlib.LoadSoundMem(basePath + "buster_charged.mp3")
+	soundEffects[resources.SEBusterShot] = dxlib.LoadSoundMem(basePath + "buster_shot.wav")
+	soundEffects[resources.SECannonHit] = dxlib.LoadSoundMem(basePath + "cannon_hit.mp3")
+	soundEffects[resources.SEExplode] = dxlib.LoadSoundMem(basePath + "bomb_explode.mp3")
+	soundEffects[resources.SEBusterHit] = dxlib.LoadSoundMem(basePath + "shot_hit.wav")
+	soundEffects[resources.SESword] = dxlib.LoadSoundMem(basePath + "sword.mp3")
+	soundEffects[resources.SERecover] = dxlib.LoadSoundMem(basePath + "recover.mp3")
+	soundEffects[resources.SEShockWave] = dxlib.LoadSoundMem(basePath + "shock_wave.mp3")
+	soundEffects[resources.SEGun] = dxlib.LoadSoundMem(basePath + "gun.mp3")
+	soundEffects[resources.SESpreadHit] = dxlib.LoadSoundMem(basePath + "shot_hit.wav")
+	soundEffects[resources.SEBombThrow] = dxlib.LoadSoundMem(basePath + "bomb_throw.mp3")
+	soundEffects[resources.SEPlayerDeleted] = dxlib.LoadSoundMem(basePath + "player_deleted.mp3")
+	soundEffects[resources.SEDamaged] = dxlib.LoadSoundMem(basePath + "damaged.mp3")
+	soundEffects[resources.SEEnemyDeleted] = dxlib.LoadSoundMem(basePath + "enemy_deleted.mp3")
+	soundEffects[resources.SEGotItem] = dxlib.LoadSoundMem(basePath + "got_item.mp3")
+	soundEffects[resources.SEWindowChange] = dxlib.LoadSoundMem(basePath + "window_change.mp3")
+	soundEffects[resources.SEThunderBall] = dxlib.LoadSoundMem(basePath + "thunder_ball.mp3")
+	soundEffects[resources.SEWideShot] = dxlib.LoadSoundMem(basePath + "wide_shot.mp3")
+	soundEffects[resources.SEBoomerangThrow] = dxlib.LoadSoundMem(basePath + "boomerang_throw.mp3")
+	soundEffects[resources.SEWaterLanding] = dxlib.LoadSoundMem(basePath + "water_landing.mp3")
+	soundEffects[resources.SEBlock] = dxlib.LoadSoundMem(basePath + "block.mp3")
+	soundEffects[resources.SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
+	soundEffects[resources.SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
+	soundEffects[resources.SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
+	soundEffects[resources.SEPAPrepare] = dxlib.LoadSoundMem(basePath + "pa_prepare.mp3")
+	soundEffects[resources.SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
+	soundEffects[resources.SEDreamSword] = dxlib.LoadSoundMem(basePath + "dream_sword.mp3")
+	soundEffects[resources.SEFlameAttack] = dxlib.LoadSoundMem(basePath + "flame_attack.wav")
+	soundEffects[resources.SEAreaSteal] = dxlib.LoadSoundMem(basePath + "area_steal.mp3")
+	soundEffects[resources.SEAreaStealHit] = dxlib.LoadSoundMem(basePath + "area_steal_hit.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
@@ -116,25 +66,25 @@ func Init() error {
 		}
 	}
 
-	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEBusterShot])
-	dxlib.ChangeVolumeSoundMem(128, soundEffects[SECannonHit])
-	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEBusterHit])
-	dxlib.ChangeVolumeSoundMem(128, soundEffects[SEBusterCharging])
-	dxlib.ChangeVolumeSoundMem(128, soundEffects[SESpreadHit])
-	dxlib.ChangeVolumeSoundMem(96, soundEffects[SEEnemyDeleted])
-	dxlib.ChangeVolumeSoundMem(192, soundEffects[SEPlayerDeleted])
-	dxlib.ChangeVolumeSoundMem(128, soundEffects[SEPanelBreak])
+	dxlib.ChangeVolumeSoundMem(96, soundEffects[resources.SEBusterShot])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SECannonHit])
+	dxlib.ChangeVolumeSoundMem(96, soundEffects[resources.SEBusterHit])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SEBusterCharging])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SESpreadHit])
+	dxlib.ChangeVolumeSoundMem(96, soundEffects[resources.SEEnemyDeleted])
+	dxlib.ChangeVolumeSoundMem(192, soundEffects[resources.SEPlayerDeleted])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SEPanelBreak])
 
 	return nil
 }
 
-func On(typ SEType) {
-	if typ == SENone {
+func On(typ resources.SEType) {
+	if typ == resources.SENone {
 		return
 	}
 
 	if dxlib.CheckSoundMem(soundEffects[typ]) == 1 {
-		if typ != SECannonHit {
+		if typ != resources.SECannonHit {
 			dxlib.StopSoundMem(soundEffects[typ])
 		}
 	}

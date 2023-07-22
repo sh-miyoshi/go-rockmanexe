@@ -5,12 +5,8 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/apiclient"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/effect"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sound"
 )
 
 type NetConn struct {
@@ -20,17 +16,17 @@ func New() *NetConn {
 	return &NetConn{}
 }
 
-func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
+func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 	for {
-		action, err := stream.Recv()
+		msg, err := stream.Recv()
 		if err != nil {
 			logger.Info("Failed to recv from client: %+v", err)
 			return nil
 		}
-		logger.Debug("Got action: %+v", action)
+		logger.Debug("Got msg: %+v", msg)
 
-		if action.GetType() == pb.Action_AUTHENTICATE {
-			res := authClient(action.GetReq(), stream)
+		if msg.GetType() == pb.Request_AUTHENTICATE {
+			res := authClient(msg.GetReq(), stream)
 			stream.Send(makeAuthRes(&res))
 			if !res.Success {
 				return nil
@@ -38,52 +34,35 @@ func (s *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 			continue
 		}
 
-		sessionID := action.GetSessionID()
-		s := session.GetSession(sessionID)
+		s := session.GetSession(msg.GetSessionID())
 		if s == nil {
-			logger.Info("No such session: %s", sessionID)
-			return fmt.Errorf("failed to get session info for %s", sessionID)
+			logger.Info("No such session: %s", msg.GetSessionID())
+			return fmt.Errorf("failed to get session info for %s", msg.GetSessionID())
 		}
 
-		switch action.GetType() {
-		case pb.Action_UPDATEOBJECT:
-			var obj object.Object
-			object.Unmarshal(&obj, action.GetObjectInfo())
-			s.UpdateObject(obj)
-		case pb.Action_REMOVEOBJECT:
-			var obj object.Object
-			object.Unmarshal(&obj, action.GetObjectInfo())
-			s.RemoveObject(obj.ID)
-		case pb.Action_ADDDAMAGE:
-			var dm []damage.Damage
-			damage.Unmarshal(&dm, action.GetDamageInfo())
-			if err := s.AddDamage(dm); err != nil {
-				logger.Error("Failed to add damage data %+v: %+v", dm, err)
-				return fmt.Errorf("failed to add damage: %v", err)
+		switch msg.GetType() {
+		case pb.Request_SENDSIGNAL:
+			if err := s.HandleSignal(msg.GetClientID(), msg.GetSignal()); err != nil {
+				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
+				return fmt.Errorf("failed to send signal: %w", err)
 			}
-		case pb.Action_ADDEFFECT:
-			var eff effect.Effect
-			effect.Unmarshal(&eff, action.GetEffect())
-			s.AddEffect(eff)
-		case pb.Action_SENDSIGNAL:
-			if err := s.SendSignal(action.GetClientID(), action.GetSignal()); err != nil {
-				logger.Error("Failed to send signal %v: %+v", action.GetSignal(), err)
-				return fmt.Errorf("failed to send signal: %v", err)
+		case pb.Request_ACTION:
+			if err := s.HandleAction(msg.GetClientID(), msg.GetAct()); err != nil {
+				logger.Error("Failed to handle action %v: %+v", msg.GetAct(), err)
+				return fmt.Errorf("failed to handle action: %w", err)
 			}
-		case pb.Action_ADDSOUND:
-			var se sound.Sound
-			sound.Unmarshal(&se, action.GetSound())
-			s.AddSound(se)
 		default:
-			return fmt.Errorf("invalid action type: %v", action.GetType())
+			return fmt.Errorf("invalid message type: %v", msg.GetType())
 		}
+
+		// TODO_Next return current status
 	}
 }
 
-func authClient(authReq *pb.Action_AuthRequest, stream pb.NetConn_TransDataServer) pb.Data_AuthResponse {
+func authClient(authReq *pb.Request_AuthRequest, stream pb.NetConn_TransDataServer) pb.Response_AuthResponse {
 	if err := api.VersionCheck(authReq.Version); err != nil {
 		logger.Info("Got missmatched version: %v", err)
-		return pb.Data_AuthResponse{
+		return pb.Response_AuthResponse{
 			Success: false,
 			ErrMsg:  err.Error(),
 		}
@@ -92,7 +71,7 @@ func authClient(authReq *pb.Action_AuthRequest, stream pb.NetConn_TransDataServe
 	caRes, err := api.ClientAuth(authReq.Id, authReq.Key)
 	if err != nil {
 		logger.Info("Failed to authenticate client: %v", err)
-		return pb.Data_AuthResponse{
+		return pb.Response_AuthResponse{
 			Success: false,
 			ErrMsg:  "authenticate failed",
 		}
@@ -101,7 +80,7 @@ func authClient(authReq *pb.Action_AuthRequest, stream pb.NetConn_TransDataServe
 	sinfo, err := api.GetSessionInfo(caRes.SessionID)
 	if err != nil {
 		logger.Error("Failed to get session: %v", err)
-		return pb.Data_AuthResponse{
+		return pb.Response_AuthResponse{
 			Success: false,
 			ErrMsg:  "internal server error",
 		}
@@ -109,13 +88,13 @@ func authClient(authReq *pb.Action_AuthRequest, stream pb.NetConn_TransDataServe
 
 	if err := session.Add(sinfo.ID, authReq.Id, stream); err != nil {
 		logger.Error("Failed to add to session manager: %v", err)
-		return pb.Data_AuthResponse{
+		return pb.Response_AuthResponse{
 			Success: false,
 			ErrMsg:  "internal server error",
 		}
 	}
 
-	return pb.Data_AuthResponse{
+	return pb.Response_AuthResponse{
 		Success:   true,
 		SessionID: sinfo.ID,
 		AllUserIDs: []string{
@@ -125,10 +104,10 @@ func authClient(authReq *pb.Action_AuthRequest, stream pb.NetConn_TransDataServe
 	}
 }
 
-func makeAuthRes(authRes *pb.Data_AuthResponse) *pb.Data {
-	return &pb.Data{
-		Type: pb.Data_AUTHRESPONSE,
-		Data: &pb.Data_AuthRes{
+func makeAuthRes(authRes *pb.Response_AuthResponse) *pb.Response {
+	return &pb.Response{
+		Type: pb.Response_AUTHRESPONSE,
+		Data: &pb.Response_AuthRes{
 			AuthRes: authRes,
 		},
 	}

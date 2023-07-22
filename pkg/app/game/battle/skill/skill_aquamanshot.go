@@ -3,11 +3,12 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -23,7 +24,7 @@ type aquamanShot struct {
 }
 
 func newAquamanShot(objID string, arg Argument) *aquamanShot {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	return &aquamanShot{
@@ -42,7 +43,7 @@ func (p *aquamanShot) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		sound.On(sound.SEBombThrow)
+		sound.On(resources.SEBombThrow)
 	}
 
 	const size = 120
@@ -55,25 +56,25 @@ func (p *aquamanShot) Process() (bool, error) {
 			return true, nil
 		}
 
-		sound.On(sound.SEWaterLanding)
-		anim.New(effect.Get(effect.TypeWaterBomb, p.target, 0))
-		damage.New(damage.Damage{
+		sound.On(resources.SEWaterLanding)
+		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           20,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		})
 		target := common.Point{X: p.target.X - 1, Y: p.target.Y}
-		anim.New(effect.Get(effect.TypeWaterBomb, target, 0))
-		damage.New(damage.Damage{
+		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
+		localanim.DamageManager().New(damage.Damage{
 			Pos:           target,
 			Power:         int(p.Arg.Power),
 			TTL:           20,
 			TargetType:    p.Arg.TargetType,
-			HitEffectType: effect.TypeNone,
+			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			DamageType:    damage.TypeWater,
 		})
@@ -86,7 +87,7 @@ func (p *aquamanShot) Process() (bool, error) {
 func (p *aquamanShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 

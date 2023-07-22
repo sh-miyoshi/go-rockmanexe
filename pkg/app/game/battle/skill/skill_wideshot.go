@@ -3,10 +3,10 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -33,7 +33,7 @@ type wideShot struct {
 }
 
 func newWideShot(objID string, arg Argument) *wideShot {
-	pos := objanim.GetObjPos(arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	direct := common.DirectRight
 	nextStep := 8
 	if arg.TargetType == damage.TargetPlayer {
@@ -92,7 +92,7 @@ func (p *wideShot) Draw() {
 func (p *wideShot) Process() (bool, error) {
 	for _, did := range p.damageID {
 		if did != "" {
-			if !damage.Exists(did) && p.count%p.NextStepCount != 0 {
+			if !localanim.DamageManager().Exists(did) && p.count%p.NextStepCount != 0 {
 				// attack hit to target
 				return true, nil
 			}
@@ -102,7 +102,7 @@ func (p *wideShot) Process() (bool, error) {
 	switch p.state {
 	case wideShotStateBegin:
 		if p.count == 0 {
-			sound.On(sound.SEWideShot)
+			sound.On(resources.SEWideShot)
 		}
 
 		max := len(imgWideShotBody)
@@ -133,12 +133,12 @@ func (p *wideShot) Process() (bool, error) {
 					continue
 				}
 
-				p.damageID[i+1] = damage.New(damage.Damage{
+				p.damageID[i+1] = localanim.DamageManager().New(damage.Damage{
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,
 					TargetType:    p.Arg.TargetType,
-					HitEffectType: effect.TypeNone,
+					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
 					DamageType:    damage.TypeWater,
 				})
@@ -153,12 +153,12 @@ func (p *wideShot) Process() (bool, error) {
 func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		AnimType: anim.AnimTypeSkill,
+		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *wideShot) StopByOwner() {
 	if p.state != wideShotStateMove {
-		anim.Delete(p.ID)
+		localanim.AnimDelete(p.ID)
 	}
 }
