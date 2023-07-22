@@ -37,14 +37,16 @@ var (
 )
 
 type enemyColdman struct {
-	pm        EnemyParam
-	images    [coldmanActTypeMax][]int
-	count     int
-	state     int
-	nextState int
-	waitCount int
-	moveNum   int
-	cubeIDs   []string
+	pm           EnemyParam
+	images       [coldmanActTypeMax][]int
+	count        int
+	state        int
+	nextState    int
+	waitCount    int
+	moveNum      int
+	cubeIDs      []string
+	targetPos    common.Point
+	targetCubeID string
 }
 
 func (e *enemyColdman) Init(objID string) error {
@@ -54,6 +56,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.nextState = coldmanActTypeMove
 	e.moveNum = rand.Intn(2) + 2
 	e.cubeIDs = []string{}
+	e.targetPos = common.Point{X: -1, Y: -1}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDColdman)
@@ -134,6 +137,26 @@ func (e *enemyColdman) Process() (bool, error) {
 		}
 	case coldmanActTypeMove:
 		if e.count == 2*coldmanDelays[coldmanActTypeMove] {
+			if e.targetPos.X != -1 && e.targetPos.Y != -1 {
+				if !battlecommon.MoveObjectDirect(
+					&e.pm.Pos,
+					e.targetPos,
+					battlecommon.PanelTypeEnemy,
+					true,
+					field.GetPanelInfo,
+				) {
+					// 移動に失敗したら、ランダム移動からやり直し
+					e.nextState = coldmanActTypeMove
+					e.moveNum = rand.Intn(2) + 2
+					e.targetCubeID = ""
+				}
+				e.targetPos = common.Point{X: -1, Y: -1}
+				e.count = 0
+				e.waitCount = 20
+				e.state = aquamanActTypeStand
+				return false, nil
+			}
+
 			e.moveRandom()
 
 			e.waitCount = 60
@@ -143,7 +166,11 @@ func (e *enemyColdman) Process() (bool, error) {
 				e.moveNum = rand.Intn(2) + 2
 
 				// TODO next action
-				e.nextState = coldmanActTypeIceCreate
+				if len(e.cubeIDs) == 0 {
+					e.nextState = coldmanActTypeIceCreate
+				} else {
+					e.nextState = coldmanActTypeIceShoot
+				}
 			}
 		}
 	case coldmanActTypeIceCreate:
@@ -161,6 +188,30 @@ func (e *enemyColdman) Process() (bool, error) {
 		e.count = 0
 		return false, nil
 	case coldmanActTypeIceShoot:
+		if e.count == 0 && e.targetCubeID == "" {
+			// キューブの前に移動
+			playerPos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+			for _, id := range e.cubeIDs {
+				pos := localanim.ObjAnimGetObjPos(id)
+				if pos.Y == playerPos.Y {
+					e.targetCubeID = id
+					e.targetPos = common.Point{X: pos.X + 1, Y: pos.Y}
+					e.state = coldmanActTypeMove
+					e.nextState = coldmanActTypeIceShoot
+					return false, nil
+				}
+			}
+
+			// 対象のキューブが見つからない場合、ランダム移動からやり直し
+			e.state = coldmanActTypeStand
+			e.nextState = coldmanActTypeMove
+			e.count = 0
+			e.waitCount = 20
+			return false, nil
+		}
+
+		// TODO: PUSH
+
 		panic("not implemented yet")
 	case coldmanActTypeBodyBlow:
 		panic("not implemented yet")
@@ -281,19 +332,24 @@ func (e *enemyColdman) createCube() error {
 		e.cubeIDs = []string{}
 	}
 
-	pm := object.ObjectParam{
-		Pos:           common.Point{X: 4, Y: 1}, // TODO(特定のパターンで3個生成)
-		HP:            200,
-		OnwerCharType: objanim.ObjTypeEnemy,
-	}
-	obj := &object.IceCube{}
-	if err := obj.Init(e.pm.ObjectID, pm); err != nil {
-		return fmt.Errorf("failed to init ice cube: %w", err)
-	}
-	id := localanim.ObjAnimNew(obj)
-	localanim.ObjAnimAddActiveAnim(id)
+	// 特定のパターンで3個生成
 
-	e.cubeIDs = append(e.cubeIDs, id)
+	// パターン1: 真ん中, 縦一列
+	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+		pm := object.ObjectParam{
+			Pos:           common.Point{X: 2, Y: y},
+			HP:            200,
+			OnwerCharType: objanim.ObjTypeEnemy,
+		}
+		obj := &object.IceCube{}
+		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
+			return fmt.Errorf("failed to init ice cube: %w", err)
+		}
+		id := localanim.ObjAnimNew(obj)
+		localanim.ObjAnimAddActiveAnim(id)
+		e.cubeIDs = append(e.cubeIDs, id)
+	}
+	// TODO: 他のパターン
 
 	return nil
 }
