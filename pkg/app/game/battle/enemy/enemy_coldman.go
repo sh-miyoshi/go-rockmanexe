@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -42,6 +43,7 @@ type enemyColdman struct {
 	nextState int
 	waitCount int
 	moveNum   int
+	cubeIDs   []string
 }
 
 func (e *enemyColdman) Init(objID string) error {
@@ -50,6 +52,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.waitCount = 60
 	e.nextState = coldmanActTypeMove
 	e.moveNum = rand.Intn(2) + 2
+	e.cubeIDs = []string{}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDColdman)
@@ -136,10 +139,26 @@ func (e *enemyColdman) Process() (bool, error) {
 			e.state = coldmanActTypeStand
 			e.moveNum--
 			if e.moveNum <= 0 {
-				// TODO next action
 				e.moveNum = rand.Intn(2) + 2
+
+				// TODO next action
+				e.nextState = coldmanActTypeIceCreate
 			}
 		}
+	case coldmanActTypeIceCreate:
+		if e.count == 0 {
+			field.SetBlackoutCount(90)
+
+			if err := e.createCube(); err != nil {
+				return false, nil
+			}
+		}
+	case coldmanActTypeIceShoot:
+		panic("not implemented yet")
+	case coldmanActTypeBodyBlow:
+		panic("not implemented yet")
+	case coldmanActTypeBless:
+		panic("not implemented yet")
 	case coldmanActTypeDamage:
 		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
 			e.waitCount = 20
@@ -244,4 +263,22 @@ func (e *enemyColdman) moveRandom() {
 			return
 		}
 	}
+}
+
+func (e *enemyColdman) createCube() error {
+	pm := object.ObjectParam{
+		Pos:           common.Point{X: 4, Y: 1}, // TODO(特定のパターンで3個生成)
+		HP:            200,
+		OnwerCharType: objanim.ObjTypeEnemy,
+	}
+	obj := &object.IceCube{}
+	if err := obj.Init(e.pm.ObjectID, pm); err != nil {
+		return fmt.Errorf("failed to init ice cube: %w", err)
+	}
+	id := localanim.ObjAnimNew(obj)
+	localanim.ObjAnimAddActiveAnim(id)
+
+	e.cubeIDs = append(e.cubeIDs, id)
+
+	return nil
 }
