@@ -1,5 +1,16 @@
 # TODO List
 
+## v0.11でやりたいこと
+
+- ナビカス
+  - HP, アタック, ラピッド
+- 考え中
+
+## バグ
+
+- 暗転中にエフェクトを止めておく
+  - https://github.com/sh-miyoshi/go-rockmanexe/blob/5266150b836d903742fc2509910a614237a66103/pkg/app/game/battle/battle.go#L217
+
 ## ネットワーク対戦のリファクタリング
 
 - 後回し
@@ -12,17 +23,6 @@
   - Field情報をServerから取得する
   - skill使用時のsound
     - バルカン発射時など
-
-## v0.11でやりたいこと
-
-- ナビカス
-  - HP, アタック, ラピッド
-- 考え中
-
-## バグ
-
-- 暗転中にエフェクトを止めておく
-  - https://github.com/sh-miyoshi/go-rockmanexe/blob/5266150b836d903742fc2509910a614237a66103/pkg/app/game/battle/battle.go#L217
 
 ## 新機能
 
