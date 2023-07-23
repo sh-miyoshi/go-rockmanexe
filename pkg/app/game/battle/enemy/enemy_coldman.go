@@ -167,11 +167,12 @@ func (e *enemyColdman) Process() (bool, error) {
 				e.moveNum = rand.Intn(2) + 2
 
 				// TODO next action
-				if len(e.cubeIDs) == 0 {
-					e.nextState = coldmanActTypeIceCreate
-				} else {
-					e.nextState = coldmanActTypeIceShoot
-				}
+				e.nextState = coldmanActTypeBless
+				// if len(e.cubeIDs) == 0 {
+				// 	e.nextState = coldmanActTypeIceCreate
+				// } else {
+				// 	e.nextState = coldmanActTypeIceShoot
+				// }
 			}
 		}
 	case coldmanActTypeIceCreate:
@@ -201,6 +202,7 @@ func (e *enemyColdman) Process() (bool, error) {
 						e.targetPos = targetPos
 						e.state = coldmanActTypeMove
 						e.nextState = coldmanActTypeIceShoot
+						e.count = 0
 					}
 					return false, nil
 				}
@@ -240,9 +242,24 @@ func (e *enemyColdman) Process() (bool, error) {
 			return false, nil
 		}
 	case coldmanActTypeBodyBlow:
-		panic("not implemented yet")
+		panic("TODO: not implemented yet")
 	case coldmanActTypeBless:
-		panic("not implemented yet")
+		targetPos := common.Point{X: 5, Y: 1}
+		if !targetPos.Equal(e.pm.Pos) {
+			e.targetPos = targetPos
+			e.state = coldmanActTypeMove
+			e.nextState = coldmanActTypeBless
+			e.count = 0
+			return false, nil
+		}
+
+		e.createBress()
+
+		e.moveNum = rand.Intn(2) + 2
+		e.waitCount = 60
+		e.state = coldmanActTypeStand
+		e.nextState = coldmanActTypeMove
+		e.count = 0
 	case coldmanActTypeDamage:
 		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
 			e.waitCount = 20
@@ -376,6 +393,24 @@ func (e *enemyColdman) createCube() error {
 		e.cubeIDs = append(e.cubeIDs, id)
 	}
 	// TODO: 他のパターン
+
+	return nil
+}
+
+func (e *enemyColdman) createBress() error {
+	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+		pm := object.ObjectParam{
+			Pos:           common.Point{X: 4, Y: y},
+			HP:            10,
+			OnwerCharType: objanim.ObjTypeEnemy,
+		}
+		obj := &object.ColdBress{}
+		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
+			return fmt.Errorf("failed to init cold bress: %w", err)
+		}
+		localanim.ObjAnimNew(obj)
+		// TODO: set to bressIDs
+	}
 
 	return nil
 }
