@@ -10,9 +10,10 @@ import (
 )
 
 type chipNameDraw struct {
-	name  string
-	count int
-	tm    int
+	name         string
+	count        int
+	tm           int
+	isUserPlayer bool
 }
 
 func loadImages() error {
@@ -304,11 +305,12 @@ func cleanupImages() {
 	imgAreaStealPanel = []int{}
 }
 
-func setChipNameDraw(name string) {
+func SetChipNameDraw(name string, isUserPlayer bool) {
 	battlecommon.AddSystem(&chipNameDraw{
-		name:  name,
-		count: 0,
-		tm:    10,
+		name:         name,
+		count:        0,
+		tm:           10,
+		isUserPlayer: isUserPlayer,
 	})
 }
 
@@ -326,7 +328,12 @@ func (c *chipNameDraw) Draw() {
 		return
 	}
 
-	draw.ExtendString(50, 70, r, 0xffffff, c.name)
+	x := 50
+	if !c.isUserPlayer {
+		x = 300
+	}
+
+	draw.ExtendString(x, 70, r, 0xffffff, c.name)
 }
 
 func (c *chipNameDraw) Process() bool {

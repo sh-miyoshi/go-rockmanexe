@@ -9,6 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
 
+const (
+	QueueTypeAction int = iota
+	QueueTypeEffect
+	QueueTypeSound
+
+	QueueTypeMax
+)
+
 type PanelInfo struct {
 	OwnerClientID string
 	ObjectID      string

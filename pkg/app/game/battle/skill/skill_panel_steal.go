@@ -72,7 +72,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 		if p.count == 1 {
 			sound.On(resources.SEAreaSteal)
 			field.SetBlackoutCount(90)
-			setChipNameDraw("パネルスチール")
+			SetChipNameDraw("パネルスチール", true)
 
 			// Target位置を実行時の一番最初に設定する
 			if p.myPanelType == battlecommon.PanelTypePlayer {
