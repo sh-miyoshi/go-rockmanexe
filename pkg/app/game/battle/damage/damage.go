@@ -79,7 +79,7 @@ func (m *DamageManager) Process() {
 
 func (m *DamageManager) Get(pos common.Point) *Damage {
 	for _, d := range m.damages {
-		if d.Pos.X == pos.X && d.Pos.Y == pos.Y {
+		if d.Pos.Equal(pos) {
 			return d
 		}
 	}

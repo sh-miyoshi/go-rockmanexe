@@ -12,15 +12,15 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 )
 
 type gameObject struct {
 	animObject        objanim.Anim
-	queueIDs          [queue.TypeMax]string
+	queueIDs          [gameinfo.QueueTypeMax]string
 	currentObjectType *int
 }
 
@@ -79,7 +79,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 
 	// Player Objectを作成
 	g.objects[clientID] = &gameObject{}
-	for i := 0; i < queue.TypeMax; i++ {
+	for i := 0; i < gameinfo.QueueTypeMax; i++ {
 		g.objects[clientID].queueIDs[i] = uuid.NewString()
 	}
 	plyr := gameobj.NewPlayer(gameinfo.Object{
@@ -101,7 +101,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {
 	logger.Info("Got action %d from %s", act.GetType(), clientID)
-	queue.Push(g.objects[clientID].queueIDs[queue.TypeAction], act)
+	queue.Push(g.objects[clientID].queueIDs[gameinfo.QueueTypeAction], act)
 	return nil
 }
 
@@ -206,14 +206,14 @@ func (g *GameHandler) updateGameInfo() {
 
 	effects := []gameinfo.Effect{}
 	for _, o := range g.objects {
-		for _, e := range queue.PopAll(o.queueIDs[queue.TypeEffect]) {
+		for _, e := range queue.PopAll(o.queueIDs[gameinfo.QueueTypeEffect]) {
 			effects = append(effects, *e.(*gameinfo.Effect))
 		}
 	}
 
 	sounds := []gameinfo.Sound{}
 	for _, o := range g.objects {
-		for _, s := range queue.PopAll(o.queueIDs[queue.TypeSound]) {
+		for _, s := range queue.PopAll(o.queueIDs[gameinfo.QueueTypeSound]) {
 			sounds = append(sounds, *s.(*gameinfo.Sound))
 		}
 	}

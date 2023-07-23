@@ -262,5 +262,5 @@ func ResetSet4x4Area() {
 }
 
 func Is4x4Area() bool {
-	return battlecommon.FieldNum.X == 8 && battlecommon.FieldNum.Y == 4
+	return battlecommon.FieldNum.Equal(common.Point{X: 8, Y: 4})
 }

@@ -7,9 +7,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 )
 
 type vulcan struct {
@@ -59,7 +59,7 @@ func (p *vulcan) Process() (bool, error) {
 						BigDamage:     lastAtk,
 						DamageType:    damage.TypeNone,
 					})
-					queue.Push(p.Arg.QueueIDs[queue.TypeEffect], &gameinfo.Effect{
+					queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 						ID:            uuid.New().String(),
 						OwnerClientID: p.Arg.GameInfo.ClientID,
 						Pos:           target,
@@ -69,7 +69,7 @@ func (p *vulcan) Process() (bool, error) {
 
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
-						queue.Push(p.Arg.QueueIDs[queue.TypeEffect], &gameinfo.Effect{
+						queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 							ID:            uuid.New().String(),
 							OwnerClientID: p.Arg.GameInfo.ClientID,
 							Pos:           target,

@@ -1,13 +1,5 @@
 package queue
 
-const (
-	TypeAction int = iota
-	TypeEffect
-	TypeSound
-
-	TypeMax
-)
-
 var (
 	allQueues = make(map[string][]interface{})
 )
