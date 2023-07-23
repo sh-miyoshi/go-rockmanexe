@@ -14,9 +14,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/queue"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
@@ -33,7 +33,7 @@ type playerAct struct {
 type Player struct {
 	objectInfo      gameinfo.Object
 	gameInfo        *gameinfo.GameInfo
-	queueIDs        [queue.TypeMax]string
+	queueIDs        [gameinfo.QueueTypeMax]string
 	hpMax           int
 	act             playerAct
 	invincibleCount int
@@ -41,7 +41,7 @@ type Player struct {
 	skillInst       skill.SkillAnim
 }
 
-func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, queueIDs [queue.TypeMax]string) *Player {
+func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, queueIDs [gameinfo.QueueTypeMax]string) *Player {
 	res := &Player{
 		objectInfo: info,
 		gameInfo:   gameInfo,
@@ -76,7 +76,7 @@ func (p *Player) Process() (bool, error) {
 	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
-	tact := queue.Pop(p.queueIDs[queue.TypeAction])
+	tact := queue.Pop(p.queueIDs[gameinfo.QueueTypeAction])
 	if tact != nil {
 		act := tact.(*pb.Request_Action)
 
@@ -132,7 +132,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	if dm.HitEffectType != resources.EffectTypeNone {
 		logger.Debug("Add effect %v", dm.HitEffectType)
 
-		queue.Push(p.queueIDs[queue.TypeEffect], &gameinfo.Effect{
+		queue.Push(p.queueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 			ID:            uuid.New().String(),
 			OwnerClientID: p.gameInfo.ClientID,
 			Pos:           p.objectInfo.Pos,
@@ -161,7 +161,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return true
 	}
 
-	queue.Push(p.queueIDs[queue.TypeSound], &gameinfo.Sound{
+	queue.Push(p.queueIDs[gameinfo.QueueTypeSound], &gameinfo.Sound{
 		ID:   uuid.New().String(),
 		Type: int(resources.SEDamaged),
 	})
