@@ -1,5 +1,17 @@
 # TODO List
 
+## コールドマンの追加
+
+- アクション
+  - coldmanActTypeIceCreate
+    - 生成するアイスのパターン
+  - coldmanActTypeIceShoot
+    - アイスキューブよりコールドマンを手前に描画
+    - アイスキューブが量エリアに転がって行って、キャラに当たったらダメージ
+  - coldmanActTypeBodyBlow
+  - coldmanActTypeBless
+- チップ
+
 ## v0.11でやりたいこと
 
 - ナビカス
