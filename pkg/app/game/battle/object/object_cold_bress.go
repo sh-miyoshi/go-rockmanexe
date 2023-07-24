@@ -11,24 +11,30 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
-	delayColdBress = 3
+	delayColdBress         = 6
+	coldBressNextStepCount = 80
 )
 
 type ColdBress struct {
-	pm     ObjectParam
-	images []int
-	count  int
+	pm       ObjectParam
+	images   []int
+	count    int
+	damageID string
+	next     common.Point
+	prev     common.Point
 }
 
 func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
 	o.pm = initParam
 	o.pm.objectID = uuid.New().String()
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
+
+	o.next = o.pm.Pos
+	o.prev = common.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
 
 	// Load Images
 	o.images = make([]int, 7)
@@ -49,16 +55,46 @@ func (o *ColdBress) End() {
 
 func (o *ColdBress) Process() (bool, error) {
 	if o.pm.HP <= 0 {
-		// TODO delete animation
 		return true, nil
 	}
 
-	o.count++
+	// キャラにヒット時はダメージを与えて消える
+	if o.count%coldBressNextStepCount == 1 {
+		if o.damageID != "" {
+			if !localanim.DamageManager().Exists(o.damageID) {
+				// attack hit to target
+				return true, nil
+			}
+		}
+	}
 
+	if o.count%coldBressNextStepCount == 0 {
+		if o.count != 0 {
+			// Update current pos
+			o.prev = o.pm.Pos
+			o.pm.Pos = o.next
+		}
+
+		if o.pm.Pos.X < 0 || o.pm.Pos.X > battlecommon.FieldNum.X || o.pm.Pos.Y < 0 || o.pm.Pos.Y > battlecommon.FieldNum.Y {
+			return true, nil
+		}
+
+		// Update next pos
+		// TODO: 基本left, 移動できないなら上下
+		o.next.X--
+	}
+
+	o.count++
 	return false, nil
 }
 
 func (o *ColdBress) Draw() {
+	cnt := o.count % coldBressNextStepCount
+	if cnt == 0 {
+		// Skip drawing because the position is updated in Process method and return unexpected value
+		return
+	}
+
 	view := battlecommon.ViewPos(o.pm.Pos)
 
 	opt := dxlib.DrawRotaGraphOption{}
@@ -67,11 +103,11 @@ func (o *ColdBress) Draw() {
 		opt.ReverseXFlag = &f
 	}
 
-	n := o.count / delayColdBress
-	if n > len(o.images)-1 {
-		n = len(o.images) - 1
-	}
-	dxlib.DrawRotaGraph(view.X, view.Y+16, 1, 0, o.images[n], true, opt)
+	n := (o.count / delayColdBress) % len(o.images)
+	ofsx := battlecommon.GetOffset(o.next.X, o.pm.Pos.X, o.prev.X, cnt, coldBressNextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(o.next.Y, o.pm.Pos.Y, o.prev.Y, cnt, coldBressNextStepCount, battlecommon.PanelSize.Y)
+
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16+ofsy, 1, 0, o.images[n], true, opt)
 }
 
 func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
@@ -86,17 +122,6 @@ func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetType&target != 0 {
 		o.pm.HP -= dm.Power
-
-		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
-				break
-			}
-		}
-		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
-				break
-			}
-		}
 
 		localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 		return true
