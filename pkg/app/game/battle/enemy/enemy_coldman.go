@@ -46,6 +46,7 @@ type enemyColdman struct {
 	waitCount    int
 	moveNum      int
 	cubeIDs      []string
+	bressIDs     []string
 	targetPos    common.Point
 	targetCubeID string
 }
@@ -57,6 +58,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.nextState = coldmanActTypeMove
 	e.moveNum = rand.Intn(2) + 2
 	e.cubeIDs = []string{}
+	e.bressIDs = []string{}
 	e.targetPos = common.Point{X: -1, Y: -1}
 
 	// Load Images
@@ -398,18 +400,33 @@ func (e *enemyColdman) createCube() error {
 }
 
 func (e *enemyColdman) createBress() error {
+	// 前のブレスがあるなら削除する
+	if len(e.bressIDs) > 0 {
+		for _, id := range e.bressIDs {
+			localanim.ObjAnimDelete(id)
+		}
+		e.bressIDs = []string{}
+	}
+
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+		pos := common.Point{X: 4, Y: y}
+		// もしObjectがあれば生成しない
+		if localanim.ObjAnimExistsObject(pos) != "" {
+			continue
+		}
+
 		pm := object.ObjectParam{
-			Pos:           common.Point{X: 4, Y: y},
+			Pos:           pos,
 			HP:            10,
 			OnwerCharType: objanim.ObjTypeEnemy,
 		}
+
 		obj := &object.ColdBress{}
 		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
 			return fmt.Errorf("failed to init cold bress: %w", err)
 		}
-		localanim.ObjAnimNew(obj)
-		// TODO: set to bressIDs
+		id := localanim.ObjAnimNew(obj)
+		e.bressIDs = append(e.bressIDs, id)
 	}
 
 	return nil
