@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -79,9 +80,36 @@ func (o *ColdBress) Process() (bool, error) {
 			return true, nil
 		}
 
+		// Add damage
+		target := damage.TargetPlayer
+		if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+			target = damage.TargetEnemy
+		}
+
+		o.damageID = localanim.DamageManager().New(damage.Damage{
+			Pos:           o.pm.Pos,
+			Power:         10,
+			TTL:           coldBressNextStepCount,
+			TargetType:    target,
+			HitEffectType: resources.EffectTypeNone,
+			ShowHitArea:   false,
+			BigDamage:     true,
+			DamageType:    damage.TypeElec,
+		})
+
 		// Update next pos
-		// TODO: 基本left, 移動できないなら上下
-		o.next.X--
+		left := common.Point{X: o.next.X - 1, Y: o.next.Y}
+		if o.checkMove(left) {
+			o.next = left
+		} else {
+			up := common.Point{X: o.next.X, Y: o.next.Y - 1}
+			down := common.Point{X: o.next.X, Y: o.next.Y + 1}
+			if up.Y >= 0 && o.checkMove(up) {
+				o.next = up
+			} else if down.Y < battlecommon.FieldNum.Y && o.checkMove(down) {
+				o.next = down
+			}
+		}
 	}
 
 	o.count++
@@ -146,3 +174,23 @@ func (o *ColdBress) GetObjectType() int {
 }
 
 func (o *ColdBress) MakeInvisible(count int) {}
+
+func (o *ColdBress) checkMove(next common.Point) bool {
+	objID := localanim.ObjAnimExistsObject(next)
+	if objID == "" {
+		return true
+	}
+
+	target := objanim.ObjTypePlayer
+	if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+		target = objanim.ObjTypeEnemy
+	}
+	objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: target})
+	for _, obj := range objs {
+		if obj.ObjID == objID {
+			return true
+		}
+	}
+
+	return false
+}
