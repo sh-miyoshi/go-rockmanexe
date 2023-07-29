@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -134,9 +135,7 @@ func (e *enemyColdman) Process() (bool, error) {
 	case coldmanActTypeStand:
 		e.waitCount--
 		if e.waitCount <= 0 {
-			e.state = e.nextState
-			e.count = 0
-			return false, nil
+			return e.stateChange(e.nextState)
 		}
 	case coldmanActTypeMove:
 		if e.count == 2*coldmanDelays[coldmanActTypeMove] {
@@ -154,10 +153,8 @@ func (e *enemyColdman) Process() (bool, error) {
 					e.targetCubeID = ""
 				}
 				e.targetPos = common.Point{X: -1, Y: -1}
-				e.count = 0
 				e.waitCount = 20
-				e.state = aquamanActTypeStand
-				return false, nil
+				return e.stateChange(aquamanActTypeStand)
 			}
 
 			e.moveRandom()
@@ -169,28 +166,31 @@ func (e *enemyColdman) Process() (bool, error) {
 				e.moveNum = rand.Intn(2) + 2
 
 				// TODO next action
-				e.nextState = coldmanActTypeBless
-				// if len(e.cubeIDs) == 0 {
-				// 	e.nextState = coldmanActTypeIceCreate
-				// } else {
-				// 	e.nextState = coldmanActTypeIceShoot
-				// }
+				// e.nextState = coldmanActTypeBless
+				if len(e.cubeIDs) == 0 {
+					e.nextState = coldmanActTypeIceCreate
+				} else {
+					e.nextState = coldmanActTypeIceShoot
+				}
 			}
 		}
 	case coldmanActTypeIceCreate:
-		field.SetBlackoutCount(90)
-		skill.SetChipNameDraw("アイスキューブ", false)
+		if e.count == 0 {
+			field.SetBlackoutCount(90)
+			skill.SetChipNameDraw("アイスキューブ", false)
 
-		if err := e.createCube(); err != nil {
-			return false, err
+			if err := e.createCube(); err != nil {
+				return false, err
+			}
 		}
-
-		e.moveNum = rand.Intn(2) + 2
-		e.waitCount = 60
-		e.state = coldmanActTypeStand
-		e.nextState = coldmanActTypeMove
-		e.count = 0
-		return false, nil
+		if e.count == 60 {
+			for _, id := range e.cubeIDs {
+				localanim.ObjAnimDeactivateAnim(id)
+			}
+			e.moveNum = rand.Intn(2) + 2
+			e.nextState = coldmanActTypeMove
+			return e.stateChange(coldmanActTypeMove)
+		}
 	case coldmanActTypeIceShoot:
 		if e.count == 0 && e.targetCubeID == "" {
 			// キューブの前に移動
@@ -202,20 +202,17 @@ func (e *enemyColdman) Process() (bool, error) {
 					targetPos := common.Point{X: pos.X + 1, Y: pos.Y}
 					if !targetPos.Equal(e.pm.Pos) {
 						e.targetPos = targetPos
-						e.state = coldmanActTypeMove
 						e.nextState = coldmanActTypeIceShoot
-						e.count = 0
+						return e.stateChange(coldmanActTypeMove)
 					}
 					return false, nil
 				}
 			}
 
 			// 対象のキューブが見つからない場合、ランダム移動からやり直し
-			e.state = coldmanActTypeStand
 			e.nextState = coldmanActTypeMove
-			e.count = 0
 			e.waitCount = 20
-			return false, nil
+			return e.stateChange(coldmanActTypeStand)
 		}
 
 		if e.count == 3*coldmanDelays[coldmanActTypeIceShoot] {
@@ -238,10 +235,8 @@ func (e *enemyColdman) Process() (bool, error) {
 
 		if e.count == 6*coldmanDelays[coldmanActTypeIceShoot] {
 			e.waitCount = 20
-			e.state = coldmanActTypeStand
 			e.nextState = coldmanActTypeMove
-			e.count = 0
-			return false, nil
+			return e.stateChange(coldmanActTypeStand)
 		}
 	case coldmanActTypeBodyBlow:
 		panic("TODO: not implemented yet")
@@ -249,26 +244,21 @@ func (e *enemyColdman) Process() (bool, error) {
 		targetPos := common.Point{X: 5, Y: 1}
 		if !targetPos.Equal(e.pm.Pos) {
 			e.targetPos = targetPos
-			e.state = coldmanActTypeMove
 			e.nextState = coldmanActTypeBless
-			e.count = 0
-			return false, nil
+			return e.stateChange(coldmanActTypeMove)
 		}
 
 		e.createBress()
 
 		e.moveNum = rand.Intn(2) + 2
 		e.waitCount = 60
-		e.state = coldmanActTypeStand
 		e.nextState = coldmanActTypeMove
-		e.count = 0
+		return e.stateChange(coldmanActTypeStand)
 	case coldmanActTypeDamage:
 		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
 			e.waitCount = 20
-			e.state = coldmanActTypeStand
 			e.nextState = coldmanActTypeMove
-			e.count = 0
-			return false, nil
+			return e.stateChange(coldmanActTypeStand)
 		}
 	}
 
@@ -430,4 +420,12 @@ func (e *enemyColdman) createBress() error {
 	}
 
 	return nil
+}
+
+func (e *enemyColdman) stateChange(next int) (bool, error) {
+	logger.Info("change coldman state to %d", next)
+	e.state = next
+	e.count = 0
+
+	return false, nil
 }

@@ -6,10 +6,8 @@
   - coldmanActTypeIceCreate
     - 生成するアイスのパターン
   - coldmanActTypeIceShoot
-    - アイスキューブよりコールドマンを手前に描画
     - アイスキューブが両エリアに転がって行って、キャラに当たったらダメージ
   - coldmanActTypeBodyBlow
-  - coldmanActTypeBless
 - チップ
 
 ## v0.11でやりたいこと
