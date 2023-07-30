@@ -5,8 +5,6 @@
 - アクション
   - coldmanActTypeIceCreate
     - 生成するアイスのパターン
-  - coldmanActTypeIceShoot
-    - アイスキューブが両エリアに転がって行って、キャラに当たったらダメージ
   - coldmanActTypeBodyBlow
 - チップ
 

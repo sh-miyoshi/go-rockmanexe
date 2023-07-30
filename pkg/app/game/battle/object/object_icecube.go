@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -87,13 +88,70 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 	if dm.TargetType&target != 0 {
 		o.pm.HP -= dm.Power
 
+		target = ^target
+
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, -1, true, field.GetPanelInfo) {
+				pos := common.Point{X: o.pm.Pos.X - 1, Y: o.pm.Pos.Y}
+				if pos.X < 0 {
+					o.pm.HP = 0 // 画面外のため終了
+					return false
+				}
+
+				// もし目の前が敵キャラならダメージを与える
+				objType := objanim.ObjTypePlayer
+				if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+					objType = objanim.ObjTypeEnemy
+				}
+
+				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
+				if len(objs) > 0 {
+					// Add damage
+					localanim.DamageManager().New(damage.Damage{
+						Pos:           pos,
+						Power:         10,
+						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
+						TargetType:    target,
+						HitEffectType: resources.EffectTypeNone,
+						ShowHitArea:   false,
+						BigDamage:     true,
+						DamageType:    damage.TypeNone,
+					})
+					o.pm.HP = 0 // 自身は死ぬ
+					return false
+				}
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectRight, -1, true, field.GetPanelInfo) {
+				pos := common.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
+				if pos.X >= battlecommon.FieldNum.X {
+					o.pm.HP = 0 // 画面外のため終了
+					return false
+				}
+				// もし目の前が敵キャラならダメージを与える
+				objType := objanim.ObjTypePlayer
+				if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+					objType = objanim.ObjTypeEnemy
+				}
+
+				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
+				if len(objs) > 0 {
+					// Add damage
+					localanim.DamageManager().New(damage.Damage{
+						Pos:           pos,
+						Power:         10,
+						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
+						TargetType:    target,
+						HitEffectType: resources.EffectTypeNone,
+						ShowHitArea:   false,
+						BigDamage:     true,
+						DamageType:    damage.TypeNone,
+					})
+					o.pm.HP = 0 // 自身は死ぬ
+					return false
+				}
 				break
 			}
 		}

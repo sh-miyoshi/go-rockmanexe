@@ -94,7 +94,7 @@ func (o *ColdBress) Process() (bool, error) {
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   false,
 			BigDamage:     true,
-			DamageType:    damage.TypeElec,
+			DamageType:    damage.TypeNone,
 		})
 
 		// Update next pos

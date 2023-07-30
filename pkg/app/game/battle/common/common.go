@@ -42,7 +42,7 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 		return false
 	}
 	// Panel owner?
-	if objPanelType != pn.Type {
+	if objPanelType >= 0 && objPanelType != pn.Type {
 		return false
 	}
 	// Panel Status
