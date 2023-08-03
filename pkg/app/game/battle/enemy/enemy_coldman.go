@@ -367,12 +367,43 @@ func (e *enemyColdman) createCube() error {
 		e.cubeIDs = []string{}
 	}
 
-	// 特定のパターンで3個生成
+	// 特定のパターンで2個生成
+	// 原作では3個だが実装の都合上2個にする
 
-	// パターン1: 真ん中, 縦一列
-	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+	// パターン1
+	//   -------------
+	//   | x |   |   |
+	//   -------------
+	//   |   |   |   |
+	//   -------------
+	//   |   | x |   |
+	//   -------------
+
+	// パターン2
+	//   -------------
+	//   |   |   |   |
+	//   -------------
+	//   | x |   |   |
+	//   -------------
+	//   | x |   |   |
+	//   -------------
+	patterns := [][]common.Point{
+		{
+			common.Point{X: 3, Y: 0},
+			common.Point{X: 4, Y: 2},
+		},
+		{
+			common.Point{X: 3, Y: 1},
+			common.Point{X: 3, Y: 2},
+		},
+	}
+
+	index := rand.Intn(len(patterns))
+	ptn := patterns[index]
+
+	for _, pos := range ptn {
 		pm := object.ObjectParam{
-			Pos:           common.Point{X: 4, Y: y},
+			Pos:           pos,
 			HP:            200,
 			OnwerCharType: objanim.ObjTypeEnemy,
 		}
@@ -384,7 +415,6 @@ func (e *enemyColdman) createCube() error {
 		localanim.ObjAnimAddActiveAnim(id)
 		e.cubeIDs = append(e.cubeIDs, id)
 	}
-	// TODO: 他のパターン
 
 	return nil
 }
