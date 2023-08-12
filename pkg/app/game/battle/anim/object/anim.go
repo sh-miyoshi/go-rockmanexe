@@ -178,6 +178,16 @@ func (am *AnimManager) AddActiveAnim(id string) {
 	am.activeAnimIDs = append(am.activeAnimIDs, id)
 }
 
+func (am *AnimManager) DeactivateAnim(id string) {
+	animIDs := []string{}
+	for _, animID := range am.activeAnimIDs {
+		if id != animID {
+			animIDs = append(animIDs, animID)
+		}
+	}
+	am.activeAnimIDs = animIDs
+}
+
 func (am *AnimManager) MakeInvisible(id string, count int) {
 	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, am.anims)
 	if _, ok := am.anims[id]; ok {

@@ -212,6 +212,19 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "極寒より訪れし者",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDColdman,
+						Pos:    common.Point{X: 4, Y: 1},
+						HP:     700,
+					},
+					View: common.Point{X: viewCenter.X, Y: viewCenter.Y},
+				},
+			},
+		},
+		{
 			Name: "練習",
 			Enemies: []selectEnemyData{
 				{

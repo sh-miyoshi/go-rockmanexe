@@ -140,6 +140,14 @@ func ObjAnimAddActiveAnim(id string) {
 	objanimInst.AddActiveAnim(id)
 }
 
+func ObjAnimDeactivateAnim(id string) {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.DeactivateAnim(id)
+}
+
 func ObjAnimMakeInvisible(id string, count int) {
 	if objanimInst == nil {
 		objanimInst = objanim.NewManager()
