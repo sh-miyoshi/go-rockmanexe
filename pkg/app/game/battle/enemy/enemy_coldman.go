@@ -50,6 +50,7 @@ type enemyColdman struct {
 	bressIDs     []string
 	targetPos    common.Point
 	targetCubeID string
+	actCount     int
 }
 
 func (e *enemyColdman) Init(objID string) error {
@@ -61,6 +62,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.cubeIDs = []string{}
 	e.bressIDs = []string{}
 	e.targetPos = common.Point{X: -1, Y: -1}
+	e.actCount = 0
 
 	// Load Images
 	name, ext := GetStandImageFile(IDColdman)
@@ -165,13 +167,19 @@ func (e *enemyColdman) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				e.moveNum = rand.Intn(2) + 2
 
-				// TODO next action
-				// e.nextState = coldmanActTypeBless
-				if len(e.cubeIDs) == 0 {
+				// Action process
+				switch e.actCount {
+				case 0:
 					e.nextState = coldmanActTypeIceCreate
-				} else {
-					e.nextState = coldmanActTypeIceShoot
+				case 1, 2:
+					_, _, exists := e.findShootCube()
+					if exists {
+						e.nextState = coldmanActTypeIceShoot
+					} else {
+						e.nextState = coldmanActTypeBless
+					}
 				}
+				e.actCount = (e.actCount + 1) % 3
 			}
 		}
 	case coldmanActTypeIceCreate:
@@ -194,25 +202,20 @@ func (e *enemyColdman) Process() (bool, error) {
 	case coldmanActTypeIceShoot:
 		if e.count == 0 && e.targetCubeID == "" {
 			// キューブの前に移動
-			playerPos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
-			for _, id := range e.cubeIDs {
-				pos := localanim.ObjAnimGetObjPos(id)
-				if pos.Y == playerPos.Y {
-					e.targetCubeID = id
-					targetPos := common.Point{X: pos.X + 1, Y: pos.Y}
-					if !targetPos.Equal(e.pm.Pos) {
-						e.targetPos = targetPos
-						e.nextState = coldmanActTypeIceShoot
-						return e.stateChange(coldmanActTypeMove)
-					}
-					return false, nil
-				}
+			targetPos, id, exists := e.findShootCube()
+			if !exists {
+				// 対象のキューブが見つからない場合、ランダム移動からやり直し
+				e.nextState = coldmanActTypeMove
+				e.waitCount = 20
+				return e.stateChange(coldmanActTypeStand)
 			}
-
-			// 対象のキューブが見つからない場合、ランダム移動からやり直し
-			e.nextState = coldmanActTypeMove
-			e.waitCount = 20
-			return e.stateChange(coldmanActTypeStand)
+			e.targetCubeID = id
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = coldmanActTypeIceShoot
+				return e.stateChange(coldmanActTypeMove)
+			}
+			return false, nil
 		}
 
 		if e.count == 3*coldmanDelays[coldmanActTypeIceShoot] {
@@ -458,4 +461,16 @@ func (e *enemyColdman) stateChange(next int) (bool, error) {
 	e.count = 0
 
 	return false, nil
+}
+
+func (e *enemyColdman) findShootCube() (common.Point, string, bool) {
+	playerPos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+	for _, id := range e.cubeIDs {
+		pos := localanim.ObjAnimGetObjPos(id)
+		if pos.Y == playerPos.Y {
+			targetPos := common.Point{X: pos.X + 1, Y: pos.Y}
+			return targetPos, id, true
+		}
+	}
+	return common.Point{X: -1, Y: -1}, "", false
 }
