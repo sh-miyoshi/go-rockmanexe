@@ -127,14 +127,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	hit := false
-	if dm.DamageType == damage.TypePosition && dm.TargetObjType&target != 0 {
-		hit = true
-	} else if dm.DamageType == damage.TypeObject {
-		hit = true
-	}
-
-	if hit {
+	if dm.TargetObjType&target != 0 {
 		o.pm.HP--
 		localanim.AnimNew(effect.Get(resources.EffectTypeBlock, o.pm.Pos, 5))
 	}

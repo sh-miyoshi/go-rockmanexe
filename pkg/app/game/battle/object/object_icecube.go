@@ -85,14 +85,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	hit := false
-	if dm.DamageType == damage.TypePosition && dm.TargetObjType&target != 0 {
-		hit = true
-	} else if dm.DamageType == damage.TypeObject {
-		hit = true
-	}
-
-	if hit {
+	if dm.TargetObjType&target != 0 {
 		o.pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {

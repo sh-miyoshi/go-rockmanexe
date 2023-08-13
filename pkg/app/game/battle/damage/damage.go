@@ -36,13 +36,13 @@ type Damage struct {
 	BigDamage     bool // trueならのけぞる
 	Element       int
 
-	DamageType int // ダメージの種類
+	DamageType    int // ダメージの種類
+	TargetObjType int // ダメージを受けるObjectのタイプ
 
 	// DamageTypeがTypePositionの時使うパラメータ
-	Pos           common.Point // (TypePosition)発生箇所
-	TTL           int          // (TypePosition)ダメージが残り続ける時間
-	ShowHitArea   bool         // (TypePosition)足元にダメージ箇所を表示するか
-	TargetObjType int          // (TypePosition)ダメージを受けるObjectのタイプ
+	Pos         common.Point // (TypePosition)発生箇所
+	TTL         int          // (TypePosition)ダメージが残り続ける時間
+	ShowHitArea bool         // (TypePosition)足元にダメージ箇所を表示するか
 
 	// DamageTypeがTypeObjectの時使うパラメータ
 	TargetObjID string // (TypeObject)ダメージを受けるObjectのID

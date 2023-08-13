@@ -451,14 +451,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	hit := false
-	if dm.DamageType == damage.TypePosition && dm.TargetObjType&damage.TargetPlayer != 0 {
-		hit = true
-	} else if dm.DamageType == damage.TypeObject {
-		hit = true
-	}
-
-	if hit {
+	if dm.TargetObjType&damage.TargetPlayer != 0 {
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
 			p.HP = 0
