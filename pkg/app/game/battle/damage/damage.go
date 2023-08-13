@@ -84,7 +84,7 @@ func (m *DamageManager) New(dm Damage) string {
 func (m *DamageManager) Process() {
 	for id, d := range m.damages {
 		if d.DamageType == TypeObject {
-			panic("TODO: not implemented yet")
+			delete(m.damages, id)
 		}
 
 		if d.DamageType == TypePosition {
@@ -96,10 +96,17 @@ func (m *DamageManager) Process() {
 	}
 }
 
-func (m *DamageManager) Get(pos common.Point) *Damage {
+func (m *DamageManager) GetHitDamage(pos common.Point, objID string) *Damage {
 	for _, d := range m.damages {
-		if d.Pos.Equal(pos) {
-			return d
+		switch d.DamageType {
+		case TypeObject:
+			if d.TargetObjID == objID {
+				return d
+			}
+		case TypePosition:
+			if d.Pos.Equal(pos) {
+				return d
+			}
 		}
 	}
 	return nil
