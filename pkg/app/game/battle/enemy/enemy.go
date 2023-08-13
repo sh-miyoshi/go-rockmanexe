@@ -190,7 +190,14 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		return false
 	}
 
-	if dm.TargetObjType&damage.TargetEnemy != 0 {
+	hit := false
+	if dm.DamageType == damage.TypePosition && dm.TargetObjType&damage.TargetEnemy != 0 {
+		hit = true
+	} else if dm.DamageType == damage.TypeObject {
+		hit = true
+	}
+
+	if hit {
 		if pm.InvincibleCount > 0 && dm.Power > 0 {
 			return false
 		}

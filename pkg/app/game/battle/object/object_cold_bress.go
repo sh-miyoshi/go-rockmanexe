@@ -149,7 +149,14 @@ func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetObjType&target != 0 {
+	hit := false
+	if dm.DamageType == damage.TypePosition && dm.TargetObjType&target != 0 {
+		hit = true
+	} else if dm.DamageType == damage.TypeObject {
+		hit = true
+	}
+
+	if hit {
 		o.pm.HP -= dm.Power
 
 		localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
