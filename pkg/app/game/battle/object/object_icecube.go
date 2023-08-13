@@ -95,8 +95,6 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 	if hit {
 		o.pm.HP -= dm.Power
 
-		target = ^target
-
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, -1, true, field.GetPanelInfo) {
 				pos := common.Point{X: o.pm.Pos.X - 1, Y: o.pm.Pos.Y}
@@ -113,18 +111,14 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 
 				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
-					// TODO: type objectで書く
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
-						DamageType:    damage.TypePosition,
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
 						Power:         10,
-						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetObjType: target,
 						HitEffectType: resources.EffectTypeNone,
-						ShowHitArea:   false,
 						BigDamage:     true,
 						Element:       damage.ElementNone,
+						TargetObjID:   objs[0].ObjID,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false
@@ -147,18 +141,14 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 
 				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
-					// TODO: type objectで書く
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
-						DamageType:    damage.TypePosition,
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
 						Power:         10,
-						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetObjType: target,
 						HitEffectType: resources.EffectTypeNone,
-						ShowHitArea:   false,
 						BigDamage:     true,
 						Element:       damage.ElementNone,
+						TargetObjID:   objs[0].ObjID,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false

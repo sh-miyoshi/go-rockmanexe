@@ -573,7 +573,6 @@ func (a *act) Process() bool {
 			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				if objID := field.GetPanelInfo(common.Point{X: x, Y: y}).ObjectID; objID != "" {
-					// TODO: type objectで書く
 					localanim.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						TargetObjID:   objID,
