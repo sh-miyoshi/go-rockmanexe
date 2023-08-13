@@ -569,6 +569,7 @@ func (a *act) Process() bool {
 					localanim.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						TargetObjID:   objID,
+						TargetObjType: damage.TargetEnemy,
 						Power:         int(s),
 						HitEffectType: eff,
 						Element:       damage.ElementNone,

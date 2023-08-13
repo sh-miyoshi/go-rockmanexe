@@ -85,8 +85,17 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetObjType&target != 0 {
+	hit := false
+	if dm.DamageType == damage.TypePosition && dm.TargetObjType&target != 0 {
+		hit = true
+	} else if dm.DamageType == damage.TypeObject {
+		hit = true
+	}
+
+	if hit {
 		o.pm.HP -= dm.Power
+
+		target = ^target
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, -1, true, field.GetPanelInfo) {
@@ -112,6 +121,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 						BigDamage:     true,
 						Element:       damage.ElementNone,
 						TargetObjID:   objs[0].ObjID,
+						TargetObjType: target,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false
@@ -142,6 +152,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 						BigDamage:     true,
 						Element:       damage.ElementNone,
 						TargetObjID:   objs[0].ObjID,
+						TargetObjType: target,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false
