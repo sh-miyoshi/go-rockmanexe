@@ -85,7 +85,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetType&target != 0 {
+	if dm.TargetObjType&target != 0 {
 		o.pm.HP -= dm.Power
 
 		target = ^target
@@ -106,16 +106,18 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 
 				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
+					// TODO: type objectで書く
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
+						DamageType:    damage.TypePosition,
 						Pos:           pos,
 						Power:         10,
 						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetType:    target,
+						TargetObjType: target,
 						HitEffectType: resources.EffectTypeNone,
 						ShowHitArea:   false,
 						BigDamage:     true,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false
@@ -138,16 +140,18 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 
 				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
+					// TODO: type objectで書く
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
+						DamageType:    damage.TypePosition,
 						Pos:           pos,
 						Power:         10,
 						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetType:    target,
+						TargetObjType: target,
 						HitEffectType: resources.EffectTypeNone,
 						ShowHitArea:   false,
 						BigDamage:     true,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false

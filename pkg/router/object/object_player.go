@@ -113,12 +113,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	}
 
 	// 自分宛のダメージだがObjectが自分じゃない時は無視
-	if dm.TargetType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
+	if dm.TargetObjType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
 		return false
 	}
 
 	// 敵宛のダメージだがObjectが自分の時は無視
-	if dm.TargetType == damage.TargetEnemy && dm.OwnerClientID == p.objectInfo.OwnerClientID {
+	if dm.TargetObjType == damage.TargetEnemy && dm.OwnerClientID == p.objectInfo.OwnerClientID {
 		return false
 	}
 
@@ -267,14 +267,16 @@ func (a *playerAct) Process() bool {
 						eff = resources.EffectTypeHitBig
 					}
 
+					// TODO: use target object
 					routeranim.DamageNew(a.ownerClientID, damage.Damage{
+						DamageType:    damage.TypePosition,
 						OwnerClientID: a.ownerClientID,
 						Pos:           pos,
 						Power:         power,
 						TTL:           1,
-						TargetType:    damage.TargetEnemy,
+						TargetObjType: damage.TargetEnemy,
 						HitEffectType: eff,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 					return true
 				}

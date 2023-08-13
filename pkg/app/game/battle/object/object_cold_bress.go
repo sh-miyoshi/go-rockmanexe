@@ -87,14 +87,15 @@ func (o *ColdBress) Process() (bool, error) {
 		}
 
 		o.damageID = localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           o.pm.Pos,
 			Power:         10,
 			TTL:           coldBressNextStepCount,
-			TargetType:    target,
+			TargetObjType: target,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   false,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 
 		// Update next pos
@@ -148,7 +149,7 @@ func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetType&target != 0 {
+	if dm.TargetObjType&target != 0 {
 		o.pm.HP -= dm.Power
 
 		localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))

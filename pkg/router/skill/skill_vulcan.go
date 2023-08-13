@@ -50,14 +50,16 @@ func (p *vulcan) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
 				if p.Arg.GameInfo.GetPanelInfo(target).ObjectID != "" {
+					// TODO: use target object
 					routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+						DamageType:    damage.TypePosition,
 						Pos:           target,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
-						TargetType:    p.Arg.TargetType,
+						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeSpreadHit,
 						BigDamage:     lastAtk,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 					queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 						ID:            uuid.New().String(),
@@ -77,14 +79,16 @@ func (p *vulcan) Process() (bool, error) {
 							RandRange:     20,
 						})
 
+						//  TODO: use target object
 						routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+							DamageType:    damage.TypePosition,
 							Pos:           target,
 							Power:         int(p.Arg.Power),
 							TTL:           1,
-							TargetType:    p.Arg.TargetType,
+							TargetObjType: p.Arg.TargetType,
 							HitEffectType: resources.EffectTypeNone,
 							BigDamage:     lastAtk,
-							DamageType:    damage.TypeNone,
+							Element:       damage.ElementNone,
 						})
 					}
 					hit = true

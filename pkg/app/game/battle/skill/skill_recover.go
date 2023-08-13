@@ -41,13 +41,15 @@ func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(resources.SERecover)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		// TODO: use target object
 		localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 	}
 

@@ -247,13 +247,14 @@ func (p *flamePillar) Process() (bool, error) {
 		if p.count == 3*delayFlamePillar {
 			// Add damage
 			localanim.DamageManager().New(damage.Damage{
-				Pos:         p.point,
-				Power:       int(p.Arg.Power),
-				TTL:         7 * delayFlamePillar,
-				TargetType:  p.Arg.TargetType,
-				ShowHitArea: true,
-				BigDamage:   true,
-				DamageType:  damage.TypeFire,
+				DamageType:    damage.TypePosition,
+				Pos:           p.point,
+				Power:         int(p.Arg.Power),
+				TTL:           7 * delayFlamePillar,
+				TargetObjType: p.Arg.TargetType,
+				ShowHitArea:   true,
+				BigDamage:     true,
+				Element:       damage.ElementFire,
 			})
 		}
 

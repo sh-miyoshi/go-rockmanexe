@@ -33,14 +33,16 @@ func (p *recover) Process() (bool, error) {
 
 	if p.count == 1 {
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
+		// TODO: use target object
 		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+			DamageType:    damage.TypePosition,
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         -int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 	}
 

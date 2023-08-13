@@ -51,15 +51,17 @@ func (p *cannon) Process() (bool, error) {
 	if p.count == 20 {
 		// Add damage
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
+		// TODO: use target object
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {

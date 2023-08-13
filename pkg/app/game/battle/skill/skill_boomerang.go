@@ -89,13 +89,14 @@ func (p *boomerang) Process() (bool, error) {
 		p.pos = p.next
 
 		localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           boomerangNextStepCount + 1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeSpreadHit,
 			ShowHitArea:   false,
-			DamageType:    damage.TypeWood,
+			Element:       damage.ElementWood,
 		})
 
 		switch p.ActType {

@@ -44,14 +44,16 @@ func (p *dreamSword) Process() (bool, error) {
 		for x := 1; x <= 2; x++ {
 			for y := -1; y <= 1; y++ {
 				pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+				// TODO: use type object
 				dm := damage.Damage{
+					DamageType:    damage.TypePosition,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
 					Pos:           common.Point{X: pos.X + x, Y: pos.Y + y},
-					DamageType:    damage.TypeNone,
+					Element:       damage.ElementNone,
 				}
 				localanim.DamageManager().New(dm)
 			}

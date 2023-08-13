@@ -48,7 +48,7 @@ const (
 
 func (e *enemyVolgear) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.pm.DamageType = damage.TypeFire
+	e.pm.DamageElement = damage.ElementFire
 	e.moveNum = 5
 	e.waitCount = volgearInitWait
 

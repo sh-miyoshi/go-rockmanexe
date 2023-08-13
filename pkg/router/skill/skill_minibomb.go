@@ -46,15 +46,17 @@ func (p *miniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
+		// TODO: use target object
 		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+			DamageType:    damage.TypePosition,
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 		return true, nil
 	}

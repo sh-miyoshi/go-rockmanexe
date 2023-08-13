@@ -67,14 +67,16 @@ func (p *heatShot) Process() (bool, error) {
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
 			if field.GetPanelInfo(target).ObjectID != "" {
+				// TODO: use target object
 				// Hit
 				localanim.DamageManager().New(damage.Damage{
+					DamageType:    damage.TypePosition,
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeHeatHit,
-					DamageType:    damage.TypeFire,
+					Element:       damage.ElementFire,
 				})
 
 				// 誘爆
@@ -92,13 +94,15 @@ func (p *heatShot) Process() (bool, error) {
 
 				for _, t := range targets {
 					localanim.AnimNew(effect.Get(resources.EffectTypeHeatHit, t, 0))
+					// TODO: use target object
 					localanim.DamageManager().New(damage.Damage{
+						DamageType:    damage.TypePosition,
 						Pos:           t,
 						Power:         int(p.Arg.Power),
 						TTL:           1,
-						TargetType:    p.Arg.TargetType,
+						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
-						DamageType:    damage.TypeFire,
+						Element:       damage.ElementFire,
 					})
 				}
 

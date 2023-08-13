@@ -43,13 +43,15 @@ func (p *sword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*delaySword {
+		// TODO: use target object
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)

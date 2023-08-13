@@ -42,15 +42,17 @@ func (p *spreadGun) Draw() {
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
+		// TODO: use target object
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHitBig,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
@@ -137,13 +139,15 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
+		// TODO: use target object
 		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 
 		return true, nil

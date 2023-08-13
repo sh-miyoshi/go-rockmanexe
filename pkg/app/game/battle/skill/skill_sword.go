@@ -54,13 +54,15 @@ func (p *sword) Process() (bool, error) {
 	if p.count == 1*delaySword {
 		sound.On(resources.SESword)
 
+		// TODO: use target object
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)

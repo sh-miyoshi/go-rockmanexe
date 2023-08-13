@@ -66,14 +66,16 @@ func (p *cannon) Process() (bool, error) {
 	if p.count == 20 {
 		sound.On(resources.SECannon)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		// TODO: use type object
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {

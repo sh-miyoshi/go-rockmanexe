@@ -70,13 +70,15 @@ func (p *spreadGun) Process() (bool, error) {
 				// Hit
 				sound.On(resources.SESpreadHit)
 
+				// TODO: use target object
 				localanim.DamageManager().New(damage.Damage{
+					DamageType:    damage.TypePosition,
 					Pos:           target,
 					Power:         int(p.Arg.Power),
 					TTL:           1,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeHitBig,
-					DamageType:    damage.TypeNone,
+					Element:       damage.ElementNone,
 				})
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
@@ -134,13 +136,15 @@ func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.pos, 5))
+		// TODO: use target object?
 		localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 
 		return true, nil

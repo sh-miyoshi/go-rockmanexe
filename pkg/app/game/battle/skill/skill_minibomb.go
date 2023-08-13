@@ -74,13 +74,14 @@ func (p *miniBomb) Process() (bool, error) {
 		sound.On(resources.SEExplode)
 		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, p.target, 0))
 		localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TTL:           1, // TODO TTLを調整
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 		return true, nil
 	}

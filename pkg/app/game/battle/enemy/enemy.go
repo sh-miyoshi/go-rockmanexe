@@ -44,7 +44,7 @@ type EnemyParam struct {
 	HP              int
 	ActNo           int
 	InvincibleCount int
-	DamageType      int
+	DamageElement   int
 }
 
 type enemyObject interface {
@@ -190,7 +190,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		return false
 	}
 
-	if dm.TargetType&damage.TargetEnemy != 0 {
+	if dm.TargetObjType&damage.TargetEnemy != 0 {
 		if pm.InvincibleCount > 0 && dm.Power > 0 {
 			return false
 		}

@@ -85,14 +85,16 @@ func (p *waterBomb) Process() (bool, error) {
 
 		sound.On(resources.SEWaterLanding)
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
+		// TODO: use target object
 		localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
 			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeWater,
+			Element:       damage.ElementWater,
 		})
 		field.PanelCrack(p.target)
 		return true, nil

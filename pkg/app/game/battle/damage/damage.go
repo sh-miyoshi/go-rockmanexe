@@ -14,27 +14,40 @@ const (
 )
 
 const (
-	TypeNone int = iota
-	TypeFire
-	TypeWater
-	TypeElec
-	TypeWood
+	ElementNone int = iota
+	ElementFire
+	ElementWater
+	ElementElec
+	ElementWood
+)
+
+const (
+	TypePosition int = iota
+	TypeObject
 )
 
 type Damage struct {
-	OwnerClientID string
-	ID            string
-	Pos           common.Point
+	OwnerClientID string // ネット対戦時のDamageを発生させたOwner
+	ID            string // Damage ID
 	Power         int
-	TTL           int
-	TargetType    int
-	HitEffectType int
-	ShowHitArea   bool
-	BigDamage     bool
-	PushRight     int
-	PushLeft      int
-	DamageType    int
-	// TODO: のけぞり(単体), インビジ貫通
+	PushRight     int  // ヒット時に右に押されるカウント
+	PushLeft      int  // ヒット時に左に押されるカウント
+	HitEffectType int  // ヒット時に表示されるEffect
+	BigDamage     bool // trueならのけぞる
+	Element       int
+
+	DamageType int // ダメージの種類
+
+	// DamageTypeがTypePositionの時使うパラメータ
+	Pos           common.Point // (TypePosition)発生箇所
+	TTL           int          // (TypePosition)ダメージが残り続ける時間
+	ShowHitArea   bool         // (TypePosition)足元にダメージ箇所を表示するか
+	TargetObjType int          // (TypePosition)ダメージを受けるObjectのタイプ
+
+	// DamageTypeがTypeObjectの時使うパラメータ
+	TargetObjID string // (TypeObject)ダメージを受けるObjectのID
+
+	// TODO: インビジ貫通
 }
 
 type DamageManager struct {
@@ -43,14 +56,14 @@ type DamageManager struct {
 
 func IsWeakness(charType int, dm Damage) bool {
 	switch charType {
-	case TypeFire:
-		return dm.DamageType == TypeWater
-	case TypeWater:
-		return dm.DamageType == TypeElec
-	case TypeElec:
-		return dm.DamageType == TypeWood
-	case TypeWood:
-		return dm.DamageType == TypeFire
+	case ElementFire:
+		return dm.Element == ElementWater
+	case ElementWater:
+		return dm.Element == ElementElec
+	case ElementElec:
+		return dm.Element == ElementWood
+	case ElementWood:
+		return dm.Element == ElementFire
 	}
 	return false
 }
@@ -70,9 +83,15 @@ func (m *DamageManager) New(dm Damage) string {
 
 func (m *DamageManager) Process() {
 	for id, d := range m.damages {
-		d.TTL--
-		if d.TTL <= 0 {
-			delete(m.damages, id)
+		if d.DamageType == TypeObject {
+			panic("TODO: not implemented yet")
+		}
+
+		if d.DamageType == TypePosition {
+			d.TTL--
+			if d.TTL <= 0 {
+				delete(m.damages, id)
+			}
 		}
 	}
 }

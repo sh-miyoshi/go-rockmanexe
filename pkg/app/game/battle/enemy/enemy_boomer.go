@@ -53,7 +53,7 @@ type enemyBoomer struct {
 
 func (e *enemyBoomer) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.pm.DamageType = damage.TypeWood
+	e.pm.DamageElement = damage.ElementWood
 	e.atk.ownerID = objID
 	e.nextY = e.pm.Pos.Y
 	e.prevY = e.pm.Pos.Y

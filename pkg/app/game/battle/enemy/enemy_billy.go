@@ -50,7 +50,7 @@ type enemyBilly struct {
 
 func (e *enemyBilly) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.pm.DamageType = damage.TypeElec
+	e.pm.DamageElement = damage.ElementElec
 	e.act.pPos = &e.pm.Pos
 	e.act.typ = -1
 	e.act.ownerID = objID

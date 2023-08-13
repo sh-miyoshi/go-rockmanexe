@@ -122,15 +122,17 @@ func (p *skillAreaSteal) Process() (bool, error) {
 				pos := common.Point{X: p.targetLineX, Y: y}
 				pn := field.GetPanelInfo(pos)
 				if pn.ObjectID != "" {
+					// TODO: use type object
 					// ダメージ
 					localanim.DamageManager().New(damage.Damage{
+						DamageType:    damage.TypePosition,
 						Pos:           pos,
 						Power:         10,
 						TTL:           1,
-						TargetType:    p.Arg.TargetType,
+						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
 						BigDamage:     false,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 				} else if p.targetLineX >= 1 && p.targetLineX < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え
