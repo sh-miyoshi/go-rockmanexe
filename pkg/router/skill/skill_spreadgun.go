@@ -42,13 +42,10 @@ func (p *spreadGun) Draw() {
 func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
-		// TODO: use target object
 		dm := damage.Damage{
-			DamageType:    damage.TypePosition,
+			DamageType:    damage.TypeObject,
 			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           pos,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHitBig,
 			BigDamage:     true,
@@ -57,8 +54,8 @@ func (p *spreadGun) Process() (bool, error) {
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				dm.Pos.X = x
-				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					logger.Debug("Add damage by spread gun: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 

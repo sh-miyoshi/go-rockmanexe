@@ -260,23 +260,21 @@ func (a *playerAct) Process() bool {
 			buster.Unmarshal(a.info)
 
 			damageAdd := func(pos common.Point, power int) bool {
-				if a.getPanelInfo(pos).ObjectID != "" {
+				if objID := a.getPanelInfo(pos).ObjectID; objID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					eff := resources.EffectTypeHitSmall
 					if buster.IsCharged {
 						eff = resources.EffectTypeHitBig
 					}
 
-					// TODO: use target object
 					routeranim.DamageNew(a.ownerClientID, damage.Damage{
-						DamageType:    damage.TypePosition,
+						DamageType:    damage.TypeObject,
 						OwnerClientID: a.ownerClientID,
-						Pos:           pos,
 						Power:         power,
-						TTL:           1,
 						TargetObjType: damage.TargetEnemy,
 						HitEffectType: eff,
 						Element:       damage.ElementNone,
+						TargetObjID:   objID,
 					})
 					return true
 				}

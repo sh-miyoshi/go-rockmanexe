@@ -70,15 +70,13 @@ func (p *spreadGun) Process() (bool, error) {
 				// Hit
 				sound.On(resources.SESpreadHit)
 
-				// TODO: use target object
 				localanim.DamageManager().New(damage.Damage{
-					DamageType:    damage.TypePosition,
-					Pos:           target,
+					DamageType:    damage.TypeObject,
 					Power:         int(p.Arg.Power),
-					TTL:           1,
 					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeHitBig,
 					Element:       damage.ElementNone,
+					TargetObjID:   objs[0].ObjID,
 				})
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {

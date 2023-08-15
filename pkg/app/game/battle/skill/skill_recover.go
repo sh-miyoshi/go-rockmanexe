@@ -40,16 +40,13 @@ func (p *recover) Draw() {
 func (p *recover) Process() (bool, error) {
 	if p.count == 0 {
 		sound.On(resources.SERecover)
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		// TODO: use target object
 		localanim.DamageManager().New(damage.Damage{
-			DamageType:    damage.TypePosition,
-			Pos:           pos,
+			DamageType:    damage.TypeObject,
 			Power:         -int(p.Arg.Power),
-			TTL:           1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			Element:       damage.ElementNone,
+			TargetObjID:   p.Arg.OwnerID,
 		})
 	}
 
