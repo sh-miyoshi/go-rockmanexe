@@ -50,7 +50,6 @@ var (
 	ErrLose = errors.New("playser lose")
 )
 
-// Init ...
 func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("Init battle data ...")
 
@@ -80,10 +79,12 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 				return fmt.Errorf("battle supporter init failed: %w", err)
 			}
 			localanim.ObjAnimNew(supporter)
+			logger.Info("add supporter %+v", supporter)
 		} else {
 			enemyList = append(enemyList, e)
 		}
 	}
+	logger.Info("enemy list: %+v", enemyList)
 
 	if err := field.Init(); err != nil {
 		return fmt.Errorf("battle field init failed: %w", err)
@@ -109,10 +110,10 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
+	logger.Info("Successfully initialized battle data")
 	return nil
 }
 
-// End ...
 func End() {
 	field.ResetSet4x4Area()
 	localanim.AnimCleanup()
@@ -123,9 +124,9 @@ func End() {
 	enemy.End()
 	effect.End()
 	win.End()
+	logger.Info("End battle data")
 }
 
-// Process ...
 func Process() error {
 	battlecommon.SystemProcess()
 	isRunAnim := false
@@ -256,7 +257,6 @@ func Process() error {
 	return nil
 }
 
-// Draw ...
 func Draw() {
 	field.Draw()
 	localanim.ObjAnimMgrDraw()
