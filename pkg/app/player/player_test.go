@@ -2,7 +2,6 @@ package player
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -13,7 +12,7 @@ func TestSave(t *testing.T) {
 		ShotPower: 5,
 	}
 
-	tmpfile, _ := ioutil.TempFile("", "")
+	tmpfile, _ := os.CreateTemp("", "")
 	defer os.Remove(tmpfile.Name())
 
 	// Save with no encryption
@@ -24,7 +23,7 @@ func TestSave(t *testing.T) {
 	tmpfile.Close()
 
 	var res SaveData
-	rawRes, _ := ioutil.ReadFile(tmpfile.Name())
+	rawRes, _ := os.ReadFile(tmpfile.Name())
 	json.Unmarshal(rawRes, &res)
 	if res.Player.HP != plyr.HP || res.Player.ShotPower != plyr.ShotPower {
 		t.Errorf("Player info save failed. expect %+v, but got %+v", plyr, res)
@@ -64,11 +63,11 @@ func TestNewWithSaveData(t *testing.T) {
 		},
 	}
 
-	tmpfile, _ := ioutil.TempFile("", "")
+	tmpfile, _ := os.CreateTemp("", "")
 	defer os.Remove(tmpfile.Name())
 
 	for _, tc := range tt {
-		ioutil.WriteFile(tmpfile.Name(), []byte(tc.input), 0644)
+		os.WriteFile(tmpfile.Name(), []byte(tc.input), 0644)
 		_, err := NewWithSaveData(tmpfile.Name(), nil)
 		if tc.expectOK && err != nil {
 			t.Errorf("Test case %s expects ok, but got %v", tc.caseName, err)
