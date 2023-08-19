@@ -77,8 +77,7 @@ func (p *cannon) Process() (bool, error) {
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				dm.Pos.X = x
-				if objID := field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break
