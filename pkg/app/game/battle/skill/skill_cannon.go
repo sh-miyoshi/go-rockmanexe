@@ -85,8 +85,7 @@ func (p *cannon) Process() (bool, error) {
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				dm.Pos.X = x
-				if objID := field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break
