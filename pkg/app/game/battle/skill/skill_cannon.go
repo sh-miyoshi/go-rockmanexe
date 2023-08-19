@@ -67,27 +67,26 @@ func (p *cannon) Process() (bool, error) {
 		sound.On(resources.SECannon)
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		dm := damage.Damage{
-			Pos:           pos,
+			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				dm.Pos.X = x
-				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break
 				}
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				dm.Pos.X = x
-				if field.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break
 				}

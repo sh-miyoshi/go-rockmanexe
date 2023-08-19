@@ -8,6 +8,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -71,12 +72,12 @@ func (p *spreadGun) Process() (bool, error) {
 				sound.On(resources.SESpreadHit)
 
 				localanim.DamageManager().New(damage.Damage{
-					Pos:           target,
+					DamageType:    damage.TypeObject,
 					Power:         int(p.Arg.Power),
-					TTL:           1,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeHitBig,
-					DamageType:    damage.TypeNone,
+					Element:       damage.ElementNone,
+					TargetObjID:   objs[0].ObjID,
 				})
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
@@ -134,14 +135,15 @@ func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.pos, 5))
-		localanim.DamageManager().New(damage.Damage{
-			Pos:           p.pos,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
-		})
+		if objID := field.GetPanelInfo(p.pos).ObjectID; objID != "" {
+			localanim.DamageManager().New(damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				Element:       damage.ElementNone,
+			})
+		}
 
 		return true, nil
 	}

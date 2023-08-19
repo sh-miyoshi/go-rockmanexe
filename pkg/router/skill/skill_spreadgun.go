@@ -43,20 +43,19 @@ func (p *spreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 		dm := damage.Damage{
+			DamageType:    damage.TypeObject,
 			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           pos,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHitBig,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				dm.Pos.X = x
-				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					logger.Debug("Add damage by spread gun: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 
@@ -137,14 +136,16 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-			Pos:           p.pos,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			DamageType:    damage.TypeNone,
-		})
+		if objID := p.Arg.GameInfo.GetPanelInfo(p.pos).ObjectID; objID != "" {
+			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				Element:       damage.ElementNone,
+				TargetObjID:   objID,
+			})
+		}
 
 		return true, nil
 	}

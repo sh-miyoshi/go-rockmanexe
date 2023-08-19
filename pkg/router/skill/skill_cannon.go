@@ -52,20 +52,19 @@ func (p *cannon) Process() (bool, error) {
 		// Add damage
 		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 		dm := damage.Damage{
+			DamageType:    damage.TypeObject,
 			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           pos,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				dm.Pos.X = x
-				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					logger.Debug("Add damage by cannon: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 					break
@@ -73,8 +72,8 @@ func (p *cannon) Process() (bool, error) {
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				dm.Pos.X = x
-				if p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: dm.Pos.Y}).ObjectID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+					dm.TargetObjID = objID
 					logger.Debug("Add damage by cannon: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
 					break

@@ -49,15 +49,15 @@ func (p *vulcan) Process() (bool, error) {
 			lastAtk := p.atkCount == p.Times
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := common.Point{X: x, Y: pos.Y}
-				if p.Arg.GameInfo.GetPanelInfo(target).ObjectID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
 					routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-						Pos:           target,
+						DamageType:    damage.TypeObject,
 						Power:         int(p.Arg.Power),
-						TTL:           1,
-						TargetType:    p.Arg.TargetType,
+						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeSpreadHit,
 						BigDamage:     lastAtk,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
+						TargetObjID:   objID,
 					})
 					queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 						ID:            uuid.New().String(),
@@ -77,15 +77,17 @@ func (p *vulcan) Process() (bool, error) {
 							RandRange:     20,
 						})
 
-						routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-							Pos:           target,
-							Power:         int(p.Arg.Power),
-							TTL:           1,
-							TargetType:    p.Arg.TargetType,
-							HitEffectType: resources.EffectTypeNone,
-							BigDamage:     lastAtk,
-							DamageType:    damage.TypeNone,
-						})
+						if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
+							routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+								DamageType:    damage.TypeObject,
+								Power:         int(p.Arg.Power),
+								TargetObjType: p.Arg.TargetType,
+								HitEffectType: resources.EffectTypeNone,
+								BigDamage:     lastAtk,
+								Element:       damage.ElementNone,
+								TargetObjID:   objID,
+							})
+						}
 					}
 					hit = true
 					break

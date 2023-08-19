@@ -46,16 +46,18 @@ func (p *miniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-			OwnerClientID: p.Arg.OwnerClientID,
-			Pos:           p.target,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
-			DamageType:    damage.TypeNone,
-		})
+		if objID := pn.ObjectID; objID != "" {
+			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+				DamageType:    damage.TypeObject,
+				OwnerClientID: p.Arg.OwnerClientID,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				BigDamage:     true,
+				Element:       damage.ElementNone,
+				TargetObjID:   objID,
+			})
+		}
 		return true, nil
 	}
 	return false, nil

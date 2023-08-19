@@ -124,13 +124,13 @@ func (p *skillAreaSteal) Process() (bool, error) {
 				if pn.ObjectID != "" {
 					// ダメージ
 					localanim.DamageManager().New(damage.Damage{
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
 						Power:         10,
-						TTL:           1,
-						TargetType:    p.Arg.TargetType,
+						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
 						BigDamage:     false,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
+						TargetObjID:   pn.ObjectID,
 					})
 				} else if p.targetLineX >= 1 && p.targetLineX < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え

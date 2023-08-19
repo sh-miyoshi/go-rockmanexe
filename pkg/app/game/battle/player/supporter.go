@@ -129,7 +129,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	if dm.TargetType&damage.TargetPlayer != 0 {
+	if dm.TargetObjType&damage.TargetPlayer != 0 {
 		hp := int(s.HP) - dm.Power
 		if hp < 0 {
 			s.HP = 0

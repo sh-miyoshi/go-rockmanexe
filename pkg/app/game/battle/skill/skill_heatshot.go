@@ -66,15 +66,15 @@ func (p *heatShot) Process() (bool, error) {
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := common.Point{X: x, Y: pos.Y}
-			if field.GetPanelInfo(target).ObjectID != "" {
+			if objID := field.GetPanelInfo(target).ObjectID; objID != "" {
 				// Hit
 				localanim.DamageManager().New(damage.Damage{
-					Pos:           target,
+					DamageType:    damage.TypeObject,
 					Power:         int(p.Arg.Power),
-					TTL:           1,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeHeatHit,
-					DamageType:    damage.TypeFire,
+					Element:       damage.ElementFire,
+					TargetObjID:   objID,
 				})
 
 				// 誘爆
@@ -92,14 +92,16 @@ func (p *heatShot) Process() (bool, error) {
 
 				for _, t := range targets {
 					localanim.AnimNew(effect.Get(resources.EffectTypeHeatHit, t, 0))
-					localanim.DamageManager().New(damage.Damage{
-						Pos:           t,
-						Power:         int(p.Arg.Power),
-						TTL:           1,
-						TargetType:    p.Arg.TargetType,
-						HitEffectType: resources.EffectTypeNone,
-						DamageType:    damage.TypeFire,
-					})
+					if objID := field.GetPanelInfo(t).ObjectID; objID != "" {
+						localanim.DamageManager().New(damage.Damage{
+							DamageType:    damage.TypeObject,
+							Power:         int(p.Arg.Power),
+							TargetObjType: p.Arg.TargetType,
+							HitEffectType: resources.EffectTypeNone,
+							Element:       damage.ElementFire,
+							TargetObjID:   objID,
+						})
+					}
 				}
 
 				break

@@ -75,14 +75,15 @@ func (p *garooBreath) Process() (bool, error) {
 		p.pos = p.next
 
 		p.damageID = localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           garooBreathNextStepCount + 1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
-			DamageType:    damage.TypeFire,
+			Element:       damage.ElementFire,
 		})
 
 		// Set next pos

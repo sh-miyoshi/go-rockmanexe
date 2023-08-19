@@ -51,15 +51,16 @@ func (p *bambooLance) Process() (bool, error) {
 
 	if p.count == 5 {
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           common.Point{X: battlecommon.FieldNum.X - 1},
 			Power:         int(p.Arg.Power),
 			TTL:           5,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeBambooHit,
 			ShowHitArea:   false,
 			BigDamage:     true,
 			PushLeft:      1,
-			DamageType:    damage.TypeWood,
+			Element:       damage.ElementWood,
 		}
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			dm.Pos.Y = y

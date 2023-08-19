@@ -73,15 +73,17 @@ func (p *miniBomb) Process() (bool, error) {
 
 		sound.On(resources.SEExplode)
 		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, p.target, 0))
-		localanim.DamageManager().New(damage.Damage{
-			Pos:           p.target,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
-			DamageType:    damage.TypeNone,
-		})
+		if objID := field.GetPanelInfo(p.target).ObjectID; objID != "" {
+			localanim.DamageManager().New(damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				BigDamage:     true,
+				Element:       damage.ElementNone,
+				TargetObjID:   objID,
+			})
+		}
 		return true, nil
 	}
 	return false, nil

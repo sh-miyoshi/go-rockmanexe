@@ -51,7 +51,7 @@ type enemyAquaman struct {
 
 func (e *enemyAquaman) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.pm.DamageType = damage.TypeWater
+	e.pm.DamageElement = damage.ElementWater
 	e.state = aquamanActTypeStand
 	e.waitCount = 60
 	e.nextState = aquamanActTypeMove

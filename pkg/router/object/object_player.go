@@ -113,12 +113,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	}
 
 	// 自分宛のダメージだがObjectが自分じゃない時は無視
-	if dm.TargetType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
+	if dm.TargetObjType == damage.TargetPlayer && dm.OwnerClientID != p.objectInfo.OwnerClientID {
 		return false
 	}
 
 	// 敵宛のダメージだがObjectが自分の時は無視
-	if dm.TargetType == damage.TargetEnemy && dm.OwnerClientID == p.objectInfo.OwnerClientID {
+	if dm.TargetObjType == damage.TargetEnemy && dm.OwnerClientID == p.objectInfo.OwnerClientID {
 		return false
 	}
 
@@ -260,7 +260,7 @@ func (a *playerAct) Process() bool {
 			buster.Unmarshal(a.info)
 
 			damageAdd := func(pos common.Point, power int) bool {
-				if a.getPanelInfo(pos).ObjectID != "" {
+				if objID := a.getPanelInfo(pos).ObjectID; objID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					eff := resources.EffectTypeHitSmall
 					if buster.IsCharged {
@@ -268,13 +268,13 @@ func (a *playerAct) Process() bool {
 					}
 
 					routeranim.DamageNew(a.ownerClientID, damage.Damage{
+						DamageType:    damage.TypeObject,
 						OwnerClientID: a.ownerClientID,
-						Pos:           pos,
 						Power:         power,
-						TTL:           1,
-						TargetType:    damage.TargetEnemy,
+						TargetObjType: damage.TargetEnemy,
 						HitEffectType: eff,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
+						TargetObjID:   objID,
 					})
 					return true
 				}

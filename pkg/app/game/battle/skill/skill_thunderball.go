@@ -103,14 +103,15 @@ func (p *thunderBall) Process() (bool, error) {
 		}
 
 		p.damageID = localanim.DamageManager().New(damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           thunderBallNextStepCount + 1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
-			DamageType:    damage.TypeElec,
+			Element:       damage.ElementElec,
 		})
 
 		// Set next pos

@@ -134,13 +134,14 @@ func (p *wideShot) Process() (bool, error) {
 				}
 
 				p.damageID[i+1] = localanim.DamageManager().New(damage.Damage{
+					DamageType:    damage.TypePosition,
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
-					DamageType:    damage.TypeWater,
+					Element:       damage.ElementWater,
 				})
 			}
 		}

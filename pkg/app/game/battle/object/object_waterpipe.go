@@ -127,7 +127,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetType&target != 0 {
+	if dm.TargetObjType&target != 0 {
 		o.pm.HP--
 		localanim.AnimNew(effect.Get(resources.EffectTypeBlock, o.pm.Pos, 5))
 	}
@@ -211,13 +211,14 @@ func (a *WaterPipeAtk) Process() {
 		}
 
 		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
 			Pos:           a.pm.Pos,
 			Power:         a.pm.Power,
 			TTL:           6 * delayWaterPipeAttack,
-			TargetType:    target,
+			TargetObjType: target,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeWater,
+			Element:       damage.ElementWater,
 		}
 
 		if a.pm.xFlip {

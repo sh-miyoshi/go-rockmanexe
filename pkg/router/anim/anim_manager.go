@@ -90,7 +90,7 @@ func DamageManager(clientID string) *damage.DamageManager {
 }
 
 func DamageNew(clientID string, dm damage.Damage) string {
-	if dm.TargetType == damage.TargetEnemy {
+	if dm.TargetObjType == damage.TargetEnemy {
 		// ダメージでは反転させる
 		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
 	}

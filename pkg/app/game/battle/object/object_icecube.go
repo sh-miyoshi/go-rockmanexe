@@ -85,7 +85,14 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		target = damage.TargetPlayer
 	}
 
-	if dm.TargetType&target != 0 {
+	hit := false
+	if dm.DamageType == damage.TypePosition && dm.TargetObjType&target != 0 {
+		hit = true
+	} else if dm.DamageType == damage.TypeObject {
+		hit = true
+	}
+
+	if hit {
 		o.pm.HP -= dm.Power
 
 		target = ^target
@@ -108,14 +115,13 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 				if len(objs) > 0 {
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
 						Power:         10,
-						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetType:    target,
 						HitEffectType: resources.EffectTypeNone,
-						ShowHitArea:   false,
 						BigDamage:     true,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
+						TargetObjID:   objs[0].ObjID,
+						TargetObjType: target,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false
@@ -140,14 +146,13 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 				if len(objs) > 0 {
 					// Add damage
 					localanim.DamageManager().New(damage.Damage{
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
 						Power:         10,
-						TTL:           2, // debug(ダメージ処理のタイミングの都合で2にする)
-						TargetType:    target,
 						HitEffectType: resources.EffectTypeNone,
-						ShowHitArea:   false,
 						BigDamage:     true,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
+						TargetObjID:   objs[0].ObjID,
+						TargetObjType: target,
 					})
 					o.pm.HP = 0 // 自身は死ぬ
 					return false

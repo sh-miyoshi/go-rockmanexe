@@ -1,6 +1,7 @@
 package skill
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -44,31 +45,41 @@ func (p *sword) Process() (bool, error) {
 
 	if p.count == 1*delaySword {
 		dm := damage.Damage{
+			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		}
 
-		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
+		userPos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 
-		dm.Pos.X = pos.X + 1
-		dm.Pos.Y = pos.Y
-		routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+		targetPos := common.Point{X: userPos.X + 1, Y: userPos.Y}
+		if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
+			dm.TargetObjID = objID
+			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+		}
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
-			dm.Pos.Y = pos.Y - 1
-			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
-			dm.Pos.Y = pos.Y + 1
-			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+			targetPos.Y = userPos.Y - 1
+			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+			}
+			targetPos.Y = userPos.Y + 1
+			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+			}
 		case TypeLongSword:
-			dm.Pos.X = pos.X + 2
-			routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+			targetPos.X = userPos.X + 2
+			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				routeranim.DamageNew(p.Arg.OwnerClientID, dm)
+			}
 		}
 	}
 

@@ -451,7 +451,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	if dm.TargetType&damage.TargetPlayer != 0 {
+	if dm.TargetObjType&damage.TargetPlayer != 0 {
 		hp := int(p.HP) - dm.Power
 		if hp < 0 {
 			p.HP = 0
@@ -565,15 +565,14 @@ func (a *act) Process() bool {
 			y := a.pPos.Y
 			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
-				pos := common.Point{X: x, Y: y}
-				if field.GetPanelInfo(pos).ObjectID != "" {
+				if objID := field.GetPanelInfo(common.Point{X: x, Y: y}).ObjectID; objID != "" {
 					localanim.DamageManager().New(damage.Damage{
-						Pos:           pos,
+						DamageType:    damage.TypeObject,
+						TargetObjID:   objID,
+						TargetObjType: damage.TargetEnemy,
 						Power:         int(s),
-						TTL:           1,
-						TargetType:    damage.TargetEnemy,
 						HitEffectType: eff,
-						DamageType:    damage.TypeNone,
+						Element:       damage.ElementNone,
 					})
 					break
 				}

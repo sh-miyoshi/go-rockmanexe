@@ -220,18 +220,20 @@ func (e *enemyColdman) Process() (bool, error) {
 
 		if e.count == 3*coldmanDelays[coldmanActTypeIceShoot] {
 			e.targetCubeID = ""
+			// TODO: target type objectで書く
 			// PUSH
 			dm := damage.Damage{
 				ID:            uuid.New().String(),
+				DamageType:    damage.TypePosition,
 				Pos:           common.Point{X: e.pm.Pos.X - 1, Y: e.pm.Pos.Y},
 				Power:         1, // debug(0でもいいかも)
 				TTL:           1,
-				TargetType:    damage.TargetPlayer | damage.TargetEnemy,
+				TargetObjType: damage.TargetPlayer | damage.TargetEnemy,
 				HitEffectType: resources.EffectTypeNone,
 				ShowHitArea:   false,
 				BigDamage:     true,
 				PushLeft:      battlecommon.FieldNum.X,
-				DamageType:    damage.TypeNone,
+				Element:       damage.ElementNone,
 			}
 			localanim.DamageManager().New(dm)
 		}

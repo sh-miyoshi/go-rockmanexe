@@ -124,7 +124,7 @@ func Draw() {
 
 			dxlib.DrawGraph(vx, vy, img, true)
 
-			if dm := localanim.DamageManager().Get(common.Point{X: x, Y: y}); dm != nil && dm.ShowHitArea {
+			if dm := localanim.DamageManager().GetHitDamage(common.Point{X: x, Y: y}, ""); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
 				x2 := vx + battlecommon.PanelSize.X

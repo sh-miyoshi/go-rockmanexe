@@ -82,14 +82,15 @@ func (p *wideShot) Process() (bool, error) {
 				}
 
 				p.damageID[i+1] = routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+					DamageType:    damage.TypePosition,
 					OwnerClientID: p.Arg.OwnerClientID,
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           wideShotNextStepCount,
-					TargetType:    p.Arg.TargetType,
+					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,
-					DamageType:    damage.TypeWater,
+					Element:       damage.ElementWater,
 				})
 			}
 		}

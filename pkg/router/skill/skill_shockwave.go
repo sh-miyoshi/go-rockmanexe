@@ -51,15 +51,16 @@ func (p *shockWave) Process() (bool, error) {
 		}
 
 		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+			DamageType:    damage.TypePosition,
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
 			TTL:           n - 2,
-			TargetType:    p.Arg.TargetType,
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
 			BigDamage:     true,
-			DamageType:    damage.TypeNone,
+			Element:       damage.ElementNone,
 		})
 	}
 
