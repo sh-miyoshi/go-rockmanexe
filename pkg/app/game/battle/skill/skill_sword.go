@@ -1,6 +1,7 @@
 package skill
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -8,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/tmp/tmp_prev/field"
 )
 
 const (
@@ -54,34 +56,43 @@ func (p *sword) Process() (bool, error) {
 	if p.count == 1*delaySword {
 		sound.On(resources.SESword)
 
-		// TODO: use target object
 		dm := damage.Damage{
-			DamageType:    damage.TypePosition,
+			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
-			TTL:           1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
 			Element:       damage.ElementNone,
 		}
 
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		userPos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 
-		dm.Pos.X = pos.X + 1
-		dm.Pos.Y = pos.Y
-		localanim.DamageManager().New(dm)
+		targetPos := common.Point{X: userPos.X + 1, Y: userPos.Y}
+		if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
+			dm.TargetObjID = objID
+			localanim.DamageManager().New(dm)
+		}
 
 		switch p.Type {
 		case TypeSword:
 			// No more damage area
 		case TypeWideSword:
-			dm.Pos.Y = pos.Y - 1
-			localanim.DamageManager().New(dm)
-			dm.Pos.Y = pos.Y + 1
-			localanim.DamageManager().New(dm)
+			targetPos.Y = userPos.Y - 1
+			if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				localanim.DamageManager().New(dm)
+			}
+			targetPos.Y = userPos.Y + 1
+			if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				localanim.DamageManager().New(dm)
+			}
 		case TypeLongSword:
-			dm.Pos.X = pos.X + 2
-			localanim.DamageManager().New(dm)
+			targetPos.X = userPos.X + 2
+			if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				localanim.DamageManager().New(dm)
+			}
 		}
 	}
 

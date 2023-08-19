@@ -92,16 +92,16 @@ func (p *heatShot) Process() (bool, error) {
 
 				for _, t := range targets {
 					localanim.AnimNew(effect.Get(resources.EffectTypeHeatHit, t, 0))
-					// TODO: use target object
-					localanim.DamageManager().New(damage.Damage{
-						DamageType:    damage.TypePosition,
-						Pos:           t,
-						Power:         int(p.Arg.Power),
-						TTL:           1,
-						TargetObjType: p.Arg.TargetType,
-						HitEffectType: resources.EffectTypeNone,
-						Element:       damage.ElementFire,
-					})
+					if objID := field.GetPanelInfo(t).ObjectID; objID != "" {
+						localanim.DamageManager().New(damage.Damage{
+							DamageType:    damage.TypeObject,
+							Power:         int(p.Arg.Power),
+							TargetObjType: p.Arg.TargetType,
+							HitEffectType: resources.EffectTypeNone,
+							Element:       damage.ElementFire,
+							TargetObjID:   objID,
+						})
+					}
 				}
 
 				break

@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/tmp/tmp_prev/field"
 )
 
 const ()
@@ -136,16 +137,16 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		// TODO: use target object
-		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-			DamageType:    damage.TypePosition,
-			Pos:           p.pos,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			Element:       damage.ElementNone,
-		})
+		if objID := field.GetPanelInfo(p.pos).ObjectID; objID != "" {
+			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				Element:       damage.ElementNone,
+				TargetObjID:   objID,
+			})
+		}
 
 		return true, nil
 	}

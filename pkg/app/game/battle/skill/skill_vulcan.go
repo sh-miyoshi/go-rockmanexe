@@ -80,17 +80,17 @@ func (p *vulcan) Process() (bool, error) {
 					if p.hit && x < battlecommon.FieldNum.X-1 {
 						target = common.Point{X: x + 1, Y: pos.Y}
 						localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit2, target, 20))
-						// TODO: use target object
-						localanim.DamageManager().New(damage.Damage{
-							DamageType:    damage.TypePosition,
-							Pos:           target,
-							Power:         int(p.Arg.Power),
-							TTL:           1,
-							TargetObjType: p.Arg.TargetType,
-							HitEffectType: resources.EffectTypeNone,
-							BigDamage:     lastAtk,
-							Element:       damage.ElementNone,
-						})
+						if objID := field.GetPanelInfo(target).ObjectID; objID != "" {
+							localanim.DamageManager().New(damage.Damage{
+								DamageType:    damage.TypeObject,
+								Power:         int(p.Arg.Power),
+								TargetObjType: p.Arg.TargetType,
+								HitEffectType: resources.EffectTypeNone,
+								BigDamage:     lastAtk,
+								Element:       damage.ElementNone,
+								TargetObjID:   objID,
+							})
+						}
 					}
 					hit = true
 					sound.On(resources.SECannonHit)

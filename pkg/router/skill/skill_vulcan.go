@@ -77,17 +77,17 @@ func (p *vulcan) Process() (bool, error) {
 							RandRange:     20,
 						})
 
-						//  TODO: use target object
-						routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-							DamageType:    damage.TypePosition,
-							Pos:           target,
-							Power:         int(p.Arg.Power),
-							TTL:           1,
-							TargetObjType: p.Arg.TargetType,
-							HitEffectType: resources.EffectTypeNone,
-							BigDamage:     lastAtk,
-							Element:       damage.ElementNone,
-						})
+						if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
+							routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
+								DamageType:    damage.TypeObject,
+								Power:         int(p.Arg.Power),
+								TargetObjType: p.Arg.TargetType,
+								HitEffectType: resources.EffectTypeNone,
+								BigDamage:     lastAtk,
+								Element:       damage.ElementNone,
+								TargetObjID:   objID,
+							})
+						}
 					}
 					hit = true
 					break

@@ -85,17 +85,17 @@ func (p *waterBomb) Process() (bool, error) {
 
 		sound.On(resources.SEWaterLanding)
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
-		// TODO: use target object
-		localanim.DamageManager().New(damage.Damage{
-			DamageType:    damage.TypePosition,
-			Pos:           p.target,
-			Power:         int(p.Arg.Power),
-			TTL:           1,
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
-			Element:       damage.ElementWater,
-		})
+		if objID := field.GetPanelInfo(p.target).ObjectID; objID != "" {
+			localanim.DamageManager().New(damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				BigDamage:     true,
+				Element:       damage.ElementWater,
+				TargetObjID:   objID,
+			})
+		}
 		field.PanelCrack(p.target)
 		return true, nil
 	}
