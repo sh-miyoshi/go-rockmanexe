@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
@@ -137,7 +136,7 @@ func (p *spreadHit) Draw() {
 func (p *spreadHit) Process() (bool, error) {
 	p.count++
 	if p.count == 10 {
-		if objID := field.GetPanelInfo(p.pos).ObjectID; objID != "" {
+		if objID := p.Arg.GameInfo.GetPanelInfo(p.pos).ObjectID; objID != "" {
 			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 				DamageType:    damage.TypeObject,
 				Power:         int(p.Arg.Power),
