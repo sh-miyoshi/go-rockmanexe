@@ -44,7 +44,6 @@ func (p *sword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*delaySword {
-		// TODO: use target object
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
