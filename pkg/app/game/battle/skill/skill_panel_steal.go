@@ -112,14 +112,13 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			if pn.ObjectID != "" {
 				// ダメージ
 				localanim.DamageManager().New(damage.Damage{
-					DamageType:    damage.TypePosition,
-					Pos:           p.target,
+					DamageType:    damage.TypeObject,
 					Power:         10,
-					TTL:           1, // TODO: TTLを調整
 					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     false,
 					Element:       damage.ElementNone,
+					TargetObjID:   pn.ObjectID,
 				})
 			} else if p.target.X >= 1 && p.target.X < battlecommon.FieldNum.X-1 {
 				// パネルを塗り替え
