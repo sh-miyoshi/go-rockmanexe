@@ -33,6 +33,7 @@ const (
 	ResultGoNetBattle
 	ResultGoMap
 	ResultGoScratch
+	ResultGoNaviCustom
 )
 
 var (
@@ -46,10 +47,11 @@ var (
 	menuDevFeatureInst  *menuDevFeature
 	specificEnemy       []enemy.EnemyParam
 
-	ErrGoBattle    = errors.New("go to battle")
-	ErrGoNetBattle = errors.New("go to net battle")
-	ErrGoMap       = errors.New("go to map")
-	ErrGoScratch   = errors.New("go to scratch")
+	ErrGoBattle     = errors.New("go to battle")
+	ErrGoNetBattle  = errors.New("go to net battle")
+	ErrGoMap        = errors.New("go to map")
+	ErrGoScratch    = errors.New("go to scratch")
+	ErrGoNaviCustom = errors.New("go to navi custom")
 )
 
 func Init(plyr *player.Player) error {

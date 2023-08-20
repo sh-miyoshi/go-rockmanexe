@@ -15,6 +15,7 @@ const (
 	devFeatureSelectMapMove = iota
 	devFeatureSelectWideArea
 	devFeatureSelectSupportNPC
+	devFeatureSelectNaviCustom
 
 	devFeatureSelectMax
 )
@@ -37,6 +38,7 @@ func (t *menuDevFeature) Draw() {
 		"マップ移動",
 		"4x4 対戦",
 		"味方NPC",
+		"ナビカス",
 	}
 
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), true)
@@ -93,6 +95,8 @@ func (t *menuDevFeature) Process() (Result, error) {
 			}
 
 			return ResultGoBattle, nil
+		case devFeatureSelectNaviCustom:
+			return ResultGoNaviCustom, nil
 		}
 		return ResultContinue, nil
 	}
