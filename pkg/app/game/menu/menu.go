@@ -1,7 +1,6 @@
 package menu
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -25,6 +24,16 @@ const (
 	stateMax
 )
 
+type Result int
+
+const (
+	ResultContinue Result = iota
+	ResultGoBattle
+	ResultGoNetBattle
+	ResultGoMap
+	ResultGoScratch
+)
+
 var (
 	menuState           int
 	imgBack             int
@@ -35,11 +44,6 @@ var (
 	menuInvalidChipInst *menuInvalidChip
 	menuDevFeatureInst  *menuDevFeature
 	specificEnemy       []enemy.EnemyParam
-
-	ErrGoBattle    = errors.New("go to battle")
-	ErrGoNetBattle = errors.New("go to net battle")
-	ErrGoMap       = errors.New("go to map")
-	ErrGoScratch   = errors.New("go to scratch")
 )
 
 func Init(plyr *player.Player) error {
@@ -116,9 +120,9 @@ func End() {
 	}
 }
 
-func Process() error {
+func Process() (Result, error) {
 	if config.Get().Debug.SkipMenu {
-		return ErrGoBattle
+		return ResultGoBattle, nil
 	}
 
 	switch menuState {
@@ -128,13 +132,13 @@ func Process() error {
 		menuFolderInst.Process()
 	case stateGoBattle:
 		if goBattleProcess() {
-			return ErrGoBattle
+			return ResultGoBattle, nil
 		}
 	case stateRecord:
 		menuRecordInst.Process()
 	case stateNetBattle:
 		if menuNetBattleInst.Process() {
-			return ErrGoNetBattle
+			return ResultGoNetBattle, nil
 		}
 	case stateInvalidChip:
 		menuInvalidChipInst.Process()
@@ -142,7 +146,7 @@ func Process() error {
 		return menuDevFeatureInst.Process()
 	}
 
-	return nil
+	return ResultContinue, nil
 }
 
 func Draw() {

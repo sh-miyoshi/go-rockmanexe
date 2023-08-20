@@ -85,25 +85,30 @@ func Process() error {
 				return fmt.Errorf("game process in state menu init failed: %w", err)
 			}
 		}
-		if err := menu.Process(); err != nil {
+		result, err := menu.Process()
+		if err != nil {
 			menu.End()
-			if errors.Is(err, menu.ErrGoBattle) {
-				if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
-					return fmt.Errorf("battle init failed at menu: %w", err)
-				}
-				stateChange(stateBattle)
-				return nil
-			} else if errors.Is(err, menu.ErrGoNetBattle) {
-				stateChange(stateNetBattle)
-				return nil
-			} else if errors.Is(err, menu.ErrGoMap) {
-				stateChange(stateMap)
-				return nil
-			} else if errors.Is(err, menu.ErrGoScratch) {
-				stateChange(stateScratch)
-				return nil
-			}
 			return fmt.Errorf("game process in state menu failed: %w", err)
+		}
+		if result != menu.ResultContinue {
+			menu.End()
+		}
+		switch result {
+		case menu.ResultGoBattle:
+			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
+				return fmt.Errorf("battle init failed at menu: %w", err)
+			}
+			stateChange(stateBattle)
+			return nil
+		case menu.ResultGoNetBattle:
+			stateChange(stateNetBattle)
+			return nil
+		case menu.ResultGoMap:
+			stateChange(stateMap)
+			return nil
+		case menu.ResultGoScratch:
+			stateChange(stateScratch)
+			return nil
 		}
 	case stateBattle:
 		if err := battle.Process(); err != nil {
