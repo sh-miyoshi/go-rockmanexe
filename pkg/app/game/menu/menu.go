@@ -1,7 +1,6 @@
 package menu
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
@@ -46,12 +45,6 @@ var (
 	menuInvalidChipInst *menuInvalidChip
 	menuDevFeatureInst  *menuDevFeature
 	specificEnemy       []enemy.EnemyParam
-
-	ErrGoBattle     = errors.New("go to battle")
-	ErrGoNetBattle  = errors.New("go to net battle")
-	ErrGoMap        = errors.New("go to map")
-	ErrGoScratch    = errors.New("go to scratch")
-	ErrGoNaviCustom = errors.New("go to navi custom")
 )
 
 func Init(plyr *player.Player) error {
