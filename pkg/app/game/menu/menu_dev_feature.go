@@ -51,17 +51,17 @@ func (t *menuDevFeature) Draw() {
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 }
 
-func (t *menuDevFeature) Process() error {
+func (t *menuDevFeature) Process() (Result, error) {
 	// 隠しコマンド
 	if inputs.CheckKey(inputs.KeyDebug) == 1 {
-		return ErrGoScratch
+		return ResultGoScratch, nil
 	}
 
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		sound.On(resources.SEMenuEnter)
 		switch t.pointer {
 		case devFeatureSelectMapMove:
-			return ErrGoMap
+			return ResultGoMap, nil
 		case devFeatureSelectWideArea:
 			field.Set4x4Area()
 
@@ -74,7 +74,7 @@ func (t *menuDevFeature) Process() error {
 				},
 			}
 
-			return ErrGoBattle
+			return ResultGoBattle, nil
 		case devFeatureSelectSupportNPC:
 			field.Set4x4Area()
 
@@ -92,9 +92,9 @@ func (t *menuDevFeature) Process() error {
 				},
 			}
 
-			return ErrGoBattle
+			return ResultGoBattle, nil
 		}
-		return nil
+		return ResultContinue, nil
 	}
 	if inputs.CheckKey(inputs.KeyUp) == 1 {
 		if t.pointer > 0 {
@@ -107,5 +107,5 @@ func (t *menuDevFeature) Process() error {
 			t.pointer++
 		}
 	}
-	return nil
+	return ResultContinue, nil
 }
