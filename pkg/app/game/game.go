@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
@@ -42,6 +43,7 @@ var (
 // Process ...
 func Process() error {
 	background.Process()
+	fade.Process()
 
 	if playerInfo != nil {
 		playerInfo.PlayCount++
@@ -251,6 +253,8 @@ func Draw() {
 	case stateNaviCustom:
 		navicustom.Draw()
 	}
+
+	fade.Draw()
 }
 
 func stateChange(nextState int) {

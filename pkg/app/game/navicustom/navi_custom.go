@@ -1,7 +1,11 @@
 package navicustom
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"fmt"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
@@ -12,17 +16,29 @@ const (
 )
 
 var (
-	state int
-	count int
+	state   int
+	count   int
+	imgBack int = -1
 )
 
 func Init() error {
 	state = stateOpening
 	count = 0
+	fname := common.ImagePath + "naviCustom/back.png"
+	imgBack = dxlib.LoadGraph(fname)
+	if imgBack == -1 {
+		return fmt.Errorf("failed to load back image")
+	}
 	return nil
 }
 
+func End() {
+	dxlib.DeleteGraph(imgBack)
+}
+
 func Draw() {
+	dxlib.DrawGraph(0, 0, imgBack, false)
+
 	switch state {
 	case stateOpening:
 		// 起動時アニメーション
@@ -36,7 +52,11 @@ func Draw() {
 func Process() {
 	switch state {
 	case stateOpening:
-		if count > 30 || (count > 3 && inputs.CheckKey(inputs.KeyEnter) > 0) {
+		if count == 0 {
+			fade.In(30)
+		}
+
+		if count > 30 {
 			stateChange(stateMain)
 		}
 	case stateMain:
