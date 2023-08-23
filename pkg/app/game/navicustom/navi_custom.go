@@ -16,9 +16,10 @@ const (
 )
 
 var (
-	state   int
-	count   int
-	imgBack int = -1
+	state    int
+	count    int
+	imgBack  int = -1
+	imgBoard int = -1
 )
 
 func Init() error {
@@ -29,6 +30,11 @@ func Init() error {
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load back image")
 	}
+	fname = common.ImagePath + "naviCustom/board.png"
+	imgBoard = dxlib.LoadGraph(fname)
+	if imgBoard == -1 {
+		return fmt.Errorf("failed to load board image")
+	}
 	return nil
 }
 
@@ -38,6 +44,7 @@ func End() {
 
 func Draw() {
 	dxlib.DrawGraph(0, 0, imgBack, false)
+	dxlib.DrawGraph(10, 30, imgBoard, true)
 
 	switch state {
 	case stateOpening:
