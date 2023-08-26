@@ -48,7 +48,7 @@ func Draw() {
 
 	switch state {
 	case stateOpening:
-		// 起動時アニメーション
+		// Nothing to do
 	case stateMain:
 		// 実際にパーツを置いたりする
 	case stateRun:
