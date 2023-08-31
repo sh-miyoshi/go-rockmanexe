@@ -117,6 +117,9 @@ MAIN:
 		fpsMgr.Wait()
 		if config.Get().Debug.ShowDebugData {
 			dxlib.DrawFormatString(common.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+			var x, y int
+			dxlib.GetMousePoint(&x, &y)
+			dxlib.DrawFormatString(common.ScreenSize.X-90, 30, 0xff0000, "(%d, %d)", x, y)
 		}
 	}
 
