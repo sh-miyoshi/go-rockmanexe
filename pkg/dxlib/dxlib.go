@@ -360,3 +360,10 @@ func WaitKey() {
 func DxLib_End() {
 	dxlib.DxLib_End()
 }
+
+func GetMousePoint(x, y *int) {
+	var tx, ty int32
+	dxlib.GetMousePoint(&tx, &ty)
+	*x = int(tx)
+	*y = int(ty)
+}
