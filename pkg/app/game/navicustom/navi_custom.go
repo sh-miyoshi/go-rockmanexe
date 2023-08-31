@@ -4,7 +4,10 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/naviparts"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -20,9 +23,19 @@ var (
 	count    int
 	imgBack  int = -1
 	imgBoard int = -1
+	// playerInfo *player.Player // TODO: 更新のタイミングで使う
+	unsetParts []player.NaviCustomParts
 )
 
-func Init() error {
+func Init(plyr *player.Player) error {
+	// playerInfo = plyr
+	unsetParts = []player.NaviCustomParts{}
+	for _, p := range plyr.AllNaviCustomParts {
+		if !p.IsSet {
+			unsetParts = append(unsetParts, p)
+		}
+	}
+
 	state = stateOpening
 	count = 0
 	fname := common.ImagePath + "naviCustom/back.png"
@@ -40,6 +53,7 @@ func Init() error {
 
 func End() {
 	dxlib.DeleteGraph(imgBack)
+	dxlib.DeleteGraph(imgBoard)
 }
 
 func Draw() {
@@ -51,6 +65,11 @@ func Draw() {
 		// Nothing to do
 	case stateMain:
 		// 実際にパーツを置いたりする
+		for i, p := range unsetParts {
+			parts := naviparts.Get(p.ID)
+			dxlib.DrawBox(300, i*30+40, 400, i*30+65, dxlib.GetColor(16, 80, 104), true)
+			draw.String(305, i*30+42, 0xFFFFFF, "%s", parts.Name)
+		}
 	case stateRun:
 		// RUN
 	}

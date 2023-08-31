@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/naviparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/stretchr/stew/slice"
 )
@@ -25,7 +26,6 @@ const (
 	SameChipNumInFolder = 4
 )
 
-// ChipInfo ...
 type ChipInfo struct {
 	ID   int    `json:"id"`
 	Code string `json:"code"`
@@ -37,15 +37,23 @@ type History struct {
 	IsWin      bool      `json:"is_win"`
 }
 
+type NaviCustomParts struct {
+	ID    int  `json:"id"`
+	IsSet bool `json:"is_set"`
+	X     int  `json:"x"`
+	Y     int  `json:"y"`
+}
+
 type Player struct {
-	HP              uint                 `json:"hp"`
-	ShotPower       uint                 `json:"shot_power"`
-	Zenny           uint                 `json:"zenny"`
-	ChipFolder      [FolderSize]ChipInfo `json:"chip_folder"`
-	WinNum          int                  `json:"win_num"`
-	PlayCount       uint                 `json:"play_count"`
-	BackPack        []ChipInfo           `json:"back_pack"`
-	BattleHistories []History            `json:"battle_histories"`
+	HP                 uint                 `json:"hp"`
+	ShotPower          uint                 `json:"shot_power"`
+	Zenny              uint                 `json:"zenny"`
+	ChipFolder         [FolderSize]ChipInfo `json:"chip_folder"`
+	WinNum             int                  `json:"win_num"`
+	PlayCount          uint                 `json:"play_count"`
+	BackPack           []ChipInfo           `json:"back_pack"`
+	BattleHistories    []History            `json:"battle_histories"`
+	AllNaviCustomParts []NaviCustomParts    `json:"navi_custom_parts"`
 }
 
 type SaveData struct {
@@ -62,6 +70,10 @@ func New() *Player {
 		WinNum:          0,
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
+		AllNaviCustomParts: []NaviCustomParts{
+			{ID: naviparts.IDAttack1, IsSet: false},
+			{ID: naviparts.IDAttack1, IsSet: false},
+		},
 	}
 	res.setChipFolder()
 	res.addPresentChips()

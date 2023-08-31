@@ -216,7 +216,7 @@ func Process() error {
 		return nil
 	case stateNaviCustom:
 		if count == 0 {
-			navicustom.Init()
+			navicustom.Init(playerInfo)
 		}
 		navicustom.Process()
 	}
