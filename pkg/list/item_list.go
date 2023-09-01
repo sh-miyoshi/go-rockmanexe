@@ -45,7 +45,7 @@ func (l *ItemList) Process() int {
 	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
 		n := len(l.lists) - 1
 		if l.maxShowNum > 0 && l.maxShowNum < n {
-			n = l.maxShowNum
+			n = l.maxShowNum - 1
 		}
 
 		if l.cursor < n {

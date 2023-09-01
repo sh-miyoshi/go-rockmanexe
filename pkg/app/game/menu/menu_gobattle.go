@@ -275,7 +275,7 @@ func goBattleProcess() bool {
 		stateChange(stateTop)
 		return false
 	}
-	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+	if goBattleItemList.Process() != -1 {
 		sound.On(resources.SEGoBattle)
 		goBattleWaitCount++
 		return false
