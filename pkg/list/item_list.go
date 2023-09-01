@@ -7,12 +7,15 @@ import (
 )
 
 type ItemList struct {
-	current int
-	lists   []string
+	cursor     int
+	lists      []string
+	scroll     int
+	maxShowNum int
 }
 
-func (l *ItemList) SetList(lists []string) {
+func (l *ItemList) SetList(lists []string, maxShowNum int) {
 	l.lists = append([]string{}, lists...)
+	l.maxShowNum = maxShowNum
 }
 
 func (l *ItemList) GetList() []string {
@@ -20,26 +23,37 @@ func (l *ItemList) GetList() []string {
 }
 
 func (l *ItemList) GetPointer() int {
-	return l.current
+	return l.cursor
+}
+
+func (l *ItemList) GetScroll() int {
+	return l.scroll
 }
 
 func (l *ItemList) Process() int {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		return l.current
+		return l.cursor + l.scroll
 	}
-	if inputs.CheckKey(inputs.KeyUp) == 1 {
-		if l.current > 0 {
+	if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
+		if l.cursor > 0 {
 			sound.On(resources.SECursorMove)
-			l.current--
-		} else {
-			sound.On(resources.SEBlock)
+			l.cursor--
+		} else if l.maxShowNum > 0 && l.scroll > 0 {
+			sound.On(resources.SECursorMove)
+			l.scroll--
 		}
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-		if l.current < len(l.lists)-1 {
+	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
+		n := len(l.lists) - 1
+		if l.maxShowNum > 0 && l.maxShowNum < n {
+			n = l.maxShowNum
+		}
+
+		if l.cursor < n {
 			sound.On(resources.SECursorMove)
-			l.current++
-		} else {
-			sound.On(resources.SEBlock)
+			l.cursor++
+		} else if l.maxShowNum > 0 && l.scroll < len(l.lists)-l.maxShowNum {
+			sound.On(resources.SECursorMove)
+			l.scroll++
 		}
 	}
 

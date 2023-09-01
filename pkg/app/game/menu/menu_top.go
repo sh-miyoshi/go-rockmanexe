@@ -34,7 +34,7 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 		"バトル",
 		"戦績",
 		"ネット対戦",
-	})
+	}, -1)
 
 	return res, nil
 }

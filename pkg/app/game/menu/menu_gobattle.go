@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
 )
 
 type selectEnemyData struct {
@@ -31,15 +32,12 @@ var (
 	viewCenter = common.Point{X: 350, Y: 150}
 
 	goBattleSelectData []selectValue
-	goBattleCursor     int
-	goBattleScroll     int
 	goBattleWaitCount  int
 	images             = make(map[int]int)
+	goBattleItemList   list.ItemList
 )
 
 func goBattleInit() error {
-	goBattleCursor = 0
-	goBattleScroll = 0
 	goBattleWaitCount = 0
 
 	goBattleSelectData = []selectValue{
@@ -239,13 +237,17 @@ func goBattleInit() error {
 		},
 	}
 
+	names := []string{}
 	for _, s := range goBattleSelectData {
 		for _, e := range s.Enemies {
 			name, ext := enemy.GetStandImageFile(e.BattleParam.CharID)
 			fname := name + ext
 			images[e.BattleParam.CharID] = dxlib.LoadGraph(fname)
 		}
+		names = append(names, s.Name)
 	}
+	goBattleItemList.SetList(names, goBattleListShowMax)
+
 	for id, img := range images {
 		if img == -1 {
 			return fmt.Errorf("failed to load enemy %d image", id)
@@ -279,29 +281,6 @@ func goBattleProcess() bool {
 		return false
 	}
 
-	if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
-		if goBattleCursor > 0 {
-			sound.On(resources.SECursorMove)
-			goBattleCursor--
-		} else if goBattleScroll > 0 {
-			sound.On(resources.SECursorMove)
-			goBattleScroll--
-		}
-	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
-		n := goBattleListShowMax - 1
-		if len(goBattleSelectData) < goBattleListShowMax {
-			n = len(goBattleSelectData) - 1
-		}
-
-		if goBattleCursor < n {
-			sound.On(resources.SECursorMove)
-			goBattleCursor++
-		} else if goBattleScroll < len(goBattleSelectData)-goBattleListShowMax {
-			sound.On(resources.SECursorMove)
-			goBattleScroll++
-		}
-	}
-
 	return false
 }
 
@@ -310,16 +289,16 @@ func goBattleDraw() {
 	dxlib.DrawBox(30, 40, 210, goBattleListShowMax*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i := 0; i < goBattleListShowMax; i++ {
-		c := i + goBattleScroll
+		c := i + goBattleItemList.GetScroll()
 		draw.String(65, 50+i*35, 0xffffff, goBattleSelectData[c].Name)
 	}
 
 	const s = 2
-	y := 50 + goBattleCursor*35
+	y := 50 + goBattleItemList.GetPointer()*35
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 
 	// Show images
-	c := goBattleCursor + goBattleScroll
+	c := goBattleItemList.GetPointer() + goBattleItemList.GetScroll()
 	const size = 150
 	dxlib.DrawBox(viewCenter.X-size/2, viewCenter.Y-size/2, viewCenter.X+size/2, viewCenter.Y+size/2, 0, true)
 	for _, e := range goBattleSelectData[c].Enemies {
@@ -341,7 +320,7 @@ func battleEnemies() []enemy.EnemyParam {
 	}
 
 	res := []enemy.EnemyParam{}
-	c := goBattleCursor + goBattleScroll
+	c := goBattleItemList.GetPointer() + goBattleItemList.GetScroll()
 	for _, e := range goBattleSelectData[c].Enemies {
 		res = append(res, e.BattleParam)
 	}

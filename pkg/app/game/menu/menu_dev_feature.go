@@ -30,7 +30,7 @@ func devFeatureNew() (*menuDevFeature, error) {
 		"マップ移動",
 		"4x4 対戦",
 		"味方NPC",
-	})
+	}, -1)
 
 	return res, nil
 }
