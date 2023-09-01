@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -17,20 +18,25 @@ const (
 	topSelectGoBattle
 	topSelectRecord
 	topSelectNetBattle
-
-	topSelectMax
 )
 
 type menuTop struct {
-	pointer    int
 	playerInfo *player.Player
+	itemList   list.ItemList
 }
 
 func topNew(plyr *player.Player) (*menuTop, error) {
-	return &menuTop{
-		pointer:    0,
+	res := &menuTop{
 		playerInfo: plyr,
-	}, nil
+	}
+	res.itemList.SetList([]string{
+		"チップフォルダ",
+		"バトル",
+		"戦績",
+		"ネット対戦",
+	})
+
+	return res, nil
 }
 
 func (t *menuTop) End() {
@@ -45,9 +51,10 @@ func (t *menuTop) Process() {
 		}
 	}
 
-	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+	sel := t.itemList.Process()
+	if sel != -1 {
 		sound.On(resources.SEMenuEnter)
-		switch t.pointer {
+		switch sel {
 		case topSelectChipFolder:
 			stateChange(stateChipFolder)
 		case topSelectGoBattle:
@@ -61,39 +68,19 @@ func (t *menuTop) Process() {
 				stateChange(stateNetBattle)
 			}
 		}
-		return
-	}
-
-	if inputs.CheckKey(inputs.KeyUp) == 1 {
-		if t.pointer > 0 {
-			sound.On(resources.SECursorMove)
-			t.pointer--
-		}
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-		if t.pointer < topSelectMax-1 {
-			sound.On(resources.SECursorMove)
-			t.pointer++
-		}
 	}
 }
 
 func (t *menuTop) Draw() {
-	msgs := []string{
-		"チップフォルダ",
-		"バトル",
-		"戦績",
-		"ネット対戦",
-	}
-
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), true)
-	dxlib.DrawBox(30, 40, 210, len(msgs)*35+50, dxlib.GetColor(16, 80, 104), true)
+	dxlib.DrawBox(30, 40, 210, len(t.itemList.GetList())*35+50, dxlib.GetColor(16, 80, 104), true)
 
-	for i, msg := range msgs {
+	for i, msg := range t.itemList.GetList() {
 		draw.String(65, 50+i*35, 0xffffff, msg)
 	}
 
 	const s = 2
-	y := 50 + t.pointer*35
+	y := 50 + t.itemList.GetPointer()*35
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 
 	// Show description
@@ -104,7 +91,7 @@ func (t *menuTop) Draw() {
 	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), true)
 	draw.String(280, 40, 0xffffff, "Description")
 
-	switch t.pointer {
+	switch t.itemList.GetPointer() {
 	case topSelectChipFolder:
 		draw.String(270, 70, 0xffffff, "チップフォルダを閲覧し")
 		draw.String(270, 100, 0xffffff, "ます")
