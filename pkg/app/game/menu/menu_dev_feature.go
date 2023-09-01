@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
 )
 
 const (
@@ -16,40 +17,36 @@ const (
 	devFeatureSelectWideArea
 	devFeatureSelectSupportNPC
 	devFeatureSelectNaviCustom
-
-	devFeatureSelectMax
 )
 
 type menuDevFeature struct {
-	pointer int
+	itemList list.ItemList
 }
 
 func devFeatureNew() (*menuDevFeature, error) {
-	return &menuDevFeature{
-		pointer: 0,
-	}, nil
+	res := &menuDevFeature{}
+	res.itemList.SetList([]string{
+		"マップ移動",
+		"4x4 対戦",
+		"味方NPC",
+	}, -1)
+
+	return res, nil
 }
 
 func (t *menuDevFeature) End() {
 }
 
 func (t *menuDevFeature) Draw() {
-	msgs := []string{
-		"マップ移動",
-		"4x4 対戦",
-		"味方NPC",
-		"ナビカス",
-	}
-
 	dxlib.DrawBox(20, 30, 230, 300, dxlib.GetColor(168, 192, 216), true)
-	dxlib.DrawBox(30, 40, 210, len(msgs)*35+50, dxlib.GetColor(16, 80, 104), true)
+	dxlib.DrawBox(30, 40, 210, len(t.itemList.GetList())*35+50, dxlib.GetColor(16, 80, 104), true)
 
-	for i, msg := range msgs {
+	for i, msg := range t.itemList.GetList() {
 		draw.String(65, 50+i*35, 0xffffff, msg)
 	}
 
 	const s = 2
-	y := 50 + t.pointer*35
+	y := 50 + t.itemList.GetPointer()*35
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 }
 
@@ -59,9 +56,10 @@ func (t *menuDevFeature) Process() (Result, error) {
 		return ResultGoScratch, nil
 	}
 
-	if inputs.CheckKey(inputs.KeyEnter) == 1 {
+	sel := t.itemList.Process()
+	if sel != -1 {
 		sound.On(resources.SEMenuEnter)
-		switch t.pointer {
+		switch t.itemList.GetPointer() {
 		case devFeatureSelectMapMove:
 			return ResultGoMap, nil
 		case devFeatureSelectWideArea:
@@ -99,17 +97,6 @@ func (t *menuDevFeature) Process() (Result, error) {
 			return ResultGoNaviCustom, nil
 		}
 		return ResultContinue, nil
-	}
-	if inputs.CheckKey(inputs.KeyUp) == 1 {
-		if t.pointer > 0 {
-			sound.On(resources.SECursorMove)
-			t.pointer--
-		}
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-		if t.pointer < devFeatureSelectMax-1 {
-			sound.On(resources.SECursorMove)
-			t.pointer++
-		}
 	}
 	return ResultContinue, nil
 }
