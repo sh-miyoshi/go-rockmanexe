@@ -18,6 +18,7 @@ import (
 
 const (
 	maxListNum = 5
+	boardSize  = 5
 )
 
 const (
@@ -32,10 +33,12 @@ var (
 	imgBack        int = -1
 	imgBoard       int = -1
 	imgListPointer int = -1
+	imgSetPointer  int = -1
 	// playerInfo *player.Player // TODO: 更新のタイミングで使う
-	unsetParts []player.NaviCustomParts
-	itemList   list.ItemList
-	selected   int
+	unsetParts    []player.NaviCustomParts
+	itemList      list.ItemList
+	selected      int
+	setPointerPos common.Point
 )
 
 func Init(plyr *player.Player) error {
@@ -54,6 +57,7 @@ func Init(plyr *player.Player) error {
 	state = stateOpening
 	count = 0
 	selected = -1
+	setPointerPos = common.Point{X: 2, Y: 2}
 
 	fname := common.ImagePath + "naviCustom/back.png"
 	imgBack = dxlib.LoadGraph(fname)
@@ -65,10 +69,15 @@ func Init(plyr *player.Player) error {
 	if imgBoard == -1 {
 		return fmt.Errorf("failed to load board image")
 	}
-	fname = common.ImagePath + "menu/arrow.png"
+	fname = common.ImagePath + "naviCustom/pointer.png"
 	imgListPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
-		return fmt.Errorf("failed to load arrow image")
+		return fmt.Errorf("failed to load list pointer image")
+	}
+	fname = common.ImagePath + "naviCustom/pointer2.png"
+	imgSetPointer = dxlib.LoadGraph(fname)
+	if imgListPointer == -1 {
+		return fmt.Errorf("failed to load set pointer image")
 	}
 
 	return nil
@@ -78,6 +87,7 @@ func End() {
 	dxlib.DeleteGraph(imgBack)
 	dxlib.DeleteGraph(imgBoard)
 	dxlib.DeleteGraph(imgListPointer)
+	dxlib.DeleteGraph(imgSetPointer)
 }
 
 func Draw() {
@@ -92,11 +102,14 @@ func Draw() {
 		for i, name := range itemList.GetList() {
 			drawPartsListItem(300, i*30+45, name)
 		}
-		if selected == -1 || (count/3)%2 == 0 {
-			dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
-		}
+		dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
 
 		// TODO: ミニウィンドウ
+
+		if selected != -1 {
+			dxlib.DrawGraph(setPointerPos.X*40+34, setPointerPos.Y*40+65, imgSetPointer, true)
+			// TODO: show parts
+		}
 	case stateRun:
 		// RUN
 	}
@@ -113,7 +126,6 @@ func Process() {
 			stateChange(stateMain)
 		}
 	case stateMain:
-		// TODO
 		if selected == -1 {
 			selected = itemList.Process()
 			if selected != -1 {
@@ -122,6 +134,29 @@ func Process() {
 		} else {
 			if inputs.CheckKey(inputs.KeyCancel) == 1 {
 				selected = -1
+				return
+			}
+
+			// TODO(決定)
+
+			if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
+				sound.On(resources.SECursorMove)
+				setPointerPos.Y--
+				return
+			}
+			if inputs.CheckKey(inputs.KeyDown) == 1 && setPointerPos.Y < boardSize-1 {
+				sound.On(resources.SECursorMove)
+				setPointerPos.Y++
+				return
+			}
+			if inputs.CheckKey(inputs.KeyLeft) == 1 && setPointerPos.X > 0 {
+				sound.On(resources.SECursorMove)
+				setPointerPos.X--
+				return
+			}
+			if inputs.CheckKey(inputs.KeyRight) == 1 && setPointerPos.X < boardSize-1 {
+				sound.On(resources.SECursorMove)
+				setPointerPos.X++
 				return
 			}
 		}
