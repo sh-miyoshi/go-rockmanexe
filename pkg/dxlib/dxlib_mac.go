@@ -318,3 +318,7 @@ func WaitKey() {
 func DxLib_End() {
 	panic("not implemented yet")
 }
+
+func GetMousePoint(x, y *int) {
+	panic("not implemented yet")
+}
