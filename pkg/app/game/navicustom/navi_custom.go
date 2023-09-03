@@ -34,6 +34,7 @@ var (
 	imgBoard       int = -1
 	imgListPointer int = -1
 	imgSetPointer  int = -1
+	imgBlocks      [3]int
 	// playerInfo *player.Player // TODO: 更新のタイミングで使う
 	unsetParts    []player.NaviCustomParts
 	itemList      list.ItemList
@@ -79,6 +80,17 @@ func Init(plyr *player.Player) error {
 	if imgListPointer == -1 {
 		return fmt.Errorf("failed to load set pointer image")
 	}
+	fname = common.ImagePath + "naviCustom/block_white.png"
+	imgBlocks[colorBlock(naviparts.ColorWhite)] = dxlib.LoadGraph(fname)
+	fname = common.ImagePath + "naviCustom/block_yellow.png"
+	imgBlocks[colorBlock(naviparts.ColorYellow)] = dxlib.LoadGraph(fname)
+	fname = common.ImagePath + "naviCustom/block_pink.png"
+	imgBlocks[colorBlock(naviparts.ColorPink)] = dxlib.LoadGraph(fname)
+	for i, b := range imgBlocks {
+		if b == -1 {
+			return fmt.Errorf("failed to load block %d image", i)
+		}
+	}
 
 	return nil
 }
@@ -88,6 +100,9 @@ func End() {
 	dxlib.DeleteGraph(imgBoard)
 	dxlib.DeleteGraph(imgListPointer)
 	dxlib.DeleteGraph(imgSetPointer)
+	for b := range imgBlocks {
+		dxlib.DeleteGraph(b)
+	}
 }
 
 func Draw() {
@@ -111,10 +126,7 @@ func Draw() {
 			baseY := setPointerPos.Y*40 + 65
 			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
 			parts := naviparts.Get(unsetParts[selected].ID)
-			for _, b := range parts.Blocks {
-				// TODO
-				dxlib.DrawBox(baseX+b.X*40, baseY+b.Y*40, baseX+(b.X+1)*40, baseY+(b.Y+1)*40, 0xFFFFFF, true)
-			}
+			drawSelectedParts(baseX, baseY, parts)
 		}
 	case stateRun:
 		// RUN
@@ -183,4 +195,25 @@ func drawPartsListItem(x, y int, name string) {
 	dxlib.DrawBox(x-2, y-1, x+102, y+26, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(x, y, x+100, y+25, dxlib.GetColor(16, 80, 104), true)
 	draw.String(x+5, y+2, 0xFFFFFF, "%s", name)
+}
+
+func colorBlock(color int) int {
+	switch color {
+	case naviparts.ColorWhite:
+		return 0
+	case naviparts.ColorYellow:
+		return 1
+	case naviparts.ColorPink:
+		return 2
+	}
+
+	common.SetError(fmt.Sprintf("カラーコード %d に対するブロックは存在しません", color))
+	return 0
+}
+
+func drawSelectedParts(baseX, baseY int, parts naviparts.NaviParts) {
+	for _, b := range parts.Blocks {
+		// TODO
+		dxlib.DrawBox(baseX+b.X*40, baseY+b.Y*40, baseX+(b.X+1)*40, baseY+(b.Y+1)*40, 0xFFFFFF, true)
+	}
 }
