@@ -41,10 +41,20 @@ var (
 			Name: "アタック+1",
 			Blocks: []common.Point{
 				{X: 0, Y: 0},
-				{X: 0, Y: 1},
+				{X: 1, Y: 0},
 			},
 			IsPlusParts: true,
 			Color:       ColorPink,
+		},
+		{
+			ID:   IDUnderShirt,
+			Name: "アンダーシャツ",
+			Blocks: []common.Point{
+				{X: 0, Y: 0},
+				{X: 0, Y: 1},
+			},
+			IsPlusParts: false,
+			Color:       ColorWhite,
 		},
 	}
 )
@@ -63,11 +73,11 @@ func Get(id int) NaviParts {
 func GetColorCode(color int) uint {
 	switch color {
 	case ColorWhite:
-		return 0xFFFFFF
+		return 0xDCD8DC
 	case ColorYellow:
-		// TODO
+		return 0xDCD800
 	case ColorPink:
-		// TODO
+		return 0xDC88C4
 	}
 
 	common.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))

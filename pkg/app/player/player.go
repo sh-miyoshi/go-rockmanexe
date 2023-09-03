@@ -72,7 +72,7 @@ func New() *Player {
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
 			{ID: naviparts.IDAttack1, IsSet: false},
-			{ID: naviparts.IDAttack1, IsSet: false},
+			{ID: naviparts.IDUnderShirt, IsSet: false},
 		},
 	}
 	res.setChipFolder()

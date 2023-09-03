@@ -124,10 +124,16 @@ func Draw() {
 		if selected != -1 {
 			baseX := setPointerPos.X*40 + 34
 			baseY := setPointerPos.Y*40 + 65
-			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
 			parts := naviparts.Get(unsetParts[selected].ID)
 			drawSelectedParts(baseX, baseY, parts)
+			if (count/10)%3 != 0 {
+				dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
+			}
 		}
+
+		// コマンドライン
+		dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
+		dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
 	case stateRun:
 		// RUN
 	}
@@ -151,13 +157,14 @@ func Process() {
 			}
 		} else {
 			if inputs.CheckKey(inputs.KeyCancel) == 1 {
+				sound.On(resources.SECancel)
 				selected = -1
 				return
 			}
 
 			if inputs.CheckKey(inputs.KeyEnter) == 1 {
 				sound.On(resources.SEMenuEnter)
-				stateChange(stateRun)
+				// TODO set parts
 				return
 			}
 
@@ -196,8 +203,8 @@ func stateChange(next int) {
 }
 
 func drawPartsListItem(x, y int, name string) {
-	dxlib.DrawBox(x-2, y-1, x+102, y+26, dxlib.GetColor(168, 192, 216), true)
-	dxlib.DrawBox(x, y, x+100, y+25, dxlib.GetColor(16, 80, 104), true)
+	dxlib.DrawBox(x-2, y-1, x+122, y+26, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(x, y, x+120, y+25, dxlib.GetColor(16, 80, 104), true)
 	draw.String(x+5, y+2, 0xFFFFFF, "%s", name)
 }
 
@@ -218,11 +225,9 @@ func colorBlock(color int) int {
 func drawSelectedParts(baseX, baseY int, parts naviparts.NaviParts) {
 	for _, b := range parts.Blocks {
 		if parts.IsPlusParts {
-			dxlib.DrawGraph(b.X*40+baseX+2, b.Y*40+baseY+2, imgBlocks[colorBlock(parts.Color)], true)
+			dxlib.DrawGraph(b.X*40+baseX+4, b.Y*40+baseY+4, imgBlocks[colorBlock(parts.Color)], true)
 		} else {
-			// TODO color
-			dxlib.DrawBox(b.X*40+baseX+2, b.Y*40+baseY+2, (b.X+1)*40+baseX-2, (b.Y+1)*40+baseY-2, naviparts.GetColorCode(parts.Color), true)
+			dxlib.DrawBox(b.X*40+baseX+4, b.Y*40+baseY+4, (b.X+1)*40+baseX, (b.Y+1)*40+baseY, naviparts.GetColorCode(parts.Color), true)
 		}
-		// TODO line
 	}
 }
