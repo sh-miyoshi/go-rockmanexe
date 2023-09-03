@@ -155,7 +155,11 @@ func Process() {
 				return
 			}
 
-			// TODO(決定)
+			if inputs.CheckKey(inputs.KeyEnter) == 1 {
+				sound.On(resources.SEMenuEnter)
+				stateChange(stateRun)
+				return
+			}
 
 			if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
 				sound.On(resources.SECursorMove)
