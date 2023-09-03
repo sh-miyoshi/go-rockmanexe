@@ -59,3 +59,17 @@ func Get(id int) NaviParts {
 	common.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
 	return NaviParts{}
 }
+
+func GetColorCode(color int) uint {
+	switch color {
+	case ColorWhite:
+		return 0xFFFFFF
+	case ColorYellow:
+		// TODO
+	case ColorPink:
+		// TODO
+	}
+
+	common.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
+	return 0
+}

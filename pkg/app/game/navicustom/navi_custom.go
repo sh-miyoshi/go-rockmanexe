@@ -213,7 +213,12 @@ func colorBlock(color int) int {
 
 func drawSelectedParts(baseX, baseY int, parts naviparts.NaviParts) {
 	for _, b := range parts.Blocks {
-		// TODO
-		dxlib.DrawBox(baseX+b.X*40, baseY+b.Y*40, baseX+(b.X+1)*40, baseY+(b.Y+1)*40, 0xFFFFFF, true)
+		if parts.IsPlusParts {
+			dxlib.DrawGraph(b.X*40+baseX+2, b.Y*40+baseY+2, imgBlocks[colorBlock(parts.Color)], true)
+		} else {
+			// TODO color
+			dxlib.DrawBox(b.X*40+baseX+2, b.Y*40+baseY+2, (b.X+1)*40+baseX-2, (b.Y+1)*40+baseY-2, naviparts.GetColorCode(parts.Color), true)
+		}
+		// TODO line
 	}
 }
