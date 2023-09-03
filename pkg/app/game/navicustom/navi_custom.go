@@ -107,8 +107,14 @@ func Draw() {
 		// TODO: ミニウィンドウ
 
 		if selected != -1 {
-			dxlib.DrawGraph(setPointerPos.X*40+34, setPointerPos.Y*40+65, imgSetPointer, true)
-			// TODO: show parts
+			baseX := setPointerPos.X*40 + 34
+			baseY := setPointerPos.Y*40 + 65
+			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
+			parts := naviparts.Get(unsetParts[selected].ID)
+			for _, b := range parts.Blocks {
+				// TODO
+				dxlib.DrawBox(baseX+b.X*40, baseY+b.Y*40, baseX+(b.X+1)*40, baseY+(b.Y+1)*40, 0xFFFFFF, true)
+			}
 		}
 	case stateRun:
 		// RUN
