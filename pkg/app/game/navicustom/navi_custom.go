@@ -35,25 +35,17 @@ var (
 	imgListPointer int = -1
 	imgSetPointer  int = -1
 	imgBlocks      [3]int
-	// playerInfo *player.Player // TODO: 更新のタイミングで使う
-	unsetParts    []player.NaviCustomParts
-	itemList      list.ItemList
-	selected      int
-	setPointerPos common.Point
+	playerInfo     *player.Player
+	unsetParts     []player.NaviCustomParts
+	setParts       []player.NaviCustomParts
+	itemList       list.ItemList
+	selected       int
+	setPointerPos  common.Point
 )
 
 func Init(plyr *player.Player) error {
-	// playerInfo = plyr
-	unsetParts = []player.NaviCustomParts{}
-	names := []string{}
-	for _, p := range plyr.AllNaviCustomParts {
-		if !p.IsSet {
-			unsetParts = append(unsetParts, p)
-			parts := naviparts.Get(p.ID)
-			names = append(names, parts.Name)
-		}
-	}
-	itemList.SetList(names, maxListNum)
+	playerInfo = plyr
+	initParts()
 
 	state = stateOpening
 	count = 0
@@ -113,20 +105,25 @@ func Draw() {
 	case stateOpening:
 		// Nothing to do
 	case stateMain:
-		// 実際にパーツを置いたりする
 		for i, name := range itemList.GetList() {
 			drawPartsListItem(300, i*30+45, name)
 		}
 		dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
 
+		// セット済みのパーツを描画
+		for _, s := range setParts {
+			parts := naviparts.Get(s.ID)
+			drawBoardParts(common.Point{X: s.X, Y: s.Y}, parts)
+		}
+
 		// TODO: ミニウィンドウ
 
 		if selected != -1 {
-			baseX := setPointerPos.X*40 + 34
-			baseY := setPointerPos.Y*40 + 65
 			parts := naviparts.Get(unsetParts[selected].ID)
-			drawSelectedParts(baseX, baseY, parts)
+			drawBoardParts(setPointerPos, parts)
 			if (count/10)%3 != 0 {
+				baseX := setPointerPos.X*40 + 34
+				baseY := setPointerPos.Y*40 + 65
 				dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
 			}
 		}
@@ -163,8 +160,19 @@ func Process() {
 			}
 
 			if inputs.CheckKey(inputs.KeyEnter) == 1 {
-				sound.On(resources.SEMenuEnter)
-				// TODO set parts
+				if checkSet() {
+					sound.On(resources.SEMenuEnter)
+					newInfo := unsetParts[selected]
+					newInfo.IsSet = true
+					newInfo.X = setPointerPos.X
+					newInfo.Y = setPointerPos.Y
+
+					playerInfo.UpdateNaviCustomParts(unsetParts[selected].ObjID, newInfo)
+					initParts()
+					selected = -1
+				} else {
+					sound.On(resources.SEDenied)
+				}
 				return
 			}
 
@@ -222,12 +230,55 @@ func colorBlock(color int) int {
 	return 0
 }
 
-func drawSelectedParts(baseX, baseY int, parts naviparts.NaviParts) {
+func drawBoardParts(basePos common.Point, parts naviparts.NaviParts) {
+	baseX := basePos.X*40 + 34
+	baseY := basePos.Y*40 + 65
+
 	for _, b := range parts.Blocks {
+		x := basePos.X + b.X
+		y := basePos.Y + b.Y
+		if x < 0 || x >= boardSize || y < 0 || y >= boardSize {
+			continue
+		}
+
 		if parts.IsPlusParts {
 			dxlib.DrawGraph(b.X*40+baseX+4, b.Y*40+baseY+4, imgBlocks[colorBlock(parts.Color)], true)
 		} else {
 			dxlib.DrawBox(b.X*40+baseX+4, b.Y*40+baseY+4, (b.X+1)*40+baseX, (b.Y+1)*40+baseY, naviparts.GetColorCode(parts.Color), true)
 		}
 	}
+}
+
+func checkSet() bool {
+	parts := naviparts.Get(unsetParts[selected].ID)
+
+	// セットするパートがボード外にはみ出ていないか
+	for _, b := range parts.Blocks {
+		x := setPointerPos.X + b.X
+		y := setPointerPos.Y + b.Y
+		if x < 0 || x >= boardSize || y < 0 || y >= boardSize {
+			return false
+		}
+	}
+
+	// パーツ同士が重なっていないか
+	// TODO
+
+	return true // セットできる
+}
+
+func initParts() {
+	unsetParts = []player.NaviCustomParts{}
+	setParts = []player.NaviCustomParts{}
+	names := []string{}
+	for _, p := range playerInfo.AllNaviCustomParts {
+		if !p.IsSet {
+			unsetParts = append(unsetParts, p)
+			parts := naviparts.Get(p.ID)
+			names = append(names, parts.Name)
+		} else {
+			setParts = append(setParts, p)
+		}
+	}
+	itemList.SetList(names, maxListNum)
 }
