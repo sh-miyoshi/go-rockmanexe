@@ -252,17 +252,26 @@ func drawBoardParts(basePos common.Point, parts naviparts.NaviParts) {
 func checkSet() bool {
 	parts := naviparts.Get(unsetParts[selected].ID)
 
-	// セットするパートがボード外にはみ出ていないか
 	for _, b := range parts.Blocks {
 		x := setPointerPos.X + b.X
 		y := setPointerPos.Y + b.Y
+		// セットするパートがボード外にはみ出ていないか
 		if x < 0 || x >= boardSize || y < 0 || y >= boardSize {
 			return false
 		}
-	}
 
-	// パーツ同士が重なっていないか
-	// TODO
+		// パーツ同士が重なっていないか
+		for _, s := range setParts {
+			setParts := naviparts.Get(s.ID)
+			for _, sb := range setParts.Blocks {
+				sx := s.X + sb.X
+				sy := s.Y + sb.Y
+				if x == sx && y == sy {
+					return false
+				}
+			}
+		}
+	}
 
 	return true // セットできる
 }
