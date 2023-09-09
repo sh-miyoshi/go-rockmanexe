@@ -19,6 +19,7 @@ import (
 const (
 	maxListNum = 5
 	boardSize  = 5
+	runName    = "RUN"
 )
 
 const (
@@ -98,41 +99,66 @@ func End() {
 }
 
 func Draw() {
+	if state == stateOpening && count < 2 {
+		return
+	}
+
 	dxlib.DrawGraph(0, 0, imgBack, false)
 	dxlib.DrawGraph(10, 30, imgBoard, true)
 
+	for i, name := range itemList.GetList() {
+		x := 300
+		y := i*30 + 45
+		if name == runName {
+			dxlib.DrawBox(x-2, y-1, x+122, y+26, dxlib.GetColor(168, 192, 216), true)
+			dxlib.DrawBox(x, y, x+120, y+25, dxlib.GetColor(0, 194, 33), true)
+			draw.String(x+25, y+2, 0xFFFFFF, "ＲＵＮ！")
+		} else {
+			drawPartsListItem(x, y, name)
+		}
+	}
+	dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
+
+	// セット済みのパーツを描画
+	for _, s := range setParts {
+		parts := naviparts.Get(s.ID)
+		drawBoardParts(common.Point{X: s.X, Y: s.Y}, parts)
+	}
+
+	// TODO: ミニウィンドウ
+
+	if selected != -1 && state == stateMain {
+		parts := naviparts.Get(unsetParts[selected].ID)
+		drawBoardParts(setPointerPos, parts)
+		if (count/10)%3 != 0 {
+			baseX := setPointerPos.X*40 + 34
+			baseY := setPointerPos.Y*40 + 65
+			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
+		}
+	}
+
+	// コマンドライン
+	dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
+	dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
+
+	// Information Panel
+	x := 300
+	y := 170
+	dxlib.DrawBox(x-2, y-1, x+122, y+106, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(x, y, x+120, y+105, dxlib.GetColor(16, 80, 104), true)
 	switch state {
-	case stateOpening:
-		// Nothing to do
 	case stateMain:
-		for i, name := range itemList.GetList() {
-			drawPartsListItem(300, i*30+45, name)
-		}
-		dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
-
-		// セット済みのパーツを描画
-		for _, s := range setParts {
-			parts := naviparts.Get(s.ID)
-			drawBoardParts(common.Point{X: s.X, Y: s.Y}, parts)
-		}
-
-		// TODO: ミニウィンドウ
-
-		if selected != -1 {
-			parts := naviparts.Get(unsetParts[selected].ID)
-			drawBoardParts(setPointerPos, parts)
-			if (count/10)%3 != 0 {
-				baseX := setPointerPos.X*40 + 34
-				baseY := setPointerPos.Y*40 + 65
-				dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
-			}
-		}
-
-		// コマンドライン
-		dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
-		dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
+		draw.String(x+5, y+5, 0xFFFFFF, "TODO:")
+		draw.String(x+5, y+25, 0xFFFFFF, "パーツの説明文")
 	case stateRun:
-		// RUN
+		str := "ＲＵＮ・"
+		switch count / 20 % 3 {
+		case 1:
+			str += "・"
+		case 2:
+			str += "・・"
+		}
+		draw.String(x+5, y+5, 0xFFFFFF, str)
 	}
 }
 
@@ -151,6 +177,10 @@ func Process() {
 			selected = itemList.Process()
 			if selected != -1 {
 				sound.On(resources.SEMenuEnter)
+				if itemList.GetList()[selected] == runName {
+					stateChange(stateRun)
+					return
+				}
 			}
 		} else {
 			if inputs.CheckKey(inputs.KeyCancel) == 1 {
@@ -289,5 +319,6 @@ func initParts() {
 			setParts = append(setParts, p)
 		}
 	}
+	names = append(names, runName)
 	itemList.SetList(names, maxListNum)
 }
