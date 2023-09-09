@@ -218,7 +218,11 @@ func Process() error {
 		if count == 0 {
 			navicustom.Init(playerInfo)
 		}
-		navicustom.Process()
+		if navicustom.Process() {
+			navicustom.End()
+			stateChange(stateMenu)
+			return nil
+		}
 	}
 	count++
 	return nil

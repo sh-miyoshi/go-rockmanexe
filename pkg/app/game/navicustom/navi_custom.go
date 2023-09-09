@@ -177,7 +177,7 @@ func Draw() {
 	}
 }
 
-func Process() {
+func Process() bool {
 	switch state {
 	case stateOpening:
 		if count == 0 {
@@ -189,19 +189,24 @@ func Process() {
 		}
 	case stateMain:
 		if selected == -1 {
+			if inputs.CheckKey(inputs.KeyCancel) == 1 {
+				sound.On(resources.SECancel)
+				return true
+			}
+
 			selected = itemList.Process()
 			if selected != -1 {
 				sound.On(resources.SEMenuEnter)
 				if itemList.GetList()[selected] == runName {
 					stateChange(stateRun)
-					return
+					return false
 				}
 			}
 		} else {
 			if inputs.CheckKey(inputs.KeyCancel) == 1 {
 				sound.On(resources.SECancel)
 				selected = -1
-				return
+				return false
 			}
 
 			if inputs.CheckKey(inputs.KeyEnter) == 1 {
@@ -218,43 +223,53 @@ func Process() {
 				} else {
 					sound.On(resources.SEDenied)
 				}
-				return
+				return false
 			}
 
 			if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
 				sound.On(resources.SECursorMove)
 				setPointerPos.Y--
-				return
+				return false
 			}
 			if inputs.CheckKey(inputs.KeyDown) == 1 && setPointerPos.Y < boardSize-1 {
 				sound.On(resources.SECursorMove)
 				setPointerPos.Y++
-				return
+				return false
 			}
 			if inputs.CheckKey(inputs.KeyLeft) == 1 && setPointerPos.X > 0 {
 				sound.On(resources.SECursorMove)
 				setPointerPos.X--
-				return
+				return false
 			}
 			if inputs.CheckKey(inputs.KeyRight) == 1 && setPointerPos.X < boardSize-1 {
 				sound.On(resources.SECursorMove)
 				setPointerPos.X++
-				return
+				return false
 			}
 		}
 	case stateRun:
 		if count >= 30 {
 			stateChange(stateRunEnd)
-			return
+			return false
 		}
 	case stateRunEnd:
-		// TODO
 		if count == 0 {
-			// playerInfo.SetNaviCustomParts()
+			// TODO: sound.On()
+			parts := []player.NaviCustomParts{}
+			for _, p := range allParts {
+				parts = append(parts, p.rawData)
+			}
+
+			playerInfo.SetNaviCustomParts(parts)
+		}
+
+		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			return true
 		}
 	}
 
 	count++
+	return false
 }
 
 func stateChange(next int) {
