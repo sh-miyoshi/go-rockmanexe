@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -39,11 +38,10 @@ type History struct {
 }
 
 type NaviCustomParts struct {
-	ID    int    `json:"id"`
-	IsSet bool   `json:"is_set"`
-	X     int    `json:"x"`
-	Y     int    `json:"y"`
-	ObjID string `json:"object_id"`
+	ID    int  `json:"id"`
+	IsSet bool `json:"is_set"`
+	X     int  `json:"x"`
+	Y     int  `json:"y"`
 }
 
 type Player struct {
@@ -73,8 +71,8 @@ func New() *Player {
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
-			{ID: naviparts.IDAttack1, IsSet: false, ObjID: uuid.New().String()},
-			{ID: naviparts.IDUnderShirt, IsSet: false, ObjID: uuid.New().String()},
+			{ID: naviparts.IDAttack1, IsSet: false},
+			{ID: naviparts.IDUnderShirt, IsSet: false},
 		},
 	}
 	res.setChipFolder()
@@ -204,13 +202,8 @@ func (p *Player) AddChip(id int, code string) error {
 	return nil
 }
 
-func (p *Player) UpdateNaviCustomParts(objID string, parts NaviCustomParts) {
-	for i := range p.AllNaviCustomParts {
-		if p.AllNaviCustomParts[i].ObjID == objID {
-			p.AllNaviCustomParts[i] = parts
-			return
-		}
-	}
+func (p *Player) SetNaviCustomParts(parts []NaviCustomParts) {
+	p.AllNaviCustomParts = append([]NaviCustomParts{}, parts...)
 }
 
 func (p *Player) setChipFolder() {

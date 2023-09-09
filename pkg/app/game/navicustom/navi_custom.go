@@ -3,6 +3,7 @@ package navicustom
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
@@ -26,7 +27,13 @@ const (
 	stateOpening int = iota
 	stateMain
 	stateRun
+	stateRunEnd
 )
+
+type partsInfo struct {
+	rawData player.NaviCustomParts
+	objID   string
+}
 
 var (
 	state          int
@@ -37,8 +44,9 @@ var (
 	imgSetPointer  int = -1
 	imgBlocks      [3]int
 	playerInfo     *player.Player
-	unsetParts     []player.NaviCustomParts
-	setParts       []player.NaviCustomParts
+	allParts       []partsInfo
+	unsetParts     []partsInfo
+	setParts       []partsInfo
 	itemList       list.ItemList
 	selected       int
 	setPointerPos  common.Point
@@ -46,12 +54,19 @@ var (
 
 func Init(plyr *player.Player) error {
 	playerInfo = plyr
-	initParts()
-
 	state = stateOpening
 	count = 0
 	selected = -1
 	setPointerPos = common.Point{X: 2, Y: 2}
+	allParts = []partsInfo{}
+	for _, p := range plyr.AllNaviCustomParts {
+		allParts = append(allParts, partsInfo{
+			rawData: p,
+			objID:   uuid.NewString(),
+		})
+	}
+
+	initParts()
 
 	fname := common.ImagePath + "naviCustom/back.png"
 	imgBack = dxlib.LoadGraph(fname)
@@ -121,14 +136,14 @@ func Draw() {
 
 	// セット済みのパーツを描画
 	for _, s := range setParts {
-		parts := naviparts.Get(s.ID)
-		drawBoardParts(common.Point{X: s.X, Y: s.Y}, parts)
+		parts := naviparts.Get(s.rawData.ID)
+		drawBoardParts(common.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
 	}
 
 	// TODO: ミニウィンドウ
 
 	if selected != -1 && state == stateMain {
-		parts := naviparts.Get(unsetParts[selected].ID)
+		parts := naviparts.Get(unsetParts[selected].rawData.ID)
 		drawBoardParts(setPointerPos, parts)
 		if (count/10)%3 != 0 {
 			baseX := setPointerPos.X*40 + 34
@@ -193,11 +208,11 @@ func Process() {
 				if checkSet() {
 					sound.On(resources.SEMenuEnter)
 					newInfo := unsetParts[selected]
-					newInfo.IsSet = true
-					newInfo.X = setPointerPos.X
-					newInfo.Y = setPointerPos.Y
+					newInfo.rawData.IsSet = true
+					newInfo.rawData.X = setPointerPos.X
+					newInfo.rawData.Y = setPointerPos.Y
 
-					playerInfo.UpdateNaviCustomParts(unsetParts[selected].ObjID, newInfo)
+					updateParts(newInfo)
 					initParts()
 					selected = -1
 				} else {
@@ -228,7 +243,15 @@ func Process() {
 			}
 		}
 	case stateRun:
+		if count >= 30 {
+			stateChange(stateRunEnd)
+			return
+		}
+	case stateRunEnd:
 		// TODO
+		if count == 0 {
+			// playerInfo.SetNaviCustomParts()
+		}
 	}
 
 	count++
@@ -280,7 +303,7 @@ func drawBoardParts(basePos common.Point, parts naviparts.NaviParts) {
 }
 
 func checkSet() bool {
-	parts := naviparts.Get(unsetParts[selected].ID)
+	parts := naviparts.Get(unsetParts[selected].rawData.ID)
 
 	for _, b := range parts.Blocks {
 		x := setPointerPos.X + b.X
@@ -292,10 +315,10 @@ func checkSet() bool {
 
 		// パーツ同士が重なっていないか
 		for _, s := range setParts {
-			setParts := naviparts.Get(s.ID)
+			setParts := naviparts.Get(s.rawData.ID)
 			for _, sb := range setParts.Blocks {
-				sx := s.X + sb.X
-				sy := s.Y + sb.Y
+				sx := s.rawData.X + sb.X
+				sy := s.rawData.Y + sb.Y
 				if x == sx && y == sy {
 					return false
 				}
@@ -307,13 +330,13 @@ func checkSet() bool {
 }
 
 func initParts() {
-	unsetParts = []player.NaviCustomParts{}
-	setParts = []player.NaviCustomParts{}
+	unsetParts = []partsInfo{}
+	setParts = []partsInfo{}
 	names := []string{}
-	for _, p := range playerInfo.AllNaviCustomParts {
-		if !p.IsSet {
+	for _, p := range allParts {
+		if !p.rawData.IsSet {
 			unsetParts = append(unsetParts, p)
-			parts := naviparts.Get(p.ID)
+			parts := naviparts.Get(p.rawData.ID)
 			names = append(names, parts.Name)
 		} else {
 			setParts = append(setParts, p)
@@ -321,4 +344,13 @@ func initParts() {
 	}
 	names = append(names, runName)
 	itemList.SetList(names, maxListNum)
+}
+
+func updateParts(parts partsInfo) {
+	for i := range allParts {
+		if allParts[i].objID == parts.objID {
+			allParts[i] = parts
+			return
+		}
+	}
 }
