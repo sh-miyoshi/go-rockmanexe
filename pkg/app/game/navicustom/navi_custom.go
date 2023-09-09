@@ -21,7 +21,7 @@ const (
 	maxListNum = 5
 	boardSize  = 5
 	runName    = "RUN"
-	lineY      = 4 - 1
+	lineY      = 3 - 1
 )
 
 const (
@@ -278,6 +278,7 @@ func Process() bool {
 			if checkBugs() {
 				return true
 			} else {
+				selected = -1
 				stateChange(stateMain)
 				return false
 			}
