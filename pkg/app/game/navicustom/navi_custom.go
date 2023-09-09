@@ -21,6 +21,7 @@ const (
 	maxListNum = 5
 	boardSize  = 5
 	runName    = "RUN"
+	lineY      = 4 - 1
 )
 
 const (
@@ -174,6 +175,16 @@ func Draw() {
 			str += "・・"
 		}
 		draw.String(x+5, y+5, 0xFFFFFF, str)
+
+		// TODO: RUNNING Line
+	case stateRunEnd:
+		if checkBugs() {
+			draw.String(x+5, y+5, 0xFFFFFF, "OK!")
+			draw.String(x+5, y+25, 0xFFFFFF, "異常なし")
+		} else {
+			draw.String(x+5, y+5, 0xFFFFFF, "異常発生")
+			draw.String(x+5, y+25, 0xFFFFFF, "プログラムを見直してください")
+		}
 	}
 }
 
@@ -264,7 +275,12 @@ func Process() bool {
 		}
 
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			return true
+			if checkBugs() {
+				return true
+			} else {
+				stateChange(stateMain)
+				return false
+			}
 		}
 	}
 
@@ -368,4 +384,36 @@ func updateParts(parts partsInfo) {
 			return
 		}
 	}
+}
+
+func checkBugs() bool {
+	// ルール
+	// 　- Plusパーツがライン上にある
+	// 　- プログラムパーツがライン上にない
+	// 　- (未実装)同じ色のプログラムやプラスパーツは隣同士に置いてはならない
+	// 　- (未実装)組み込めるパーツは最大4色まで
+
+	for _, p := range setParts {
+		parts := naviparts.Get(p.rawData.ID)
+		if parts.IsPlusParts {
+			for _, b := range parts.Blocks {
+				if p.rawData.Y+b.Y == lineY {
+					return false
+				}
+			}
+		} else {
+			ok := false
+			for _, b := range parts.Blocks {
+				if p.rawData.Y+b.Y == lineY {
+					ok = true
+					break
+				}
+			}
+			if !ok {
+				return false
+			}
+		}
+	}
+
+	return true // ok
 }
