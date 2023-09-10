@@ -16,7 +16,6 @@ const (
 
 const (
 	IDAttack1 int = iota
-	IDRapid1
 	IDCharge1
 	IDHP50
 	IDHP100

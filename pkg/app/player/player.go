@@ -204,6 +204,7 @@ func (p *Player) AddChip(id int, code string) error {
 
 func (p *Player) SetNaviCustomParts(parts []NaviCustomParts) {
 	p.AllNaviCustomParts = append([]NaviCustomParts{}, parts...)
+	p.updatePlayerStatus()
 }
 
 func (p *Player) setChipFolder() {
@@ -296,5 +297,27 @@ func (p *Player) addPresentChips() {
 		}
 
 		p.BackPack = append(p.BackPack, c)
+	}
+}
+
+func (p *Player) updatePlayerStatus() {
+	p.HP = defaultHP
+	p.ShotPower = defaultShotPower
+
+	// ナビカスによるステータス上昇
+	for _, parts := range p.AllNaviCustomParts {
+		if parts.IsSet {
+			info := ncparts.Get(parts.ID)
+			switch info.ID {
+			case ncparts.IDAttack1:
+				p.ShotPower++
+			case ncparts.IDCharge1:
+				panic("TODO: not implemented yet")
+			case ncparts.IDHP50:
+				p.HP += 50
+			case ncparts.IDHP100:
+				p.HP += 100
+			}
+		}
 	}
 }
