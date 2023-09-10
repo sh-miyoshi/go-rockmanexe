@@ -7,7 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/naviparts"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -90,11 +90,11 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to load set pointer image")
 	}
 	fname = common.ImagePath + "naviCustom/block_white.png"
-	imgBlocks[colorBlock(naviparts.ColorWhite)] = dxlib.LoadGraph(fname)
+	imgBlocks[colorBlock(ncparts.ColorWhite)] = dxlib.LoadGraph(fname)
 	fname = common.ImagePath + "naviCustom/block_yellow.png"
-	imgBlocks[colorBlock(naviparts.ColorYellow)] = dxlib.LoadGraph(fname)
+	imgBlocks[colorBlock(ncparts.ColorYellow)] = dxlib.LoadGraph(fname)
 	fname = common.ImagePath + "naviCustom/block_pink.png"
-	imgBlocks[colorBlock(naviparts.ColorPink)] = dxlib.LoadGraph(fname)
+	imgBlocks[colorBlock(ncparts.ColorPink)] = dxlib.LoadGraph(fname)
 	for i, b := range imgBlocks {
 		if b == -1 {
 			return fmt.Errorf("failed to load block %d image", i)
@@ -137,14 +137,14 @@ func Draw() {
 
 	// セット済みのパーツを描画
 	for _, s := range setParts {
-		parts := naviparts.Get(s.rawData.ID)
+		parts := ncparts.Get(s.rawData.ID)
 		drawBoardParts(common.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
 	}
 
 	// TODO: ミニウィンドウ
 
 	if selected != -1 && state == stateMain {
-		parts := naviparts.Get(unsetParts[selected].rawData.ID)
+		parts := ncparts.Get(unsetParts[selected].rawData.ID)
 		drawBoardParts(setPointerPos, parts)
 		if (count/10)%3 != 0 {
 			baseX := setPointerPos.X*40 + 34
@@ -303,11 +303,11 @@ func drawPartsListItem(x, y int, name string) {
 
 func colorBlock(color int) int {
 	switch color {
-	case naviparts.ColorWhite:
+	case ncparts.ColorWhite:
 		return 0
-	case naviparts.ColorYellow:
+	case ncparts.ColorYellow:
 		return 1
-	case naviparts.ColorPink:
+	case ncparts.ColorPink:
 		return 2
 	}
 
@@ -315,7 +315,7 @@ func colorBlock(color int) int {
 	return 0
 }
 
-func drawBoardParts(basePos common.Point, parts naviparts.NaviParts) {
+func drawBoardParts(basePos common.Point, parts ncparts.NaviCustomParts) {
 	baseX := basePos.X*40 + 34
 	baseY := basePos.Y*40 + 65
 
@@ -329,13 +329,13 @@ func drawBoardParts(basePos common.Point, parts naviparts.NaviParts) {
 		if parts.IsPlusParts {
 			dxlib.DrawGraph(b.X*40+baseX+4, b.Y*40+baseY+4, imgBlocks[colorBlock(parts.Color)], true)
 		} else {
-			dxlib.DrawBox(b.X*40+baseX+4, b.Y*40+baseY+4, (b.X+1)*40+baseX, (b.Y+1)*40+baseY, naviparts.GetColorCode(parts.Color), true)
+			dxlib.DrawBox(b.X*40+baseX+4, b.Y*40+baseY+4, (b.X+1)*40+baseX, (b.Y+1)*40+baseY, ncparts.GetColorCode(parts.Color), true)
 		}
 	}
 }
 
 func checkSet() bool {
-	parts := naviparts.Get(unsetParts[selected].rawData.ID)
+	parts := ncparts.Get(unsetParts[selected].rawData.ID)
 
 	for _, b := range parts.Blocks {
 		x := setPointerPos.X + b.X
@@ -347,7 +347,7 @@ func checkSet() bool {
 
 		// パーツ同士が重なっていないか
 		for _, s := range setParts {
-			setParts := naviparts.Get(s.rawData.ID)
+			setParts := ncparts.Get(s.rawData.ID)
 			for _, sb := range setParts.Blocks {
 				sx := s.rawData.X + sb.X
 				sy := s.rawData.Y + sb.Y
@@ -368,7 +368,7 @@ func initParts() {
 	for _, p := range allParts {
 		if !p.rawData.IsSet {
 			unsetParts = append(unsetParts, p)
-			parts := naviparts.Get(p.rawData.ID)
+			parts := ncparts.Get(p.rawData.ID)
 			names = append(names, parts.Name)
 		} else {
 			setParts = append(setParts, p)
@@ -395,7 +395,7 @@ func checkBugs() bool {
 	// 　- (未実装)組み込めるパーツは最大4色まで
 
 	for _, p := range setParts {
-		parts := naviparts.Get(p.rawData.ID)
+		parts := ncparts.Get(p.rawData.ID)
 		if parts.IsPlusParts {
 			for _, b := range parts.Blocks {
 				if p.rawData.Y+b.Y == lineY {

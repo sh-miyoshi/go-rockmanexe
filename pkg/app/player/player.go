@@ -13,7 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/naviparts"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/stretchr/stew/slice"
 )
@@ -71,8 +71,8 @@ func New() *Player {
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
-			{ID: naviparts.IDAttack1, IsSet: false},
-			{ID: naviparts.IDUnderShirt, IsSet: false},
+			{ID: ncparts.IDAttack1, IsSet: false},
+			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
 	res.setChipFolder()

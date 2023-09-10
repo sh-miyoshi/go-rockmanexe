@@ -1,4 +1,4 @@
-package naviparts
+package ncparts
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ const (
 	IDQuickGauge
 )
 
-type NaviParts struct {
+type NaviCustomParts struct {
 	ID          int
 	Name        string
 	Blocks      []common.Point
@@ -35,7 +35,7 @@ type NaviParts struct {
 }
 
 var (
-	allParts = []NaviParts{
+	allParts = []NaviCustomParts{
 		{
 			ID:   IDAttack1,
 			Name: "アタック+1",
@@ -59,7 +59,7 @@ var (
 	}
 )
 
-func Get(id int) NaviParts {
+func Get(id int) NaviCustomParts {
 	for _, parts := range allParts {
 		if parts.ID == id {
 			return parts
@@ -67,7 +67,7 @@ func Get(id int) NaviParts {
 	}
 
 	common.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
-	return NaviParts{}
+	return NaviCustomParts{}
 }
 
 func GetColorCode(color int) uint {
