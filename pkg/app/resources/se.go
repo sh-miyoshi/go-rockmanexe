@@ -47,6 +47,7 @@ const (
 	SEFlameAttack
 	SEAreaSteal
 	SEAreaStealHit
+	SERunOK
 
 	SEMax
 )

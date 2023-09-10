@@ -265,7 +265,7 @@ func Process() bool {
 		}
 	case stateRunEnd:
 		if count == 0 {
-			// TODO: sound.On()
+			sound.On(resources.SERunOK)
 			parts := []player.NaviCustomParts{}
 			for _, p := range allParts {
 				parts = append(parts, p.rawData)
