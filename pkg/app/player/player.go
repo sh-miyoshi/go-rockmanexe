@@ -72,6 +72,10 @@ func New() *Player {
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
 			{ID: ncparts.IDAttack1, IsSet: false},
+			{ID: ncparts.IDCharge1, IsSet: false},
+			{ID: ncparts.IDHP50, IsSet: false},
+			{ID: ncparts.IDHP100, IsSet: false},
+			{ID: ncparts.IDCustom1, IsSet: false},
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}

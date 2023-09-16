@@ -12,6 +12,7 @@ const (
 	ColorWhite int = iota
 	ColorYellow
 	ColorPink
+	ColorBlue
 )
 
 const (
@@ -21,7 +22,6 @@ const (
 	IDHP100
 	IDCustom1
 	IDUnderShirt
-	IDQuickGauge
 )
 
 type NaviCustomParts struct {
@@ -30,7 +30,6 @@ type NaviCustomParts struct {
 	Blocks      []common.Point
 	IsPlusParts bool
 	Color       int
-	// TODO: 効果
 }
 
 var (
@@ -40,10 +39,40 @@ var (
 			Name: "アタック+1",
 			Blocks: []common.Point{
 				{X: 0, Y: 0},
-				{X: 1, Y: 0},
+				{X: 0, Y: 1},
 			},
 			IsPlusParts: true,
 			Color:       ColorPink,
+		},
+		{
+			ID:   IDCharge1,
+			Name: "チャージ+1",
+			Blocks: []common.Point{
+				{X: 0, Y: 0},
+			},
+			IsPlusParts: true,
+			Color:       ColorYellow,
+		},
+		{
+			ID:   IDHP50,
+			Name: "ＨＰ+50",
+			Blocks: []common.Point{
+				{X: 0, Y: 0},
+				{X: 1, Y: 0},
+			},
+			IsPlusParts: true,
+			Color:       ColorWhite,
+		},
+		{
+			ID:   IDHP100,
+			Name: "ＨＰ+100",
+			Blocks: []common.Point{
+				{X: 0, Y: 0},
+				{X: 1, Y: 0},
+				{X: 1, Y: 1},
+			},
+			IsPlusParts: true,
+			Color:       ColorYellow,
 		},
 		{
 			ID:   IDUnderShirt,
@@ -54,6 +83,19 @@ var (
 			},
 			IsPlusParts: false,
 			Color:       ColorWhite,
+		},
+		{
+			ID:   IDCustom1,
+			Name: "カスタム１",
+			Blocks: []common.Point{
+				{X: 0, Y: 0},
+				{X: 1, Y: 0},
+				{X: 0, Y: 1},
+				{X: 0, Y: 2},
+				{X: -1, Y: 1},
+			},
+			IsPlusParts: false,
+			Color:       ColorBlue,
 		},
 	}
 )
@@ -77,6 +119,8 @@ func GetColorCode(color int) uint {
 		return 0xDCD800
 	case ColorPink:
 		return 0xDC88C4
+	case ColorBlue:
+		return 0x2880DC
 	}
 
 	common.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
