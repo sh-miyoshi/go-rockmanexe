@@ -26,7 +26,9 @@ const (
 
 const (
 	stateOpening int = iota
-	stateMain
+	stateUnsetPartsSelect
+	stateBoardPartsSelect
+	stateDeployment
 	stateRun
 	stateRunEnd
 )
@@ -38,6 +40,7 @@ type partsInfo struct {
 
 var (
 	state          int
+	beforeState    int
 	count          int
 	imgBack        int = -1
 	imgBoard       int = -1
@@ -56,6 +59,7 @@ var (
 func Init(plyr *player.Player) error {
 	playerInfo = plyr
 	state = stateOpening
+	beforeState = stateOpening
 	count = 0
 	selected = -1
 	setPointerPos = common.Point{X: 2, Y: 2}
@@ -143,7 +147,8 @@ func Draw() {
 
 	// TODO: ミニウィンドウ
 
-	if selected != -1 && state == stateMain {
+	// 選択しているパーツの描画
+	if selected <= 0 && selected < len(unsetParts) {
 		parts := ncparts.Get(unsetParts[selected].rawData.ID)
 		drawBoardParts(setPointerPos, parts)
 		if (count/10)%3 != 0 {
@@ -163,7 +168,7 @@ func Draw() {
 	dxlib.DrawBox(x-2, y-1, x+122, y+106, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(x, y, x+120, y+105, dxlib.GetColor(16, 80, 104), true)
 	switch state {
-	case stateMain:
+	case stateUnsetPartsSelect, stateBoardPartsSelect, stateDeployment:
 		draw.String(x+5, y+5, 0xFFFFFF, "TODO:")
 		draw.String(x+5, y+25, 0xFFFFFF, "パーツの説明文")
 	case stateRun:
@@ -196,67 +201,75 @@ func Process() bool {
 		}
 
 		if count > 30 {
-			stateChange(stateMain)
+			stateChange(stateUnsetPartsSelect)
 		}
-	case stateMain:
-		if selected == -1 {
-			if inputs.CheckKey(inputs.KeyCancel) == 1 {
-				sound.On(resources.SECancel)
-				return true
-			}
+	case stateUnsetPartsSelect:
+		if inputs.CheckKey(inputs.KeyCancel) == 1 {
+			sound.On(resources.SECancel)
+			return true
+		}
 
-			selected = itemList.Process()
-			if selected != -1 {
+		selected = itemList.Process()
+		if selected != -1 {
+			sound.On(resources.SEMenuEnter)
+			if itemList.GetList()[selected] == runName {
+				stateChange(stateRun)
+			} else {
+				stateChange(stateDeployment)
+			}
+			return false
+		}
+
+		if inputs.CheckKey(inputs.KeyLeft) == 1 {
+			stateChange(stateBoardPartsSelect)
+			return false
+		}
+	case stateBoardPartsSelect:
+		// TODO
+	case stateDeployment:
+		if inputs.CheckKey(inputs.KeyCancel) == 1 {
+			sound.On(resources.SECancel)
+			selected = -1
+			stateChange(beforeState)
+			return false
+		}
+
+		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			if checkSet() {
 				sound.On(resources.SEMenuEnter)
-				if itemList.GetList()[selected] == runName {
-					stateChange(stateRun)
-					return false
-				}
-			}
-		} else {
-			if inputs.CheckKey(inputs.KeyCancel) == 1 {
-				sound.On(resources.SECancel)
+				newInfo := unsetParts[selected]
+				newInfo.rawData.IsSet = true
+				newInfo.rawData.X = setPointerPos.X
+				newInfo.rawData.Y = setPointerPos.Y
+
+				updateParts(newInfo)
+				initParts()
 				selected = -1
-				return false
+			} else {
+				sound.On(resources.SEDenied)
 			}
+			return false
+		}
 
-			if inputs.CheckKey(inputs.KeyEnter) == 1 {
-				if checkSet() {
-					sound.On(resources.SEMenuEnter)
-					newInfo := unsetParts[selected]
-					newInfo.rawData.IsSet = true
-					newInfo.rawData.X = setPointerPos.X
-					newInfo.rawData.Y = setPointerPos.Y
-
-					updateParts(newInfo)
-					initParts()
-					selected = -1
-				} else {
-					sound.On(resources.SEDenied)
-				}
-				return false
-			}
-
-			if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
-				sound.On(resources.SECursorMove)
-				setPointerPos.Y--
-				return false
-			}
-			if inputs.CheckKey(inputs.KeyDown) == 1 && setPointerPos.Y < boardSize-1 {
-				sound.On(resources.SECursorMove)
-				setPointerPos.Y++
-				return false
-			}
-			if inputs.CheckKey(inputs.KeyLeft) == 1 && setPointerPos.X > 0 {
-				sound.On(resources.SECursorMove)
-				setPointerPos.X--
-				return false
-			}
-			if inputs.CheckKey(inputs.KeyRight) == 1 && setPointerPos.X < boardSize-1 {
-				sound.On(resources.SECursorMove)
-				setPointerPos.X++
-				return false
-			}
+		if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.Y--
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyDown) == 1 && setPointerPos.Y < boardSize-1 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.Y++
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyLeft) == 1 && setPointerPos.X > 0 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.X--
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyRight) == 1 && setPointerPos.X < boardSize-1 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.X++
+			return false
 		}
 	case stateRun:
 		if count >= 30 {
@@ -279,7 +292,7 @@ func Process() bool {
 				return true
 			} else {
 				selected = -1
-				stateChange(stateMain)
+				stateChange(stateUnsetPartsSelect)
 				return false
 			}
 		}
@@ -291,6 +304,7 @@ func Process() bool {
 
 func stateChange(next int) {
 	logger.Info("Change navu cutom state from %d to %d", state, next)
+	beforeState = state
 	state = next
 	count = 0
 }
