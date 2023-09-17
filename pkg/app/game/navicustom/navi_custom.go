@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	maxListNum = 5
+	maxListNum = 3
 	boardSize  = 5
 	runName    = "RUN"
 	lineY      = 3 - 1
@@ -126,7 +126,10 @@ func Draw() {
 	dxlib.DrawGraph(0, 0, imgBack, false)
 	dxlib.DrawGraph(10, 30, imgBoard, true)
 
-	for i, name := range itemList.GetList() {
+	for i := 0; i < maxListNum; i++ {
+		c := i + itemList.GetScroll()
+		name := itemList.GetList()[c]
+
 		x := 300
 		y := i*30 + 45
 		if name == runName {
@@ -148,7 +151,7 @@ func Draw() {
 	// TODO: ミニウィンドウ
 
 	// 選択しているパーツの描画
-	if selected <= 0 && selected < len(unsetParts) {
+	if selected >= 0 && selected < len(unsetParts) {
 		parts := ncparts.Get(unsetParts[selected].rawData.ID)
 		drawBoardParts(setPointerPos, parts)
 		if (count/10)%3 != 0 {
@@ -245,6 +248,7 @@ func Process() bool {
 				updateParts(newInfo)
 				initParts()
 				selected = -1
+				stateChange(stateUnsetPartsSelect)
 			} else {
 				sound.On(resources.SEDenied)
 			}

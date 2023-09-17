@@ -16,6 +16,8 @@ type ItemList struct {
 func (l *ItemList) SetList(lists []string, maxShowNum int) {
 	l.lists = append([]string{}, lists...)
 	l.maxShowNum = maxShowNum
+	l.cursor = 0
+	l.scroll = 0
 }
 
 func (l *ItemList) GetList() []string {
