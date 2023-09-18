@@ -30,6 +30,7 @@ type NaviCustomParts struct {
 	Blocks      []common.Point
 	IsPlusParts bool
 	Color       int
+	Description string
 }
 
 var (
@@ -43,6 +44,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorPink,
+			Description: "ロックバスターの威力を上げる",
 		},
 		{
 			ID:   IDCharge1,
@@ -52,6 +54,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorYellow,
+			Description: "ロックバスターのチャージ速度を上げる",
 		},
 		{
 			ID:   IDHP50,
@@ -62,6 +65,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorWhite,
+			Description: "最大HPを+50する",
 		},
 		{
 			ID:   IDHP100,
@@ -73,6 +77,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorYellow,
+			Description: "最大HPを+100する",
 		},
 		{
 			ID:   IDUnderShirt,
@@ -83,6 +88,7 @@ var (
 			},
 			IsPlusParts: false,
 			Color:       ColorWhite,
+			Description: "HPが0になる前に1で耐える",
 		},
 		{
 			ID:   IDCustom1,
@@ -96,6 +102,7 @@ var (
 			},
 			IsPlusParts: false,
 			Color:       ColorBlue,
+			Description: "カスタム画面のチップが一枚増える",
 		},
 	}
 )
