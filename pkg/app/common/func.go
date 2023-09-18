@@ -2,6 +2,7 @@ package common
 
 import (
 	"errors"
+	"unicode/utf8"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -27,4 +28,26 @@ func SetError(msg string) {
 	logger.Error(msg)
 	logger.SetExtraSkipCount(0)
 	IrreversibleError = errors.New("ゲームプレイ中")
+}
+
+func SplitMsg(msg string, max int) []string {
+	if max <= 0 {
+		return []string{msg}
+	}
+
+	res := []string{}
+	for len(msg) > 0 {
+		tmp := []byte{}
+		for i := 0; i < max; i++ {
+			r, size := utf8.DecodeRuneInString(msg)
+			tmp = utf8.AppendRune(tmp, r)
+			msg = msg[size:]
+			if len(msg) <= 0 {
+				break
+			}
+		}
+		res = append(res, string(tmp))
+	}
+
+	return res
 }
