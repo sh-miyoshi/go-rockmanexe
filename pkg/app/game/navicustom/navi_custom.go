@@ -172,8 +172,13 @@ func Draw() {
 	dxlib.DrawBox(x, y, x+120, y+105, dxlib.GetColor(16, 80, 104), true)
 	switch state {
 	case stateUnsetPartsSelect, stateBoardPartsSelect, stateDeployment:
-		draw.String(x+5, y+5, 0xFFFFFF, "TODO:")
-		draw.String(x+5, y+25, 0xFFFFFF, "パーツの説明文")
+		c := itemList.GetPointer() + itemList.GetScroll()
+		if c < len(unsetParts) {
+			parts := ncparts.Get(unsetParts[c].rawData.ID)
+			for i, s := range common.SplitMsg(parts.Description, 7) {
+				draw.String(x+5, y+5+i*20, 0xFFFFFF, s)
+			}
+		}
 	case stateRun:
 		str := "ＲＵＮ・"
 		switch count / 20 % 3 {

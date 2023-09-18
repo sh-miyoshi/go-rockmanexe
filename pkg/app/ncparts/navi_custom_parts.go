@@ -65,7 +65,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorWhite,
-			Description: "最大HPを+50する",
+			Description: "最大ＨＰを＋５０する",
 		},
 		{
 			ID:   IDHP100,
@@ -77,7 +77,7 @@ var (
 			},
 			IsPlusParts: true,
 			Color:       ColorYellow,
-			Description: "最大HPを+100する",
+			Description: "最大ＨＰを＋１００する",
 		},
 		{
 			ID:   IDUnderShirt,
