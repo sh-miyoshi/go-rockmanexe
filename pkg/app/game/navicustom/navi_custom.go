@@ -123,9 +123,11 @@ func Draw() {
 		return
 	}
 
+	// ボードの描画
 	dxlib.DrawGraph(0, 0, imgBack, false)
 	dxlib.DrawGraph(10, 30, imgBoard, true)
 
+	// パーツリストの描画
 	for i := 0; i < maxListNum; i++ {
 		c := i + itemList.GetScroll()
 		name := itemList.GetList()[c]
@@ -154,16 +156,16 @@ func Draw() {
 	if selected >= 0 && selected < len(unsetParts) {
 		parts := ncparts.Get(unsetParts[selected].rawData.ID)
 		drawBoardParts(setPointerPos, parts)
+	}
+
+	// 選択カーソルの描画
+	if state == stateBoardPartsSelect || state == stateDeployment {
 		if (count/10)%3 != 0 {
 			baseX := setPointerPos.X*40 + 34
 			baseY := setPointerPos.Y*40 + 65
 			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
 		}
 	}
-
-	// コマンドライン
-	dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
-	dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
 
 	// Information Panel
 	x := 300
@@ -188,8 +190,6 @@ func Draw() {
 			str += "・・"
 		}
 		draw.String(x+5, y+5, 0xFFFFFF, str)
-
-		// TODO: RUNNING Line
 	case stateRunEnd:
 		if checkBugs() {
 			draw.String(x+5, y+5, 0xFFFFFF, "OK!")
@@ -201,6 +201,12 @@ func Draw() {
 			}
 		}
 	}
+
+	// コマンドライン
+	dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
+	dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
+
+	// TODO: RUNNING Line
 }
 
 func Process() bool {
@@ -231,6 +237,7 @@ func Process() bool {
 		}
 
 		if inputs.CheckKey(inputs.KeyLeft) == 1 {
+			sound.On(resources.SECursorMove)
 			stateChange(stateBoardPartsSelect)
 			return false
 		}
@@ -243,9 +250,21 @@ func Process() bool {
 		}
 
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			// TODO
-			//   if カーソルの箇所にパーツがあれば
-			//     selected = -1 && 配置モードへ
+			index := getSetPartsIndex(setPointerPos)
+			if index != -1 {
+				sound.On(resources.SEMenuEnter)
+				// TODO: 選択したパーツを選択リストに戻す
+				newInfo := setParts[index]
+				newInfo.rawData.IsSet = false
+
+				updateParts(newInfo)
+				initParts()
+				selected = -1
+				stateChange(stateUnsetPartsSelect)
+				return false
+			} else {
+				sound.On(resources.SEDenied)
+			}
 		}
 
 		if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
@@ -474,4 +493,21 @@ func checkBugs() bool {
 	}
 
 	return true // ok
+}
+
+func getSetPartsIndex(pos common.Point) int {
+	for i, s := range setParts {
+		parts := ncparts.Get(s.rawData.ID)
+		drawBoardParts(common.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
+
+		for _, b := range parts.Blocks {
+			tx := s.rawData.X + b.X
+			ty := s.rawData.Y + b.Y
+			if pos.X == tx && pos.Y == ty {
+				return i
+			}
+		}
+	}
+
+	return -1
 }
