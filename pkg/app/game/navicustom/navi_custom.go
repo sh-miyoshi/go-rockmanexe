@@ -235,7 +235,39 @@ func Process() bool {
 			return false
 		}
 	case stateBoardPartsSelect:
-		// TODO
+		if inputs.CheckKey(inputs.KeyCancel) == 1 {
+			sound.On(resources.SECancel)
+			selected = -1
+			stateChange(stateUnsetPartsSelect)
+			return false
+		}
+
+		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			// TODO
+			//   if カーソルの箇所にパーツがあれば
+			//     selected = -1 && 配置モードへ
+		}
+
+		if inputs.CheckKey(inputs.KeyUp) == 1 && setPointerPos.Y > 0 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.Y--
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyDown) == 1 && setPointerPos.Y < boardSize-1 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.Y++
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyLeft) == 1 && setPointerPos.X > 0 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.X--
+			return false
+		}
+		if inputs.CheckKey(inputs.KeyRight) == 1 && setPointerPos.X < boardSize-1 {
+			sound.On(resources.SECursorMove)
+			setPointerPos.X++
+			return false
+		}
 	case stateDeployment:
 		if inputs.CheckKey(inputs.KeyCancel) == 1 {
 			sound.On(resources.SECancel)
