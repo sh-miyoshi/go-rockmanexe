@@ -196,7 +196,9 @@ func Draw() {
 			draw.String(x+5, y+25, 0xFFFFFF, "異常なし")
 		} else {
 			draw.String(x+5, y+5, 0xFFFFFF, "異常発生")
-			draw.String(x+5, y+25, 0xFFFFFF, "プログラムを見直してください")
+			for i, s := range common.SplitMsg("プログラムを見直してください", 7) {
+				draw.String(x+5, y+25+i*20, 0xFFFFFF, s)
+			}
 		}
 	}
 }
