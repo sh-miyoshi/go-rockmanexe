@@ -128,7 +128,10 @@ func Process() (Result, error) {
 
 	switch menuState {
 	case stateTop:
-		menuTopInst.Process()
+		res := menuTopInst.Process()
+		if res != ResultContinue {
+			return res, nil
+		}
 	case stateChipFolder:
 		menuFolderInst.Process()
 	case stateGoBattle:

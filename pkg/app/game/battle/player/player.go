@@ -63,6 +63,7 @@ type BattlePlayer struct {
 	MoveNum       int
 	DamageNum     int
 	MindStatus    int
+	IsUnderShirt  bool
 
 	act             act
 	invincibleCount int
@@ -84,15 +85,16 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:         uuid.New().String(),
-		HP:         plyr.HP,
-		HPMax:      plyr.HP, // TODO HPは引き継がない
-		Pos:        common.Point{X: 1, Y: 1},
-		ShotPower:  plyr.ShotPower,
-		ChargeTime: plyr.ChargeTime,
-		EnableAct:  true,
-		MindStatus: battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
-		visible:    true,
+		ID:           uuid.New().String(),
+		HP:           plyr.HP,
+		HPMax:        plyr.HP, // TODO HPは引き継がない
+		Pos:          common.Point{X: 1, Y: 1},
+		ShotPower:    plyr.ShotPower,
+		ChargeTime:   plyr.ChargeTime,
+		EnableAct:    true,
+		MindStatus:   battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
+		visible:      true,
+		IsUnderShirt: plyr.IsUnderShirt(),
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
@@ -216,7 +218,6 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	return &res, nil
 }
 
-// End ...
 func (p *BattlePlayer) End() {
 	logger.Info("Cleanup battle player data")
 
@@ -454,9 +455,15 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 	}
 
 	if dm.TargetObjType&damage.TargetPlayer != 0 {
+		prevHP := p.HP
 		hp := int(p.HP) - dm.Power
-		if hp < 0 {
-			p.HP = 0
+		if hp <= 0 {
+			if p.IsUnderShirt && prevHP >= 2 {
+				p.IsUnderShirt = false
+				p.HP = 1
+			} else {
+				p.HP = 0
+			}
 		} else if hp > int(p.HPMax) {
 			p.HP = p.HPMax
 		} else {

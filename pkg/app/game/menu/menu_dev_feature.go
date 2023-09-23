@@ -16,7 +16,6 @@ const (
 	devFeatureSelectMapMove = iota
 	devFeatureSelectWideArea
 	devFeatureSelectSupportNPC
-	devFeatureSelectNaviCustom
 )
 
 type menuDevFeature struct {
@@ -93,8 +92,6 @@ func (t *menuDevFeature) Process() (Result, error) {
 			}
 
 			return ResultGoBattle, nil
-		case devFeatureSelectNaviCustom:
-			return ResultGoNaviCustom, nil
 		}
 		return ResultContinue, nil
 	}

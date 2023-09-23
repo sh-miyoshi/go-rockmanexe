@@ -78,7 +78,6 @@ func New() *Player {
 			{ID: ncparts.IDCharge1, IsSet: false},
 			{ID: ncparts.IDHP50, IsSet: false},
 			{ID: ncparts.IDHP100, IsSet: false},
-			{ID: ncparts.IDCustom1, IsSet: false},
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
@@ -217,6 +216,16 @@ func (p *Player) AddChip(id int, code string) error {
 func (p *Player) SetNaviCustomParts(parts []NaviCustomParts) {
 	p.AllNaviCustomParts = append([]NaviCustomParts{}, parts...)
 	p.updatePlayerStatus()
+}
+
+func (p *Player) IsUnderShirt() bool {
+	for _, parts := range p.AllNaviCustomParts {
+		if parts.ID == ncparts.IDUnderShirt {
+			return parts.IsSet
+		}
+	}
+
+	return false
 }
 
 func (p *Player) setChipFolder() {
