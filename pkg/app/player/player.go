@@ -19,8 +19,9 @@ import (
 )
 
 const (
-	defaultHP        uint = 200
-	defaultShotPower uint = 1
+	defaultHP         uint = 200
+	defaultShotPower  uint = 1
+	defaultChargeTime uint = 180
 
 	FolderSize          = 30
 	SameChipNumInFolder = 4
@@ -47,6 +48,7 @@ type NaviCustomParts struct {
 type Player struct {
 	HP                 uint                 `json:"hp"`
 	ShotPower          uint                 `json:"shot_power"`
+	ChargeTime         uint                 `json:"charge_time"`
 	Zenny              uint                 `json:"zenny"`
 	ChipFolder         [FolderSize]ChipInfo `json:"chip_folder"`
 	WinNum             int                  `json:"win_num"`
@@ -66,6 +68,7 @@ func New() *Player {
 	res := &Player{
 		HP:              defaultHP,
 		ShotPower:       defaultShotPower,
+		ChargeTime:      defaultChargeTime,
 		Zenny:           0,
 		WinNum:          0,
 		BackPack:        []ChipInfo{},
@@ -119,6 +122,11 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	if err := json.Unmarshal(bin, &rawData); err != nil {
 		logger.Error("Failed to unmarshal save data: %v", err)
 		return nil, fmt.Errorf("save data maybe broken or invalid version")
+	}
+
+	// 互換性維持
+	if rawData.Player.ChargeTime == 0 {
+		rawData.Player.ChargeTime = defaultChargeTime
 	}
 
 	switch rawData.ProgramVersion {
@@ -307,6 +315,7 @@ func (p *Player) addPresentChips() {
 func (p *Player) updatePlayerStatus() {
 	p.HP = defaultHP
 	p.ShotPower = defaultShotPower
+	p.ChargeTime = defaultChargeTime
 
 	// ナビカスによるステータス上昇
 	for _, parts := range p.AllNaviCustomParts {
@@ -316,7 +325,7 @@ func (p *Player) updatePlayerStatus() {
 			case ncparts.IDAttack1:
 				p.ShotPower++
 			case ncparts.IDCharge1:
-				panic("TODO: not implemented yet")
+				p.ChargeTime -= 20
 			case ncparts.IDHP50:
 				p.HP += 50
 			case ncparts.IDHP100:

@@ -53,6 +53,7 @@ type BattlePlayer struct {
 	HP            uint
 	HPMax         uint
 	ChargeCount   uint
+	ChargeTime    uint
 	GaugeCount    uint
 	ShotPower     uint
 	ChipFolder    []player.ChipInfo
@@ -88,6 +89,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		HPMax:      plyr.HP, // TODO HPは引き継がない
 		Pos:        common.Point{X: 1, Y: 1},
 		ShotPower:  plyr.ShotPower,
+		ChargeTime: plyr.ChargeTime,
 		EnableAct:  true,
 		MindStatus: battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
 		visible:    true,
@@ -285,7 +287,7 @@ func (p *BattlePlayer) Draw() {
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
 		n := 0
-		if p.ChargeCount > battlecommon.ChargeTime {
+		if p.ChargeCount > p.ChargeTime {
 			n = 1
 		}
 		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
@@ -427,12 +429,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if p.ChargeCount == battlecommon.ChargeViewDelay {
 			sound.On(resources.SEBusterCharging)
 		}
-		if p.ChargeCount == battlecommon.ChargeTime {
+		if p.ChargeCount == p.ChargeTime {
 			sound.On(resources.SEBusterCharged)
 		}
 	} else if p.ChargeCount > 0 {
 		sound.On(resources.SEBusterShot)
-		p.act.Charged = p.ChargeCount > battlecommon.ChargeTime
+		p.act.Charged = p.ChargeCount > p.ChargeTime
 		p.act.ShotPower = p.ShotPower
 		p.act.SetAnim(battlecommon.PlayerActBuster, 0)
 		p.ChargeCount = 0
