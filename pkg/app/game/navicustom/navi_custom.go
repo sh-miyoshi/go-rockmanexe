@@ -130,6 +130,10 @@ func Draw() {
 	// パーツリストの描画
 	for i := 0; i < maxListNum; i++ {
 		c := i + itemList.GetScroll()
+		if c >= len(itemList.GetList()) {
+			break
+		}
+
 		name := itemList.GetList()[c]
 
 		x := 300

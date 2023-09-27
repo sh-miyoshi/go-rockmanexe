@@ -112,7 +112,7 @@ func (t *menuTop) Draw() {
 	}
 
 	if config.Get().Debug.EnableDevFeature {
-		draw.String(50, 220, 0x000000, "L-btn: Debug機能")
+		draw.String(50, 250, 0x000000, "L-btn: Debug機能")
 	}
 }
 
