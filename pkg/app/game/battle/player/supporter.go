@@ -168,8 +168,12 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		}
 		s.act.skillID = ""
 
-		s.act.SetAnim(battlecommon.PlayerActDamage, 0)
-		s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		if dm.IsParalyzed {
+			// TODO: p.act.SetAnim(battlecommon.PlayerActParalyzed, 120)
+		} else {
+			s.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
 		logger.Debug("Supporter damaged: %+v", *dm)
 		return true
 	}

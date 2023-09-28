@@ -499,8 +499,13 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		}
 		p.act.skillID = ""
 
-		p.act.SetAnim(battlecommon.PlayerActDamage, 0)
-		p.invincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		if dm.IsParalyzed {
+			// TODO: p.act.SetAnim(battlecommon.PlayerActParalyzed, 120)
+		} else {
+			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
+
 		p.DamageNum++
 		logger.Debug("Player damaged: %+v", *dm)
 		return true

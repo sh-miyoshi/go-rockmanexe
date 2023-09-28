@@ -214,6 +214,11 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		}
 
 		localanim.AnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
+
+		if dm.IsParalyzed {
+			// TODO: 麻痺状態
+		}
+
 		return true
 	}
 	return false
