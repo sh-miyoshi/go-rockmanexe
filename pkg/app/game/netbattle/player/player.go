@@ -36,6 +36,7 @@ type BattlePlayer struct {
 	chipAnimID    string
 	chargeCount   int
 	shotPower     int
+	chargeTime    int
 	gaugeCount    int
 }
 
@@ -43,7 +44,8 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	res := &BattlePlayer{
 		objectID:    uuid.New().String(),
 		chargeCount: 0,
-		shotPower:   1,
+		shotPower:   int(plyr.ShotPower),
+		chargeTime:  int(plyr.ChargeTime),
 		gaugeCount:  0,
 	}
 	for _, c := range plyr.ChipFolder {
@@ -235,12 +237,12 @@ func (p *BattlePlayer) Process() (bool, error) {
 		if p.chargeCount == battlecommon.ChargeViewDelay {
 			sound.On(resources.SEBusterCharging)
 		}
-		if p.chargeCount == battlecommon.ChargeTime {
+		if p.chargeCount == p.chargeTime {
 			sound.On(resources.SEBusterCharged)
 		}
 	} else if p.chargeCount > 0 {
 		sound.On(resources.SEBusterShot)
-		charged := p.chargeCount > battlecommon.ChargeTime
+		charged := p.chargeCount > p.chargeTime
 		power := p.shotPower
 		if charged {
 			power *= 10

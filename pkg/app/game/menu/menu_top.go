@@ -18,6 +18,7 @@ const (
 	topSelectGoBattle
 	topSelectRecord
 	topSelectNetBattle
+	topSelectNaviCustom
 )
 
 type menuTop struct {
@@ -34,6 +35,7 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 		"バトル",
 		"戦績",
 		"ネット対戦",
+		"ナビカスタマイザー",
 	}, -1)
 
 	return res, nil
@@ -42,12 +44,12 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 func (t *menuTop) End() {
 }
 
-func (t *menuTop) Process() {
+func (t *menuTop) Process() Result {
 	if config.Get().Debug.EnableDevFeature {
 		if inputs.CheckKey(inputs.KeyLButton) == 1 {
 			sound.On(resources.SEMenuEnter)
 			stateChange(stateDevFeature)
-			return
+			return ResultContinue
 		}
 	}
 
@@ -67,8 +69,11 @@ func (t *menuTop) Process() {
 			} else {
 				stateChange(stateNetBattle)
 			}
+		case topSelectNaviCustom:
+			return ResultGoNaviCustom
 		}
 	}
+	return ResultContinue
 }
 
 func (t *menuTop) Draw() {
@@ -107,7 +112,7 @@ func (t *menuTop) Draw() {
 	}
 
 	if config.Get().Debug.EnableDevFeature {
-		draw.String(50, 220, 0x000000, "L-btn: Debug機能")
+		draw.String(50, 250, 0x000000, "L-btn: Debug機能")
 	}
 }
 

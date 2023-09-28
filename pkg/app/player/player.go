@@ -13,19 +13,20 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/stretchr/stew/slice"
 )
 
 const (
-	defaultHP        uint = 200
-	defaultShotPower uint = 1
+	defaultHP         uint = 200
+	defaultShotPower  uint = 1
+	defaultChargeTime uint = 180
 
 	FolderSize          = 30
 	SameChipNumInFolder = 4
 )
 
-// ChipInfo ...
 type ChipInfo struct {
 	ID   int    `json:"id"`
 	Code string `json:"code"`
@@ -37,15 +38,24 @@ type History struct {
 	IsWin      bool      `json:"is_win"`
 }
 
+type NaviCustomParts struct {
+	ID    int  `json:"id"`
+	IsSet bool `json:"is_set"`
+	X     int  `json:"x"`
+	Y     int  `json:"y"`
+}
+
 type Player struct {
-	HP              uint                 `json:"hp"`
-	ShotPower       uint                 `json:"shot_power"`
-	Zenny           uint                 `json:"zenny"`
-	ChipFolder      [FolderSize]ChipInfo `json:"chip_folder"`
-	WinNum          int                  `json:"win_num"`
-	PlayCount       uint                 `json:"play_count"`
-	BackPack        []ChipInfo           `json:"back_pack"`
-	BattleHistories []History            `json:"battle_histories"`
+	HP                 uint                 `json:"hp"`
+	ShotPower          uint                 `json:"shot_power"`
+	ChargeTime         uint                 `json:"charge_time"`
+	Zenny              uint                 `json:"zenny"`
+	ChipFolder         [FolderSize]ChipInfo `json:"chip_folder"`
+	WinNum             int                  `json:"win_num"`
+	PlayCount          uint                 `json:"play_count"`
+	BackPack           []ChipInfo           `json:"back_pack"`
+	BattleHistories    []History            `json:"battle_histories"`
+	AllNaviCustomParts []NaviCustomParts    `json:"navi_custom_parts"`
 }
 
 type SaveData struct {
@@ -58,10 +68,18 @@ func New() *Player {
 	res := &Player{
 		HP:              defaultHP,
 		ShotPower:       defaultShotPower,
+		ChargeTime:      defaultChargeTime,
 		Zenny:           0,
 		WinNum:          0,
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
+		AllNaviCustomParts: []NaviCustomParts{
+			{ID: ncparts.IDAttack1, IsSet: false},
+			{ID: ncparts.IDCharge1, IsSet: false},
+			{ID: ncparts.IDHP50, IsSet: false},
+			{ID: ncparts.IDHP100, IsSet: false},
+			{ID: ncparts.IDUnderShirt, IsSet: false},
+		},
 	}
 	res.setChipFolder()
 	res.addPresentChips()
@@ -103,6 +121,11 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	if err := json.Unmarshal(bin, &rawData); err != nil {
 		logger.Error("Failed to unmarshal save data: %v", err)
 		return nil, fmt.Errorf("save data maybe broken or invalid version")
+	}
+
+	// 互換性維持
+	if rawData.Player.ChargeTime == 0 {
+		rawData.Player.ChargeTime = defaultChargeTime
 	}
 
 	switch rawData.ProgramVersion {
@@ -188,6 +211,21 @@ func (p *Player) AddChip(id int, code string) error {
 		Code: code,
 	})
 	return nil
+}
+
+func (p *Player) SetNaviCustomParts(parts []NaviCustomParts) {
+	p.AllNaviCustomParts = append([]NaviCustomParts{}, parts...)
+	p.updatePlayerStatus()
+}
+
+func (p *Player) IsUnderShirt() bool {
+	for _, parts := range p.AllNaviCustomParts {
+		if parts.ID == ncparts.IDUnderShirt {
+			return parts.IsSet
+		}
+	}
+
+	return false
 }
 
 func (p *Player) setChipFolder() {
@@ -280,5 +318,28 @@ func (p *Player) addPresentChips() {
 		}
 
 		p.BackPack = append(p.BackPack, c)
+	}
+}
+
+func (p *Player) updatePlayerStatus() {
+	p.HP = defaultHP
+	p.ShotPower = defaultShotPower
+	p.ChargeTime = defaultChargeTime
+
+	// ナビカスによるステータス上昇
+	for _, parts := range p.AllNaviCustomParts {
+		if parts.IsSet {
+			info := ncparts.Get(parts.ID)
+			switch info.ID {
+			case ncparts.IDAttack1:
+				p.ShotPower++
+			case ncparts.IDCharge1:
+				p.ChargeTime -= 20
+			case ncparts.IDHP50:
+				p.HP += 50
+			case ncparts.IDHP100:
+				p.HP += 100
+			}
+		}
 	}
 }

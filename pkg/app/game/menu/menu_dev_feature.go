@@ -16,8 +16,6 @@ const (
 	devFeatureSelectMapMove = iota
 	devFeatureSelectWideArea
 	devFeatureSelectSupportNPC
-
-	devFeatureSelectMax
 )
 
 type menuDevFeature struct {

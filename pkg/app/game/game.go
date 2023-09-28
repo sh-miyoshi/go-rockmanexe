@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/menu"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/navicustom"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/scratch"
@@ -27,6 +29,7 @@ const (
 	stateMapChange
 	stateScratch
 	stateEvent
+	stateNaviCustom
 
 	stateMax
 )
@@ -40,6 +43,7 @@ var (
 // Process ...
 func Process() error {
 	background.Process()
+	fade.Process()
 
 	if playerInfo != nil {
 		playerInfo.PlayCount++
@@ -108,6 +112,9 @@ func Process() error {
 			return nil
 		case menu.ResultGoScratch:
 			stateChange(stateScratch)
+			return nil
+		case menu.ResultGoNaviCustom:
+			stateChange(stateNaviCustom)
 			return nil
 		}
 	case stateBattle:
@@ -207,6 +214,15 @@ func Process() error {
 			stateChange(stateMap)
 		}
 		return nil
+	case stateNaviCustom:
+		if count == 0 {
+			navicustom.Init(playerInfo)
+		}
+		if navicustom.Process() {
+			navicustom.End()
+			stateChange(stateMenu)
+			return nil
+		}
 	}
 	count++
 	return nil
@@ -238,7 +254,11 @@ func Draw() {
 	case stateEvent:
 		mapmove.Draw()
 		event.Draw()
+	case stateNaviCustom:
+		navicustom.Draw()
 	}
+
+	fade.Draw()
 }
 
 func stateChange(nextState int) {
