@@ -131,6 +131,11 @@ func (e *enemyAquaman) Process() (bool, error) {
 		e.pm.InvincibleCount--
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	switch e.state {
 	case aquamanActTypeStand:
 		e.waitCount--
@@ -302,6 +307,10 @@ func (e *enemyAquaman) Process() (bool, error) {
 func (e *enemyAquaman) Draw() {
 	if e.pm.InvincibleCount/5%2 != 0 {
 		return
+	}
+
+	if e.pm.ParalyzedCount > 0 {
+		// TODO: 麻痺状態描画
 	}
 
 	if e.state == aquamanActTypeShot && e.count == 0 {

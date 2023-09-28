@@ -45,6 +45,7 @@ type EnemyParam struct {
 	ActNo           int
 	InvincibleCount int
 	DamageElement   int
+	ParalyzedCount  int
 }
 
 type enemyObject interface {
