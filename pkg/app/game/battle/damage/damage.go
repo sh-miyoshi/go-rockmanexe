@@ -34,7 +34,8 @@ type Damage struct {
 	PushLeft      int  // ヒット時に左に押されるカウント
 	HitEffectType int  // ヒット時に表示されるEffect
 	BigDamage     bool // trueならのけぞる
-	Element       int
+	Element       int  // 属性
+	IsParalyzed   bool // ヒット時に麻痺状態になる
 
 	DamageType    int // ダメージの種類
 	TargetObjType int // ダメージを受けるObjectのタイプ

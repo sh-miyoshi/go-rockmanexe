@@ -112,6 +112,7 @@ func (p *thunderBall) Process() (bool, error) {
 			ShowHitArea:   true,
 			BigDamage:     true,
 			Element:       damage.ElementElec,
+			IsParalyzed:   true,
 		})
 
 		// Set next pos
