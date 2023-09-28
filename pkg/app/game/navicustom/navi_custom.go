@@ -148,6 +148,14 @@ func Draw() {
 	}
 	dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
 
+	// 表示されてないパーツがある場合に矢印を表示
+	if itemList.GetScroll() > 0 {
+		dxlib.DrawTriangle(360, 30, 340, 40, 380, 40, 0xF2F2F2, true)
+	}
+	if len(itemList.GetList()) > (maxListNum + itemList.GetScroll()) {
+		dxlib.DrawTriangle(360, 145, 340, 135, 380, 135, 0xF2F2F2, true)
+	}
+
 	// セット済みのパーツを描画
 	for _, s := range setParts {
 		parts := ncparts.Get(s.rawData.ID)
