@@ -18,8 +18,8 @@ type animDraw struct {
 	drawMiniBombInst skilldraw.DrawMiniBomb
 	drawRecover      skilldraw.DrawRecover
 	drawShockWave    skilldraw.DrawShockWave
-	drawSpreadGun    drawskill.DrawSpreadGun
-	drawSpreadHit    drawskill.DrawSpreadHit
+	drawSpreadGun    skilldraw.DrawSpreadGun
+	drawSpreadHit    skilldraw.DrawSpreadHit
 	drawSword        drawskill.DrawSword
 	drawVulcan       drawskill.DrawVulcan
 	drawWideShot     drawskill.DrawWideShot

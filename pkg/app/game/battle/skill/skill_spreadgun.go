@@ -9,20 +9,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delaySpreadGun = 2
 )
 
 type spreadGun struct {
 	ID  string
 	Arg Argument
 
-	count int
+	count  int
+	drawer skilldraw.DrawSpreadGun
 }
 
 type spreadHit struct {
@@ -34,29 +31,20 @@ type spreadHit struct {
 }
 
 func newSpreadGun(objID string, arg Argument) *spreadGun {
-	return &spreadGun{
+	res := &spreadGun{
 		ID:  objID,
 		Arg: arg,
 	}
+
+	res.drawer.Init() // TODO error
+
+	return res
 }
 
 func (p *spreadGun) Draw() {
-	n := p.count / delaySpreadGun
-
-	// Show body
-	if n < len(imgSpreadGunBody) {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgSpreadGunBody[n], true)
-	}
-
-	// Show atk
-	n = (p.count - 4) / delaySpreadGun
-	if n >= 0 && n < len(imgSpreadGunAtk) {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgSpreadGunAtk[n], true)
-	}
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	view := battlecommon.ViewPos(pos)
+	p.drawer.Draw(view, p.count)
 }
 
 func (p *spreadGun) Process() (bool, error) {
@@ -104,12 +92,7 @@ func (p *spreadGun) Process() (bool, error) {
 
 	p.count++
 
-	max := len(imgSpreadGunAtk)
-	if len(imgSpreadGunBody) > max {
-		max = len(imgSpreadGunBody)
-	}
-
-	if p.count > max*delaySpreadGun {
+	if p.count > resources.SkillSpreadGunEndCount {
 		return true, nil
 	}
 	return false, nil

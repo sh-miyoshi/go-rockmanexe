@@ -1,4 +1,4 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
+
+const delaySpreadGun = 3
 
 type DrawSpreadGun struct {
 	imgBody []int
@@ -45,9 +47,6 @@ func (p *DrawSpreadGun) End() {
 }
 
 func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const delaySpreadGun = 3
-
 	n := count / delaySpreadGun
 
 	// Show body
