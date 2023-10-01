@@ -62,9 +62,6 @@ var (
 	imgBombThrow      []int
 	imgPick           []int
 	imgThunderBall    []int
-	imgWideShotBody   []int
-	imgWideShotBegin  []int
-	imgWideShotMove   []int
 	imgBoomerang      []int
 	imgAquamanShot    []int
 	imgBambooLance    []int

@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
-	drawskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
@@ -21,7 +20,7 @@ type animDraw struct {
 	drawSpreadHit    skilldraw.DrawSpreadHit
 	drawSword        skilldraw.DrawSword
 	drawVulcan       skilldraw.DrawVulcan
-	drawWideShot     drawskill.DrawWideShot
+	drawWideShot     skilldraw.DrawWideShot
 }
 
 func (d *animDraw) Init() error {
@@ -100,7 +99,10 @@ func (d *animDraw) Draw() {
 		case anim.TypeVulcan:
 			d.drawVulcan.Draw(pos, a.ActCount)
 		case anim.TypeWideShot:
-			d.drawWideShot.Draw(a.Pos, a.ActCount)
+			// TODO: refactoring
+			state := a.ActCount / 1000
+			a.ActCount -= state * 1000
+			d.drawWideShot.Draw(a.Pos, a.ActCount, common.DirectRight, true, resources.SkillWideShotPlayerNextStepCount, state)
 		default:
 			common.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

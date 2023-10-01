@@ -47,28 +47,6 @@ func loadImages() error {
 		imgThunderBall = append(imgThunderBall, tmp[i])
 	}
 
-	fname = path + "ワイドショット_body.png"
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 3; i++ {
-		imgWideShotBody = append(imgWideShotBody, tmp[i])
-	}
-	fname = path + "ワイドショット_begin.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 4; i++ {
-		imgWideShotBegin = append(imgWideShotBegin, tmp[i])
-	}
-	fname = path + "ワイドショット_move.png"
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 3; i++ {
-		imgWideShotMove = append(imgWideShotMove, tmp[i])
-	}
-
 	fname = path + "ブーメラン.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 80, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -143,18 +121,6 @@ func cleanupImages() {
 		dxlib.DeleteGraph(imgThunderBall[i])
 	}
 	imgThunderBall = []int{}
-	for i := 0; i < len(imgWideShotBody); i++ {
-		dxlib.DeleteGraph(imgWideShotBody[i])
-	}
-	imgWideShotBody = []int{}
-	for i := 0; i < len(imgWideShotBegin); i++ {
-		dxlib.DeleteGraph(imgWideShotBegin[i])
-	}
-	imgWideShotBegin = []int{}
-	for i := 0; i < len(imgWideShotMove); i++ {
-		dxlib.DeleteGraph(imgWideShotMove[i])
-	}
-	imgWideShotMove = []int{}
 	for i := 0; i < len(imgBoomerang); i++ {
 		dxlib.DeleteGraph(imgBoomerang[i])
 	}

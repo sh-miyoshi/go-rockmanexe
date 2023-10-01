@@ -1,10 +1,11 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -55,40 +56,39 @@ func (p *DrawWideShot) End() {
 	p.imgMove = []int{}
 }
 
-func (p *DrawWideShot) Draw(pos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const delayWideShot = 4
-	const nextStepCount = 8
-	const stateSeparateCount = 1000
-	// 順番をRouter側と合わせておく
-	const (
-		wideShotStateBegin int = iota
-		wideShotStateMove
-	)
-
-	viewPos := battlecommon.ViewPos(pos)
-
-	state := count / stateSeparateCount
+func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bool, nextStepCount int, state int) {
+	opt := dxlib.DrawRotaGraphOption{}
+	ofs := 1
+	if direct == common.DirectLeft {
+		xflip := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &xflip
+		ofs = -1
+	}
+	view := battlecommon.ViewPos(pos)
 
 	switch state {
-	case wideShotStateBegin:
-		if count == 0 {
-			return
-		}
+	case resources.SkillWideShotStateBegin:
+		n := (count / resources.SkillWideShotDelay)
 
-		n := (count / delayWideShot)
-
-		if n < len(p.imgBody) {
-			dxlib.DrawRotaGraph(viewPos.X+40, viewPos.Y-13, 1, 0, p.imgBody[n], true)
+		if n < len(p.imgBody) && showBody {
+			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, p.imgBody[n], true, opt)
 		}
 		if n >= len(p.imgBegin) {
 			n = len(p.imgBegin) - 1
 		}
-		dxlib.DrawRotaGraph(viewPos.X+62, viewPos.Y+20, 1, 0, p.imgBegin[n], true)
-	case wideShotStateMove:
-		count -= stateSeparateCount
-		n := (count / delayWideShot) % len(p.imgMove)
-		ofsx := battlecommon.PanelSize.X*count/nextStepCount + (battlecommon.PanelSize.X / 2)
-		dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+20, 1, 0, p.imgMove[n], true)
+		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, p.imgBegin[n], true, opt)
+	case resources.SkillWideShotStateMove:
+		n := (count / resources.SkillWideShotDelay) % len(p.imgMove)
+		next := pos.X + 1
+		prev := pos.X - 1
+		if direct == common.DirectLeft {
+			next, prev = prev, next
+		}
+
+		c := count % nextStepCount
+		if c != 0 {
+			ofsx := battlecommon.GetOffset(next, pos.X, prev, c, nextStepCount, battlecommon.PanelSize.X)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, p.imgMove[n], true, opt)
+		}
 	}
 }
