@@ -5,7 +5,6 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -53,7 +52,11 @@ func (p *DrawCannon) End() {
 }
 
 func (p *DrawCannon) Draw(cannonType int, viewPos common.Point, count int) {
-	n := count / resources.SkillDelayCannonBody
+	// TODO: 定義場所を統一する
+	const delayCannonAtk = 2
+	const delayCannonBody = 6
+
+	n := count / delayCannonBody
 	if n < len(p.imgBody[cannonType]) {
 		if n >= 3 {
 			viewPos.X -= 15
@@ -62,7 +65,7 @@ func (p *DrawCannon) Draw(cannonType int, viewPos common.Point, count int) {
 		dxlib.DrawRotaGraph(viewPos.X+48, viewPos.Y-12, 1, 0, p.imgBody[cannonType][n], true)
 	}
 
-	n = (count - 15) / resources.SkillDelayCannonAtk
+	n = (count - 15) / delayCannonAtk
 	if n >= 0 && n < len(p.imgAtk[cannonType]) {
 		dxlib.DrawRotaGraph(viewPos.X+90, viewPos.Y-10, 1, 0, p.imgAtk[cannonType][n], true)
 	}
