@@ -8,14 +8,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	miniBombEndCount   = 60
-	delayMiniBombThrow = 4
 )
 
 type miniBomb struct {
@@ -25,37 +20,24 @@ type miniBomb struct {
 	count  int
 	pos    common.Point
 	target common.Point
+	drawer skilldraw.DrawMiniBomb
 }
 
 func newMiniBomb(objID string, arg Argument) *miniBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-	return &miniBomb{
+	res := &miniBomb{
 		ID:     objID,
 		Arg:    arg,
 		pos:    pos,
 		target: common.Point{X: pos.X + 3, Y: pos.Y},
 	}
+	res.drawer.Init() // TODO: error
+
+	return res
 }
 
 func (p *miniBomb) Draw() {
-	imgNo := (p.count / delayMiniBombThrow) % len(imgBombThrow)
-	view := battlecommon.ViewPos(p.pos)
-
-	// y = ax^2 + bx + c
-	// (0,0), (d/2, ymax), (d, 0)
-	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
-	size := battlecommon.PanelSize.X * (p.target.X - p.pos.X)
-	ofsx := size * p.count / miniBombEndCount
-	const ymax = 100
-	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
-
-	if p.target.Y != p.pos.Y {
-		size = battlecommon.PanelSize.Y * (p.target.Y - p.pos.Y)
-		dy := size * p.count / miniBombEndCount
-		ofsy += dy
-	}
-
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], true)
+	p.drawer.Draw(p.pos, p.target, p.count)
 }
 
 func (p *miniBomb) Process() (bool, error) {
@@ -65,7 +47,7 @@ func (p *miniBomb) Process() (bool, error) {
 		sound.On(resources.SEBombThrow)
 	}
 
-	if p.count == miniBombEndCount {
+	if p.count == resources.SkillMiniBombEndCount {
 		pn := field.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil

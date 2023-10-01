@@ -1,11 +1,16 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+)
+
+const (
+	delayMiniBombThrow = 4
 )
 
 type DrawMiniBomb struct {
@@ -31,10 +36,6 @@ func (p *DrawMiniBomb) End() {
 }
 
 func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const miniBombEndCount = 60
-	const delayMiniBombThrow = 4
-
 	imgNo := (count / delayMiniBombThrow) % len(p.imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 
@@ -42,13 +43,13 @@ func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
 	size := battlecommon.PanelSize.X * (targetPos.X - objPos.X)
-	ofsx := size * count / miniBombEndCount
+	ofsx := size * count / resources.SkillMiniBombEndCount
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if targetPos.Y != objPos.Y {
 		size = battlecommon.PanelSize.Y * (targetPos.Y - objPos.Y)
-		dy := size * count / miniBombEndCount
+		dy := size * count / resources.SkillMiniBombEndCount
 		ofsy += dy
 	}
 
