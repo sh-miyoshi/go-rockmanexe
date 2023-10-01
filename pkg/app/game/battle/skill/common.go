@@ -19,27 +19,9 @@ type chipNameDraw struct {
 func loadImages() error {
 	path := common.ImagePath + "battle/skill/"
 
-	tmp := make([]int, 24)
-	fname := path + "キャノン_atk.png"
-	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 8; i++ {
-		imgCannonAtk[0] = append(imgCannonAtk[0], tmp[i])
-		imgCannonAtk[1] = append(imgCannonAtk[1], tmp[i+8])
-		imgCannonAtk[2] = append(imgCannonAtk[2], tmp[i+16])
-	}
-	fname = path + "キャノン_body.png"
-	if res := dxlib.LoadDivGraph(fname, 15, 5, 3, 46, 40, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 5; i++ {
-		imgCannonBody[0] = append(imgCannonBody[0], tmp[i])
-		imgCannonBody[1] = append(imgCannonBody[1], tmp[i+5])
-		imgCannonBody[2] = append(imgCannonBody[2], tmp[i+10])
-	}
+	tmp := make([]int, 12)
 
-	fname = path + "ミニボム.png"
+	fname := path + "ミニボム.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -199,16 +181,6 @@ func loadImages() error {
 }
 
 func cleanupImages() {
-	for i := 0; i < 3; i++ {
-		for j := 0; j < len(imgCannonAtk[i]); j++ {
-			dxlib.DeleteGraph(imgCannonAtk[i][j])
-		}
-		imgCannonAtk[i] = []int{}
-		for j := 0; j < len(imgCannonBody[i]); j++ {
-			dxlib.DeleteGraph(imgCannonBody[i][j])
-		}
-		imgCannonBody[i] = []int{}
-	}
 	for i := 0; i < 3; i++ {
 		for j := 0; j < len(imgSword[i]); j++ {
 			dxlib.DeleteGraph(imgSword[i][j])

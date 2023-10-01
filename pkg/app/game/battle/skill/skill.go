@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 )
 
 const (
@@ -58,8 +59,6 @@ type Argument struct {
 }
 
 var (
-	imgCannonAtk      [TypeCannonMax][]int
-	imgCannonBody     [TypeCannonMax][]int
 	imgSword          [TypeSwordMax][]int
 	imgBombThrow      []int
 	imgShockWave      []int
@@ -103,11 +102,11 @@ func Get(skillID int, arg Argument) SkillAnim {
 
 	switch skillID {
 	case SkillCannon:
-		return newCannon(objID, TypeNormalCannon, arg)
+		return newCannon(objID, resources.SkillTypeNormalCannon, arg)
 	case SkillHighCannon:
-		return newCannon(objID, TypeHighCannon, arg)
+		return newCannon(objID, resources.SkillTypeHighCannon, arg)
 	case SkillMegaCannon:
-		return newCannon(objID, TypeMegaCannon, arg)
+		return newCannon(objID, resources.SkillTypeMegaCannon, arg)
 	case SkillMiniBomb:
 		return newMiniBomb(objID, arg)
 	case SkillSword:

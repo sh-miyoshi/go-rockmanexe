@@ -18,13 +18,6 @@ const (
 	TypeCannonMax
 )
 
-const (
-	delayCannonAtk   = 2
-	delayCannonBody  = 6
-	imgCannonBodyNum = 5
-	imgCannonAtkNum  = 8
-)
-
 type cannon struct {
 	ID   string
 	Type int
@@ -115,9 +108,5 @@ func (p *cannon) StopByOwner() {
 }
 
 func (p *cannon) GetEndCount() int {
-	max := imgCannonBodyNum * delayCannonBody
-	if max < imgCannonAtkNum*delayCannonAtk+15 {
-		max = imgCannonAtkNum*delayCannonAtk + 15
-	}
-	return max
+	return resources.SkillCannonEndCount
 }

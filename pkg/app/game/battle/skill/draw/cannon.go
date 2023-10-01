@@ -1,16 +1,21 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayCannonAtk  = 2
+	delayCannonBody = 6
+)
+
 type DrawCannon struct {
-	imgBody [skill.TypeCannonMax][]int
-	imgAtk  [skill.TypeCannonMax][]int
+	imgBody [resources.SkillTypeCannonMax][]int
+	imgAtk  [resources.SkillTypeCannonMax][]int
 }
 
 func (p *DrawCannon) Init() error {
@@ -52,10 +57,6 @@ func (p *DrawCannon) End() {
 }
 
 func (p *DrawCannon) Draw(cannonType int, viewPos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const delayCannonAtk = 2
-	const delayCannonBody = 6
-
 	n := count / delayCannonBody
 	if n < len(p.imgBody[cannonType]) {
 		if n >= 3 {

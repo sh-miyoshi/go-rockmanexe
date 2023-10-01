@@ -6,13 +6,15 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	drawskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
 type animDraw struct {
-	drawCannonInst   drawskill.DrawCannon
+	drawCannonInst   skilldraw.DrawCannon
 	drawMiniBombInst drawskill.DrawMiniBomb
 	drawRecover      drawskill.DrawRecover
 	drawShockWave    drawskill.DrawShockWave
@@ -74,11 +76,11 @@ func (d *animDraw) Draw() {
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal:
-			d.drawCannonInst.Draw(skill.TypeNormalCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillTypeNormalCannon, pos, a.ActCount)
 		case anim.TypeCannonHigh:
-			d.drawCannonInst.Draw(skill.TypeHighCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillTypeHighCannon, pos, a.ActCount)
 		case anim.TypeCannonMega:
-			d.drawCannonInst.Draw(skill.TypeMegaCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillTypeMegaCannon, pos, a.ActCount)
 		case anim.TypeMiniBomb:
 			target := common.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
 			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount)
