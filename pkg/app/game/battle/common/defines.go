@@ -9,6 +9,7 @@ const (
 
 var (
 	PlayerDefaultInvincibleTime = 120
+	DefaultParalyzedTime        = 120
 )
 
 const (

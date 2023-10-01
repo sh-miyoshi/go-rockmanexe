@@ -44,6 +44,12 @@ func (e *enemyTarget) Process() (bool, error) {
 		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
+
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	return false, nil
 }
 
@@ -54,6 +60,19 @@ func (e *enemyTarget) Draw() {
 
 	view := battlecommon.ViewPos(e.pm.Pos)
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, true)
+
+	if e.pm.ParalyzedCount > 0 {
+		// 麻痺状態描画
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+		pm := 0
+		if e.pm.ParalyzedCount/10%2 == 0 {
+			pm = 255
+		}
+		dxlib.SetDrawBright(255, 255, pm)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, true)
+		dxlib.SetDrawBright(255, 255, 255)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 
 	// Show HP
 	if e.pm.HP > 0 {
