@@ -177,8 +177,10 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, fmt.Errorf("failed to load player throw image: %s", fname)
 	}
 
-	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 1)
-	imgPlayers[battlecommon.PlayerActParalyzed][0] = imgPlayers[battlecommon.PlayerActDamage][0]
+	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 4)
+	for i := 0; i < 4; i++ {
+		imgPlayers[battlecommon.PlayerActParalyzed][i] = imgPlayers[battlecommon.PlayerActDamage][i]
+	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
@@ -287,6 +289,18 @@ func (p *BattlePlayer) Draw() {
 	view := battlecommon.ViewPos(p.Pos)
 	img := p.act.GetImage()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+	if p.act.IsParalyzed() {
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+		// 黄色と白を点滅させる
+		pm := 0
+		if p.act.count/10%2 == 0 {
+			pm = 255
+		}
+		dxlib.SetDrawBright(255, 255, pm)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+		dxlib.SetDrawBright(255, 255, 255)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -501,6 +515,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			p.act.skillInst.StopByOwner()
 		}
 		p.act.skillID = ""
+		p.ChargeCount = 0
 
 		if dm.IsParalyzed {
 			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
@@ -638,4 +653,8 @@ func (a *act) GetImage() int {
 	}
 
 	return imgPlayers[a.typ][imgNo]
+}
+
+func (a *act) IsParalyzed() bool {
+	return a.typ == battlecommon.PlayerActParalyzed
 }
