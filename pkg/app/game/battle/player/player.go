@@ -587,6 +587,7 @@ func (a *act) Process() bool {
 						Power:         int(s),
 						HitEffectType: eff,
 						Element:       damage.ElementNone,
+						IsParalyzed:   true, // debug
 					})
 					break
 				}
