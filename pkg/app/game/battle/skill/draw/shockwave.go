@@ -1,4 +1,4 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
@@ -30,9 +30,15 @@ func (p *DrawShockWave) End() {
 	p.imgShockWave = []int{}
 }
 
-func (p *DrawShockWave) Draw(viewPos common.Point, count int) {
-	const shockWaveSpeed = 3
-
-	n := (count / shockWaveSpeed) % len(p.imgShockWave)
-	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgShockWave[n], true)
+func (p *DrawShockWave) Draw(viewPos common.Point, count int, speed int, direct int) {
+	n := (count / speed) % len(p.imgShockWave)
+	if direct == common.DirectLeft {
+		flag := int32(dxlib.TRUE)
+		dxopts := dxlib.DrawRotaGraphOption{
+			ReverseXFlag: &flag,
+		}
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgShockWave[n], true, dxopts)
+	} else if direct == common.DirectRight {
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgShockWave[n], true)
+	}
 }

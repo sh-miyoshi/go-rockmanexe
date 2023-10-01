@@ -9,12 +9,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const (
-	shockWaveInitWaitCount = 9
-	shockWaveSpeed         = 3
-	imgShockWaveNum        = 7
-)
-
 type shockWave struct {
 	ID    string
 	Arg   Argument
@@ -37,11 +31,11 @@ func (p *shockWave) Draw() {
 func (p *shockWave) Process() (bool, error) {
 	p.count++
 
-	if p.count < shockWaveInitWaitCount {
+	if p.count < resources.SkillShockWaveInitWait {
 		return false, nil
 	}
 
-	n := imgShockWaveNum * shockWaveSpeed
+	n := resources.SkillShockWaveImageNum * resources.SkillShockWavePlayerSpeed
 	if p.count%n == 0 {
 		p.pos.X++
 

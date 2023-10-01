@@ -17,7 +17,7 @@ type animDraw struct {
 	drawCannonInst   skilldraw.DrawCannon
 	drawMiniBombInst skilldraw.DrawMiniBomb
 	drawRecover      skilldraw.DrawRecover
-	drawShockWave    drawskill.DrawShockWave
+	drawShockWave    skilldraw.DrawShockWave
 	drawSpreadGun    drawskill.DrawSpreadGun
 	drawSpreadHit    drawskill.DrawSpreadHit
 	drawSword        drawskill.DrawSword
@@ -87,7 +87,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:
-			d.drawShockWave.Draw(pos, a.ActCount)
+			d.drawShockWave.Draw(pos, a.ActCount, 3, common.DirectRight) // debug
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:

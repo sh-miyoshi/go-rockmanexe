@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -27,6 +28,7 @@ type shockWave struct {
 	count    int
 	pos      common.Point
 	showWave bool
+	drawer   skilldraw.DrawShockWave
 }
 
 func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
@@ -39,33 +41,26 @@ func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
 		pos:    pos,
 	}
 
+	res.drawer.Init() // TODO: error
+
 	if isPlayer {
 		res.Direct = common.DirectRight
-		res.Speed = 3
+		res.Speed = resources.SkillShockWavePlayerSpeed
 		res.ShowPick = true
-		res.InitWait = 9
+		res.InitWait = resources.SkillShockWaveInitWait
 	}
 
 	return res
 }
 
 func (p *shockWave) Draw() {
-	n := (p.count / p.Speed) % len(imgShockWave)
-	if p.showWave && n >= 0 {
+	if p.showWave {
 		view := battlecommon.ViewPos(p.pos)
-		if p.Direct == common.DirectLeft {
-			flag := int32(dxlib.TRUE)
-			dxopts := dxlib.DrawRotaGraphOption{
-				ReverseXFlag: &flag,
-			}
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true, dxopts)
-		} else if p.Direct == common.DirectRight {
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true)
-		}
+		p.drawer.Draw(view, p.count, p.Speed, p.Direct)
 	}
 
 	if p.ShowPick {
-		n = (p.count / delayPick)
+		n := (p.count / delayPick)
 		if n < len(imgPick) {
 			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			view := battlecommon.ViewPos(pos)
@@ -80,7 +75,7 @@ func (p *shockWave) Process() (bool, error) {
 		return false, nil
 	}
 
-	n := len(imgShockWave) * p.Speed
+	n := resources.SkillShockWaveImageNum * p.Speed
 	if p.count%(n) == 0 {
 		p.showWave = true
 		if p.Direct == common.DirectLeft {

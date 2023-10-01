@@ -61,7 +61,6 @@ type Argument struct {
 var (
 	imgSword          [TypeSwordMax][]int
 	imgBombThrow      []int
-	imgShockWave      []int
 	imgSpreadGunAtk   []int
 	imgSpreadGunBody  []int
 	imgVulcan         []int
