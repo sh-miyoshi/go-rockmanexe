@@ -19,8 +19,7 @@ type DrawRotaGraphOption struct {
 	ReverseYFlag *int32
 }
 
-// TODO: 正しい値を入れる
-
+// 現在MacではDxLibが正常に動作しないため適当な値を入れている
 const (
 	DX_BLENDMODE_INVSRC  = 0
 	DX_BLENDMODE_ADD     = 0
