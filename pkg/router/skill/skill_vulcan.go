@@ -22,10 +22,6 @@ type vulcan struct {
 	hit      bool
 }
 
-const (
-	delayVulcan = 2
-)
-
 func newVulcan(times int, arg Argument) *vulcan {
 	return &vulcan{
 		ID:    arg.AnimObjID,
@@ -40,8 +36,8 @@ func (p *vulcan) Draw() {
 
 func (p *vulcan) Process() (bool, error) {
 	p.count++
-	if p.count >= delayVulcan*1 {
-		if p.count%(delayVulcan*5) == delayVulcan*1 {
+	if p.count >= resources.SkillVulcanDelay*1 {
+		if p.count%(resources.SkillVulcanDelay*5) == resources.SkillVulcanDelay*1 {
 			// Add damage
 			pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 			hit := false
@@ -124,5 +120,5 @@ func (p *vulcan) StopByOwner() {
 }
 
 func (p *vulcan) GetEndCount() int {
-	return delayVulcan*5*(p.Times-1) + delayVulcan*1
+	return resources.SkillVulcanDelay*5*(p.Times-1) + resources.SkillVulcanDelay*1
 }

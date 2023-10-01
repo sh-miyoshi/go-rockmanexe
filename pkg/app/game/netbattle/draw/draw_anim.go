@@ -20,7 +20,7 @@ type animDraw struct {
 	drawSpreadGun    skilldraw.DrawSpreadGun
 	drawSpreadHit    skilldraw.DrawSpreadHit
 	drawSword        skilldraw.DrawSword
-	drawVulcan       drawskill.DrawVulcan
+	drawVulcan       skilldraw.DrawVulcan
 	drawWideShot     drawskill.DrawWideShot
 }
 

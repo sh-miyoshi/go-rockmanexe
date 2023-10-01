@@ -29,4 +29,5 @@ const (
 	SkillShockWavePlayerSpeed = 3
 	SkillShockWaveImageNum    = 7
 	SkillSwordDelay           = 3
+	SkillVulcanDelay          = 2
 )

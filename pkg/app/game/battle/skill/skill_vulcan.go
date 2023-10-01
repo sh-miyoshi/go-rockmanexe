@@ -8,13 +8,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delayVulcan = 2
 )
 
 type vulcan struct {
@@ -23,42 +19,36 @@ type vulcan struct {
 	Times int
 
 	count    int
-	imageNo  int
 	atkCount int
 	hit      bool
+	drawer   skilldraw.DrawVulcan
 }
 
 func newVulcan(objID string, arg Argument) *vulcan {
-	return &vulcan{
+	res := &vulcan{
 		ID:    objID,
 		Arg:   arg,
 		Times: 3,
 	}
+
+	res.drawer.Init() // TODO error
+
+	return res
 }
 
 func (p *vulcan) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	// Show body
-	dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgVulcan[p.imageNo], true)
-	// Show attack
-	if p.imageNo != 0 {
-		if p.imageNo%2 == 0 {
-			dxlib.DrawRotaGraph(view.X+100, view.Y-10, 1, 0, imgVulcan[3], true)
-		} else {
-			dxlib.DrawRotaGraph(view.X+100, view.Y-15, 1, 0, imgVulcan[3], true)
-		}
-	}
+	p.drawer.Draw(view, p.count)
 }
 
 func (p *vulcan) Process() (bool, error) {
 	p.count++
-	if p.count >= delayVulcan*1 {
-		if p.count%(delayVulcan*5) == delayVulcan*1 {
+	if p.count >= resources.SkillVulcanDelay*1 {
+		if p.count%(resources.SkillVulcanDelay*5) == resources.SkillVulcanDelay*1 {
 			sound.On(resources.SEGun)
 
-			p.imageNo = p.imageNo%2 + 1
 			// Add damage
 			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 			hit := false

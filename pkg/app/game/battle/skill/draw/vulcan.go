@@ -1,9 +1,10 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -31,12 +32,9 @@ func (p *DrawVulcan) End() {
 }
 
 func (p *DrawVulcan) Draw(viewPos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const delayVulcan = 2
-
 	imgNo := 0
-	if count > delayVulcan*1 {
-		imgNo = (count/(delayVulcan*5))%2 + 1
+	if count > resources.SkillVulcanDelay*1 {
+		imgNo = (count/(resources.SkillVulcanDelay*5))%2 + 1
 	}
 
 	// Show body
