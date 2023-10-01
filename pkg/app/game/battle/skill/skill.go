@@ -59,7 +59,6 @@ type Argument struct {
 }
 
 var (
-	imgSword          [TypeSwordMax][]int
 	imgBombThrow      []int
 	imgVulcan         []int
 	imgPick           []int
@@ -106,11 +105,11 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillMiniBomb:
 		return newMiniBomb(objID, arg)
 	case SkillSword:
-		return newSword(objID, TypeSword, arg)
+		return newSword(objID, resources.SkillTypeSword, arg)
 	case SkillWideSword:
-		return newSword(objID, TypeWideSword, arg)
+		return newSword(objID, resources.SkillTypeWideSword, arg)
 	case SkillLongSword:
-		return newSword(objID, TypeLongSword, arg)
+		return newSword(objID, resources.SkillTypeLongSword, arg)
 	case SkillShockWave:
 		return newShockWave(objID, false, arg)
 	case SkillRecover:

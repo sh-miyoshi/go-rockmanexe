@@ -5,7 +5,6 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	drawskill "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw/skill"
@@ -20,7 +19,7 @@ type animDraw struct {
 	drawShockWave    skilldraw.DrawShockWave
 	drawSpreadGun    skilldraw.DrawSpreadGun
 	drawSpreadHit    skilldraw.DrawSpreadHit
-	drawSword        drawskill.DrawSword
+	drawSword        skilldraw.DrawSword
 	drawVulcan       drawskill.DrawVulcan
 	drawWideShot     drawskill.DrawWideShot
 }
@@ -93,11 +92,11 @@ func (d *animDraw) Draw() {
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword:
-			d.drawSword.Draw(skill.TypeSword, pos, a.ActCount)
+			d.drawSword.Draw(resources.SkillTypeSword, pos, a.ActCount)
 		case anim.TypeWideSword:
-			d.drawSword.Draw(skill.TypeWideSword, pos, a.ActCount)
+			d.drawSword.Draw(resources.SkillTypeWideSword, pos, a.ActCount)
 		case anim.TypeLongSword:
-			d.drawSword.Draw(skill.TypeLongSword, pos, a.ActCount)
+			d.drawSword.Draw(resources.SkillTypeLongSword, pos, a.ActCount)
 		case anim.TypeVulcan:
 			d.drawVulcan.Draw(pos, a.ActCount)
 		case anim.TypeWideShot:

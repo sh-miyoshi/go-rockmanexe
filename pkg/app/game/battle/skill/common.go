@@ -29,17 +29,6 @@ func loadImages() error {
 		imgBombThrow = append(imgBombThrow, tmp[i])
 	}
 
-	fname = path + "ソード.png"
-	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 4; i++ {
-		// Note: In the image, the order of wide sword and long sword is swapped.
-		imgSword[0] = append(imgSword[0], tmp[i])
-		imgSword[1] = append(imgSword[1], tmp[i+8])
-		imgSword[2] = append(imgSword[2], tmp[i+4])
-	}
-
 	fname = path + "バルカン.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -150,12 +139,6 @@ func loadImages() error {
 }
 
 func cleanupImages() {
-	for i := 0; i < 3; i++ {
-		for j := 0; j < len(imgSword[i]); j++ {
-			dxlib.DeleteGraph(imgSword[i][j])
-		}
-		imgSword[i] = []int{}
-	}
 	for i := 0; i < len(imgBombThrow); i++ {
 		dxlib.DeleteGraph(imgBombThrow[i])
 	}

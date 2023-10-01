@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
@@ -43,11 +44,11 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 	case chip.IDSpreadGun:
 		return newSpreadGun(arg)
 	case chip.IDSword:
-		return newSword(TypeSword, arg)
+		return newSword(resources.SkillTypeSword, arg)
 	case chip.IDWideSword:
-		return newSword(TypeWideSword, arg)
+		return newSword(resources.SkillTypeWideSword, arg)
 	case chip.IDLongSword:
-		return newSword(TypeLongSword, arg)
+		return newSword(resources.SkillTypeLongSword, arg)
 	case chip.IDVulcan1:
 		return newVulcan(3, arg)
 	case chip.IDWideShot:

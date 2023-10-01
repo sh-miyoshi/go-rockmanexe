@@ -30,7 +30,7 @@ func (p *dreamSword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	n := (p.count - 5) / delaySword
+	n := (p.count - 5) / resources.SkillSwordDelay
 	if n >= 0 && n < len(imgDreamSword) {
 		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgDreamSword[n], true)
 	}
@@ -39,7 +39,7 @@ func (p *dreamSword) Draw() {
 func (p *dreamSword) Process() (bool, error) {
 	p.count++
 
-	if p.count == 1*delaySword {
+	if p.count == 1*resources.SkillSwordDelay {
 		sound.On(resources.SEDreamSword)
 
 		userPos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
@@ -61,7 +61,7 @@ func (p *dreamSword) Process() (bool, error) {
 		}
 	}
 
-	if p.count > len(imgDreamSword)*delaySword {
+	if p.count > len(imgDreamSword)*resources.SkillSwordDelay {
 		return true, nil
 	}
 	return false, nil

@@ -1,15 +1,17 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const delaySword = 3
+
 type DrawSword struct {
-	img [skill.TypeSwordMax][]int
+	img [resources.SkillTypeSwordMax][]int
 }
 
 func (p *DrawSword) Init() error {
@@ -40,9 +42,6 @@ func (p *DrawSword) End() {
 }
 
 func (p *DrawSword) Draw(swordType int, viewPos common.Point, count int) {
-	// TODO: 定義場所を統一する
-	const delaySword = 3
-
 	n := (count - 5) / delaySword
 	if n >= 0 && n < len(p.img[swordType]) {
 		dxlib.DrawRotaGraph(viewPos.X+100, viewPos.Y, 1, 0, p.img[swordType][n], true)
