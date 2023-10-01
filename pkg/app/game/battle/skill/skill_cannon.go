@@ -20,11 +20,6 @@ const (
 	TypeCannonMax
 )
 
-const (
-	delayCannonAtk  = 2
-	delayCannonBody = 6
-)
-
 type cannon struct {
 	ID   string
 	Type int
@@ -45,7 +40,7 @@ func (p *cannon) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	n := p.count / delayCannonBody
+	n := p.count / resources.SkillDelayCannonBody
 	if n < len(imgCannonBody[p.Type]) {
 		if n >= 3 {
 			view.X -= 15
@@ -54,7 +49,7 @@ func (p *cannon) Draw() {
 		dxlib.DrawRotaGraph(view.X+48, view.Y-12, 1, 0, imgCannonBody[p.Type][n], true)
 	}
 
-	n = (p.count - 15) / delayCannonAtk
+	n = (p.count - 15) / resources.SkillDelayCannonAtk
 	if n >= 0 && n < len(imgCannonAtk[p.Type]) {
 		dxlib.DrawRotaGraph(view.X+90, view.Y-10, 1, 0, imgCannonAtk[p.Type][n], true)
 	}
@@ -94,9 +89,9 @@ func (p *cannon) Process() (bool, error) {
 		}
 	}
 
-	max := len(imgCannonBody[p.Type]) * delayCannonBody
-	if max < len(imgCannonAtk[p.Type])*delayCannonAtk+15 {
-		max = len(imgCannonAtk[p.Type])*delayCannonAtk + 15
+	max := len(imgCannonBody[p.Type]) * resources.SkillDelayCannonBody
+	if max < len(imgCannonAtk[p.Type])*resources.SkillDelayCannonAtk+15 {
+		max = len(imgCannonAtk[p.Type])*resources.SkillDelayCannonAtk + 15
 	}
 
 	if p.count > max {
