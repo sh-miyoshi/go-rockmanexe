@@ -116,6 +116,12 @@ func (e *enemyLark) Process() (bool, error) {
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
+
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	e.count++
 
 	if e.atk.attacking {
@@ -179,6 +185,7 @@ func (e *enemyLark) Draw() {
 	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, larkMoveNextStepCount, battlecommon.PanelSize.Y)
 
 	dxlib.DrawRotaGraph(view.X+20+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	drawParalysis(view.X+20+ofsx, view.Y+ofsy, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

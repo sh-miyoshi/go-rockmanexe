@@ -309,10 +309,6 @@ func (e *enemyAquaman) Draw() {
 		return
 	}
 
-	if e.pm.ParalyzedCount > 0 {
-		// TODO: 麻痺状態描画
-	}
-
 	if e.state == aquamanActTypeShot && e.count == 0 {
 		// 移動が必要な際にShotの画像を表示したくないため
 		return
@@ -332,6 +328,8 @@ func (e *enemyAquaman) Draw() {
 	}
 
 	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
+
+	drawParalysis(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

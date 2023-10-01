@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -223,6 +224,22 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		return true
 	}
 	return false
+}
+
+// 麻痺状態描画
+func drawParalysis(x, y int, image int, count int, opt ...dxlib.DrawRotaGraphOption) {
+	if count > 0 {
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+		// 黄色と白を点滅させる
+		pm := 0
+		if count/10%2 == 0 {
+			pm = 255
+		}
+		dxlib.SetDrawBright(255, 255, pm)
+		dxlib.DrawRotaGraph(x, y, 1, 0, image, true, opt...)
+		dxlib.SetDrawBright(255, 255, 255)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 }
 
 /*

@@ -61,18 +61,7 @@ func (e *enemyTarget) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, true)
 
-	if e.pm.ParalyzedCount > 0 {
-		// 麻痺状態描画
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-		pm := 0
-		if e.pm.ParalyzedCount/10%2 == 0 {
-			pm = 255
-		}
-		dxlib.SetDrawBright(255, 255, pm)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, e.image, true)
-		dxlib.SetDrawBright(255, 255, 255)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-	}
+	drawParalysis(view.X, view.Y, e.image, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

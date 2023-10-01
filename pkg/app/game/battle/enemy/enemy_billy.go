@@ -94,6 +94,11 @@ func (e *enemyBilly) Process() (bool, error) {
 		return true, nil
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	if e.act.Process() {
 		return false, nil
 	}
@@ -141,6 +146,8 @@ func (e *enemyBilly) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true)
+
+	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

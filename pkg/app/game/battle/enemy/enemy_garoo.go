@@ -90,6 +90,11 @@ func (e *enemyGaroo) Process() (bool, error) {
 		return true, nil
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	if e.waitCount > 0 {
 		e.waitCount--
 		return false, nil
@@ -180,6 +185,8 @@ func (e *enemyGaroo) Draw() {
 	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+
+	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {
