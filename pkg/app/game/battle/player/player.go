@@ -72,7 +72,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers    [battlecommon.PlayerActMax][]int
-	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3}
+	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -176,6 +176,9 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, imgPlayers[battlecommon.PlayerActThrow]); res == -1 {
 		return nil, fmt.Errorf("failed to load player throw image: %s", fname)
 	}
+
+	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 1)
+	imgPlayers[battlecommon.PlayerActParalyzed][0] = imgPlayers[battlecommon.PlayerActDamage][0]
 
 	fname = common.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
@@ -500,7 +503,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		p.act.skillID = ""
 
 		if dm.IsParalyzed {
-			// TODO: p.act.SetAnim(battlecommon.PlayerActParalyzed, 120)
+			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
 			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
 			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
@@ -597,7 +600,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPos, a.MoveDirect, battlecommon.PanelTypePlayer, true, field.GetPanelInfo)
 		}
-	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow, battlecommon.PlayerActParalyzed:
 		// No special action
 	default:
 		common.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))

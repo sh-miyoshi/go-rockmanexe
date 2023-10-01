@@ -22,6 +22,7 @@ const (
 	PlayerActBuster
 	PlayerActPick
 	PlayerActThrow
+	PlayerActParalyzed
 
 	PlayerActMax
 )
