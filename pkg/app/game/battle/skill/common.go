@@ -48,14 +48,6 @@ func loadImages() error {
 		imgShockWave = append(imgShockWave, tmp[i])
 	}
 
-	fname = path + "リカバリー.png"
-	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 8; i++ {
-		imgRecover = append(imgRecover, tmp[i])
-	}
-
 	fname = path + "スプレッドガン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -207,10 +199,6 @@ func cleanupImages() {
 		dxlib.DeleteGraph(imgVulcan[i])
 	}
 	imgVulcan = []int{}
-	for i := 0; i < len(imgRecover); i++ {
-		dxlib.DeleteGraph(imgRecover[i])
-	}
-	imgRecover = []int{}
 	for i := 0; i < len(imgPick); i++ {
 		dxlib.DeleteGraph(imgPick[i])
 	}

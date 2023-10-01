@@ -62,7 +62,6 @@ var (
 	imgSword          [TypeSwordMax][]int
 	imgBombThrow      []int
 	imgShockWave      []int
-	imgRecover        []int
 	imgSpreadGunAtk   []int
 	imgSpreadGunBody  []int
 	imgVulcan         []int

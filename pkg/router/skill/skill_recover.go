@@ -7,10 +7,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const (
-	recoverEndCount = 8
-)
-
 type recover struct {
 	ID    string
 	Arg   Argument
@@ -68,5 +64,5 @@ func (p *recover) StopByOwner() {
 }
 
 func (p *recover) GetEndCount() int {
-	return recoverEndCount
+	return resources.SkillRecoverEndCount
 }

@@ -11,4 +11,5 @@ const (
 const (
 	SkillCannonEndCount   = 31 // imgAtkNum*delayAtk + 15
 	SkillMiniBombEndCount = 60
+	SkillRecoverEndCount  = 8
 )

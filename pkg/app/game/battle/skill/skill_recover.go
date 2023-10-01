@@ -5,36 +5,33 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delayRecover = 1
 )
 
 type recover struct {
 	ID  string
 	Arg Argument
 
-	count int
+	count  int
+	drawer skilldraw.DrawRecover
 }
 
 func newRecover(objID string, arg Argument) *recover {
-	return &recover{
+	res := &recover{
 		ID:  objID,
 		Arg: arg,
 	}
+	res.drawer.Init() // TODO: error
+
+	return res
 }
 
 func (p *recover) Draw() {
-	n := (p.count / delayRecover) % len(imgRecover)
-	if n >= 0 {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgRecover[n], true)
-	}
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	view := battlecommon.ViewPos(pos)
+	p.drawer.Draw(view, p.count)
 }
 
 func (p *recover) Process() (bool, error) {
@@ -52,7 +49,7 @@ func (p *recover) Process() (bool, error) {
 
 	p.count++
 
-	if p.count > len(imgRecover)*delayRecover {
+	if p.count > resources.SkillRecoverEndCount {
 		return true, nil
 	}
 	return false, nil

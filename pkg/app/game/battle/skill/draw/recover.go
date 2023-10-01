@@ -1,10 +1,14 @@
-package skill
+package skilldraw
 
 import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+)
+
+const (
+	delayRecover = 1
 )
 
 type DrawRecover struct {
@@ -31,8 +35,6 @@ func (p *DrawRecover) End() {
 }
 
 func (p *DrawRecover) Draw(viewPos common.Point, count int) {
-	const delayRecover = 1
-
 	n := (count / delayRecover) % len(p.imgRecover)
 	if n >= 0 {
 		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgRecover[n], true)

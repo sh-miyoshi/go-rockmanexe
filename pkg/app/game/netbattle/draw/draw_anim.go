@@ -16,7 +16,7 @@ import (
 type animDraw struct {
 	drawCannonInst   skilldraw.DrawCannon
 	drawMiniBombInst skilldraw.DrawMiniBomb
-	drawRecover      drawskill.DrawRecover
+	drawRecover      skilldraw.DrawRecover
 	drawShockWave    drawskill.DrawShockWave
 	drawSpreadGun    drawskill.DrawSpreadGun
 	drawSpreadHit    drawskill.DrawSpreadHit
