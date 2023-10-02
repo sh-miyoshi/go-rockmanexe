@@ -1,8 +1,6 @@
 package skilldraw
 
 import (
-	"fmt"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -15,45 +13,10 @@ type DrawWideShot struct {
 	imgMove  []int
 }
 
-func (p *DrawWideShot) Init() error {
-	path := common.ImagePath + "battle/skill/"
-
-	fname := path + "ワイドショット_body.png"
-	p.imgBody = make([]int, 3)
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, p.imgBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	fname = path + "ワイドショット_begin.png"
-	p.imgBegin = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, p.imgBegin); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	fname = path + "ワイドショット_move.png"
-	p.imgMove = make([]int, 3)
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, p.imgMove); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	return nil
-}
-
-func (p *DrawWideShot) End() {
-	for i := 0; i < len(p.imgBody); i++ {
-		dxlib.DeleteGraph(p.imgBody[i])
-	}
-	p.imgBody = []int{}
-
-	for i := 0; i < len(p.imgBegin); i++ {
-		dxlib.DeleteGraph(p.imgBegin[i])
-	}
-	p.imgBegin = []int{}
-
-	for i := 0; i < len(p.imgMove); i++ {
-		dxlib.DeleteGraph(p.imgMove[i])
-	}
-	p.imgMove = []int{}
+func (p *DrawWideShot) Init() {
+	p.imgBody = imgWideShotBody
+	p.imgBegin = imgWideShotBegin
+	p.imgMove = imgWideShotMove
 }
 
 func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bool, nextStepCount int, state int) {

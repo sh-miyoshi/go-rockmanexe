@@ -18,32 +18,9 @@ type DrawSpreadHit struct {
 	img []int
 }
 
-func (p *DrawSpreadGun) Init() error {
-	path := common.ImagePath + "battle/skill/"
-
-	fname := path + "スプレッドガン_atk.png"
-	p.imgAtk = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, p.imgAtk); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "スプレッドガン_body.png"
-	p.imgBody = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, p.imgBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	return nil
-}
-
-func (p *DrawSpreadGun) End() {
-	for j := 0; j < len(p.imgAtk); j++ {
-		dxlib.DeleteGraph(p.imgAtk[j])
-	}
-	p.imgAtk = []int{}
-	for j := 0; j < len(p.imgBody); j++ {
-		dxlib.DeleteGraph(p.imgBody[j])
-	}
-	p.imgBody = []int{}
+func (p *DrawSpreadGun) Init() {
+	p.imgAtk = imgSpreadGunAtk
+	p.imgBody = imgSpreadGunBody
 }
 
 func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
@@ -69,13 +46,6 @@ func (p *DrawSpreadHit) Init() error {
 	}
 
 	return nil
-}
-
-func (p *DrawSpreadHit) End() {
-	for i := 0; i < len(p.img); i++ {
-		dxlib.DeleteGraph(p.img[i])
-	}
-	p.img = []int{}
 }
 
 func (p *DrawSpreadHit) Draw(viewPos common.Point, count int) {

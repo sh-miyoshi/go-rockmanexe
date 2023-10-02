@@ -76,7 +76,7 @@ func (p *shockWave) Process() (bool, error) {
 	}
 
 	n := resources.SkillShockWaveImageNum * p.Speed
-	if p.count%(n) == 0 {
+	if p.count%n == 0 {
 		p.showWave = true
 		if p.Direct == common.DirectLeft {
 			p.pos.X--

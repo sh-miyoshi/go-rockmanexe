@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 )
 
@@ -76,7 +77,11 @@ var (
 )
 
 func Init() error {
+	// TODO: 重複削除
 	if err := loadImages(); err != nil {
+		return fmt.Errorf("failed to load skill image: %w", err)
+	}
+	if err := skilldraw.LoadImages(); err != nil {
 		return fmt.Errorf("failed to load skill image: %w", err)
 	}
 
@@ -85,6 +90,7 @@ func Init() error {
 
 func End() {
 	cleanupImages()
+	skilldraw.ClearImages()
 }
 
 // Get ...

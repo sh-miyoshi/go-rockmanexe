@@ -24,47 +24,25 @@ type animDraw struct {
 }
 
 func (d *animDraw) Init() error {
-	if err := d.drawCannonInst.Init(); err != nil {
-		return fmt.Errorf("draw cannon init failed: %w", err)
+	if err := skilldraw.LoadImages(); err != nil {
+		return fmt.Errorf("failed to load skill image: %w", err)
 	}
-	if err := d.drawMiniBombInst.Init(); err != nil {
-		return fmt.Errorf("draw minibomb init failed: %w", err)
-	}
-	if err := d.drawRecover.Init(); err != nil {
-		return fmt.Errorf("draw recover init failed: %w", err)
-	}
-	if err := d.drawShockWave.Init(); err != nil {
-		return fmt.Errorf("draw shock wave init failed: %w", err)
-	}
-	if err := d.drawSpreadGun.Init(); err != nil {
-		return fmt.Errorf("draw spread gun init failed: %w", err)
-	}
-	if err := d.drawSpreadHit.Init(); err != nil {
-		return fmt.Errorf("draw spread hit init failed: %w", err)
-	}
-	if err := d.drawSword.Init(); err != nil {
-		return fmt.Errorf("draw sword init failed: %w", err)
-	}
-	if err := d.drawVulcan.Init(); err != nil {
-		return fmt.Errorf("draw vulcan init failed: %w", err)
-	}
-	if err := d.drawWideShot.Init(); err != nil {
-		return fmt.Errorf("draw wide shot init failed: %w", err)
-	}
+
+	d.drawCannonInst.Init()
+	d.drawMiniBombInst.Init()
+	d.drawRecover.Init()
+	d.drawShockWave.Init()
+	d.drawSpreadGun.Init()
+	d.drawSpreadHit.Init()
+	d.drawSword.Init()
+	d.drawVulcan.Init()
+	d.drawWideShot.Init()
 
 	return nil
 }
 
 func (d *animDraw) End() {
-	d.drawCannonInst.End()
-	d.drawMiniBombInst.End()
-	d.drawRecover.End()
-	d.drawShockWave.End()
-	d.drawSpreadGun.End()
-	d.drawSpreadHit.End()
-	d.drawSword.End()
-	d.drawVulcan.End()
-	d.drawWideShot.End()
+	skilldraw.ClearImages()
 }
 
 func (d *animDraw) Draw() {

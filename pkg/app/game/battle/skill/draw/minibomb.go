@@ -1,8 +1,6 @@
 package skilldraw
 
 import (
-	"fmt"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -17,22 +15,8 @@ type DrawMiniBomb struct {
 	imgBombThrow []int
 }
 
-func (p *DrawMiniBomb) Init() error {
-	path := common.ImagePath + "battle/skill/"
-
-	fname := path + "ミニボム.png"
-	p.imgBombThrow = make([]int, 5)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, p.imgBombThrow); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	return nil
-}
-
-func (p *DrawMiniBomb) End() {
-	for i := 0; i < len(p.imgBombThrow); i++ {
-		dxlib.DeleteGraph(p.imgBombThrow[i])
-	}
-	p.imgBombThrow = []int{}
+func (p *DrawMiniBomb) Init() {
+	p.imgBombThrow = imgBombThrow
 }
 
 func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
