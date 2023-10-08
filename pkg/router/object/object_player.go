@@ -173,7 +173,8 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	p.skillID = ""
 
 	if dm.IsParalyzed {
-		// TODO: p.act.SetAnim(battlecommon.PlayerActParalyzed, 120)
+		// 麻痺状態(p.act.SetAnim(battlecommon.PlayerActParalyzed, 120))
+		panic("TODO: not implemented yet")
 	} else {
 		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
 		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
