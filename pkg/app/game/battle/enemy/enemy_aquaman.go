@@ -131,6 +131,11 @@ func (e *enemyAquaman) Process() (bool, error) {
 		e.pm.InvincibleCount--
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	switch e.state {
 	case aquamanActTypeStand:
 		e.waitCount--
@@ -323,6 +328,8 @@ func (e *enemyAquaman) Draw() {
 	}
 
 	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
+
+	drawParalysis(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

@@ -171,9 +171,15 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		p.skillInst.StopByOwner()
 	}
 	p.skillID = ""
-	p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
 
-	p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+	if dm.IsParalyzed {
+		// 麻痺状態(p.act.SetAnim(battlecommon.PlayerActParalyzed, 120))
+		panic("TODO: not implemented yet")
+	} else {
+		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
+		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+	}
+
 	logger.Debug("Player damaged: %+v", *dm)
 	return true
 }

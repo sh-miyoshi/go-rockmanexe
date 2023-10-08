@@ -93,6 +93,11 @@ func (e *enemyMetall) Process() (bool, error) {
 		return true, nil
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	const waitCount = 1 * 60
 	const actionInterval = 1 * 60
 	const forceAttackCount = 3
@@ -159,6 +164,7 @@ func (e *enemyMetall) Draw() {
 		img = e.atk.images[e.atk.GetImageNo()]
 	}
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+	drawParalysis(view.X, view.Y, img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {
