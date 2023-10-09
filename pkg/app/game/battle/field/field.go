@@ -2,6 +2,7 @@ package field
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
@@ -38,7 +39,6 @@ var (
 	panels        [][]extendPanelInfo
 )
 
-// Init ...
 func Init() error {
 	logger.Info("Initialize battle field data")
 
@@ -83,7 +83,12 @@ func Init() error {
 	}
 
 	// TODO: Map情報から取得する
-	if err := background.Set(background.Type秋原町); err != nil {
+	mapTypes := []int{
+		background.Type秋原町,
+		background.Typeアッフリク,
+		background.Typeブラックアース,
+	}
+	if err := background.Set(mapTypes[rand.Intn(len(mapTypes))]); err != nil {
 		return fmt.Errorf("failed to load background: %w", err)
 	}
 
