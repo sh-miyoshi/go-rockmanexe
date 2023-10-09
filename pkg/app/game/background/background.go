@@ -10,6 +10,7 @@ import (
 const (
 	TypeNone int = iota
 	Type秋原町
+	Typeアッフリク
 )
 
 type info struct {
@@ -47,6 +48,14 @@ func (i *info) Init(typ int) error {
 		i.BGColor = dxlib.GetColor(0, 0, 160)
 		i.Images = make([]int, 8)
 		fname := basePath + "back_image_秋原町.png"
+		if res := dxlib.LoadDivGraph(fname, 8, 2, 4, 64, 64, i.Images); res == -1 {
+			return fmt.Errorf("failed to load image %s", fname)
+		}
+		return nil
+	case Typeアッフリク:
+		i.BGColor = dxlib.GetColor(255, 140, 0)
+		i.Images = make([]int, 8)
+		fname := basePath + "back_image_アッフリク.png"
 		if res := dxlib.LoadDivGraph(fname, 8, 2, 4, 64, 64, i.Images); res == -1 {
 			return fmt.Errorf("failed to load image %s", fname)
 		}
