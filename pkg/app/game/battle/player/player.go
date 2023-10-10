@@ -328,7 +328,12 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show HP
 	dxlib.DrawGraph(x, y, imgHPFrame, true)
-	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
+	col := draw.NumberColorWhite
+	if p.HP*3 < p.HPMax {
+		// HPが1/3未満の時はオレンジ色にする
+		col = draw.NumberColorRed
+	}
+	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4, Color: col})
 
 	// Show Mind Status
 	dxlib.DrawGraph(x, y+35, imgMindFrame, true)
