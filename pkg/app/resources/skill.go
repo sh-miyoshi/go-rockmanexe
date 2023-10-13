@@ -39,3 +39,10 @@ const (
 	SkillWideShotStateBegin int = iota
 	SkillWideShotStateMove
 )
+
+const (
+	SkillAquamanStateInit int = iota
+	SkillAquamanStateAppear
+	SkillAquamanStateCreatePipe
+	SkillAquamanStateAttack
+)

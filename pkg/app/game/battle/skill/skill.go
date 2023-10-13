@@ -133,11 +133,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillAquamanShot:
 		return newAquamanShot(objID, arg)
 	case SkillAquaman:
-		res, err := newAquaman(objID, arg)
-		if err != nil {
-			common.SetError(err.Error())
-		}
-		return res
+		return newAquaman(objID, arg)
 	case SkillCrackout:
 		return newCrack(objID, crackType1, arg)
 	case SkillDoubleCrack:

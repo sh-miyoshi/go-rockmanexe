@@ -9,31 +9,33 @@ import (
 )
 
 var (
-	imgCannonAtk      [resources.SkillTypeCannonMax][]int
-	imgCannonBody     [resources.SkillTypeCannonMax][]int
-	imgSword          [resources.SkillTypeSwordMax][]int
-	imgBombThrow      []int
-	imgShockWave      []int
-	imgRecover        []int
-	imgSpreadGunAtk   []int
-	imgSpreadGunBody  []int
-	imgVulcan         []int
-	imgPick           []int
-	imgThunderBall    []int
-	imgWideShotBody   []int
-	imgWideShotBegin  []int
-	imgWideShotMove   []int
-	imgBoomerang      []int
-	imgAquamanShot    []int
-	imgBambooLance    []int
-	imgDreamSword     []int
-	imgGarooBreath    []int
-	imgFlamePillar    []int
-	imgFlameLineBody  []int
-	imgHeatShotBody   []int
-	imgHeatShotAtk    []int
-	imgAreaStealMain  []int
-	imgAreaStealPanel []int
+	imgCannonAtk         [resources.SkillTypeCannonMax][]int
+	imgCannonBody        [resources.SkillTypeCannonMax][]int
+	imgSword             [resources.SkillTypeSwordMax][]int
+	imgBombThrow         []int
+	imgShockWave         []int
+	imgRecover           []int
+	imgSpreadGunAtk      []int
+	imgSpreadGunBody     []int
+	imgVulcan            []int
+	imgPick              []int
+	imgThunderBall       []int
+	imgWideShotBody      []int
+	imgWideShotBegin     []int
+	imgWideShotMove      []int
+	imgBoomerang         []int
+	imgAquamanShot       []int
+	imgBambooLance       []int
+	imgDreamSword        []int
+	imgGarooBreath       []int
+	imgFlamePillar       []int
+	imgFlameLineBody     []int
+	imgHeatShotBody      []int
+	imgHeatShotAtk       []int
+	imgAreaStealMain     []int
+	imgAreaStealPanel    []int
+	imgAquamanCharStand  []int
+	imgAquamanCharCreate []int
 )
 
 func LoadImages() error {
@@ -215,6 +217,18 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
+	fname = common.ImagePath + "battle/character/アクアマン_stand.png"
+	imgAquamanCharStand = make([]int, 9)
+	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, imgAquamanCharStand); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	fname = common.ImagePath + "battle/character/アクアマン_create.png"
+	imgAquamanCharCreate = make([]int, 1)
+	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, imgAquamanCharCreate); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -323,4 +337,12 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgAreaStealPanel[i])
 	}
 	imgAreaStealPanel = []int{}
+	for i := 0; i < len(imgAquamanCharStand); i++ {
+		dxlib.DeleteGraph(imgAquamanCharStand[i])
+	}
+	imgAquamanCharStand = []int{}
+	for i := 0; i < len(imgAquamanCharCreate); i++ {
+		dxlib.DeleteGraph(imgAquamanCharCreate[i])
+	}
+	imgAquamanCharCreate = []int{}
 }

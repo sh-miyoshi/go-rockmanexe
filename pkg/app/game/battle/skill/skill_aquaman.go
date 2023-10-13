@@ -10,87 +10,52 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	aquamanStateInit int = iota
-	aquamanStateAppear
-	aquamanStateCreatePipe
-	aquamanStateAttack
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 )
 
 type aquaman struct {
 	ID  string
 	Arg Argument
 
-	count         int
-	state         int
-	imgCharStand  []int
-	imgCharCreate []int
-	pos           common.Point
-	atkID         string
+	count  int
+	state  int
+	pos    common.Point
+	atkID  string
+	drawer skilldraw.DrawAquaman
 }
 
-func newAquaman(objID string, arg Argument) (*aquaman, error) {
+func newAquaman(objID string, arg Argument) *aquaman {
 	res := &aquaman{
 		ID:    objID,
 		Arg:   arg,
-		state: aquamanStateInit,
+		state: resources.SkillAquamanStateInit,
 		pos:   localanim.ObjAnimGetObjPos(arg.OwnerID),
 	}
 
-	fname := common.ImagePath + "battle/character/アクアマン_stand.png"
-	res.imgCharStand = make([]int, 9)
-	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, res.imgCharStand); res == -1 {
-		return nil, fmt.Errorf("failed to load image: %s", fname)
-	}
+	res.drawer.Init()
 
-	fname = common.ImagePath + "battle/character/アクアマン_create.png"
-	res.imgCharCreate = make([]int, 1)
-	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, res.imgCharCreate); res == -1 {
-		return nil, fmt.Errorf("failed to load image: %s", fname)
-	}
-
-	return res, nil
+	return res
 }
 
 func (p *aquaman) Draw() {
 	view := battlecommon.ViewPos(p.pos)
-	xflip := int32(dxlib.TRUE)
-
-	switch p.state {
-	case aquamanStateInit:
-	case aquamanStateAppear:
-		const delay = 8
-		if p.count > 20 {
-			imgNo := (p.count / delay) % len(p.imgCharStand)
-			dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharStand[imgNo], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-		}
-	case aquamanStateCreatePipe:
-		imgNo := p.count
-		if imgNo >= len(p.imgCharCreate) {
-			imgNo = len(p.imgCharCreate) - 1
-		}
-		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[imgNo], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-	case aquamanStateAttack:
-		dxlib.DrawRotaGraph(view.X+35, view.Y, 1, 0, p.imgCharCreate[len(p.imgCharCreate)-1], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-	}
+	p.drawer.Draw(view, p.count, p.state)
 }
 
 func (p *aquaman) Process() (bool, error) {
 	switch p.state {
-	case aquamanStateInit:
+	case resources.SkillAquamanStateInit:
 		field.SetBlackoutCount(300)
 		SetChipNameDraw("アクアマン", true)
-		p.setState(aquamanStateAppear)
+		p.setState(resources.SkillAquamanStateAppear)
 		return false, nil
-	case aquamanStateAppear:
+	case resources.SkillAquamanStateAppear:
 		if p.count == 70 {
-			p.setState(aquamanStateCreatePipe)
+			p.setState(resources.SkillAquamanStateCreatePipe)
 			return false, nil
 		}
-	case aquamanStateCreatePipe:
+	case resources.SkillAquamanStateCreatePipe:
 		if p.count == 10 {
 			obj := &object.WaterPipe{}
 			pm := object.ObjectParam{
@@ -107,13 +72,12 @@ func (p *aquaman) Process() (bool, error) {
 			p.atkID = localanim.ObjAnimNew(obj)
 			localanim.ObjAnimAddActiveAnim(p.atkID)
 
-			p.setState(aquamanStateAttack)
+			p.setState(resources.SkillAquamanStateAttack)
 			return false, nil
 		}
-	case aquamanStateAttack:
+	case resources.SkillAquamanStateAttack:
 		if !localanim.ObjAnimIsProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
-			p.end()
 			return true, nil
 		}
 	}
@@ -136,13 +100,4 @@ func (p *aquaman) StopByOwner() {
 func (p *aquaman) setState(nextState int) {
 	p.count = 0
 	p.state = nextState
-}
-
-func (p *aquaman) end() {
-	for _, img := range p.imgCharStand {
-		dxlib.DeleteGraph(img)
-	}
-	for _, img := range p.imgCharCreate {
-		dxlib.DeleteGraph(img)
-	}
 }
