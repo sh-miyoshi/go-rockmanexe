@@ -102,6 +102,11 @@ func (e *enemyBoomer) Process() (bool, error) {
 		return true, nil
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	// Enemy Logic
 	switch e.state {
 	case boomerStateWait:
@@ -182,6 +187,8 @@ func (e *enemyBoomer) Draw() {
 		}
 	}
 	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, true)
+
+	drawParalysis(view.X, view.Y+ofsy, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

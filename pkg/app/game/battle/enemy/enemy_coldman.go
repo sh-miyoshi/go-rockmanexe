@@ -128,6 +128,11 @@ func (e *enemyColdman) Process() (bool, error) {
 		return true, nil
 	}
 
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	// Enemy Logic
 	if e.pm.InvincibleCount > 0 {
 		e.pm.InvincibleCount--
@@ -291,6 +296,8 @@ func (e *enemyColdman) Draw() {
 	}
 
 	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
+
+	drawParalysis(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {

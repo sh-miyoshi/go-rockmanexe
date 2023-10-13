@@ -67,6 +67,19 @@ func (s *Supporter) Draw() {
 	view := battlecommon.ViewPos(s.Pos)
 	img := s.act.GetImage()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+
+	if s.act.IsParalyzed() {
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+		// 黄色と白を点滅させる
+		pm := 0
+		if s.act.count/10%2 == 0 {
+			pm = 255
+		}
+		dxlib.SetDrawBright(255, 255, pm)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+		dxlib.SetDrawBright(255, 255, 255)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 }
 
 func (s *Supporter) Process() (bool, error) {
@@ -168,8 +181,12 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		}
 		s.act.skillID = ""
 
-		s.act.SetAnim(battlecommon.PlayerActDamage, 0)
-		s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		if dm.IsParalyzed {
+			s.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
+		} else {
+			s.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
 		logger.Debug("Supporter damaged: %+v", *dm)
 		return true
 	}

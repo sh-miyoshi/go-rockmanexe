@@ -9,6 +9,7 @@ const (
 
 var (
 	PlayerDefaultInvincibleTime = 120
+	DefaultParalyzedTime        = 60
 )
 
 const (
@@ -21,6 +22,7 @@ const (
 	PlayerActBuster
 	PlayerActPick
 	PlayerActThrow
+	PlayerActParalyzed
 
 	PlayerActMax
 )

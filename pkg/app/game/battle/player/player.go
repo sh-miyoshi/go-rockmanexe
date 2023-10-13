@@ -72,7 +72,7 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers    [battlecommon.PlayerActMax][]int
-	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3}
+	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -175,6 +175,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	imgPlayers[battlecommon.PlayerActThrow] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, imgPlayers[battlecommon.PlayerActThrow]); res == -1 {
 		return nil, fmt.Errorf("failed to load player throw image: %s", fname)
+	}
+
+	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 4)
+	for i := 0; i < 4; i++ {
+		imgPlayers[battlecommon.PlayerActParalyzed][i] = imgPlayers[battlecommon.PlayerActDamage][i]
 	}
 
 	fname = common.ImagePath + "battle/hp_frame.png"
@@ -284,6 +289,18 @@ func (p *BattlePlayer) Draw() {
 	view := battlecommon.ViewPos(p.Pos)
 	img := p.act.GetImage()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+	if p.act.IsParalyzed() {
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+		// 黄色と白を点滅させる
+		pm := 0
+		if p.act.count/10%2 == 0 {
+			pm = 255
+		}
+		dxlib.SetDrawBright(255, 255, pm)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+		dxlib.SetDrawBright(255, 255, 255)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
 
 	// Show charge image
 	if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -311,7 +328,12 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show HP
 	dxlib.DrawGraph(x, y, imgHPFrame, true)
-	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4})
+	col := draw.NumberColorWhite
+	if p.HP*3 < p.HPMax {
+		// HPが1/3未満の時はオレンジ色にする
+		col = draw.NumberColorRed
+	}
+	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4, Color: col})
 
 	// Show Mind Status
 	dxlib.DrawGraph(x, y+35, imgMindFrame, true)
@@ -498,9 +520,15 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			p.act.skillInst.StopByOwner()
 		}
 		p.act.skillID = ""
+		p.ChargeCount = 0
 
-		p.act.SetAnim(battlecommon.PlayerActDamage, 0)
-		p.invincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		if dm.IsParalyzed {
+			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
+		} else {
+			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
+
 		p.DamageNum++
 		logger.Debug("Player damaged: %+v", *dm)
 		return true
@@ -591,7 +619,7 @@ func (a *act) Process() bool {
 		if a.count == 2 {
 			battlecommon.MoveObject(a.pPos, a.MoveDirect, battlecommon.PanelTypePlayer, true, field.GetPanelInfo)
 		}
-	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
+	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow, battlecommon.PlayerActParalyzed:
 		// No special action
 	default:
 		common.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
@@ -629,4 +657,8 @@ func (a *act) GetImage() int {
 	}
 
 	return imgPlayers[a.typ][imgNo]
+}
+
+func (a *act) IsParalyzed() bool {
+	return a.typ == battlecommon.PlayerActParalyzed
 }
