@@ -23,6 +23,7 @@ const (
 	SkillSpreadGunEndCount = 8 // imgAtkNum*delay
 	SkillSwordEndCount     = 12
 	SkillWideShotEndCount  = 16
+	SkillWaterBombEndCount = 60
 )
 
 const (
@@ -33,6 +34,7 @@ const (
 	SkillVulcanDelay                 = 2
 	SkillWideShotDelay               = 4
 	SkillWideShotPlayerNextStepCount = 8
+	SKillBombThrowDelay              = 4
 )
 
 const (

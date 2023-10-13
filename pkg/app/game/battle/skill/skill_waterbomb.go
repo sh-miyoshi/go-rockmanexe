@@ -9,14 +9,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	waterBombEndCount   = 60
-	delayWaterBombThrow = 4
 )
 
 type waterBomb struct {
@@ -26,6 +21,7 @@ type waterBomb struct {
 	count  int
 	pos    common.Point
 	target common.Point
+	drawer skilldraw.DrawWaterBomb
 }
 
 func newWaterBomb(objID string, arg Argument) *waterBomb {
@@ -41,33 +37,19 @@ func newWaterBomb(objID string, arg Argument) *waterBomb {
 		t = objs[0].Pos
 	}
 
-	return &waterBomb{
+	res := &waterBomb{
 		ID:     objID,
 		Arg:    arg,
 		target: t,
 		pos:    pos,
 	}
+	res.drawer.Init()
+
+	return res
 }
 
 func (p *waterBomb) Draw() {
-	imgNo := (p.count / delayWaterBombThrow) % len(imgBombThrow)
-	view := battlecommon.ViewPos(p.pos)
-
-	// y = ax^2 + bx + c
-	// (0,0), (d/2, ymax), (d, 0)
-	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
-	size := battlecommon.PanelSize.X * (p.target.X - p.pos.X)
-	ofsx := size * p.count / waterBombEndCount
-	const ymax = 100
-	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
-
-	if p.target.Y != p.pos.Y {
-		size = battlecommon.PanelSize.Y * (p.target.Y - p.pos.Y)
-		dy := size * p.count / waterBombEndCount
-		ofsy += dy
-	}
-
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], true)
+	p.drawer.Draw(p.pos, p.target, p.count)
 }
 
 func (p *waterBomb) Process() (bool, error) {
@@ -77,7 +59,7 @@ func (p *waterBomb) Process() (bool, error) {
 		sound.On(resources.SEBombThrow)
 	}
 
-	if p.count == waterBombEndCount {
+	if p.count == resources.SkillWaterBombEndCount {
 		pn := field.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil

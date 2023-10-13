@@ -60,7 +60,6 @@ type Argument struct {
 }
 
 var (
-	imgBombThrow      []int
 	imgPick           []int
 	imgThunderBall    []int
 	imgBoomerang      []int

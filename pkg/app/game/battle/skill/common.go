@@ -21,15 +21,7 @@ func loadImages() error {
 
 	tmp := make([]int, 12)
 
-	fname := path + "ミニボム.png"
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 5; i++ {
-		imgBombThrow = append(imgBombThrow, tmp[i])
-	}
-
-	fname = path + "ウェーブ_body.png"
+	fname := path + "ウェーブ_body.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -104,10 +96,6 @@ func loadImages() error {
 }
 
 func cleanupImages() {
-	for i := 0; i < len(imgBombThrow); i++ {
-		dxlib.DeleteGraph(imgBombThrow[i])
-	}
-	imgBombThrow = []int{}
 	for i := 0; i < len(imgPick); i++ {
 		dxlib.DeleteGraph(imgPick[i])
 	}
