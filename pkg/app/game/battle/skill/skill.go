@@ -64,7 +64,6 @@ var (
 	imgPick           []int
 	imgThunderBall    []int
 	imgBoomerang      []int
-	imgAquamanShot    []int
 	imgBambooLance    []int
 	imgDreamSword     []int
 	imgGarooBreath    []int

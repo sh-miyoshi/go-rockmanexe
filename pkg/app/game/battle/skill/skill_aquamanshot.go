@@ -8,9 +8,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type aquamanShot struct {
@@ -21,22 +21,26 @@ type aquamanShot struct {
 	ofs    common.Point
 	target common.Point
 	count  int
+	drawer skilldraw.DrawAquamanShot
 }
 
 func newAquamanShot(objID string, arg Argument) *aquamanShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	return &aquamanShot{
+	res := &aquamanShot{
 		ID:     objID,
 		Arg:    arg,
 		pos:    common.Point{X: view.X - 40, Y: view.Y + 10},
 		target: common.Point{X: pos.X - 2, Y: pos.Y},
 	}
+	res.drawer.Init()
+
+	return res
 }
 
 func (p *aquamanShot) Draw() {
-	dxlib.DrawRotaGraph(p.pos.X+p.ofs.X, p.pos.Y+p.ofs.Y, 1, 0, imgAquamanShot[0], true)
+	p.drawer.Draw(p.pos, p.ofs)
 }
 
 func (p *aquamanShot) Process() (bool, error) {
