@@ -60,18 +60,16 @@ type Argument struct {
 }
 
 var (
-	imgPick           []int
-	imgThunderBall    []int
-	imgBoomerang      []int
-	imgBambooLance    []int
-	imgDreamSword     []int
-	imgGarooBreath    []int
-	imgFlamePillar    []int
-	imgFlameLineBody  []int
-	imgHeatShotBody   []int
-	imgHeatShotAtk    []int
-	imgAreaStealMain  []int
-	imgAreaStealPanel []int
+	imgPick          []int
+	imgThunderBall   []int
+	imgBoomerang     []int
+	imgBambooLance   []int
+	imgDreamSword    []int
+	imgGarooBreath   []int
+	imgFlamePillar   []int
+	imgFlameLineBody []int
+	imgHeatShotBody  []int
+	imgHeatShotAtk   []int
 )
 
 func Init() error {

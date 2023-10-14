@@ -17,13 +17,14 @@ const (
 )
 
 const (
-	SkillCannonEndCount    = 31 // imgAtkNum*delayAtk + 15
-	SkillMiniBombEndCount  = 60
-	SkillRecoverEndCount   = 8
-	SkillSpreadGunEndCount = 8 // imgAtkNum*delay
-	SkillSwordEndCount     = 12
-	SkillWideShotEndCount  = 16
-	SkillWaterBombEndCount = 60
+	SkillCannonEndCount       = 31 // imgAtkNum*delayAtk + 15
+	SkillMiniBombEndCount     = 60
+	SkillRecoverEndCount      = 8
+	SkillSpreadGunEndCount    = 8 // imgAtkNum*delay
+	SkillSwordEndCount        = 12
+	SkillWideShotEndCount     = 16
+	SkillWaterBombEndCount    = 60
+	SkillAreaStealHitEndCount = SkillAreaStealHitDelay * 6
 )
 
 const (
@@ -35,6 +36,7 @@ const (
 	SkillWideShotDelay               = 4
 	SkillWideShotPlayerNextStepCount = 8
 	SKillBombThrowDelay              = 4
+	SkillAreaStealHitDelay           = 2
 )
 
 const (
@@ -47,4 +49,10 @@ const (
 	SkillAquamanStateAppear
 	SkillAquamanStateCreatePipe
 	SkillAquamanStateAttack
+)
+
+const (
+	SkillAreaStealStateBlackout int = iota
+	SkillAreaStealStateActing
+	SkillAreaStealStateHit
 )

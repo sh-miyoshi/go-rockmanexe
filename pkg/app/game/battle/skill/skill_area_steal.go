@@ -7,19 +7,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delayAreaStealHit = 2
-)
-
-const (
-	areaStealStateBlackout int = iota
-	areaStealStateActing
-	areaStealStateHit
 )
 
 type skillAreaSteal struct {
@@ -30,13 +20,14 @@ type skillAreaSteal struct {
 	state       int
 	targetLineX int
 	myPanelType int
+	drawer      skilldraw.DrawAreaSteal
 }
 
 func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
 	res := &skillAreaSteal{
 		ID:    objID,
 		Arg:   arg,
-		state: areaStealStateBlackout,
+		state: resources.SkillAreaStealStateBlackout,
 	}
 
 	if arg.TargetType == battlecommon.PanelTypePlayer {
@@ -49,36 +40,19 @@ func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
 }
 
 func (p *skillAreaSteal) Draw() {
-	switch p.state {
-	case areaStealStateBlackout:
-	case areaStealStateActing:
-		ofs := p.count*4 - 30
-		ino := p.count / 3
-		if ino >= len(imgAreaStealMain) {
-			ino = len(imgAreaStealMain) - 1
-		}
-
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
-			dxlib.DrawRotaGraph(view.X, view.Y+ofs, 1, 0, imgAreaStealMain[ino], true)
-		}
-	case areaStealStateHit:
-		ino := p.count / delayAreaStealHit
-		if ino >= len(imgAreaStealPanel) {
-			ino = len(imgAreaStealPanel) - 1
-		}
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			view := battlecommon.ViewPos(common.Point{X: p.targetLineX, Y: y})
-			dxlib.DrawRotaGraph(view.X, view.Y+30, 1, 0, imgAreaStealPanel[ino], true)
-		}
+	targets := []common.Point{}
+	for y := 0; y < battlecommon.FieldNum.Y; y++ {
+		targets = append(targets, common.Point{X: p.targetLineX, Y: y})
 	}
+
+	p.drawer.Draw(p.count, p.state, targets)
 }
 
 func (p *skillAreaSteal) Process() (bool, error) {
 	p.count++
 
 	switch p.state {
-	case areaStealStateBlackout:
+	case resources.SkillAreaStealStateBlackout:
 		if p.count == 1 {
 			sound.On(resources.SEAreaSteal)
 			field.SetBlackoutCount(90)
@@ -108,16 +82,15 @@ func (p *skillAreaSteal) Process() (bool, error) {
 			}
 		}
 		if p.count == 30 {
-			p.setState(areaStealStateActing)
+			p.setState(resources.SkillAreaStealStateActing)
 		}
-	case areaStealStateActing:
+	case resources.SkillAreaStealStateActing:
 		if p.count == 15 {
 			sound.On(resources.SEAreaStealHit)
-			p.setState(areaStealStateHit)
+			p.setState(resources.SkillAreaStealStateHit)
 		}
-	case areaStealStateHit:
-		max := delayAreaStealHit * len(imgAreaStealPanel)
-		if p.count >= max {
+	case resources.SkillAreaStealStateHit:
+		if p.count >= resources.SkillAreaStealHitEndCount {
 			for y := 0; y < battlecommon.FieldNum.Y; y++ {
 				pos := common.Point{X: p.targetLineX, Y: y}
 				pn := field.GetPanelInfo(pos)
