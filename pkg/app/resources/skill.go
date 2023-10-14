@@ -24,7 +24,7 @@ const (
 	SkillSwordEndCount        = 12
 	SkillWideShotEndCount     = 16
 	SkillWaterBombEndCount    = 60
-	SkillAreaStealHitEndCount = SkillAreaStealHitDelay * 6
+	SkillAreaStealHitEndCount = 12
 )
 
 const (
@@ -36,7 +36,7 @@ const (
 	SkillWideShotDelay               = 4
 	SkillWideShotPlayerNextStepCount = 8
 	SKillBombThrowDelay              = 4
-	SkillAreaStealHitDelay           = 2 // WIP
+	SkillBoomerangNextStepCount      = 6
 )
 
 const (

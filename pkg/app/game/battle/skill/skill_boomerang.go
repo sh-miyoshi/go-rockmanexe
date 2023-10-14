@@ -8,7 +8,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type boomerang struct {
@@ -22,11 +21,6 @@ type boomerang struct {
 	next    common.Point
 	prev    common.Point
 }
-
-const (
-	boomerangNextStepCount = 6
-	delayBoomerang         = 8
-)
 
 const (
 	boomerangActTypeClockwise = iota
@@ -64,18 +58,6 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 }
 
 func (p *boomerang) Draw() {
-	view := battlecommon.ViewPos(p.pos)
-	n := (p.count / delayBoomerang) % len(imgBoomerang)
-
-	cnt := p.count % boomerangNextStepCount
-	if cnt == 0 {
-		// Skip drawing because the position is updated in Process method and return unexpected value
-		return
-	}
-
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, boomerangNextStepCount, battlecommon.PanelSize.X)
-	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, boomerangNextStepCount, battlecommon.PanelSize.Y)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgBoomerang[n], true)
 }
 
 func (p *boomerang) Process() (bool, error) {
@@ -83,7 +65,7 @@ func (p *boomerang) Process() (bool, error) {
 		sound.On(resources.SEBoomerangThrow)
 	}
 
-	if p.count%boomerangNextStepCount == 0 {
+	if p.count%resources.SkillBoomerangNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
@@ -92,7 +74,7 @@ func (p *boomerang) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           boomerangNextStepCount + 1,
+			TTL:           resources.SkillBoomerangNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeSpreadHit,
 			ShowHitArea:   false,

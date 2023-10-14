@@ -7,6 +7,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayStealHit = 2
+)
+
 type DrawAreaSteal struct {
 }
 
@@ -25,7 +29,7 @@ func (p *DrawAreaSteal) Draw(count int, state int, targets []common.Point) {
 			dxlib.DrawRotaGraph(view.X, view.Y+ofs, 1, 0, imgAreaStealMain[ino], true)
 		}
 	case resources.SkillAreaStealStateHit:
-		ino := count / resources.SkillAreaStealHitDelay
+		ino := count / delayStealHit
 		if ino >= len(imgAreaStealPanel) {
 			ino = len(imgAreaStealPanel) - 1
 		}
