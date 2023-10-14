@@ -1,6 +1,3 @@
-//go:build !mac
-// +build !mac
-
 package dxlib
 
 import "github.com/sh-miyoshi/dxlib"
