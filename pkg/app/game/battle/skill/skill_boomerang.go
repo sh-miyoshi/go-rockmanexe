@@ -6,6 +6,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
@@ -20,6 +21,7 @@ type boomerang struct {
 	pos     common.Point
 	next    common.Point
 	prev    common.Point
+	drawer  skilldraw.DrawBoomerang
 }
 
 const (
@@ -58,6 +60,7 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 }
 
 func (p *boomerang) Draw() {
+	p.drawer.Draw(p.prev, p.pos, p.next, p.count)
 }
 
 func (p *boomerang) Process() (bool, error) {
