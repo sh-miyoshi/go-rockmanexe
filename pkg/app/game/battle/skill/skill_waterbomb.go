@@ -37,15 +37,12 @@ func newWaterBomb(objID string, arg Argument) *waterBomb {
 		t = objs[0].Pos
 	}
 
-	res := &waterBomb{
+	return &waterBomb{
 		ID:     objID,
 		Arg:    arg,
 		target: t,
 		pos:    pos,
 	}
-	res.drawer.Init()
-
-	return res
 }
 
 func (p *waterBomb) Draw() {

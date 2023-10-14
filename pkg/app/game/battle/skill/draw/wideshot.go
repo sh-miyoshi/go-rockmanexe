@@ -8,15 +8,6 @@ import (
 )
 
 type DrawWideShot struct {
-	imgBody  []int
-	imgBegin []int
-	imgMove  []int
-}
-
-func (p *DrawWideShot) Init() {
-	p.imgBody = imgWideShotBody
-	p.imgBegin = imgWideShotBegin
-	p.imgMove = imgWideShotMove
 }
 
 func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bool, nextStepCount int, state int) {
@@ -33,15 +24,15 @@ func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bo
 	case resources.SkillWideShotStateBegin:
 		n := (count / resources.SkillWideShotDelay)
 
-		if n < len(p.imgBody) && showBody {
-			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, p.imgBody[n], true, opt)
+		if n < len(imgWideShotBody) && showBody {
+			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
 		}
-		if n >= len(p.imgBegin) {
-			n = len(p.imgBegin) - 1
+		if n >= len(imgWideShotBegin) {
+			n = len(imgWideShotBegin) - 1
 		}
-		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, p.imgBegin[n], true, opt)
+		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
 	case resources.SkillWideShotStateMove:
-		n := (count / resources.SkillWideShotDelay) % len(p.imgMove)
+		n := (count / resources.SkillWideShotDelay) % len(imgWideShotMove)
 		next := pos.X + 1
 		prev := pos.X - 1
 		if direct == common.DirectLeft {
@@ -51,7 +42,7 @@ func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bo
 		c := count % nextStepCount
 		if c != 0 {
 			ofsx := battlecommon.GetOffset(next, pos.X, prev, c, nextStepCount, battlecommon.PanelSize.X)
-			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, p.imgMove[n], true, opt)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true, opt)
 		}
 	}
 }

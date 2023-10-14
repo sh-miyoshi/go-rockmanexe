@@ -22,15 +22,11 @@ type cannon struct {
 }
 
 func newCannon(objID string, cannonType int, arg Argument) *cannon {
-	res := &cannon{
+	return &cannon{
 		ID:   objID,
 		Type: cannonType,
 		Arg:  arg,
 	}
-	// TODO: return error
-	res.drawer.Init()
-
-	return res
 }
 
 func (p *cannon) Draw() {

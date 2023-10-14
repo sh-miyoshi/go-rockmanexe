@@ -6,13 +6,8 @@ import (
 )
 
 type DrawAquamanShot struct {
-	img []int
-}
-
-func (p *DrawAquamanShot) Init() {
-	p.img = imgAquamanShot
 }
 
 func (p *DrawAquamanShot) Draw(viewPos, ofs common.Point) {
-	dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, p.img[0], true)
+	dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, imgAquamanShot[0], true)
 }

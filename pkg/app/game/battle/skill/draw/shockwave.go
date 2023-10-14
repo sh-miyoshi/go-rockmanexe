@@ -6,22 +6,17 @@ import (
 )
 
 type DrawShockWave struct {
-	imgShockWave []int
-}
-
-func (p *DrawShockWave) Init() {
-	p.imgShockWave = imgShockWave
 }
 
 func (p *DrawShockWave) Draw(viewPos common.Point, count int, speed int, direct int) {
-	n := (count / speed) % len(p.imgShockWave)
+	n := (count / speed) % len(imgShockWave)
 	if direct == common.DirectLeft {
 		flag := int32(dxlib.TRUE)
 		dxopts := dxlib.DrawRotaGraphOption{
 			ReverseXFlag: &flag,
 		}
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgShockWave[n], true, dxopts)
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgShockWave[n], true, dxopts)
 	} else if direct == common.DirectRight {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, p.imgShockWave[n], true)
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgShockWave[n], true)
 	}
 }

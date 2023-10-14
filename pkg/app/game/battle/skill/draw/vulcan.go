@@ -7,11 +7,6 @@ import (
 )
 
 type DrawVulcan struct {
-	img []int
-}
-
-func (p *DrawVulcan) Init() {
-	p.img = imgVulcan
 }
 
 func (p *DrawVulcan) Draw(viewPos common.Point, count int) {
@@ -21,13 +16,13 @@ func (p *DrawVulcan) Draw(viewPos common.Point, count int) {
 	}
 
 	// Show body
-	dxlib.DrawRotaGraph(viewPos.X+50, viewPos.Y-18, 1, 0, p.img[imgNo], true)
+	dxlib.DrawRotaGraph(viewPos.X+50, viewPos.Y-18, 1, 0, imgVulcan[imgNo], true)
 	// Show attack
 	if imgNo != 0 {
 		if imgNo%2 == 0 {
-			dxlib.DrawRotaGraph(viewPos.X+100, viewPos.Y-10, 1, 0, p.img[3], true)
+			dxlib.DrawRotaGraph(viewPos.X+100, viewPos.Y-10, 1, 0, imgVulcan[3], true)
 		} else {
-			dxlib.DrawRotaGraph(viewPos.X+100, viewPos.Y-15, 1, 0, p.img[3], true)
+			dxlib.DrawRotaGraph(viewPos.X+100, viewPos.Y-15, 1, 0, imgVulcan[3], true)
 		}
 	}
 }

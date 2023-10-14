@@ -26,16 +26,12 @@ type aquaman struct {
 }
 
 func newAquaman(objID string, arg Argument) *aquaman {
-	res := &aquaman{
+	return &aquaman{
 		ID:    objID,
 		Arg:   arg,
 		state: resources.SkillAquamanStateInit,
 		pos:   localanim.ObjAnimGetObjPos(arg.OwnerID),
 	}
-
-	res.drawer.Init()
-
-	return res
 }
 
 func (p *aquaman) Draw() {

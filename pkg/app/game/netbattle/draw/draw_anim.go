@@ -28,16 +28,6 @@ func (d *animDraw) Init() error {
 		return fmt.Errorf("failed to load skill image: %w", err)
 	}
 
-	d.drawCannonInst.Init()
-	d.drawMiniBombInst.Init()
-	d.drawRecover.Init()
-	d.drawShockWave.Init()
-	d.drawSpreadGun.Init()
-	d.drawSpreadHit.Init()
-	d.drawSword.Init()
-	d.drawVulcan.Init()
-	d.drawWideShot.Init()
-
 	return nil
 }
 

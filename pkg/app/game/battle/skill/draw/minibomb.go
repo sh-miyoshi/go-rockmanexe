@@ -8,15 +8,10 @@ import (
 )
 
 type DrawMiniBomb struct {
-	imgBombThrow []int
-}
-
-func (p *DrawMiniBomb) Init() {
-	p.imgBombThrow = imgBombThrow
 }
 
 func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
-	imgNo := (count / resources.SKillBombThrowDelay) % len(p.imgBombThrow)
+	imgNo := (count / resources.SKillBombThrowDelay) % len(imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 
 	// y = ax^2 + bx + c
@@ -33,5 +28,5 @@ func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
 		ofsy += dy
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, p.imgBombThrow[imgNo], true)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], true)
 }

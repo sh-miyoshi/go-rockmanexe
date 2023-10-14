@@ -25,15 +25,12 @@ type miniBomb struct {
 
 func newMiniBomb(objID string, arg Argument) *miniBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-	res := &miniBomb{
+	return &miniBomb{
 		ID:     objID,
 		Arg:    arg,
 		pos:    pos,
 		target: common.Point{X: pos.X + 3, Y: pos.Y},
 	}
-	res.drawer.Init() // TODO: error
-
-	return res
 }
 
 func (p *miniBomb) Draw() {

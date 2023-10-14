@@ -41,8 +41,6 @@ func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
 		pos:    pos,
 	}
 
-	res.drawer.Init() // TODO: error
-
 	if isPlayer {
 		res.Direct = common.DirectRight
 		res.Speed = resources.SkillShockWavePlayerSpeed

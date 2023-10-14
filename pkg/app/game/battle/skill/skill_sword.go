@@ -22,15 +22,11 @@ type sword struct {
 }
 
 func newSword(objID string, swordType int, arg Argument) *sword {
-	res := &sword{
+	return &sword{
 		ID:   objID,
 		Type: swordType,
 		Arg:  arg,
 	}
-
-	res.drawer.Init() // TODO error
-
-	return res
 }
 
 func (p *sword) Draw() {

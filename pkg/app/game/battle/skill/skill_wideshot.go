@@ -33,7 +33,7 @@ func newWideShot(objID string, arg Argument) *wideShot {
 		nextStep = 16
 	}
 
-	res := &wideShot{
+	return &wideShot{
 		ID:            objID,
 		Arg:           arg,
 		Direct:        direct,
@@ -41,10 +41,6 @@ func newWideShot(objID string, arg Argument) *wideShot {
 		pos:           pos,
 		state:         resources.SkillWideShotStateBegin,
 	}
-
-	res.drawer.Init() // TODO error
-
-	return res
 }
 
 func (p *wideShot) Draw() {

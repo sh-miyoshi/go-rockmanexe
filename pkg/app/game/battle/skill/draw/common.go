@@ -36,6 +36,7 @@ var (
 	imgAreaStealPanel    []int
 	imgAquamanCharStand  []int
 	imgAquamanCharCreate []int
+	imgSpreadHit         []int
 )
 
 func LoadImages() error {
@@ -229,6 +230,12 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
+	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
+	imgSpreadHit = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHit); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
 	return nil
 }
 
@@ -345,4 +352,8 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgAquamanCharCreate[i])
 	}
 	imgAquamanCharCreate = []int{}
+	for i := 0; i < len(imgSpreadHit); i++ {
+		dxlib.DeleteGraph(imgSpreadHit[i])
+	}
+	imgSpreadHit = []int{}
 }

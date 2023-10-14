@@ -36,7 +36,7 @@ const (
 	SkillWideShotDelay               = 4
 	SkillWideShotPlayerNextStepCount = 8
 	SKillBombThrowDelay              = 4
-	SkillAreaStealHitDelay           = 2
+	SkillAreaStealHitDelay           = 2 // WIP
 )
 
 const (

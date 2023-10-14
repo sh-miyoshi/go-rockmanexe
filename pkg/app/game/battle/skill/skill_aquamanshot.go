@@ -28,15 +28,12 @@ func newAquamanShot(objID string, arg Argument) *aquamanShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	res := &aquamanShot{
+	return &aquamanShot{
 		ID:     objID,
 		Arg:    arg,
 		pos:    common.Point{X: view.X - 40, Y: view.Y + 10},
 		target: common.Point{X: pos.X - 2, Y: pos.Y},
 	}
-	res.drawer.Init()
-
-	return res
 }
 
 func (p *aquamanShot) Draw() {

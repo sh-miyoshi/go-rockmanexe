@@ -25,15 +25,11 @@ type vulcan struct {
 }
 
 func newVulcan(objID string, arg Argument) *vulcan {
-	res := &vulcan{
+	return &vulcan{
 		ID:    objID,
 		Arg:   arg,
 		Times: 3,
 	}
-
-	res.drawer.Init() // TODO error
-
-	return res
 }
 
 func (p *vulcan) Draw() {

@@ -19,13 +19,10 @@ type recover struct {
 }
 
 func newRecover(objID string, arg Argument) *recover {
-	res := &recover{
+	return &recover{
 		ID:  objID,
 		Arg: arg,
 	}
-	res.drawer.Init() // TODO: error
-
-	return res
 }
 
 func (p *recover) Draw() {
