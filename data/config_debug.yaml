@@ -14,8 +14,11 @@ debug:
   enable_dev_feature: true
   use_private_res: true
   use_debug_folder: true
-bgm:
-  disabled: true
+sound:
+  se:
+    disabled: false
+  bgm:
+    disabled: true
 net:
   insecure: true
   client_id: "tester1"

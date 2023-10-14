@@ -27,9 +27,14 @@ type Config struct {
 		UsePrivateResource bool `yaml:"use_private_res"`
 		UseDebugFolder     bool `yaml:"use_debug_folder"`
 	} `yaml:"debug"`
-	BGM struct {
-		Disabled bool `yaml:"disabled"`
-	} `yaml:"bgm"`
+	Sound struct {
+		SE struct {
+			Disabled bool `yaml:"disabled"`
+		} `yaml:"se"`
+		BGM struct {
+			Disabled bool `yaml:"disabled"`
+		} `yaml:"bgm"`
+	} `yaml:"sound"`
 	Net struct {
 		Insecure   bool   `yaml:"insecure"`
 		ClientID   string `yaml:"client_id"`
