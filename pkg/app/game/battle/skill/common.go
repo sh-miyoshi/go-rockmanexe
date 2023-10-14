@@ -46,11 +46,6 @@ func loadImages() error {
 	for i := 0; i < 4; i++ {
 		imgBoomerang = append(imgBoomerang, tmp[i])
 	}
-	fname = path + "バンブーランス.png"
-	imgBambooLance = make([]int, 1)
-	if imgBambooLance[0] = dxlib.LoadGraph(fname); imgBambooLance[0] == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
 	fname = path + "ドリームソード.png"
 	imgDreamSword = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 200, 188, imgDreamSword); res == -1 {
@@ -98,10 +93,6 @@ func cleanupImages() {
 		dxlib.DeleteGraph(imgBoomerang[i])
 	}
 	imgBoomerang = []int{}
-	for i := 0; i < len(imgBambooLance); i++ {
-		dxlib.DeleteGraph(imgBambooLance[i])
-	}
-	imgBambooLance = []int{}
 	for i := 0; i < len(imgDreamSword); i++ {
 		dxlib.DeleteGraph(imgDreamSword[i])
 	}
