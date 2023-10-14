@@ -34,7 +34,7 @@ var (
 )
 
 func BGMPlay(typ int) error {
-	if config.Get().BGM.Disabled {
+	if config.Get().Sound.BGM.Disabled {
 		return nil
 	}
 

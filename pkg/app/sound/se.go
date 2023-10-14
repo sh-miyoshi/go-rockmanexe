@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -13,6 +14,10 @@ var (
 )
 
 func Init() error {
+	if config.Get().Sound.SE.Disabled {
+		return nil
+	}
+
 	basePath := common.SoundPath + "se/"
 
 	soundEffects[resources.SENone] = 0
@@ -80,6 +85,10 @@ func Init() error {
 }
 
 func On(typ resources.SEType) {
+	if config.Get().Sound.SE.Disabled {
+		return
+	}
+
 	if typ == resources.SENone {
 		return
 	}
