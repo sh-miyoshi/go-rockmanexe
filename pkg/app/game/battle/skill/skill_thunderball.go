@@ -8,14 +8,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	thunderBallNextStepCount = 80
-	delayThunderBall         = 6
 )
 
 type thunderBall struct {
@@ -29,6 +24,7 @@ type thunderBall struct {
 	pos       common.Point
 	next      common.Point
 	prev      common.Point
+	drawer    skilldraw.DrawThunderBall
 }
 
 func newThunderBall(objID string, arg Argument) *thunderBall {
@@ -51,19 +47,7 @@ func newThunderBall(objID string, arg Argument) *thunderBall {
 }
 
 func (p *thunderBall) Draw() {
-	view := battlecommon.ViewPos(p.pos)
-	n := (p.count / delayThunderBall) % len(imgThunderBall)
-
-	cnt := p.count % thunderBallNextStepCount
-	if cnt == 0 {
-		// Skip drawing because the position is updated in Process method and return unexpected value
-		return
-	}
-
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, thunderBallNextStepCount, battlecommon.PanelSize.X)
-	ofsy := battlecommon.GetOffset(p.next.Y, p.pos.Y, p.prev.Y, cnt, thunderBallNextStepCount, battlecommon.PanelSize.Y)
-
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], true)
+	p.drawer.Draw(p.prev, p.pos, p.next, p.count)
 }
 
 func (p *thunderBall) Process() (bool, error) {
@@ -71,7 +55,7 @@ func (p *thunderBall) Process() (bool, error) {
 		sound.On(resources.SEThunderBall)
 	}
 
-	if p.count%thunderBallNextStepCount == 2 {
+	if p.count%resources.SkillThunderBallNextStepCount == 2 {
 		if p.damageID != "" {
 			if !localanim.DamageManager().Exists(p.damageID) {
 				// attack hit to target
@@ -80,7 +64,7 @@ func (p *thunderBall) Process() (bool, error) {
 		}
 	}
 
-	if p.count%thunderBallNextStepCount == 0 {
+	if p.count%resources.SkillThunderBallNextStepCount == 0 {
 		t := p.pos
 		if p.count != 0 {
 			// Update current pos
@@ -106,7 +90,7 @@ func (p *thunderBall) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           thunderBallNextStepCount + 1,
+			TTL:           resources.SkillThunderBallNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,

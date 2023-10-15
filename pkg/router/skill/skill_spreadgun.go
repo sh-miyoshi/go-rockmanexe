@@ -12,8 +12,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const ()
-
 type spreadGun struct {
 	ID    string
 	Arg   Argument
@@ -115,18 +113,7 @@ func (p *spreadGun) StopByOwner() {
 }
 
 func (p *spreadGun) GetEndCount() int {
-	const (
-		delaySpreadGun      = 2
-		imgSpreadGunBodyNum = 4
-		imgSpreadGunAtkNum  = 4
-	)
-
-	max := imgSpreadGunAtkNum
-	if imgSpreadGunBodyNum > max {
-		max = imgSpreadGunBodyNum
-	}
-
-	return max * delaySpreadGun
+	return resources.SkillSpreadGunEndCount
 }
 
 func (p *spreadHit) Draw() {

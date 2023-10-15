@@ -7,13 +7,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delayPick = 3
 )
 
 type shockWave struct {
@@ -24,9 +20,11 @@ type shockWave struct {
 	Speed    int
 	InitWait int
 
-	count    int
-	pos      common.Point
-	showWave bool
+	count      int
+	pos        common.Point
+	showWave   bool
+	drawer     skilldraw.DrawShockWave
+	pickDrawer skilldraw.DrawPick
 }
 
 func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
@@ -41,36 +39,24 @@ func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
 
 	if isPlayer {
 		res.Direct = common.DirectRight
-		res.Speed = 3
+		res.Speed = resources.SkillShockWavePlayerSpeed
 		res.ShowPick = true
-		res.InitWait = 9
+		res.InitWait = resources.SkillShockWaveInitWait
 	}
 
 	return res
 }
 
 func (p *shockWave) Draw() {
-	n := (p.count / p.Speed) % len(imgShockWave)
-	if p.showWave && n >= 0 {
+	if p.showWave {
 		view := battlecommon.ViewPos(p.pos)
-		if p.Direct == common.DirectLeft {
-			flag := int32(dxlib.TRUE)
-			dxopts := dxlib.DrawRotaGraphOption{
-				ReverseXFlag: &flag,
-			}
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true, dxopts)
-		} else if p.Direct == common.DirectRight {
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShockWave[n], true)
-		}
+		p.drawer.Draw(view, p.count, p.Speed, p.Direct)
 	}
 
 	if p.ShowPick {
-		n = (p.count / delayPick)
-		if n < len(imgPick) {
-			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-			view := battlecommon.ViewPos(pos)
-			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], true)
-		}
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		view := battlecommon.ViewPos(pos)
+		p.pickDrawer.Draw(view, p.count)
 	}
 }
 
@@ -80,8 +66,8 @@ func (p *shockWave) Process() (bool, error) {
 		return false, nil
 	}
 
-	n := len(imgShockWave) * p.Speed
-	if p.count%(n) == 0 {
+	n := resources.SkillShockWaveImageNum * p.Speed
+	if p.count%n == 0 {
 		p.showWave = true
 		if p.Direct == common.DirectLeft {
 			p.pos.X--

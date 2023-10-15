@@ -7,16 +7,17 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type dreamSword struct {
 	ID  string
 	Arg Argument
 
-	count int
+	count  int
+	drawer skilldraw.DrawDreamSword
 }
 
 func newDreamSword(objID string, arg Argument) *dreamSword {
@@ -30,16 +31,13 @@ func (p *dreamSword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	n := (p.count - 5) / delaySword
-	if n >= 0 && n < len(imgDreamSword) {
-		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgDreamSword[n], true)
-	}
+	p.drawer.Draw(view, p.count)
 }
 
 func (p *dreamSword) Process() (bool, error) {
 	p.count++
 
-	if p.count == 1*delaySword {
+	if p.count == 1*resources.SkillSwordDelay {
 		sound.On(resources.SEDreamSword)
 
 		userPos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
@@ -61,7 +59,7 @@ func (p *dreamSword) Process() (bool, error) {
 		}
 	}
 
-	if p.count > len(imgDreamSword)*delaySword {
+	if p.count > resources.SkillSwordEndCount {
 		return true, nil
 	}
 	return false, nil

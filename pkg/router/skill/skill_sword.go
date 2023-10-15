@@ -8,18 +8,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const (
-	TypeSword int = iota
-	TypeWideSword
-	TypeLongSword
-
-	TypeSwordMax
-)
-
-const (
-	delaySword = 3
-)
-
 type sword struct {
 	ID   string
 	Type int
@@ -43,7 +31,7 @@ func (p *sword) Draw() {
 func (p *sword) Process() (bool, error) {
 	p.count++
 
-	if p.count == 1*delaySword {
+	if p.count == 1*resources.SkillSwordDelay {
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
@@ -62,9 +50,9 @@ func (p *sword) Process() (bool, error) {
 		}
 
 		switch p.Type {
-		case TypeSword:
+		case resources.SkillTypeSword:
 			// No more damage area
-		case TypeWideSword:
+		case resources.SkillTypeWideSword:
 			targetPos.Y = userPos.Y - 1
 			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
@@ -74,7 +62,7 @@ func (p *sword) Process() (bool, error) {
 			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
 			}
-		case TypeLongSword:
+		case resources.SkillTypeLongSword:
 			targetPos.X = userPos.X + 2
 			if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
@@ -95,11 +83,11 @@ func (p *sword) GetParam() anim.Param {
 		ActCount:      p.count,
 	}
 	switch p.Type {
-	case TypeSword:
+	case resources.SkillTypeSword:
 		info.AnimType = routeranim.TypeSword
-	case TypeWideSword:
+	case resources.SkillTypeWideSword:
 		info.AnimType = routeranim.TypeWideSword
-	case TypeLongSword:
+	case resources.SkillTypeLongSword:
 		info.AnimType = routeranim.TypeLongSword
 	}
 
@@ -116,7 +104,5 @@ func (p *sword) StopByOwner() {
 }
 
 func (p *sword) GetEndCount() int {
-	const imgSwordNum = 4
-
-	return imgSwordNum * delaySword
+	return resources.SkillSwordEndCount
 }

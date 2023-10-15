@@ -9,16 +9,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const (
-	wideShotStateBegin int = iota
-	wideShotStateMove
-)
-
-const (
-	delayWideShot         = 4
-	wideShotNextStepCount = 8
-)
-
 type wideShot struct {
 	ID  string
 	Arg Argument
@@ -44,7 +34,7 @@ func (p *wideShot) Draw() {
 func (p *wideShot) Process() (bool, error) {
 	for _, did := range p.damageID {
 		if did != "" {
-			if !routeranim.DamageManager(p.Arg.OwnerClientID).Exists(did) && p.count%wideShotNextStepCount != 0 {
+			if !routeranim.DamageManager(p.Arg.OwnerClientID).Exists(did) && p.count%resources.SkillWideShotPlayerNextStepCount != 0 {
 				// attack hit to target
 				return true, nil
 			}
@@ -52,23 +42,14 @@ func (p *wideShot) Process() (bool, error) {
 	}
 
 	switch p.state {
-	case wideShotStateBegin:
-		const (
-			imgWideShotBodyNum  = 3
-			imgWideShotBeginNum = 4
-		)
-		max := imgWideShotBodyNum
-		if imgWideShotBeginNum > max {
-			max = imgWideShotBeginNum
-		}
-		max *= delayWideShot
-		if p.count > max {
-			p.state = wideShotStateMove
+	case resources.SkillWideShotStateBegin:
+		if p.count > resources.SkillWideShotEndCount {
+			p.state = resources.SkillWideShotStateMove
 			p.count = 0
 			return false, nil
 		}
-	case wideShotStateMove:
-		if p.count%wideShotNextStepCount == 0 {
+	case resources.SkillWideShotStateMove:
+		if p.count%resources.SkillWideShotPlayerNextStepCount == 0 {
 			p.pos.X++
 
 			if p.pos.X >= battlecommon.FieldNum.X || p.pos.X < 0 {
@@ -86,7 +67,7 @@ func (p *wideShot) Process() (bool, error) {
 					OwnerClientID: p.Arg.OwnerClientID,
 					Pos:           common.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
-					TTL:           wideShotNextStepCount,
+					TTL:           resources.SkillWideShotPlayerNextStepCount,
 					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
 					BigDamage:     true,

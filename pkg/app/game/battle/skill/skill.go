@@ -7,6 +7,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 )
 
 const (
@@ -57,36 +59,8 @@ type Argument struct {
 	TargetType int
 }
 
-var (
-	imgCannonAtk      [TypeCannonMax][]int
-	imgCannonBody     [TypeCannonMax][]int
-	imgSword          [TypeSwordMax][]int
-	imgBombThrow      []int
-	imgShockWave      []int
-	imgRecover        []int
-	imgSpreadGunAtk   []int
-	imgSpreadGunBody  []int
-	imgVulcan         []int
-	imgPick           []int
-	imgThunderBall    []int
-	imgWideShotBody   []int
-	imgWideShotBegin  []int
-	imgWideShotMove   []int
-	imgBoomerang      []int
-	imgAquamanShot    []int
-	imgBambooLance    []int
-	imgDreamSword     []int
-	imgGarooBreath    []int
-	imgFlamePillar    []int
-	imgFlameLineBody  []int
-	imgHeatShotBody   []int
-	imgHeatShotAtk    []int
-	imgAreaStealMain  []int
-	imgAreaStealPanel []int
-)
-
 func Init() error {
-	if err := loadImages(); err != nil {
+	if err := skilldraw.LoadImages(); err != nil {
 		return fmt.Errorf("failed to load skill image: %w", err)
 	}
 
@@ -94,7 +68,7 @@ func Init() error {
 }
 
 func End() {
-	cleanupImages()
+	skilldraw.ClearImages()
 }
 
 // Get ...
@@ -103,19 +77,19 @@ func Get(skillID int, arg Argument) SkillAnim {
 
 	switch skillID {
 	case SkillCannon:
-		return newCannon(objID, TypeNormalCannon, arg)
+		return newCannon(objID, resources.SkillTypeNormalCannon, arg)
 	case SkillHighCannon:
-		return newCannon(objID, TypeHighCannon, arg)
+		return newCannon(objID, resources.SkillTypeHighCannon, arg)
 	case SkillMegaCannon:
-		return newCannon(objID, TypeMegaCannon, arg)
+		return newCannon(objID, resources.SkillTypeMegaCannon, arg)
 	case SkillMiniBomb:
 		return newMiniBomb(objID, arg)
 	case SkillSword:
-		return newSword(objID, TypeSword, arg)
+		return newSword(objID, resources.SkillTypeSword, arg)
 	case SkillWideSword:
-		return newSword(objID, TypeWideSword, arg)
+		return newSword(objID, resources.SkillTypeWideSword, arg)
 	case SkillLongSword:
-		return newSword(objID, TypeLongSword, arg)
+		return newSword(objID, resources.SkillTypeLongSword, arg)
 	case SkillShockWave:
 		return newShockWave(objID, false, arg)
 	case SkillRecover:
@@ -137,11 +111,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillAquamanShot:
 		return newAquamanShot(objID, arg)
 	case SkillAquaman:
-		res, err := newAquaman(objID, arg)
-		if err != nil {
-			common.SetError(err.Error())
-		}
-		return res
+		return newAquaman(objID, arg)
 	case SkillCrackout:
 		return newCrack(objID, crackType1, arg)
 	case SkillDoubleCrack:
@@ -157,9 +127,9 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillGarooBreath:
 		return newGarooBreath(objID, arg)
 	case SkillFlamePillarTracking:
-		return newFlamePillar(objID, arg, flamePillarTypeTracking)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeTracking)
 	case SkillFlamePillarRandom:
-		return newFlamePillar(objID, arg, flamePillarTypeRandom)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeRandom)
 	case SkillHeatShot:
 		return newHeatShot(objID, arg, heatShotTypeShot)
 	case SkillHeatV:
@@ -167,7 +137,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillHeatSide:
 		return newHeatShot(objID, arg, heatShotTypeSide)
 	case SkillFlamePillarLine:
-		return newFlamePillar(objID, arg, flamePillarTypeLine)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeLine)
 	case SkillAreaSteal:
 		return newAreaSteal(objID, arg)
 	case SkillPanelSteal:

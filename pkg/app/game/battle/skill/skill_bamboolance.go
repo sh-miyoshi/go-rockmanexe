@@ -6,44 +6,30 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type bambooLance struct {
 	ID  string
 	Arg Argument
 
-	count    int
-	imgSizeX int
+	count  int
+	drawer skilldraw.DrawBamboolance
 }
 
 func newBambooLance(objID string, arg Argument) *bambooLance {
-	var sx, sy int
-	dxlib.GetGraphSize(imgBambooLance[0], &sx, &sy)
-
-	return &bambooLance{
-		ID:       objID,
-		Arg:      arg,
-		imgSizeX: sx,
+	res := &bambooLance{
+		ID:  objID,
+		Arg: arg,
 	}
+	res.drawer.Init()
+
+	return res
 }
 
 func (p *bambooLance) Draw() {
-	xreverse := int32(dxlib.TRUE)
-	opt := dxlib.DrawRotaGraphOption{
-		ReverseXFlag: &xreverse,
-	}
-
-	xd := p.count * 25
-	if xd > battlecommon.PanelSize.X {
-		xd = battlecommon.PanelSize.X
-	}
-	x := common.ScreenSize.X + p.imgSizeX/2 - xd
-	for y := 0; y < battlecommon.FieldNum.Y; y++ {
-		v := battlecommon.ViewPos(common.Point{X: 0, Y: y})
-		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)
-	}
+	p.drawer.Draw(p.count)
 }
 
 func (p *bambooLance) Process() (bool, error) {

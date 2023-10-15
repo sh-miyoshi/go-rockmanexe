@@ -6,13 +6,8 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	garooBreathNextStepCount = 10
-	delayGarooBreath         = 4
 )
 
 type garooBreath struct {
@@ -25,6 +20,7 @@ type garooBreath struct {
 	prev     common.Point
 	moveVecX int
 	damageID string
+	drawer   skilldraw.DrawGarooBreath
 }
 
 func newGarooBreath(objID string, arg Argument) *garooBreath {
@@ -46,30 +42,18 @@ func newGarooBreath(objID string, arg Argument) *garooBreath {
 }
 
 func (p *garooBreath) Draw() {
-	view := battlecommon.ViewPos(p.pos)
-	n := (p.count / delayGarooBreath) % len(imgGarooBreath)
-
-	cnt := p.count % garooBreathNextStepCount
-	if cnt == 0 {
-		// Skip drawing because the position is updated in Process method and return unexpected value
-		return
-	}
-
-	ofsx := battlecommon.GetOffset(p.next.X, p.pos.X, p.prev.X, cnt, garooBreathNextStepCount, battlecommon.PanelSize.X)
-	ofsy := -15
-	xflip := int32(dxlib.TRUE)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	p.drawer.Draw(p.prev, p.pos, p.next, p.count)
 }
 
 func (p *garooBreath) Process() (bool, error) {
-	if p.count%garooBreathNextStepCount/2 == 0 {
+	if p.count%resources.SkillGarooBreathNextStepCount/2 == 0 {
 		// Finish if hit
 		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
 
-	if p.count%garooBreathNextStepCount == 0 {
+	if p.count%resources.SkillGarooBreathNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
@@ -78,7 +62,7 @@ func (p *garooBreath) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           garooBreathNextStepCount + 1,
+			TTL:           resources.SkillGarooBreathNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,

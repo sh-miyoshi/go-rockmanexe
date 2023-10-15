@@ -7,21 +7,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	TypeSword int = iota
-	TypeWideSword
-	TypeLongSword
-
-	TypeSwordMax
-)
-
-const (
-	delaySword = 3
 )
 
 type sword struct {
@@ -29,7 +17,8 @@ type sword struct {
 	Type int
 	Arg  Argument
 
-	count int
+	count  int
+	drawer skilldraw.DrawSword
 }
 
 func newSword(objID string, swordType int, arg Argument) *sword {
@@ -44,16 +33,13 @@ func (p *sword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	n := (p.count - 5) / delaySword
-	if n >= 0 && n < len(imgSword[p.Type]) {
-		dxlib.DrawRotaGraph(view.X+100, view.Y, 1, 0, imgSword[p.Type][n], true)
-	}
+	p.drawer.Draw(p.Type, view, p.count)
 }
 
 func (p *sword) Process() (bool, error) {
 	p.count++
 
-	if p.count == 1*delaySword {
+	if p.count == 1*resources.SkillSwordDelay {
 		sound.On(resources.SESword)
 
 		dm := damage.Damage{
@@ -74,9 +60,9 @@ func (p *sword) Process() (bool, error) {
 		}
 
 		switch p.Type {
-		case TypeSword:
+		case resources.SkillTypeSword:
 			// No more damage area
-		case TypeWideSword:
+		case resources.SkillTypeWideSword:
 			targetPos.Y = userPos.Y - 1
 			if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
@@ -87,7 +73,7 @@ func (p *sword) Process() (bool, error) {
 				dm.TargetObjID = objID
 				localanim.DamageManager().New(dm)
 			}
-		case TypeLongSword:
+		case resources.SkillTypeLongSword:
 			targetPos.X = userPos.X + 2
 			if objID := field.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
@@ -96,7 +82,7 @@ func (p *sword) Process() (bool, error) {
 		}
 	}
 
-	if p.count > len(imgSword[p.Type])*delaySword {
+	if p.count > resources.SkillSwordEndCount {
 		return true, nil
 	}
 	return false, nil

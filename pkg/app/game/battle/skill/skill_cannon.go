@@ -7,22 +7,9 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	TypeNormalCannon int = iota
-	TypeHighCannon
-	TypeMegaCannon
-
-	TypeCannonMax
-)
-
-const (
-	delayCannonAtk  = 2
-	delayCannonBody = 6
 )
 
 type cannon struct {
@@ -30,7 +17,8 @@ type cannon struct {
 	Type int
 	Arg  Argument
 
-	count int
+	count  int
+	drawer skilldraw.DrawCannon
 }
 
 func newCannon(objID string, cannonType int, arg Argument) *cannon {
@@ -44,20 +32,7 @@ func newCannon(objID string, cannonType int, arg Argument) *cannon {
 func (p *cannon) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-
-	n := p.count / delayCannonBody
-	if n < len(imgCannonBody[p.Type]) {
-		if n >= 3 {
-			view.X -= 15
-		}
-
-		dxlib.DrawRotaGraph(view.X+48, view.Y-12, 1, 0, imgCannonBody[p.Type][n], true)
-	}
-
-	n = (p.count - 15) / delayCannonAtk
-	if n >= 0 && n < len(imgCannonAtk[p.Type]) {
-		dxlib.DrawRotaGraph(view.X+90, view.Y-10, 1, 0, imgCannonAtk[p.Type][n], true)
-	}
+	p.drawer.Draw(p.Type, view, p.count)
 }
 
 func (p *cannon) Process() (bool, error) {
@@ -94,12 +69,7 @@ func (p *cannon) Process() (bool, error) {
 		}
 	}
 
-	max := len(imgCannonBody[p.Type]) * delayCannonBody
-	if max < len(imgCannonAtk[p.Type])*delayCannonAtk+15 {
-		max = len(imgCannonAtk[p.Type])*delayCannonAtk + 15
-	}
-
-	if p.count > max {
+	if p.count > resources.SkillCannonEndCount {
 		return true, nil
 	}
 	return false, nil

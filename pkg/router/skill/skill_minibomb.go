@@ -9,11 +9,6 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-const (
-	miniBombEndCount   = 60
-	delayMiniBombThrow = 4
-)
-
 type miniBomb struct {
 	ID  string
 	Arg Argument
@@ -40,7 +35,7 @@ func (p *miniBomb) Draw() {
 func (p *miniBomb) Process() (bool, error) {
 	p.count++
 
-	if p.count == miniBombEndCount {
+	if p.count == resources.SkillMiniBombEndCount {
 		pn := p.Arg.GameInfo.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
@@ -85,5 +80,5 @@ func (p *miniBomb) StopByOwner() {
 }
 
 func (p *miniBomb) GetEndCount() int {
-	return miniBombEndCount
+	return resources.SkillMiniBombEndCount
 }

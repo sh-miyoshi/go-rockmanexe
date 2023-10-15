@@ -6,18 +6,9 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	wideShotStateBegin int = iota
-	wideShotStateMove
-)
-
-const (
-	delayWideShot = 4
 )
 
 type wideShot struct {
@@ -30,12 +21,13 @@ type wideShot struct {
 	count    int
 	pos      common.Point
 	damageID [3]string
+	drawer   skilldraw.DrawWideShot
 }
 
 func newWideShot(objID string, arg Argument) *wideShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	direct := common.DirectRight
-	nextStep := 8
+	nextStep := resources.SkillWideShotPlayerNextStepCount
 	if arg.TargetType == damage.TargetPlayer {
 		direct = common.DirectLeft
 		nextStep = 16
@@ -47,46 +39,12 @@ func newWideShot(objID string, arg Argument) *wideShot {
 		Direct:        direct,
 		NextStepCount: nextStep,
 		pos:           pos,
-		state:         wideShotStateBegin,
+		state:         resources.SkillWideShotStateBegin,
 	}
 }
 
 func (p *wideShot) Draw() {
-	opt := dxlib.DrawRotaGraphOption{}
-	ofs := 1
-	if p.Direct == common.DirectLeft {
-		xflip := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &xflip
-		ofs = -1
-	}
-
-	switch p.state {
-	case wideShotStateBegin:
-		view := battlecommon.ViewPos(p.pos)
-		n := (p.count / delayWideShot)
-
-		if n < len(imgWideShotBody) && p.Arg.TargetType == damage.TargetEnemy {
-			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
-		}
-		if n >= len(imgWideShotBegin) {
-			n = len(imgWideShotBegin) - 1
-		}
-		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
-	case wideShotStateMove:
-		view := battlecommon.ViewPos(p.pos)
-		n := (p.count / delayWideShot) % len(imgWideShotMove)
-		next := p.pos.X + 1
-		prev := p.pos.X - 1
-		if p.Direct == common.DirectLeft {
-			next, prev = prev, next
-		}
-
-		c := p.count % p.NextStepCount
-		if c != 0 {
-			ofsx := battlecommon.GetOffset(next, p.pos.X, prev, c, p.NextStepCount, battlecommon.PanelSize.X)
-			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true, opt)
-		}
-	}
+	p.drawer.Draw(p.pos, p.count, p.Direct, p.Arg.TargetType == damage.TargetEnemy, p.NextStepCount, p.state)
 }
 
 func (p *wideShot) Process() (bool, error) {
@@ -100,22 +58,17 @@ func (p *wideShot) Process() (bool, error) {
 	}
 
 	switch p.state {
-	case wideShotStateBegin:
+	case resources.SkillWideShotStateBegin:
 		if p.count == 0 {
 			sound.On(resources.SEWideShot)
 		}
 
-		max := len(imgWideShotBody)
-		if len(imgWideShotBegin) > max {
-			max = len(imgWideShotBegin)
-		}
-		max *= delayWideShot
-		if p.count > max {
-			p.state = wideShotStateMove
+		if p.count > resources.SkillWideShotEndCount {
+			p.state = resources.SkillWideShotStateMove
 			p.count = 0
 			return false, nil
 		}
-	case wideShotStateMove:
+	case resources.SkillWideShotStateMove:
 		if p.count%p.NextStepCount == 0 {
 			if p.Direct == common.DirectRight {
 				p.pos.X++
@@ -159,7 +112,7 @@ func (p *wideShot) GetParam() anim.Param {
 }
 
 func (p *wideShot) StopByOwner() {
-	if p.state != wideShotStateMove {
+	if p.state != resources.SkillWideShotStateMove {
 		localanim.AnimDelete(p.ID)
 	}
 }
