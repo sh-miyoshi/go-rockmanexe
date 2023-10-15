@@ -1,15 +1,5 @@
 # TODO List
 
-## スキル描画のリファクタリング
-
-- 各スキルの調整
-- battle/skill/commonのLoad/Cleanの削除
-- 各スキルでEndを呼ぶようにする
-- Init時のエラーハンドリング
-- 調整不足の個所の調整
-  - ShockWave
-  - SpreadHit
-
 ## v0.12でやりたいこと
 
 - WIP
