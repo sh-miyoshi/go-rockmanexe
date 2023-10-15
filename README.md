@@ -1,5 +1,7 @@
 # ロックマンエグゼ
 
+[![紹介動画](https://github.com/sh-miyoshi/go-rockmanexe/assets/20141200/a9e47a9f-d61e-4887-9056-2d3fa4e09276)](https://youtu.be/VcXlnRfedrk)
+
 ## 遊び方
 
 まず、[リリースリンク](https://github.com/sh-miyoshi/go-rockmanexe/releases/download/v0.11/project.zip)からzipファイルをダウンロードします。  
