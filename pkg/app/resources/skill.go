@@ -39,6 +39,7 @@ const (
 	SKillBombThrowDelay              = 4
 	SkillBoomerangNextStepCount      = 6
 	SkillGarooBreathNextStepCount    = 10
+	SkillThunderBallNextStepCount    = 80
 )
 
 const (
