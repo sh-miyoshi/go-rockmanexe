@@ -1,12 +1,8 @@
 package skill
 
 import (
-	"fmt"
-
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type chipNameDraw struct {
@@ -14,109 +10,6 @@ type chipNameDraw struct {
 	count        int
 	tm           int
 	isUserPlayer bool
-}
-
-func loadImages() error {
-	path := common.ImagePath + "battle/skill/"
-
-	tmp := make([]int, 12)
-
-	fname := path + "ウェーブ_body.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 4; i++ {
-		imgPick = append(imgPick, tmp[i])
-	}
-	imgPick = append(imgPick, tmp[3])
-	imgPick = append(imgPick, tmp[3])
-
-	fname = path + "サンダーボール.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 80, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 4; i++ {
-		imgThunderBall = append(imgThunderBall, tmp[i])
-	}
-
-	fname = path + "ブーメラン.png"
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 80, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	for i := 0; i < 4; i++ {
-		imgBoomerang = append(imgBoomerang, tmp[i])
-	}
-	fname = path + "ドリームソード.png"
-	imgDreamSword = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 200, 188, imgDreamSword); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "ガルー_atk.png"
-	imgGarooBreath = make([]int, 3)
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 108, 62, imgGarooBreath); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "フレイムライン_火柱.png"
-	imgFlamePillar = make([]int, 5)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 72, 120, imgFlamePillar); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "フレイムライン_body.png"
-	imgFlameLineBody = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 64, imgFlameLineBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "ヒートショット_body.png"
-	imgHeatShotBody = make([]int, 5)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 40, imgHeatShotBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-	fname = path + "ヒートショット_atk.png"
-	imgHeatShotAtk = make([]int, 3)
-	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 60, 45, imgHeatShotAtk); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
-	}
-
-	return nil
-}
-
-func cleanupImages() {
-	for i := 0; i < len(imgPick); i++ {
-		dxlib.DeleteGraph(imgPick[i])
-	}
-	imgPick = []int{}
-	for i := 0; i < len(imgThunderBall); i++ {
-		dxlib.DeleteGraph(imgThunderBall[i])
-	}
-	imgThunderBall = []int{}
-	for i := 0; i < len(imgBoomerang); i++ {
-		dxlib.DeleteGraph(imgBoomerang[i])
-	}
-	imgBoomerang = []int{}
-	for i := 0; i < len(imgDreamSword); i++ {
-		dxlib.DeleteGraph(imgDreamSword[i])
-	}
-	imgDreamSword = []int{}
-	for i := 0; i < len(imgGarooBreath); i++ {
-		dxlib.DeleteGraph(imgGarooBreath[i])
-	}
-	imgGarooBreath = []int{}
-	for i := 0; i < len(imgFlamePillar); i++ {
-		dxlib.DeleteGraph(imgFlamePillar[i])
-	}
-	imgFlamePillar = []int{}
-	for i := 0; i < len(imgFlameLineBody); i++ {
-		dxlib.DeleteGraph(imgFlameLineBody[i])
-	}
-	imgFlameLineBody = []int{}
-	for i := 0; i < len(imgHeatShotBody); i++ {
-		dxlib.DeleteGraph(imgHeatShotBody[i])
-	}
-	imgHeatShotBody = []int{}
-	for i := 0; i < len(imgHeatShotAtk); i++ {
-		dxlib.DeleteGraph(imgHeatShotAtk[i])
-	}
-	imgHeatShotAtk = []int{}
 }
 
 func SetChipNameDraw(name string, isUserPlayer bool) {

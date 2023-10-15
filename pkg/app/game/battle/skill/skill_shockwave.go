@@ -10,11 +10,6 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	delayPick = 3
 )
 
 type shockWave struct {
@@ -25,10 +20,11 @@ type shockWave struct {
 	Speed    int
 	InitWait int
 
-	count    int
-	pos      common.Point
-	showWave bool
-	drawer   skilldraw.DrawShockWave
+	count      int
+	pos        common.Point
+	showWave   bool
+	drawer     skilldraw.DrawShockWave
+	pickDrawer skilldraw.DrawPick
 }
 
 func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
@@ -58,12 +54,9 @@ func (p *shockWave) Draw() {
 	}
 
 	if p.ShowPick {
-		n := (p.count / delayPick)
-		if n < len(imgPick) {
-			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-			view := battlecommon.ViewPos(pos)
-			dxlib.DrawRotaGraph(view.X, view.Y-15, 1, 0, imgPick[n], true)
-		}
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		view := battlecommon.ViewPos(pos)
+		p.pickDrawer.Draw(view, p.count)
 	}
 }
 

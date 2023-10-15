@@ -218,7 +218,7 @@ func (p *flamePillar) Process() (bool, error) {
 			})
 		}
 
-		if p.count > len(imgFlamePillar)*resources.SkillFlamePillarDelay {
+		if p.count > resources.SkillFlamePillarEndCount {
 			p.count = 0
 			p.state = resources.SkillFlamePillarStateDoing
 			return false, nil
@@ -231,7 +231,7 @@ func (p *flamePillar) Process() (bool, error) {
 			return false, nil
 		}
 	case resources.SkillFlamePillarStateEnd:
-		if p.count > len(imgFlamePillar)*resources.SkillFlamePillarDelay {
+		if p.count > resources.SkillFlamePillarEndCount {
 			return true, nil
 		}
 	case resources.SkillFlamePillarStateDeleted:

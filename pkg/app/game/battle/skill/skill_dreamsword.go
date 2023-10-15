@@ -59,7 +59,7 @@ func (p *dreamSword) Process() (bool, error) {
 		}
 	}
 
-	if p.count > len(imgDreamSword)*resources.SkillSwordDelay {
+	if p.count > resources.SkillSwordEndCount {
 		return true, nil
 	}
 	return false, nil
