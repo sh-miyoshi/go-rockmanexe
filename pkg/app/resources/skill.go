@@ -25,6 +25,7 @@ const (
 	SkillWideShotEndCount     = 16
 	SkillWaterBombEndCount    = 60
 	SkillAreaStealHitEndCount = 12
+	SkillHeatShotEndCount     = 15
 )
 
 const (

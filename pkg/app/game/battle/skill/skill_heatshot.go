@@ -8,13 +8,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 const (
-	delayHeatShot    = 3
 	heatShotAtkDelay = 15
 )
 
@@ -29,7 +28,8 @@ type heatShot struct {
 	Arg  Argument
 	Type int
 
-	count int
+	count  int
+	drawer skilldraw.DrawHeatShot
 }
 
 func newHeatShot(objID string, arg Argument, shotType int) *heatShot {
@@ -41,22 +41,9 @@ func newHeatShot(objID string, arg Argument, shotType int) *heatShot {
 }
 
 func (p *heatShot) Draw() {
-	n := p.count / delayHeatShot
-
-	// Show body
-	if n < len(imgHeatShotBody) {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+50, view.Y-18, 1, 0, imgHeatShotBody[n], true)
-	}
-
-	// Show atk
-	n = (p.count - 4) / delayHeatShot
-	if n >= 0 && n < len(imgHeatShotAtk) {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		view := battlecommon.ViewPos(pos)
-		dxlib.DrawRotaGraph(view.X+100, view.Y-20, 1, 0, imgHeatShotAtk[n], true)
-	}
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	view := battlecommon.ViewPos(pos)
+	p.drawer.Draw(view, p.count)
 }
 
 func (p *heatShot) Process() (bool, error) {
@@ -111,12 +98,7 @@ func (p *heatShot) Process() (bool, error) {
 
 	p.count++
 
-	max := len(imgHeatShotAtk)
-	if len(imgHeatShotBody) > max {
-		max = len(imgHeatShotBody)
-	}
-
-	if p.count > max*delayHeatShot {
+	if p.count > resources.SkillHeatShotEndCount {
 		return true, nil
 	}
 	return false, nil
