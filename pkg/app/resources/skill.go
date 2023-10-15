@@ -40,6 +40,7 @@ const (
 	SkillBoomerangNextStepCount      = 6
 	SkillGarooBreathNextStepCount    = 10
 	SkillThunderBallNextStepCount    = 80
+	SkillFlamePillarDelay            = 4
 )
 
 const (
@@ -58,4 +59,17 @@ const (
 	SkillAreaStealStateBlackout int = iota
 	SkillAreaStealStateActing
 	SkillAreaStealStateHit
+)
+
+const (
+	SkillFlamePillarStateWakeup int = iota
+	SkillFlamePillarStateDoing
+	SkillFlamePillarStateEnd
+	SkillFlamePillarStateDeleted
+)
+
+const (
+	SkillFlamePillarTypeRandom int = iota
+	SkillFlamePillarTypeTracking
+	SkillFlamePillarTypeLine
 )

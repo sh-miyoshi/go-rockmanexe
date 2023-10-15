@@ -144,9 +144,9 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillGarooBreath:
 		return newGarooBreath(objID, arg)
 	case SkillFlamePillarTracking:
-		return newFlamePillar(objID, arg, flamePillarTypeTracking)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeTracking)
 	case SkillFlamePillarRandom:
-		return newFlamePillar(objID, arg, flamePillarTypeRandom)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeRandom)
 	case SkillHeatShot:
 		return newHeatShot(objID, arg, heatShotTypeShot)
 	case SkillHeatV:
@@ -154,7 +154,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillHeatSide:
 		return newHeatShot(objID, arg, heatShotTypeSide)
 	case SkillFlamePillarLine:
-		return newFlamePillar(objID, arg, flamePillarTypeLine)
+		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeLine)
 	case SkillAreaSteal:
 		return newAreaSteal(objID, arg)
 	case SkillPanelSteal:

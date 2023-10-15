@@ -11,34 +11,18 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-)
-
-const (
-	flamePillarStateWakeup int = iota
-	flamePillarStateDoing
-	flamePillarStateEnd
-	flamePillarStateDeleted
-)
-
-const (
-	flamePillarTypeRandom int = iota
-	flamePillarTypeTracking
-	flamePillarTypeLine
-)
-
-const (
-	delayFlamePillar = 4
 )
 
 type flamePillar struct {
 	Arg Argument
 
-	count int
-	state int
-	point common.Point
+	count  int
+	state  int
+	point  common.Point
+	drawer skilldraw.DrawFlamePiller
 }
 
 type flamePillarManager struct {
@@ -49,6 +33,7 @@ type flamePillarManager struct {
 	skillType int
 	isPlayer  bool
 	pillars   []*flamePillar
+	drawer    skilldraw.DrawFlamePillerManager
 }
 
 func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManager {
@@ -63,9 +48,9 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 	}
 
 	switch skillType {
-	case flamePillarTypeRandom:
+	case resources.SkillFlamePillarTypeRandom:
 		common.SetError("TODO: not implemented yet")
-	case flamePillarTypeTracking:
+	case resources.SkillFlamePillarTypeTracking:
 		pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 		if res.isPlayer {
 			pos.X++
@@ -75,10 +60,10 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 
 		res.pillars = append(res.pillars, &flamePillar{
 			Arg:   arg,
-			state: flamePillarStateWakeup,
+			state: resources.SkillFlamePillarStateWakeup,
 			point: pos,
 		})
-	case flamePillarTypeLine:
+	case resources.SkillFlamePillarTypeLine:
 		posX := localanim.ObjAnimGetObjPos(arg.OwnerID).X
 		if res.isPlayer {
 			posX += 2
@@ -89,7 +74,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			res.pillars = append(res.pillars, &flamePillar{
 				Arg:   arg,
-				state: flamePillarStateWakeup,
+				state: resources.SkillFlamePillarStateWakeup,
 				point: common.Point{X: posX, Y: y},
 			})
 		}
@@ -103,34 +88,27 @@ func (p *flamePillarManager) Draw() {
 		pillar.Draw()
 	}
 
-	if p.skillType == flamePillarTypeLine {
-		if len(p.pillars) > 0 && p.pillars[0].state != flamePillarStateEnd {
-			imageNo := p.count / 4
-			if imageNo >= len(imgFlameLineBody) {
-				imageNo = len(imgFlameLineBody) - 1
-			}
-
-			pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-			view := battlecommon.ViewPos(pos)
-
-			// Show body
-			dxlib.DrawRotaGraph(view.X+35, view.Y-15, 1, 0, imgFlameLineBody[imageNo], true)
-		}
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	view := battlecommon.ViewPos(pos)
+	state := resources.SkillFlamePillarStateEnd
+	if len(p.pillars) > 0 {
+		state = p.pillars[0].state
 	}
+	p.drawer.Draw(view, p.count, p.skillType, state)
 }
 
 func (p *flamePillarManager) Process() (bool, error) {
 	switch p.skillType {
-	case flamePillarTypeRandom:
+	case resources.SkillFlamePillarTypeRandom:
 		common.SetError("TODO: not implemented yet")
-	case flamePillarTypeTracking:
+	case resources.SkillFlamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {
 			return false, fmt.Errorf("flame pillar process failed: %w", err)
 		}
 		if end {
 			// 穴パネルなどで進めなかったら終わり
-			if p.pillars[0].state == flamePillarStateDeleted {
+			if p.pillars[0].state == resources.SkillFlamePillarStateDeleted {
 				return true, nil
 			}
 
@@ -167,11 +145,11 @@ func (p *flamePillarManager) Process() (bool, error) {
 
 			p.pillars = append([]*flamePillar{}, &flamePillar{
 				Arg:   p.Arg,
-				state: flamePillarStateWakeup,
+				state: resources.SkillFlamePillarStateWakeup,
 				point: common.Point{X: x, Y: y},
 			})
 		}
-	case flamePillarTypeLine:
+	case resources.SkillFlamePillarTypeLine:
 		remove := []int{}
 		for i, pillar := range p.pillars {
 			end, err := pillar.Process()
@@ -210,47 +188,29 @@ func (p *flamePillarManager) StopByOwner() {
 
 func (p *flamePillar) Draw() {
 	view := battlecommon.ViewPos(p.point)
-
-	n := 0
-	switch p.state {
-	case flamePillarStateWakeup:
-		n = p.count / delayFlamePillar
-		if n >= len(imgFlamePillar) {
-			n = len(imgFlamePillar) - 1
-		}
-	case flamePillarStateDoing:
-		t := (p.count / delayFlamePillar) % 2
-		n = len(imgFlamePillar) - (t + 1)
-	case flamePillarStateEnd:
-		n = len(imgFlamePillar) - (1 + p.count/delayFlamePillar)
-		if n < 0 {
-			n = 0
-		}
-	}
-
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgFlamePillar[n], true)
+	p.drawer.Draw(view, p.count, p.state)
 }
 
 func (p *flamePillar) Process() (bool, error) {
 	switch p.state {
-	case flamePillarStateWakeup:
+	case resources.SkillFlamePillarStateWakeup:
 		if p.count == 0 {
 			pn := field.GetPanelInfo(p.point)
 			if pn.Status == battlecommon.PanelStatusHole {
-				p.state = flamePillarStateDeleted
+				p.state = resources.SkillFlamePillarStateDeleted
 				return true, nil
 			}
 
 			sound.On(resources.SEFlameAttack)
 		}
 
-		if p.count == 3*delayFlamePillar {
+		if p.count == 3*resources.SkillFlamePillarDelay {
 			// Add damage
 			localanim.DamageManager().New(damage.Damage{
 				DamageType:    damage.TypePosition,
 				Pos:           p.point,
 				Power:         int(p.Arg.Power),
-				TTL:           7 * delayFlamePillar,
+				TTL:           7 * resources.SkillFlamePillarDelay,
 				TargetObjType: p.Arg.TargetType,
 				ShowHitArea:   true,
 				BigDamage:     true,
@@ -258,23 +218,23 @@ func (p *flamePillar) Process() (bool, error) {
 			})
 		}
 
-		if p.count > len(imgFlamePillar)*delayFlamePillar {
+		if p.count > len(imgFlamePillar)*resources.SkillFlamePillarDelay {
 			p.count = 0
-			p.state = flamePillarStateDoing
+			p.state = resources.SkillFlamePillarStateDoing
 			return false, nil
 		}
-	case flamePillarStateDoing:
+	case resources.SkillFlamePillarStateDoing:
 		num := 3
-		if p.count > num*delayFlamePillar {
+		if p.count > num*resources.SkillFlamePillarDelay {
 			p.count = 0
-			p.state = flamePillarStateEnd
+			p.state = resources.SkillFlamePillarStateEnd
 			return false, nil
 		}
-	case flamePillarStateEnd:
-		if p.count > len(imgFlamePillar)*delayFlamePillar {
+	case resources.SkillFlamePillarStateEnd:
+		if p.count > len(imgFlamePillar)*resources.SkillFlamePillarDelay {
 			return true, nil
 		}
-	case flamePillarStateDeleted:
+	case resources.SkillFlamePillarStateDeleted:
 		// Nothing to do
 	}
 
