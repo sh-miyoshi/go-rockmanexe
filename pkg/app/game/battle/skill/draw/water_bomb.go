@@ -11,7 +11,7 @@ type DrawWaterBomb struct {
 }
 
 func (p *DrawWaterBomb) Draw(objPos, targetPos common.Point, count int) {
-	imgNo := (count / resources.SKillBombThrowDelay) % len(imgBombThrow)
+	imgNo := (count / delayBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 
 	// y = ax^2 + bx + c

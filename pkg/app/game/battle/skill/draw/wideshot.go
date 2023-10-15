@@ -7,6 +7,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayWideShot = 4
+)
+
 type DrawWideShot struct {
 }
 
@@ -22,7 +26,7 @@ func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bo
 
 	switch state {
 	case resources.SkillWideShotStateBegin:
-		n := (count / resources.SkillWideShotDelay)
+		n := (count / delayWideShot)
 
 		if n < len(imgWideShotBody) && showBody {
 			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
@@ -32,7 +36,7 @@ func (p *DrawWideShot) Draw(pos common.Point, count int, direct int, showBody bo
 		}
 		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
 	case resources.SkillWideShotStateMove:
-		n := (count / resources.SkillWideShotDelay) % len(imgWideShotMove)
+		n := (count / delayWideShot) % len(imgWideShotMove)
 		next := pos.X + 1
 		prev := pos.X - 1
 		if direct == common.DirectLeft {

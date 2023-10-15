@@ -7,11 +7,15 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	delayBombThrow = 4
+)
+
 type DrawMiniBomb struct {
 }
 
 func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
-	imgNo := (count / resources.SKillBombThrowDelay) % len(imgBombThrow)
+	imgNo := (count / delayBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 
 	// y = ax^2 + bx + c

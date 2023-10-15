@@ -30,18 +30,18 @@ const (
 )
 
 const (
-	SkillShockWaveInitWait           = 9
-	SkillShockWavePlayerSpeed        = 3
-	SkillShockWaveImageNum           = 7
-	SkillSwordDelay                  = 3
-	SkillVulcanDelay                 = 2
-	SkillWideShotDelay               = 4
+	SkillShockWaveInitWait    = 9
+	SkillShockWavePlayerSpeed = 3
+	SkillShockWaveImageNum    = 7
+
 	SkillWideShotPlayerNextStepCount = 8
-	SKillBombThrowDelay              = 4
 	SkillBoomerangNextStepCount      = 6
 	SkillGarooBreathNextStepCount    = 10
 	SkillThunderBallNextStepCount    = 80
-	SkillFlamePillarDelay            = 4
+
+	SkillSwordDelay       = 3
+	SkillVulcanDelay      = 2
+	SkillFlamePillarDelay = 4
 )
 
 const (
