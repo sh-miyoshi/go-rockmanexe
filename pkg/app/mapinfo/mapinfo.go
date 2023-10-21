@@ -39,6 +39,7 @@ const (
 	// 順番をmapInfo.yamlと合わせる
 
 	ID_犬小屋 int = iota
+	ID_秋原町
 
 	idMax
 )
