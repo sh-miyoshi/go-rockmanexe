@@ -133,6 +133,8 @@ func Draw() {
 
 func Process() error {
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
+		// リロードの場合はyamlの情報も含めて再取得する
+		mapinfo.Init(common.MapInfoFilePath)
 		Init()
 		return nil
 	}
