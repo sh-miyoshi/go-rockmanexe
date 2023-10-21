@@ -169,7 +169,7 @@ func Process() error {
 		loadScenarioData(mapInfo.ID, e.No)
 		return ErrGoEvent
 	}
-	// TODO(hit object)
+	// TODO(hit object(NPCなど))
 
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
 		absPlayerPosX = nextX
