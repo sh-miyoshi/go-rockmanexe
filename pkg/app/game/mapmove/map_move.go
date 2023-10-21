@@ -40,15 +40,15 @@ func Init() error {
 	}
 
 	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
-	mapID := mapinfo.ID_犬小屋
+	mapID := mapinfo.ID_秋原町
 
 	var err error
 	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
 		return fmt.Errorf("failed to load map info: %w", err)
 	}
-	absPlayerPosX = 300
-	absPlayerPosY = 200
+	absPlayerPosX = 1400
+	absPlayerPosY = 500
 
 	collision.SetWalls(mapInfo.CollisionWalls)
 	collision.SetEvents(mapInfo.Events)
