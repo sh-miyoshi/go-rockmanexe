@@ -18,10 +18,11 @@ type Wall struct {
 }
 
 type Event struct {
-	No int `yaml:"no"`
-	X  int `yaml:"x"`
-	Y  int `yaml:"y"`
-	R  int `yaml:"r"`
+	No            int  `yaml:"no"`
+	RequireAction bool `yaml:"require_action"`
+	X             int  `yaml:"x"`
+	Y             int  `yaml:"y"`
+	R             int  `yaml:"r"`
 }
 
 type MapInfo struct {
@@ -68,9 +69,12 @@ func Load(id int) (*MapInfo, error) {
 	m := mapInfo[id]
 	fname := fmt.Sprintf("%smap/field/%d_%s.png", common.ImagePath, m.ID, m.Name)
 	res := &MapInfo{
-		Image:          dxlib.LoadGraph(fname),
-		CollisionWalls: m.CollisionWalls,
-		Events:         m.Events,
+		ID:               m.ID,
+		Name:             m.Name,
+		CollisionWalls:   m.CollisionWalls,
+		Events:           m.Events,
+		IsEnemyEncounter: m.IsEnemyEncounter,
+		Image:            dxlib.LoadGraph(fname),
 	}
 	if res.Image == -1 {
 		return nil, fmt.Errorf("failed to load image: %s", fname)

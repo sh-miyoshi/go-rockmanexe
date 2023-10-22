@@ -39,20 +39,6 @@ func Init() error {
 		initFlag = false
 	}
 
-	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
-	mapID := mapinfo.ID_秋原町
-
-	var err error
-	mapInfo, err = mapinfo.Load(mapID)
-	if err != nil {
-		return fmt.Errorf("failed to load map info: %w", err)
-	}
-	absPlayerPosX = 1400
-	absPlayerPosY = 500
-
-	collision.SetWalls(mapInfo.CollisionWalls)
-	collision.SetEvents(mapInfo.Events)
-
 	// Load player image
 	tmp := make([]int, 30)
 	fname := common.ImagePath + "map/rockman_overworld_move.png"
@@ -71,6 +57,15 @@ func Init() error {
 	}
 
 	playerMoveDirect = common.DirectDown
+
+	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
+	mapID := mapinfo.ID_秋原町
+
+	initPos := common.Point{X: 1400, Y: 500} // TODO: 適切な値をセット
+	if err := MapChange(mapID, initPos); err != nil {
+		return fmt.Errorf("failed to change map to %d: %w", mapID, err)
+	}
+
 	initFlag = true
 
 	return nil
@@ -132,6 +127,7 @@ func Draw() {
 }
 
 func Process() error {
+	// デバッグ機能
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
 		// リロードの場合はyamlの情報も含めて再取得する
 		mapinfo.Init(common.MapInfoFilePath)
