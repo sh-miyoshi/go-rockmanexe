@@ -18,6 +18,7 @@
       x2: 15
       y2: 327
   events:
+    # プラグアウト
     - no: 0
       require_action: false
       x: 460
@@ -177,6 +178,7 @@
       y2: 702
   is_enemy_encounter: false
   events:
+    # 犬小屋にプラグイン
     - no: 0
       require_action: true
       x: 1300
