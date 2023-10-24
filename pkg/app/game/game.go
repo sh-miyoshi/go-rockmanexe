@@ -17,6 +17,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/scratch"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 )
 
@@ -108,7 +109,12 @@ func Process() error {
 			stateChange(stateNetBattle)
 			return nil
 		case menu.ResultGoMap:
-			stateChange(stateMap)
+			// debug: 初期イベントをセット
+			args := event.MapChangeArgs{MapID: mapinfo.ID_秋原町, InitPos: common.Point{X: 1400, Y: 500}}
+			event.SetScenarios([]event.Scenario{
+				{Type: event.TypeChangeMapArea, Values: args.Marshal()},
+			})
+			stateChange(stateEvent)
 			return nil
 		case menu.ResultGoScratch:
 			stateChange(stateScratch)
@@ -194,7 +200,9 @@ func Process() error {
 			return fmt.Errorf("map move process failed: %w", err)
 		}
 	case stateMapChange:
-		mapmove.Init()
+		var args event.MapChangeArgs
+		args.Unmarshal(event.GetStoredValues())
+		mapmove.MapChange(args.MapID, args.InitPos)
 		stateChange(stateEvent)
 		return nil
 	case stateScratch:

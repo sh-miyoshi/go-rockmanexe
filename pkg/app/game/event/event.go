@@ -8,6 +8,7 @@ import (
 
 const (
 	TypeChangeMapArea int = iota
+	TypeEnd
 )
 
 const (
@@ -17,20 +18,20 @@ const (
 )
 
 type Scenario struct {
-	Type int
-	// TODO values
+	Type   int
+	Values []byte
 }
 
 type Handler interface {
-	Init(args string) error
 	Draw()
 	Process() (int, error)
 }
 
 var (
-	handler   Handler
-	scenarios []Scenario
-	current   = 0
+	handler      Handler
+	scenarios    []Scenario
+	current      = 0
+	storedValues []byte
 )
 
 func SetScenarios(s []Scenario) {
@@ -40,8 +41,16 @@ func SetScenarios(s []Scenario) {
 	}
 
 	scenarios = append([]Scenario{}, s...)
+
+	// 最後にEndHandlerを追加する
+	scenarios = append(scenarios, Scenario{Type: TypeEnd})
+
 	current = 0
 	setHandler(scenarios[current])
+}
+
+func GetStoredValues() []byte {
+	return storedValues
 }
 
 func Draw() {
@@ -71,7 +80,11 @@ func Process() (int, error) {
 func setHandler(s Scenario) {
 	switch s.Type {
 	case TypeChangeMapArea:
-		handler = &MapChangeHandler{}
+		var args MapChangeArgs
+		args.Unmarshal(s.Values)
+		handler = &MapChangeHandler{args: args}
+	case TypeEnd:
+		handler = &EndHandler{}
 	default:
 		common.SetError(fmt.Sprintf("scenario type %d is not implemented", s.Type))
 	}

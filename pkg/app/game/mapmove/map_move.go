@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
 )
 
@@ -21,7 +22,7 @@ var (
 	ErrGoMenu   = errors.New("go to menu")
 	ErrGoEvent  = errors.New("go to event")
 
-	mapInfo       *mapinfo.MapInfo
+	mapInfo       mapinfo.MapInfo
 	absPlayerPosX float64
 	absPlayerPosY float64
 
@@ -57,22 +58,11 @@ func Init() error {
 	}
 
 	playerMoveDirect = common.DirectDown
-
-	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
-	mapID := mapinfo.ID_秋原町
-
-	initPos := common.Point{X: 1400, Y: 500} // TODO: 適切な値をセット
-	if err := MapChange(mapID, initPos); err != nil {
-		return fmt.Errorf("failed to change map to %d: %w", mapID, err)
-	}
-
 	initFlag = true
-
 	return nil
 }
 
 func End() {
-	dxlib.DeleteGraph(mapInfo.Image)
 	for i := 0; i < 5; i++ {
 		for _, img := range playerMoveImages[i] {
 			dxlib.DeleteGraph(img)
@@ -92,6 +82,8 @@ func MapChange(mapID int, pos common.Point) error {
 
 	collision.SetWalls(mapInfo.CollisionWalls)
 	collision.SetEvents(mapInfo.Events)
+	logger.Info("change map to %d with %s", mapID, pos.String())
+	logger.Debug("map info: %+v", mapInfo)
 	return nil
 }
 
@@ -251,9 +243,13 @@ func drawRockman(pos common.Point) {
 }
 
 func loadScenarioData(mapType int, eventNo int) {
+	logger.Info("load scenario for map %d, event %d", mapType, eventNo)
+
 	switch mapType {
 	case mapinfo.ID_犬小屋:
 		event.SetScenarios(scenario.Scenario_犬小屋[eventNo])
+	case mapinfo.ID_秋原町:
+		event.SetScenarios(scenario.Scenario_秋原町[eventNo])
 	default:
 		common.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}

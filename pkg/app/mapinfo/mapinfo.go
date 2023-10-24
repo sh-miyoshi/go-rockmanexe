@@ -57,32 +57,31 @@ func Init(fname string) error {
 	if err := yaml.Unmarshal(buf, &mapInfo); err != nil {
 		return err
 	}
+	for i := 0; i < len(mapInfo); i++ {
+		mapInfo[i].Image = -1
+	}
 
 	return nil
 }
 
-func Load(id int) (*MapInfo, error) {
+func Load(id int) (MapInfo, error) {
 	if id < 0 || id >= idMax {
-		return nil, fmt.Errorf("no such as map %d", id)
+		return MapInfo{}, fmt.Errorf("no such as map %d", id)
 	}
 
-	m := mapInfo[id]
-	fname := fmt.Sprintf("%smap/field/%d_%s.png", common.ImagePath, m.ID, m.Name)
-	res := &MapInfo{
-		ID:               m.ID,
-		Name:             m.Name,
-		CollisionWalls:   m.CollisionWalls,
-		Events:           m.Events,
-		IsEnemyEncounter: m.IsEnemyEncounter,
-		Image:            dxlib.LoadGraph(fname),
+	if mapInfo[id].Image == -1 {
+		fname := fmt.Sprintf("%smap/field/%d_%s.png", common.ImagePath, id, mapInfo[id].Name)
+		mapInfo[id].Image = dxlib.LoadGraph(fname)
+		if mapInfo[id].Image == -1 {
+			return MapInfo{}, fmt.Errorf("failed to load image: %s", fname)
+		}
+		dxlib.GetGraphSize(mapInfo[id].Image, &mapInfo[id].Size.X, &mapInfo[id].Size.Y)
 	}
-	if res.Image == -1 {
-		return nil, fmt.Errorf("failed to load image: %s", fname)
-	}
-	dxlib.GetGraphSize(res.Image, &res.Size.X, &res.Size.Y)
+
+	// TODO: 適切な背景をセットする
 	if err := background.Set(background.Type秋原町); err != nil {
-		return nil, fmt.Errorf("failed to load background: %w", err)
+		return MapInfo{}, fmt.Errorf("failed to load background: %w", err)
 	}
 
-	return res, nil
+	return mapInfo[id], nil
 }
