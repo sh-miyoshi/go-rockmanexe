@@ -25,6 +25,7 @@
       y: 420
       r: 40
   is_enemy_encounter: true
+  is_cyber_world: true
 - id: 1
   name: "秋原町"
   walls:
@@ -177,6 +178,7 @@
       x2: 884
       y2: 702
   is_enemy_encounter: false
+  is_cyber_world: false
   events:
     # 犬小屋にプラグイン
     - no: 0

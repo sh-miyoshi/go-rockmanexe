@@ -31,6 +31,7 @@ type MapInfo struct {
 	CollisionWalls   []Wall  `yaml:"walls"`
 	Events           []Event `yaml:"events"`
 	IsEnemyEncounter bool    `yaml:"is_enemy_encounter"`
+	IsCyberWorld     bool    `yaml:"is_cyber_world"`
 
 	Image int
 	Size  common.Point
