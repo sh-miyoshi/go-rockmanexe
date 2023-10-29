@@ -5,6 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
 )
 
@@ -28,6 +29,10 @@ func GetEvent(currentX, currentY float64) *mapinfo.Event {
 		y2 := (float64(e.Y) - currentY) * (float64(e.Y) - currentY)
 		r2 := float64((r + e.R) * (r + e.R))
 		if x2+y2 <= r2 {
+			if e.RequireAction && inputs.CheckKey(inputs.KeyEnter) == 0 {
+				return nil
+			}
+
 			return &e
 		}
 	}

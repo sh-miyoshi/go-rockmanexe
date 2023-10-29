@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
 )
 
@@ -21,14 +22,17 @@ var (
 	ErrGoMenu   = errors.New("go to menu")
 	ErrGoEvent  = errors.New("go to event")
 
-	mapInfo       *mapinfo.MapInfo
+	mapInfo       mapinfo.MapInfo
 	absPlayerPosX float64
 	absPlayerPosY float64
 
-	playerMoveImages      [5][]int
-	playerMoveStandImages []int
-	playerMoveDirect      int
-	playerMoveCount       int
+	rockmanMoveImages      [5][]int
+	rockmanMoveStandImages []int
+	netMoveImages          [5][]int
+	netMoveStandImages     []int
+
+	playerMoveDirect int
+	playerMoveCount  int
 
 	initFlag bool = false
 )
@@ -39,51 +43,66 @@ func Init() error {
 		initFlag = false
 	}
 
-	// TODO 本来ならplayerInfoから取得するが実装中なのでここでセットする
-	mapID := mapinfo.ID_犬小屋
-
-	var err error
-	mapInfo, err = mapinfo.Load(mapID)
-	if err != nil {
-		return fmt.Errorf("failed to load map info: %w", err)
-	}
-	absPlayerPosX = 300
-	absPlayerPosY = 200
-
-	collision.SetWalls(mapInfo.CollisionWalls)
-	collision.SetEvents(mapInfo.Events)
-
-	// Load player image
-	tmp := make([]int, 30)
+	// Load rockman image
+	tmp := make([]int, 40)
 	fname := common.ImagePath + "map/rockman_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 6, 5, 64, 64, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 6; j++ {
-			playerMoveImages[i] = append(playerMoveImages[i], tmp[i*6+j])
+			rockmanMoveImages[i] = append(rockmanMoveImages[i], tmp[i*6+j])
 		}
 	}
-	playerMoveStandImages = make([]int, 5)
+	rockmanMoveStandImages = make([]int, 5)
 	fname = common.ImagePath + "map/rockman_overworld_stand.png"
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, playerMoveStandImages); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, rockmanMoveStandImages); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	// Load net image
+	fname = common.ImagePath + "map/net_overworld_move.png"
+	if res := dxlib.LoadDivGraph(fname, 40, 8, 5, 64, 64, tmp); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 8; j++ {
+			netMoveImages[i] = append(netMoveImages[i], tmp[i*8+j])
+		}
+	}
+	netMoveStandImages = make([]int, 5)
+	fname = common.ImagePath + "map/net_overworld_stand.png"
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, netMoveStandImages); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	playerMoveDirect = common.DirectDown
 	initFlag = true
-
 	return nil
 }
 
 func End() {
-	dxlib.DeleteGraph(mapInfo.Image)
-	for i := 0; i < 5; i++ {
-		for _, img := range playerMoveImages[i] {
+	for i := 0; i < len(rockmanMoveImages); i++ {
+		for _, img := range rockmanMoveImages[i] {
 			dxlib.DeleteGraph(img)
 		}
-		playerMoveImages[i] = []int{}
+		rockmanMoveImages[i] = []int{}
 	}
+	for _, img := range rockmanMoveStandImages {
+		dxlib.DeleteGraph(img)
+	}
+	rockmanMoveStandImages = []int{}
+
+	for i := 0; i < len(netMoveImages); i++ {
+		for _, img := range netMoveImages[i] {
+			dxlib.DeleteGraph(img)
+		}
+		netMoveImages[i] = []int{}
+	}
+	for _, img := range netMoveStandImages {
+		dxlib.DeleteGraph(img)
+	}
+	netMoveStandImages = []int{}
 }
 
 func MapChange(mapID int, pos common.Point) error {
@@ -97,6 +116,7 @@ func MapChange(mapID int, pos common.Point) error {
 
 	collision.SetWalls(mapInfo.CollisionWalls)
 	collision.SetEvents(mapInfo.Events)
+	logger.Info("change map to %d with %s", mapID, pos.String())
 	return nil
 }
 
@@ -106,7 +126,7 @@ func Draw() {
 
 	dxlib.DrawRectGraph(0, 0, window.X, window.Y, mapInfo.Size.X, mapInfo.Size.Y, mapInfo.Image, true)
 
-	drawRockman(player)
+	drawPlayer(player)
 
 	if config.Get().Debug.ShowDebugData {
 		// show debug data
@@ -132,7 +152,10 @@ func Draw() {
 }
 
 func Process() error {
+	// デバッグ機能
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
+		// リロードの場合はyamlの情報も含めて再取得する
+		mapinfo.Init(common.MapInfoFilePath)
 		Init()
 		return nil
 	}
@@ -167,7 +190,6 @@ func Process() error {
 		loadScenarioData(mapInfo.ID, e.No)
 		return ErrGoEvent
 	}
-	// TODO(hit object)
 
 	if nextX >= 0 && nextX < float64(mapInfo.Size.X) && nextY >= 0 && nextY < float64(mapInfo.Size.Y) {
 		absPlayerPosX = nextX
@@ -218,7 +240,7 @@ func getViewPos(player, window *common.Point) {
 	}
 }
 
-func drawRockman(pos common.Point) {
+func drawPlayer(pos common.Point) {
 	dxopts := dxlib.DrawRotaGraphOption{}
 	rlFlag := false
 	if playerMoveDirect&common.DirectLeft != 0 {
@@ -245,17 +267,30 @@ func drawRockman(pos common.Point) {
 	}
 
 	if playerMoveCount == 0 {
-		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, playerMoveStandImages[typ], true, dxopts)
+		img := netMoveStandImages[typ]
+		if mapInfo.IsCyberWorld {
+			img = rockmanMoveStandImages[typ]
+		}
+		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, img, true, dxopts)
 	} else {
-		n := (playerMoveCount / 4) % 6
-		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, playerMoveImages[typ][n], true, dxopts)
+		n := (playerMoveCount / 4) % len(netMoveImages[typ])
+		img := netMoveImages[typ][n]
+		if mapInfo.IsCyberWorld {
+			n = (playerMoveCount / 4) % len(rockmanMoveImages[typ])
+			img = rockmanMoveImages[typ][n]
+		}
+		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, img, true, dxopts)
 	}
 }
 
 func loadScenarioData(mapType int, eventNo int) {
+	logger.Info("load scenario for map %d, event %d", mapType, eventNo)
+
 	switch mapType {
 	case mapinfo.ID_犬小屋:
 		event.SetScenarios(scenario.Scenario_犬小屋[eventNo])
+	case mapinfo.ID_秋原町:
+		event.SetScenarios(scenario.Scenario_秋原町[eventNo])
 	default:
 		common.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}

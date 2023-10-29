@@ -76,7 +76,7 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 		return nil, fmt.Errorf("failed to load menu arrow image %s", fname)
 	}
 
-	fname = common.ImagePath + "menu/msg_frame.png"
+	fname = common.ImagePath + "msg_frame.png"
 	res.imgMsgFrame = dxlib.LoadGraph(fname)
 	if res.imgMsgFrame == -1 {
 		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
