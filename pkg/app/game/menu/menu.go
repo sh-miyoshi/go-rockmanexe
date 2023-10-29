@@ -123,7 +123,7 @@ func End() {
 
 func Process() (Result, error) {
 	if config.Get().Debug.SkipMenu {
-		return ResultGoMap, nil
+		return ResultGoBattle, nil
 	}
 
 	switch menuState {
