@@ -6,6 +6,7 @@ type EndHandler struct {
 func (h *EndHandler) Draw() {
 }
 
-func (h *EndHandler) Process() (int, error) {
-	return resultEnd, nil
+func (h *EndHandler) Process() (bool, error) {
+	resultCode = ResultEnd
+	return true, nil
 }

@@ -13,9 +13,9 @@ func (h *MessageHandler) Draw() {
 	dxlib.DrawString(0, 100, h.Message, 0xff0000)
 }
 
-func (h *MessageHandler) Process() (int, error) {
+func (h *MessageHandler) Process() (bool, error) {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		return resultNext, nil
+		return true, nil
 	}
-	return resultContinue, nil
+	return false, nil
 }

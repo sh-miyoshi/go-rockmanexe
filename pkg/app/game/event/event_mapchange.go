@@ -20,10 +20,11 @@ type MapChangeHandler struct {
 func (h *MapChangeHandler) Draw() {
 }
 
-func (h *MapChangeHandler) Process() (int, error) {
+func (h *MapChangeHandler) Process() (bool, error) {
 	logger.Info("store map args %+v to event storedValues", h.args)
 	storedValues = h.args.Marshal()
-	return resultMapChange, nil
+	resultCode = ResultMapChange
+	return true, nil
 }
 
 func (p *MapChangeArgs) Marshal() []byte {

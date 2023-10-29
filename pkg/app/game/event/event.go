@@ -14,13 +14,6 @@ const (
 )
 
 const (
-	resultContinue int = iota
-	resultMapChange
-	resultNext
-	resultEnd
-)
-
-const (
 	ResultContinue int = iota
 	ResultMapChange
 	ResultEnd
@@ -33,7 +26,7 @@ type Scenario struct {
 
 type Handler interface {
 	Draw()
-	Process() (int, error)
+	Process() (bool, error)
 }
 
 var (
@@ -41,6 +34,7 @@ var (
 	scenarios    []Scenario
 	current      = 0
 	storedValues []byte
+	resultCode   = ResultContinue
 )
 
 func SetScenarios(s []Scenario) {
@@ -56,6 +50,7 @@ func SetScenarios(s []Scenario) {
 
 	current = 0
 	setHandler(scenarios[current])
+	resultCode = ResultContinue
 }
 
 func GetStoredValues() []byte {
@@ -70,26 +65,19 @@ func Draw() {
 
 func Process() (int, error) {
 	if handler != nil {
-		res, err := handler.Process()
+		end, err := handler.Process()
 		if err != nil {
 			return ResultContinue, err
 		}
-		if res != resultContinue {
+		if end {
 			current++
 			if current >= len(scenarios) {
 				return ResultEnd, nil
 			}
 			setHandler(scenarios[current])
-
-			switch res {
-			case resultMapChange:
-				return ResultMapChange, nil
-			case resultEnd:
-				return ResultEnd, nil
-			}
 		}
 	}
-	return ResultContinue, nil
+	return resultCode, nil
 }
 
 func setHandler(s Scenario) {
