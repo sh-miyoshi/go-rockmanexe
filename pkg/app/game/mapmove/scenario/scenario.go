@@ -24,6 +24,7 @@ var eno0Args_秋原町 = event.MapChangeArgs{
 
 var Scenario_秋原町 = [][]event.Scenario{
 	{ // EventNo: 0
+		{Type: event.TypeMessage, Values: []byte("プラグイン！ロックマン．ｅｘｅトランスミッション！")},
 		{Type: event.TypeChangeMapArea, Values: eno0Args_秋原町.Marshal()},
 	},
 }

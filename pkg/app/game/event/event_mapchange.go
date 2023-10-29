@@ -23,7 +23,7 @@ func (h *MapChangeHandler) Draw() {
 func (h *MapChangeHandler) Process() (int, error) {
 	logger.Info("store map args %+v to event storedValues", h.args)
 	storedValues = h.args.Marshal()
-	return ResultMapChange, nil
+	return resultMapChange, nil
 }
 
 func (p *MapChangeArgs) Marshal() []byte {

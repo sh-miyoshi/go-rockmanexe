@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -218,10 +219,11 @@ func Process() error {
 		switch res {
 		case event.ResultMapChange:
 			stateChange(stateMapChange)
+			return nil
 		case event.ResultEnd:
 			stateChange(stateMap)
+			return nil
 		}
-		return nil
 	case stateNaviCustom:
 		if count == 0 {
 			navicustom.Init(playerInfo)
@@ -274,6 +276,7 @@ func stateChange(nextState int) {
 		common.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
 		return
 	}
+	logger.Info("game state change from %d to %d", state, nextState)
 	state = nextState
 	count = 0
 }

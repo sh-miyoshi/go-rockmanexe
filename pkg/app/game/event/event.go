@@ -4,11 +4,20 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
 	TypeChangeMapArea int = iota
 	TypeEnd
+	TypeMessage
+)
+
+const (
+	resultContinue int = iota
+	resultMapChange
+	resultNext
+	resultEnd
 )
 
 const (
@@ -65,13 +74,19 @@ func Process() (int, error) {
 		if err != nil {
 			return ResultContinue, err
 		}
-		if res != ResultContinue {
+		if res != resultContinue {
 			current++
 			if current >= len(scenarios) {
 				return ResultEnd, nil
 			}
 			setHandler(scenarios[current])
-			return res, nil
+
+			switch res {
+			case resultMapChange:
+				return ResultMapChange, nil
+			case resultEnd:
+				return ResultEnd, nil
+			}
 		}
 	}
 	return ResultContinue, nil
@@ -83,8 +98,13 @@ func setHandler(s Scenario) {
 		var args MapChangeArgs
 		args.Unmarshal(s.Values)
 		handler = &MapChangeHandler{args: args}
+		logger.Info("set map change scenario with %+v", args)
 	case TypeEnd:
 		handler = &EndHandler{}
+		logger.Info("set end scenario")
+	case TypeMessage:
+		handler = &MessageHandler{Message: string(s.Values)}
+		logger.Info("set message scenario with %s", string(s.Values))
 	default:
 		common.SetError(fmt.Sprintf("scenario type %d is not implemented", s.Type))
 	}

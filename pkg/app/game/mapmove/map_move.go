@@ -117,7 +117,6 @@ func MapChange(mapID int, pos common.Point) error {
 	collision.SetWalls(mapInfo.CollisionWalls)
 	collision.SetEvents(mapInfo.Events)
 	logger.Info("change map to %d with %s", mapID, pos.String())
-	logger.Debug("map info: %+v", mapInfo)
 	return nil
 }
 
