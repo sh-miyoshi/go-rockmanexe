@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 const (
@@ -25,6 +24,8 @@ type Scenario struct {
 }
 
 type Handler interface {
+	Init(values []byte) error
+	End()
 	Draw()
 	Process() (bool, error)
 }
@@ -49,7 +50,9 @@ func SetScenarios(s []Scenario) {
 	scenarios = append(scenarios, Scenario{Type: TypeEnd})
 
 	current = 0
-	setHandler(scenarios[current])
+	if err := setHandler(scenarios[current]); err != nil {
+		common.SetError(fmt.Sprintf("failed to set handler: %v", err))
+	}
 	resultCode = ResultContinue
 }
 
@@ -67,33 +70,34 @@ func Process() (int, error) {
 	if handler != nil {
 		end, err := handler.Process()
 		if err != nil {
+			handler.End()
 			return ResultContinue, err
 		}
 		if end {
+			handler.End()
+
 			current++
 			if current >= len(scenarios) {
 				return ResultEnd, nil
 			}
-			setHandler(scenarios[current])
+			if err := setHandler(scenarios[current]); err != nil {
+				return ResultContinue, err
+			}
 		}
 	}
 	return resultCode, nil
 }
 
-func setHandler(s Scenario) {
+func setHandler(s Scenario) error {
 	switch s.Type {
 	case TypeChangeMapArea:
-		var args MapChangeArgs
-		args.Unmarshal(s.Values)
-		handler = &MapChangeHandler{args: args}
-		logger.Info("set map change scenario with %+v", args)
+		handler = &MapChangeHandler{}
 	case TypeEnd:
 		handler = &EndHandler{}
-		logger.Info("set end scenario")
 	case TypeMessage:
-		handler = &MessageHandler{Message: string(s.Values)}
-		logger.Info("set message scenario with %s", string(s.Values))
+		handler = &MessageHandler{}
 	default:
-		common.SetError(fmt.Sprintf("scenario type %d is not implemented", s.Type))
+		return fmt.Errorf("scenario type %d is not implemented", s.Type)
 	}
+	return handler.Init(s.Values)
 }

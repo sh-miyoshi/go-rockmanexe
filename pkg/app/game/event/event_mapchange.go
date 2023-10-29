@@ -17,6 +17,15 @@ type MapChangeHandler struct {
 	args MapChangeArgs
 }
 
+func (h *MapChangeHandler) Init(values []byte) error {
+	h.args.Unmarshal(values)
+	logger.Info("init map change handler with %+v", h.args)
+	return nil
+}
+
+func (h *MapChangeHandler) End() {
+}
+
 func (h *MapChangeHandler) Draw() {
 }
 

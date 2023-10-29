@@ -42,7 +42,6 @@ var (
 	playerInfo *player.Player
 )
 
-// Process ...
 func Process() error {
 	background.Process()
 	fade.Process()
