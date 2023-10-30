@@ -8,28 +8,28 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 )
 
-type menuRecord struct {
+type menuPlayerStatus struct {
 	playerInfo *player.Player
 }
 
-func recordNew(plyr *player.Player) (*menuRecord, error) {
-	res := menuRecord{
+func playerStatusNew(plyr *player.Player) (*menuPlayerStatus, error) {
+	res := menuPlayerStatus{
 		playerInfo: plyr,
 	}
 	return &res, nil
 }
 
-func (r *menuRecord) End() {
+func (r *menuPlayerStatus) End() {
 }
 
-func (r *menuRecord) Process() {
+func (r *menuPlayerStatus) Process() {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(resources.SECancel)
 		stateChange(stateTop)
 	}
 }
 
-func (r *menuRecord) Draw() {
+func (r *menuPlayerStatus) Draw() {
 	// get game count as seconds (FPS: 60)
 	tm := r.playerInfo.PlayCount / 60
 	if tm > 999*12*60 {

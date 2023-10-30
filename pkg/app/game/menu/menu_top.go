@@ -16,7 +16,7 @@ import (
 const (
 	topSelectChipFolder int = iota
 	topSelectGoBattle
-	topSelectRecord
+	topSelectPlayerStatus
 	topSelectNetBattle
 	topSelectNaviCustom
 )
@@ -33,7 +33,7 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 	res.itemList.SetList([]string{
 		"チップフォルダ",
 		"バトル",
-		"戦績",
+		"ロックマン",
 		"ネット対戦",
 		"ナビカスタマイザー",
 	}, -1)
@@ -61,8 +61,8 @@ func (t *menuTop) Process() Result {
 			stateChange(stateChipFolder)
 		case topSelectGoBattle:
 			stateChange(stateGoBattle)
-		case topSelectRecord:
-			stateChange(stateRecord)
+		case topSelectPlayerStatus:
+			stateChange(statePlayerStatus)
 		case topSelectNetBattle:
 			if t.haveInvalidChip() {
 				stateChange(stateInvalidChip)
@@ -103,7 +103,7 @@ func (t *menuTop) Draw() {
 	case topSelectGoBattle:
 		draw.String(270, 70, 0xffffff, "ウィルスバスティングを")
 		draw.String(270, 100, 0xffffff, "行います")
-	case topSelectRecord:
+	case topSelectPlayerStatus:
 		draw.String(270, 70, 0xffffff, "今までの戦績を確認しま")
 		draw.String(270, 100, 0xffffff, "す")
 	case topSelectNetBattle:
