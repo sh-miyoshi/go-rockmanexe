@@ -50,6 +50,7 @@ const (
 	IDLongSword   = 56
 	IDBoomerang1  = 69
 	IDBambooLance = 75
+	IDCountBomb   = 93
 	IDCrackout    = 106
 	IDDoubleCrack = 107
 	IDTripleCrack = 108
@@ -88,7 +89,6 @@ var (
 	chipData []Chip
 )
 
-// Init ...
 func Init(fname string) error {
 	// Load chip data
 	buf, err := ioutil.ReadFile(fname)

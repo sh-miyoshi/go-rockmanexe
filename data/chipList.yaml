@@ -183,3 +183,9 @@
   type: 0
   player_act: -1
   description: 前方の敵エリア1マスを自分のエリアに塗り替える
+- id: 93
+  name: "カウントボム"
+  power: 150
+  type: 0
+  player_act: -1
+  description: 敵エリア全体を巻き込む時限爆弾を設置
