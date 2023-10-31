@@ -37,6 +37,7 @@ var (
 	imgAquamanCharStand  []int
 	imgAquamanCharCreate []int
 	imgSpreadHit         []int
+	imgCountBomb         []int
 )
 
 func LoadImages() error {
@@ -218,6 +219,12 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
+	fname = path + "カウントボム.png"
+	imgCountBomb = make([]int, 1)
+	if imgCountBomb[0] = dxlib.LoadGraph(fname); imgCountBomb[0] == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	fname = common.ImagePath + "battle/character/アクアマン_stand.png"
 	imgAquamanCharStand = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, imgAquamanCharStand); res == -1 {
@@ -356,4 +363,8 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgSpreadHit[i])
 	}
 	imgSpreadHit = []int{}
+	for i := 0; i < len(imgCountBomb); i++ {
+		dxlib.DeleteGraph(imgCountBomb[i])
+	}
+	imgCountBomb = []int{}
 }
