@@ -48,6 +48,8 @@ const (
 	SEAreaSteal
 	SEAreaStealHit
 	SERunOK
+	SECountBombCountdown
+	SECountBombEnd
 
 	SEMax
 )
