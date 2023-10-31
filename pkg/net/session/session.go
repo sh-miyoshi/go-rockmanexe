@@ -51,7 +51,7 @@ func newSession(sessionID string, gameHandler GameLogic) *Session {
 	res := &Session{
 		id:          sessionID,
 		expiresAt:   time.Now().Add(sessionExpireTime),
-		fpsMgr:      fps.Fps{TargetFPS: 60},
+		fpsMgr:      fps.Fps{},
 		state:       stateConnectWait,
 		gameHandler: gameHandler,
 	}

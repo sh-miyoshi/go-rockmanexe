@@ -4,9 +4,11 @@ import (
 	"time"
 )
 
-type Fps struct {
-	TargetFPS int64
+var (
+	FPS int64 = 60
+)
 
+type Fps struct {
 	baseTime int64
 	count    int64
 	current  float32
@@ -19,19 +21,19 @@ func (f *Fps) Wait() {
 	} else {
 		c := time.Now().UnixNano() / (1000 * 1000)
 
-		if f.count == f.TargetFPS-1 {
+		if f.count == FPS-1 {
 			// Update current FPS
-			f.current = float32(f.TargetFPS * 1000 / (c - f.baseTime))
+			f.current = float32(FPS * 1000 / (c - f.baseTime))
 		}
 
-		target := f.count*1000/f.TargetFPS + f.baseTime
+		target := f.count*1000/FPS + f.baseTime
 		wait = target - c
 	}
 
 	if wait > 0 {
 		time.Sleep(time.Millisecond * time.Duration(wait))
 	}
-	f.count = (f.count + 1) % f.TargetFPS
+	f.count = (f.count + 1) % FPS
 }
 
 func (f *Fps) Get() float32 {

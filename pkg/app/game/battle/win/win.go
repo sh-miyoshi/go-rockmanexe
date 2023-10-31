@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -46,7 +47,7 @@ type WinArg struct {
 
 func Init(args WinArg, plyr *player.Player) error {
 	state = stateMsg
-	deleteTimeSec = args.GameTime / 60
+	deleteTimeSec = args.GameTime / int(fps.FPS)
 	if deleteTimeSec == 0 {
 		deleteTimeSec = 1
 	}

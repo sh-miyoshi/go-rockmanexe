@@ -35,7 +35,8 @@ func Init(clientID string, conn *netconn.NetConn) {
 }
 
 func Process() error {
-	fpsMgr := fps.Fps{TargetFPS: 60}
+	fps.FPS = 60
+	fpsMgr := fps.Fps{}
 
 	// Main loop
 MAIN_LOOP:

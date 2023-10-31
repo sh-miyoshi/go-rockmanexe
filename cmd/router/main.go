@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconn"
@@ -35,6 +36,8 @@ func main() {
 		logger.Error("Failed to initialize chip info: %+v", err)
 		return
 	}
+
+	fps.FPS = 60
 
 	// Listen data connection
 	logger.Info("start data stream with %s", c.DataStreamAddr)

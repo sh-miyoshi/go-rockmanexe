@@ -32,7 +32,8 @@ func init() {
 }
 
 func main() {
-	fpsMgr := fps.Fps{TargetFPS: 60}
+	fps.FPS = 60
+	fpsMgr := fps.Fps{}
 
 	var confFile string
 	flag.StringVar(&confFile, "config", common.DefaultConfigFile, "file path of config")

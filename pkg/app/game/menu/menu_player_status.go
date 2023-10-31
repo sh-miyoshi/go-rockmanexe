@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 )
 
@@ -35,8 +36,8 @@ func (r *menuPlayerStatus) Process() {
 func (r *menuPlayerStatus) Draw() {
 	dxlib.DrawBox(60, 35, 400, 270, dxlib.GetColor(168, 192, 216), true)
 
-	// get game count as seconds (FPS: 60)
-	tm := r.playerInfo.PlayCount / 60
+	// get game count as seconds
+	tm := r.playerInfo.PlayCount / uint(fps.FPS)
 	if tm > 999*12*60 {
 		tm = 999 * 12 * 60
 	}
@@ -75,7 +76,7 @@ func (r *menuPlayerStatus) Draw() {
 		},
 		{
 			key:   "チャージ時間",
-			value: fmt.Sprintf("%.01f秒", float64(r.playerInfo.ChargeTime)/60), // 60 is FPS
+			value: fmt.Sprintf("%.01f秒", float64(r.playerInfo.ChargeTime)/float64(fps.FPS)),
 		},
 	}
 
