@@ -18,13 +18,14 @@ import (
 )
 
 const (
-	explodeTime = 180
+	explodeTime = 240
 )
 
 type CountBomb struct {
-	pm    ObjectParam
-	image int
-	count int
+	pm        ObjectParam
+	imgBody   int
+	imgNumber []int
+	count     int
 }
 
 func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
@@ -33,8 +34,14 @@ func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
 	o.count = 0
 
 	fname := common.ImagePath + "battle/skill/カウントボム.png"
-	o.image = dxlib.LoadGraph(fname)
-	if o.image == -1 {
+	o.imgBody = dxlib.LoadGraph(fname)
+	if o.imgBody == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	o.imgNumber = make([]int, 4)
+	fname = common.ImagePath + "battle/skill/カウントボム_数字.png"
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, o.imgNumber); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -42,12 +49,19 @@ func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
 }
 
 func (o *CountBomb) End() {
-	dxlib.DeleteGraph(o.image)
+	dxlib.DeleteGraph(o.imgBody)
+	for _, img := range o.imgNumber {
+		dxlib.DeleteGraph(img)
+	}
+	o.imgNumber = []int{}
 }
 
 func (o *CountBomb) Draw() {
 	view := battlecommon.ViewPos(o.pm.Pos)
-	dxlib.DrawRotaGraph(view.X, view.Y+16, 1, 0, o.image, true)
+	dxlib.DrawRotaGraph(view.X, view.Y+16, 1, 0, o.imgBody, true)
+
+	cnt := 3 - o.count/60
+	dxlib.DrawRotaGraph(view.X, view.Y+20, 1, 0, o.imgNumber[cnt], true)
 }
 
 func (o *CountBomb) Process() (bool, error) {
@@ -57,14 +71,20 @@ func (o *CountBomb) Process() (bool, error) {
 		return true, nil
 	}
 
-	if o.count >= explodeTime {
+	if o.count == explodeTime {
 		// TODO(ダメージ処理)
 		logger.Info("explode count bomb with %+v", o.pm)
+		sound.On(resources.SEExplode)
 		return true, nil
 	}
 
 	if o.count%60 == 0 {
-		sound.On(resources.SECountBombCountdown)
+		if o.count/60 == 3 {
+			// 最終カウント
+			sound.On(resources.SECountBombEnd)
+		} else {
+			sound.On(resources.SECountBombCountdown)
+		}
 	}
 
 	return false, nil
