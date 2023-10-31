@@ -16,7 +16,7 @@ const (
 	stateTop int = iota
 	stateChipFolder
 	stateGoBattle
-	stateRecord
+	statePlayerStatus
 	stateNetBattle
 	stateInvalidChip
 	stateDevFeature
@@ -36,15 +36,15 @@ const (
 )
 
 var (
-	menuState           int
-	imgBack             int
-	menuTopInst         *menuTop
-	menuFolderInst      *menuFolder
-	menuRecordInst      *menuRecord
-	menuNetBattleInst   *menuNetBattle
-	menuInvalidChipInst *menuInvalidChip
-	menuDevFeatureInst  *menuDevFeature
-	specificEnemy       []enemy.EnemyParam
+	menuState            int
+	imgBack              int
+	menuTopInst          *menuTop
+	menuFolderInst       *menuFolder
+	menuPlayerStatusInst *menuPlayerStatus
+	menuNetBattleInst    *menuNetBattle
+	menuInvalidChipInst  *menuInvalidChip
+	menuDevFeatureInst   *menuDevFeature
+	specificEnemy        []enemy.EnemyParam
 )
 
 func Init(plyr *player.Player) error {
@@ -71,9 +71,9 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu go battle: %w", err)
 	}
 
-	menuRecordInst, err = recordNew(plyr)
+	menuPlayerStatusInst, err = playerStatusNew(plyr)
 	if err != nil {
-		return fmt.Errorf("failed to init menu record: %w", err)
+		return fmt.Errorf("failed to init menu player status: %w", err)
 	}
 
 	menuNetBattleInst, err = netBattleNew()
@@ -107,8 +107,8 @@ func End() {
 		menuFolderInst.End()
 	}
 	goBattleEnd()
-	if menuRecordInst != nil {
-		menuRecordInst.End()
+	if menuPlayerStatusInst != nil {
+		menuPlayerStatusInst.End()
 	}
 	if menuNetBattleInst != nil {
 		menuNetBattleInst.End()
@@ -138,8 +138,8 @@ func Process() (Result, error) {
 		if goBattleProcess() {
 			return ResultGoBattle, nil
 		}
-	case stateRecord:
-		menuRecordInst.Process()
+	case statePlayerStatus:
+		menuPlayerStatusInst.Process()
 	case stateNetBattle:
 		if menuNetBattleInst.Process() {
 			return ResultGoNetBattle, nil
@@ -163,8 +163,8 @@ func Draw() {
 		menuFolderInst.Draw()
 	case stateGoBattle:
 		goBattleDraw()
-	case stateRecord:
-		menuRecordInst.Draw()
+	case statePlayerStatus:
+		menuPlayerStatusInst.Draw()
 	case stateNetBattle:
 		menuNetBattleInst.Draw()
 	case stateInvalidChip:
