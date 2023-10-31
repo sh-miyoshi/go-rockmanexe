@@ -36,8 +36,6 @@ func newSpreadGun(objID string, arg Argument) *spreadGun {
 		Arg: arg,
 	}
 
-	res.drawer.Init() // TODO error
-
 	return res
 }
 

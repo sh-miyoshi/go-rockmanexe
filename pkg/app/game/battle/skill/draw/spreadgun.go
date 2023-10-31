@@ -13,10 +13,6 @@ type DrawSpreadGun struct {
 type DrawSpreadHit struct {
 }
 
-func (p *DrawSpreadGun) Init() {
-	imgSpreadGunBody = imgSpreadGunBody
-}
-
 func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
 	n := count / delaySpreadGun
 
