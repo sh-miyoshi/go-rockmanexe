@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -40,7 +42,42 @@ func (r *menuPlayerStatus) Draw() {
 	chipNum := player.FolderSize
 	chipNum += len(r.playerInfo.BackPack)
 
-	draw.String(80, 50, 0, "プレイ時間                 %03d：%02d", tm/12, tm%12)
-	draw.String(80, 90, 0, "バトルチップ              %6d枚", chipNum)
-	draw.String(80, 130, 0, "お金                    %7d ゼニー", r.playerInfo.Zenny)
+	info := []struct {
+		key   string
+		value string
+	}{
+		{
+			key:   "プレイ時間",
+			value: fmt.Sprintf("%03d：%02d", tm/12, tm%12),
+		},
+		{
+			key:   "バトルチップ",
+			value: fmt.Sprintf("%d枚", chipNum),
+		},
+		{
+			key:   "お金",
+			value: fmt.Sprintf("%d ゼニー", r.playerInfo.Zenny),
+		},
+		{
+			key:   "",
+			value: fmt.Sprintf(""),
+		},
+		{
+			key:   "ＨＰ",
+			value: fmt.Sprintf("%d", r.playerInfo.HP),
+		},
+		{
+			key:   "アタックレベル",
+			value: fmt.Sprintf("%d", r.playerInfo.ShotPower),
+		},
+		{
+			key:   "チャージ時間",
+			value: fmt.Sprintf("%.01f秒", float64(r.playerInfo.ChargeTime)/60), // 60 is FPS
+		},
+	}
+
+	for i, row := range info {
+		draw.String(80, 50+i*30, 0, row.key)
+		draw.String(280, 50+i*30, 0, row.value)
+	}
 }
