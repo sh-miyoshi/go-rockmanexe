@@ -51,6 +51,7 @@
 
 ## 改善
 
+- Message Windowシステムの作成
 - BulkSendFieldInfoのリファクタリング
 - remove hit damage data
 - マッチングサーバーの拡充
