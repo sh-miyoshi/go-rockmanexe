@@ -45,6 +45,7 @@ const (
 	SkillFlamePillarLine
 	SkillAreaSteal
 	SkillPanelSteal
+	SkillCountBomb
 )
 
 type SkillAnim interface {
@@ -71,7 +72,6 @@ func End() {
 	skilldraw.ClearImages()
 }
 
-// Get ...
 func Get(skillID int, arg Argument) SkillAnim {
 	objID := uuid.New().String()
 
@@ -142,6 +142,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newAreaSteal(objID, arg)
 	case SkillPanelSteal:
 		return newPanelSteal(objID, arg)
+	case SkillCountBomb:
+		return newCountBomb(objID, arg)
 	}
 
 	common.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -206,6 +208,8 @@ func GetSkillID(chipID int) int {
 		return SkillAreaSteal
 	case chip.IDPanelSteal:
 		return SkillPanelSteal
+	case chip.IDCountBomb:
+		return SkillCountBomb
 	}
 
 	common.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
@@ -215,6 +219,13 @@ func GetSkillID(chipID int) int {
 /*
 Skill template
 package skill
+
+import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+)
 
 type tmpskill struct {
 	ID  string
@@ -231,7 +242,7 @@ func newTmpSkill(objID string, arg Argument) *tmpskill {
 }
 
 func (p *tmpskill) Draw() {
-	pos := localanim.GetObjPos(p.Arg.OwnerID)
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	n := p.count / delay
@@ -258,6 +269,6 @@ func (p *tmpskill) GetParam() anim.Param {
 }
 
 func (p *tmpskill) StopByOwner() {
-	localanim.Delete(p.ID)
+	localanim.AnimDelete(p.ID)
 }
 */
