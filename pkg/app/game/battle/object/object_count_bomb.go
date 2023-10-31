@@ -72,7 +72,26 @@ func (o *CountBomb) Process() (bool, error) {
 	}
 
 	if o.count == explodeTime {
-		// TODO(ダメージ処理)
+		target := damage.TargetPlayer
+		if o.pm.OnwerCharType == objanim.ObjTypePlayer {
+			target = damage.TargetEnemy
+		}
+
+		targetObjType := objanim.ObjTypeAll ^ o.pm.OnwerCharType ^ objanim.ObjTypeNone
+		objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: targetObjType})
+
+		for _, obj := range objs {
+			dm := damage.Damage{
+				DamageType:    damage.TypeObject,
+				Power:         o.pm.Power,
+				TargetObjType: target,
+				HitEffectType: resources.EffectTypeExplode,
+				BigDamage:     true,
+				TargetObjID:   obj.ObjID,
+			}
+			localanim.DamageManager().New(dm)
+		}
+
 		logger.Info("explode count bomb with %+v", o.pm)
 		sound.On(resources.SEExplode)
 		return true, nil
