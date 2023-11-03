@@ -46,6 +46,7 @@ const (
 	SkillAreaSteal
 	SkillPanelSteal
 	SkillCountBomb
+	SkillTornado
 )
 
 type SkillAnim interface {
@@ -144,6 +145,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newPanelSteal(objID, arg)
 	case SkillCountBomb:
 		return newCountBomb(objID, arg)
+	case SkillTornado:
+		return newTornado(objID, arg)
 	}
 
 	common.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -210,6 +213,8 @@ func GetSkillID(chipID int) int {
 		return SkillPanelSteal
 	case chip.IDCountBomb:
 		return SkillCountBomb
+	case chip.IDTornado:
+		return SkillTornado
 	}
 
 	common.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
@@ -223,8 +228,6 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
 type tmpskill struct {
@@ -242,22 +245,12 @@ func newTmpSkill(objID string, arg Argument) *tmpskill {
 }
 
 func (p *tmpskill) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-	view := battlecommon.ViewPos(pos)
-
-	n := p.count / delay
-	if n < len(img) {
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img[n], true)
-	}
+	// p.drawer.Draw()
 }
 
 func (p *tmpskill) Process() (bool, error) {
 	p.count++
 
-	max := len(img) * delay
-	if p.count > max {
-		return true, nil
-	}
 	return false, nil
 }
 
