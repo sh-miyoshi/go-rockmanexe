@@ -38,6 +38,8 @@ var (
 	imgAquamanCharCreate []int
 	imgSpreadHit         []int
 	imgCountBomb         []int
+	imgTornadoAtk        []int
+	imgTornadoBody       []int
 )
 
 func LoadImages() error {
@@ -225,6 +227,18 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
+	fname = path + "トルネード_atk.png"
+	imgTornadoAtk = make([]int, 3)
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 63, 96, imgTornadoAtk); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	fname = path + "トルネード_body.png"
+	imgTornadoBody = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 64, imgTornadoBody); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
 	fname = common.ImagePath + "battle/character/アクアマン_stand.png"
 	imgAquamanCharStand = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, imgAquamanCharStand); res == -1 {
@@ -367,4 +381,12 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgCountBomb[i])
 	}
 	imgCountBomb = []int{}
+	for i := 0; i < len(imgTornadoAtk); i++ {
+		dxlib.DeleteGraph(imgTornadoAtk[i])
+	}
+	imgTornadoAtk = []int{}
+	for i := 0; i < len(imgTornadoBody); i++ {
+		dxlib.DeleteGraph(imgTornadoBody[i])
+	}
+	imgTornadoBody = []int{}
 }

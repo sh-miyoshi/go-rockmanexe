@@ -195,3 +195,4 @@
   type: 1
   player_act: 2
   description: ２マス前方に最大８ヒットの竜巻を発生させる
+  keep_cnt: 10
