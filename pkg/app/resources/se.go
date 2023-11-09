@@ -50,6 +50,7 @@ const (
 	SERunOK
 	SECountBombCountdown
 	SECountBombEnd
+	SETornado
 
 	SEMax
 )

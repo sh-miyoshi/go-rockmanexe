@@ -189,3 +189,10 @@
   type: 0
   player_act: -1
   description: 敵エリア全体を巻き込む時限爆弾を設置
+- id: 42
+  name: "トルネード"
+  power: 20
+  type: 1
+  player_act: 2
+  description: ２マス前方に最大８ヒットの竜巻を発生させる
+  keep_cnt: 10
