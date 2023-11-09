@@ -5,7 +5,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 const (
@@ -40,8 +43,24 @@ func (p *tornado) Draw() {
 func (p *tornado) Process() (bool, error) {
 	p.count++
 
+	if p.count == 1 {
+		sound.On(resources.SETornado)
+	}
+
 	if p.count%atkInterval == 0 {
-		// TODO: ダメージ処理
+		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		targetPos := common.Point{X: pos.X + 2, Y: pos.Y}
+		dm := damage.Damage{
+			DamageType:    damage.TypePosition,
+			Power:         int(p.Arg.Power),
+			TargetObjType: p.Arg.TargetType,
+			BigDamage:     true, // TODO
+			Element:       damage.ElementNone,
+			Pos:           targetPos,
+			TTL:           atkInterval,
+			ShowHitArea:   false,
+		}
+		localanim.DamageManager().New(dm)
 
 		p.atkCount++
 		return p.atkCount >= hitNum, nil
