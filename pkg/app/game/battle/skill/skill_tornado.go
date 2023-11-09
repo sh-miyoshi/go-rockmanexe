@@ -20,23 +20,26 @@ type tornado struct {
 	ID  string
 	Arg Argument
 
-	count    int
-	atkCount int
-	drawer   skilldraw.DrawTurnado
+	count     int
+	atkCount  int
+	drawer    skilldraw.DrawTurnado
+	objPos    common.Point
+	targetPos common.Point
 }
 
 func newTornado(objID string, arg Argument) *tornado {
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	return &tornado{
-		ID:  objID,
-		Arg: arg,
+		ID:        objID,
+		Arg:       arg,
+		objPos:    pos,
+		targetPos: common.Point{X: pos.X + 2, Y: pos.Y},
 	}
 }
 
 func (p *tornado) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-	targetPos := common.Point{X: pos.X + 2, Y: pos.Y}
-	view := battlecommon.ViewPos(pos)
-	target := battlecommon.ViewPos(targetPos)
+	view := battlecommon.ViewPos(p.objPos)
+	target := battlecommon.ViewPos(p.targetPos)
 	p.drawer.Draw(view, target, p.count)
 }
 
@@ -48,19 +51,17 @@ func (p *tornado) Process() (bool, error) {
 	}
 
 	if p.count%atkInterval == 0 {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		targetPos := common.Point{X: pos.X + 2, Y: pos.Y}
-		dm := damage.Damage{
+		lastAtk := p.atkCount == hitNum-1
+		localanim.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
-			BigDamage:     true, // TODO
+			BigDamage:     lastAtk,
 			Element:       damage.ElementNone,
-			Pos:           targetPos,
+			Pos:           p.targetPos,
 			TTL:           atkInterval,
 			ShowHitArea:   false,
-		}
-		localanim.DamageManager().New(dm)
+		})
 
 		p.atkCount++
 		return p.atkCount >= hitNum, nil
