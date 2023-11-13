@@ -196,3 +196,9 @@
   player_act: 2
   description: ２マス前方に最大８ヒットの竜巻を発生させる
   keep_cnt: 10
+- id: 148
+  name: "アタック＋１０"
+  power: 10
+  type: 0
+  player_act: -1
+  description: 次に選択するチップの威力を１０上げる

@@ -60,6 +60,7 @@ const (
 	IDPanelSteal  = 118
 	IDAreaSteal   = 119
 	IDInvisible   = 133
+	IDAttack10    = 148
 	IDAquaman     = 211
 	IDShockWave   = 229
 
