@@ -14,6 +14,7 @@ const (
 	EffectTypeBambooHit
 	EffectTypeHeatHit
 	EffectTypeExclamation
+	EffectTypeFailed
 
 	EffectTypeMax
 )

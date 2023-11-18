@@ -151,7 +151,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 	case SkillTornado:
 		return newTornado(objID, arg)
 	case SkillFailed:
-		return newFailed(objID)
+		return newFailed(objID, arg)
 	case SkillQuickGauge:
 		return newQuickGauge(objID, arg)
 	}

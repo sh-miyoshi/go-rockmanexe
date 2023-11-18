@@ -99,6 +99,11 @@ func Init() error {
 	for i := 3; i < 6; i++ {
 		images[resources.EffectTypeExclamation][i] = images[resources.EffectTypeExclamation][2]
 	}
+	images[resources.EffectTypeFailed] = make([]int, 8)
+	fname = common.ImagePath + "battle/effect/failed.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 38, 38, images[resources.EffectTypeFailed]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	for i := 0; i < resources.EffectTypeMax; i++ {
 		sounds[i] = -1
@@ -151,6 +156,8 @@ func Get(typ int, pos common.Point, randRange int) anim.Anim {
 	case resources.EffectTypeExclamation:
 		res.delay = exclamationDelay
 		res.ofs.Y -= 40
+	case resources.EffectTypeFailed:
+		res.ofs.Y -= 60
 	}
 
 	return res

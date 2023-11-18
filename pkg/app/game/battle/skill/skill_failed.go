@@ -3,15 +3,19 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 )
 
 type failed struct {
-	ID string
+	ID  string
+	Arg Argument
 }
 
-func newFailed(objID string) *failed {
+func newFailed(objID string, arg Argument) *failed {
 	return &failed{
-		ID: objID,
+		ID:  objID,
+		Arg: arg,
 	}
 }
 
@@ -19,7 +23,8 @@ func (p *failed) Draw() {
 }
 
 func (p *failed) Process() (bool, error) {
-	// TODO 失敗エフェクトを追加
+	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	localanim.AnimNew(effect.Get(resources.EffectTypeFailed, pos, 0))
 	return true, nil
 }
 
