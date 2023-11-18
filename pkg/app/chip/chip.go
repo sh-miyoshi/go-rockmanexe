@@ -59,6 +59,7 @@ const (
 	IDRecover30   = 110
 	IDPanelSteal  = 118
 	IDAreaSteal   = 119
+	IDQuickGauge  = 128
 	IDInvisible   = 133
 	IDAttack10    = 148
 	IDAquaman     = 211

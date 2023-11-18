@@ -202,3 +202,9 @@
   type: 0
   player_act: -1
   description: 次に選択するチップの威力を１０上げる
+- id: 128
+  name: "クイックゲージ"
+  power: 0
+  type: 0
+  player_act: -1
+  description: カスタムゲージの回復スピードがアップ
