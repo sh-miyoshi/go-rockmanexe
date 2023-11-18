@@ -47,6 +47,8 @@ const (
 	SkillPanelSteal
 	SkillCountBomb
 	SkillTornado
+
+	SkillFailed
 )
 
 type SkillAnim interface {
@@ -147,6 +149,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newCountBomb(objID, arg)
 	case SkillTornado:
 		return newTornado(objID, arg)
+	case SkillFailed:
+		return newFailed(objID)
 	}
 
 	common.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -215,6 +219,8 @@ func GetSkillID(chipID int) int {
 		return SkillCountBomb
 	case chip.IDTornado:
 		return SkillTornado
+	case chip.IDAttack10:
+		return SkillFailed
 	}
 
 	common.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

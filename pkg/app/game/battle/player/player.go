@@ -568,7 +568,7 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	}
 }
 
-func (p *BattlePlayer) UpdatePA() {
+func (p *BattlePlayer) UpdateChipInfo() {
 	// Check program advance
 	list := []chip.SelectParam{}
 	for _, c := range p.SelectedChips {
@@ -582,6 +582,9 @@ func (p *BattlePlayer) UpdatePA() {
 		p.SelectedChips = append(before, player.ChipInfo{ID: paID})
 		p.SelectedChips = append(p.SelectedChips, after...)
 	}
+
+	// TODO: アタック+10などの処理
+
 	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 

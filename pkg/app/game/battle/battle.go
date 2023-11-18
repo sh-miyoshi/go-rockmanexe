@@ -172,7 +172,7 @@ func Process() error {
 			if err != nil {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
-			playerInst.UpdatePA()
+			playerInst.UpdateChipInfo()
 		}
 
 		if b4mainInst.Process() {
