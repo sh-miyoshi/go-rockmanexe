@@ -3,13 +3,15 @@ package common
 import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 
 const (
-	GaugeMaxCount   = 1200
-	ChargeViewDelay = 20
+	GaugeMaxCount           = 1200
+	ChargeViewDelay         = 20
+	DefaultCustomGaugeSpeed = 4
 )
 
 var (
 	PlayerDefaultInvincibleTime = 120
 	DefaultParalyzedTime        = 60
+	CustomGaugeSpeed            = 4
 )
 
 const (

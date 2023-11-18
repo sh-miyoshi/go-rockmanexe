@@ -110,6 +110,9 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 		return fmt.Errorf("failed to play bgm: %v", err)
 	}
 
+	// カスタムゲージのスピードをデフォルトにしておく
+	battlecommon.CustomGaugeSpeed = battlecommon.DefaultCustomGaugeSpeed
+
 	logger.Info("Successfully initialized battle data")
 	return nil
 }
