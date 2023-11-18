@@ -5,6 +5,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type failed struct {
@@ -25,6 +26,7 @@ func (p *failed) Draw() {
 func (p *failed) Process() (bool, error) {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	localanim.AnimNew(effect.Get(resources.EffectTypeFailed, pos, 0))
+	sound.On(resources.SEFailed)
 	return true, nil
 }
 

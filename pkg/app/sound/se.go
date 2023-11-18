@@ -68,6 +68,7 @@ func Init() error {
 	soundEffects[resources.SECountBombCountdown] = dxlib.LoadSoundMem(basePath + "count_bomb_countdown.mp3")
 	soundEffects[resources.SECountBombEnd] = dxlib.LoadSoundMem(basePath + "count_bomb_end.mp3")
 	soundEffects[resources.SETornado] = dxlib.LoadSoundMem(basePath + "tornado.mp3")
+	soundEffects[resources.SEFailed] = dxlib.LoadSoundMem(basePath + "failed.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
