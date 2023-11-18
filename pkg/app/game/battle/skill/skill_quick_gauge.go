@@ -4,11 +4,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 )
 
 type quickGauge struct {
 	ID  string
 	Arg Argument
+
+	count int
 }
 
 func newQuickGauge(objID string, arg Argument) *quickGauge {
@@ -22,8 +25,14 @@ func (p *quickGauge) Draw() {
 }
 
 func (p *quickGauge) Process() (bool, error) {
-	battlecommon.CustomGaugeSpeed = 6
-	return true, nil
+	if p.count == 0 {
+		field.SetBlackoutCount(90)
+		SetChipNameDraw("クイックゲージ", true)
+		battlecommon.CustomGaugeSpeed = 6
+	}
+
+	p.count++
+	return p.count >= 90, nil
 }
 
 func (p *quickGauge) GetParam() anim.Param {
