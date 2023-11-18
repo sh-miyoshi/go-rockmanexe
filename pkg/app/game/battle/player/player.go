@@ -380,7 +380,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		p.invincibleCount--
 	}
 
-	p.GaugeCount += 4 // TODO GaugeSpeed
+	p.GaugeCount += uint(battlecommon.CustomGaugeSpeed)
 
 	if p.act.Process() {
 		return false, nil

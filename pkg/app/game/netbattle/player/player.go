@@ -168,7 +168,7 @@ func (p *BattlePlayer) LocalDraw() {
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
-	p.gaugeCount += 4 // TODO GaugeSpeed
+	p.gaugeCount += battlecommon.CustomGaugeSpeed
 
 	info := net.GetInst().GetGameInfo()
 	for _, anim := range info.Anims {
