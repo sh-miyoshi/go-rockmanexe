@@ -445,7 +445,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			sid := skill.GetSkillID(c.ID)
 			p.act.skillInst = skill.Get(sid, skill.Argument{
 				OwnerID:    p.ID,
-				Power:      c.Power,
+				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,
 			})
 			p.act.skillID = localanim.AnimNew(p.act.skillInst)
