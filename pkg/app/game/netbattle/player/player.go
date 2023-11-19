@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -26,7 +27,7 @@ import (
 type BattlePlayer struct {
 	objectID      string
 	chipFolder    []player.ChipInfo
-	selectedChips []player.ChipInfo
+	selectedChips []battleplayer.SelectChip
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -264,9 +265,15 @@ func (p *BattlePlayer) GetChipFolder() []player.ChipInfo {
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.selectedChips = []player.ChipInfo{}
+	p.selectedChips = []battleplayer.SelectChip{}
 	for _, s := range selected {
-		p.selectedChips = append(p.selectedChips, p.chipFolder[s])
+		p.selectedChips = append(
+			p.selectedChips,
+			battleplayer.SelectChip{
+				ID:   p.chipFolder[s].ID,
+				Code: p.chipFolder[s].Code,
+			},
+		)
 	}
 
 	// Remove selected chips from folder
@@ -276,7 +283,7 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	}
 }
 
-func (p *BattlePlayer) GetSelectedChips() []player.ChipInfo {
+func (p *BattlePlayer) GetSelectedChips() []battleplayer.SelectChip {
 	return p.selectedChips
 }
 

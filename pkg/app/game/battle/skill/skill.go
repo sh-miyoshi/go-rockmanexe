@@ -48,6 +48,8 @@ const (
 	SkillCountBomb
 	SkillTornado
 	SkillQuickGauge
+
+	SkillFailed
 )
 
 type SkillAnim interface {
@@ -148,6 +150,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newCountBomb(objID, arg)
 	case SkillTornado:
 		return newTornado(objID, arg)
+	case SkillFailed:
+		return newFailed(objID, arg)
 	case SkillQuickGauge:
 		return newQuickGauge(objID, arg)
 	}
@@ -218,6 +222,8 @@ func GetSkillID(chipID int) int {
 		return SkillCountBomb
 	case chip.IDTornado:
 		return SkillTornado
+	case chip.IDAttack10:
+		return SkillFailed
 	case chip.IDQuickGauge:
 		return SkillQuickGauge
 	}

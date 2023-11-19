@@ -51,6 +51,7 @@ const (
 	SECountBombCountdown
 	SECountBombEnd
 	SETornado
+	SEFailed
 
 	SEMax
 )

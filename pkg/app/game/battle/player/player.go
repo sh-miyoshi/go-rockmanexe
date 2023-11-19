@@ -26,6 +26,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -33,6 +34,12 @@ const (
 	NextActChipSelect
 	NextActLose
 )
+
+type SelectChip struct {
+	ID        int
+	Code      string
+	PlusPower int
+}
 
 type act struct {
 	MoveDirect int
@@ -57,7 +64,7 @@ type BattlePlayer struct {
 	GaugeCount    uint
 	ShotPower     uint
 	ChipFolder    []player.ChipInfo
-	SelectedChips []player.ChipInfo
+	SelectedChips []SelectChip
 	NextAction    int
 	EnableAct     bool
 	MoveNum       int
@@ -268,6 +275,9 @@ func (p *BattlePlayer) Draw() {
 		powTxt := ""
 		if c.Power > 0 && !c.ForMe {
 			powTxt = fmt.Sprintf("%d", c.Power)
+			if p.SelectedChips[0].PlusPower > 0 {
+				powTxt += fmt.Sprintf("＋ %d", p.SelectedChips[0].PlusPower)
+			}
 		}
 		draw.String(5, common.ScreenSize.Y-20, 0xffffff, "%s %s", c.Name, powTxt)
 
@@ -435,7 +445,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			sid := skill.GetSkillID(c.ID)
 			p.act.skillInst = skill.Get(sid, skill.Argument{
 				OwnerID:    p.ID,
-				Power:      c.Power,
+				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,
 			})
 			p.act.skillID = localanim.AnimNew(p.act.skillInst)
@@ -556,9 +566,15 @@ func (p *BattlePlayer) MakeInvisible(count int) {
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
-	p.SelectedChips = []player.ChipInfo{}
+	p.SelectedChips = []SelectChip{}
 	for _, s := range selected {
-		p.SelectedChips = append(p.SelectedChips, p.ChipFolder[s])
+		p.SelectedChips = append(
+			p.SelectedChips,
+			SelectChip{
+				ID:   p.ChipFolder[s].ID,
+				Code: p.ChipFolder[s].Code,
+			},
+		)
 	}
 
 	// Remove selected chips from folder
@@ -568,7 +584,7 @@ func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	}
 }
 
-func (p *BattlePlayer) UpdatePA() {
+func (p *BattlePlayer) UpdateChipInfo() {
 	// Check program advance
 	list := []chip.SelectParam{}
 	for _, c := range p.SelectedChips {
@@ -577,11 +593,33 @@ func (p *BattlePlayer) UpdatePA() {
 
 	start, end, paID := chip.GetPAinList(list)
 	if paID != -1 {
-		before := append([]player.ChipInfo{}, p.SelectedChips[:start]...)
-		after := append([]player.ChipInfo{}, p.SelectedChips[end:]...)
-		p.SelectedChips = append(before, player.ChipInfo{ID: paID})
+		before := append([]SelectChip{}, p.SelectedChips[:start]...)
+		after := append([]SelectChip{}, p.SelectedChips[end:]...)
+		p.SelectedChips = append(before, SelectChip{ID: paID})
 		p.SelectedChips = append(p.SelectedChips, after...)
 	}
+
+	// アタック+10などの処理
+	if len(p.SelectedChips) >= 2 {
+		removes := []int{}
+		target := 0
+		for i := 1; i < len(p.SelectedChips); i++ {
+			if p.SelectedChips[i].ID == chip.IDAttack10 {
+				p.SelectedChips[target].PlusPower += 10
+				removes = append(removes, i)
+			} else {
+				target = i
+			}
+		}
+		tmp := append([]SelectChip{}, p.SelectedChips...)
+		p.SelectedChips = []SelectChip{}
+		for i := 0; i < len(tmp); i++ {
+			if !slice.Contains(removes, i) {
+				p.SelectedChips = append(p.SelectedChips, tmp[i])
+			}
+		}
+	}
+
 	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 
