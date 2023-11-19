@@ -308,6 +308,8 @@ func (p *Player) addPresentChips() {
 		{ID: chip.IDTripleCrack, Code: "*"},
 		{ID: chip.IDBambooLance, Code: "g"},
 		{ID: chip.IDCountBomb, Code: "k"},
+		{ID: chip.IDAttack10, Code: "*"},
+		{ID: chip.IDQuickGauge, Code: "q"},
 	}
 
 	for _, c := range presentChips {
