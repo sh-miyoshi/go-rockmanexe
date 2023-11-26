@@ -76,7 +76,7 @@ func main() {
 
 	fmt.Println("Run main app")
 	var appStderr bytes.Buffer
-	appCmd := exec.Command("go-rockmanexe.exe", "--config", "data/config_debug.yaml")
+	appCmd := exec.Command("./go-rockmanexe.exe", "--config", "data/config_debug.yaml")
 	appCmd.Stderr = &appStderr
 	if err := appCmd.Run(); err != nil {
 		fmt.Printf("Failed to run main app: %v\n", err)
