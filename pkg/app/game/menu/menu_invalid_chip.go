@@ -4,33 +4,34 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 )
 
 type menuInvalidChip struct {
-	imgMsgFrame int
+	win window.MessageWindow
 }
 
 func invalidChipNew() (*menuInvalidChip, error) {
 	res := menuInvalidChip{}
 
-	fname := common.ImagePath + "msg_frame.png"
-	res.imgMsgFrame = dxlib.LoadGraph(fname)
-	if res.imgMsgFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
+	msg := "これらのチップはまだ通信対戦では使えないんだ。チップフォルダを編集しよう"
+	var err error
+	res.win, err = window.New(msg)
+	if err != nil {
+		return nil, err
 	}
 
 	return &res, nil
 }
 
 func (i *menuInvalidChip) End() {
-	dxlib.DeleteGraph(i.imgMsgFrame)
+	i.win.End()
 }
 
 func (i *menuInvalidChip) Process() {
@@ -47,8 +48,5 @@ func (i *menuInvalidChip) Draw() {
 		draw.MessageText(35, 80+(i*30), 0x000000, fmt.Sprintf("・%s", chip.Get(cid).Name))
 	}
 
-	dxlib.DrawGraph(40, 205, i.imgMsgFrame, true)
-	draw.MessageText(120, 220, 0x000000, "これらのチップはまだ通信対戦では使えな")
-	draw.MessageText(120, 220+28, 0x000000, "いんだ。")
-	draw.MessageText(120, 220+56, 0x000000, "チップフォルダを編集しよう")
+	i.win.Draw()
 }
