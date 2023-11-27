@@ -53,8 +53,20 @@ type NetBattle struct {
 }
 
 var (
-	InvalidChips = []int{
-		chip.IDBoomerang1,
+	ValidChips = []int{
+		chip.IDCannon,
+		chip.IDHighCannon,
+		chip.IDMegaCannon,
+		chip.IDMiniBomb,
+		chip.IDRecover10,
+		chip.IDRecover30,
+		chip.IDShockWave,
+		chip.IDSpreadGun,
+		chip.IDSword,
+		chip.IDWideSword,
+		chip.IDLongSword,
+		chip.IDVulcan1,
+		chip.IDWideShot,
 	}
 
 	inst NetBattle

@@ -118,7 +118,7 @@ func (t *menuTop) Draw() {
 
 func (t *menuTop) haveInvalidChip() bool {
 	for _, c := range t.playerInfo.ChipFolder {
-		if slice.Contains(netbattle.InvalidChips, c.ID) {
+		if !slice.Contains(netbattle.ValidChips, c.ID) {
 			return true
 		}
 	}
