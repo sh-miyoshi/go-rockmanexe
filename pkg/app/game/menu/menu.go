@@ -81,7 +81,7 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("failed to init menu net battle: %w", err)
 	}
 
-	menuInvalidChipInst, err = invalidChipNew()
+	menuInvalidChipInst, err = invalidChipNew(plyr)
 	if err != nil {
 		return fmt.Errorf("failed to init menu invalid chip: %w", err)
 	}
