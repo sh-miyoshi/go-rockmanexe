@@ -11,7 +11,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -40,7 +39,7 @@ func (i *menuInvalidChip) End() {
 }
 
 func (i *menuInvalidChip) Process() {
-	if inputs.CheckKey(inputs.KeyCancel) == 1 || inputs.CheckKey(inputs.KeyEnter) == 1 {
+	if i.win.Process() {
 		sound.On(resources.SECancel)
 		stateChange(stateTop)
 	}

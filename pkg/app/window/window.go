@@ -2,47 +2,67 @@ package window
 
 import (
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+)
+
+const (
+	messageSpeed = 5
+	lineCharNum  = 19
 )
 
 type MessageWindow struct {
-	Image    int
-	Messages []string
+	image    int
+	messages []string
+	msgNum   int
+	cursor   int
+	count    int
 }
 
 func New(msg string) (MessageWindow, error) {
 	fname := common.ImagePath + "msg_frame.png"
 	res := MessageWindow{
-		Image: dxlib.LoadGraph(fname),
+		image:    dxlib.LoadGraph(fname),
+		messages: common.SplitJAMsg(msg, lineCharNum),
+		msgNum:   utf8.RuneCount([]byte(msg)),
 	}
-	if res.Image == -1 {
+	if res.image == -1 {
 		return res, fmt.Errorf("failed to load message frame image %s", fname)
 	}
-	res.Messages = common.SplitMsg(msg, 19)
 	return res, nil
 }
 
 func (w *MessageWindow) End() {
-	dxlib.DeleteGraph(w.Image)
+	dxlib.DeleteGraph(w.image)
 }
 
 func (w *MessageWindow) Draw() {
-	dxlib.DrawGraph(40, 205, w.Image, true)
-	for i, msg := range w.Messages {
-		draw.MessageText(120, 220+i*30, 0x000000, msg)
+	dxlib.DrawGraph(40, 205, w.image, true)
+	for i, msg := range w.messages {
+		last := w.cursor - (i * lineCharNum)
+		if last > 0 {
+			msg = common.SliceJAMsg(msg, last)
+			draw.MessageText(120, 220+i*30, 0x000000, msg)
+		}
 	}
 }
 
 func (w *MessageWindow) Process() bool {
-	// TODO: 改ページ, 流れるように表示
-	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		logger.Debug("end window process")
-		return true
+	w.count++
+	if w.count%messageSpeed == 0 {
+		w.cursor++
+	}
+
+	if inputs.CheckKey(inputs.KeyCancel) == 1 || inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if w.cursor < w.msgNum {
+			w.cursor = w.msgNum
+		} else {
+			return true
+		}
 	}
 	return false
 }

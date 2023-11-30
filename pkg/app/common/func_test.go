@@ -56,7 +56,7 @@ func TestSplitMsg(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		res := SplitMsg(tc.input, tc.splitNum)
+		res := SplitJAMsg(tc.input, tc.splitNum)
 		if len(res) != len(tc.expect) {
 			t.Errorf("SplitMsg method expects %v, but got %v", tc.expect, res)
 		} else {
