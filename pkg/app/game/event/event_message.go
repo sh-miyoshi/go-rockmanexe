@@ -10,11 +10,10 @@ type MessageHandler struct {
 }
 
 func (h *MessageHandler) Init(values []byte) error {
-	var err error
-	h.win, err = window.New(string(values))
-	if err != nil {
+	if err := h.win.Init(); err != nil {
 		return err
 	}
+	h.win.SetMessage(string(values))
 
 	logger.Info("init message handler with %s", string(values))
 	return nil

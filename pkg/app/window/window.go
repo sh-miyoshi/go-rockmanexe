@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	messageSpeed = 5
+	messageSpeed = 2
 	lineCharNum  = 19
 )
 
@@ -23,21 +23,22 @@ type MessageWindow struct {
 	count    int
 }
 
-func New(msg string) (MessageWindow, error) {
+func (w *MessageWindow) Init() error {
 	fname := common.ImagePath + "msg_frame.png"
-	res := MessageWindow{
-		image:    dxlib.LoadGraph(fname),
-		messages: common.SplitJAMsg(msg, lineCharNum),
-		msgNum:   utf8.RuneCount([]byte(msg)),
+	w.image = dxlib.LoadGraph(fname)
+	if w.image == -1 {
+		return fmt.Errorf("failed to load message frame image %s", fname)
 	}
-	if res.image == -1 {
-		return res, fmt.Errorf("failed to load message frame image %s", fname)
-	}
-	return res, nil
+	return nil
 }
 
 func (w *MessageWindow) End() {
 	dxlib.DeleteGraph(w.image)
+}
+
+func (w *MessageWindow) SetMessage(msg string) {
+	w.messages = common.SplitJAMsg(msg, lineCharNum)
+	w.msgNum = utf8.RuneCount([]byte(msg))
 }
 
 func (w *MessageWindow) Draw() {

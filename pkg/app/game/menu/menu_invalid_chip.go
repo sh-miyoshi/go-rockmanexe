@@ -24,12 +24,11 @@ func invalidChipNew(plyr *player.Player) (*menuInvalidChip, error) {
 		playerInfo: plyr,
 	}
 
-	msg := "これらのチップはまだ通信対戦では使えないんだ。チップフォルダを編集しよう"
-	var err error
-	res.win, err = window.New(msg)
-	if err != nil {
+	if err := res.win.Init(); err != nil {
 		return nil, err
 	}
+	msg := "これらのチップはまだ通信対戦では使えないんだ。チップフォルダを編集しよう"
+	res.win.SetMessage(msg)
 
 	return &res, nil
 }
