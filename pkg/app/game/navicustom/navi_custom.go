@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -191,7 +192,7 @@ func Draw() {
 		c := itemList.GetPointer() + itemList.GetScroll()
 		if c < len(unsetParts) {
 			parts := ncparts.Get(unsetParts[c].rawData.ID)
-			for i, s := range common.SplitJAMsg(parts.Description, 7) {
+			for i, s := range ja.SplitMsg(parts.Description, 7) {
 				draw.String(x+5, y+5+i*20, 0xFFFFFF, s)
 			}
 		}
@@ -210,7 +211,7 @@ func Draw() {
 			draw.String(x+5, y+25, 0xFFFFFF, "異常なし")
 		} else {
 			draw.String(x+5, y+5, 0xFFFFFF, "異常発生")
-			for i, s := range common.SplitJAMsg("プログラムを見直してください", 7) {
+			for i, s := range ja.SplitMsg("プログラムを見直してください", 7) {
 				draw.String(x+5, y+25+i*20, 0xFFFFFF, s)
 			}
 		}

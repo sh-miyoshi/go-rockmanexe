@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 )
 
 const (
@@ -64,7 +65,7 @@ func (w *MessageWindow) End() {
 }
 
 func (w *MessageWindow) SetMessage(msg string, faceType int) {
-	messages := common.SplitJAMsg(msg, lineCharNum)
+	messages := ja.SplitMsg(msg, lineCharNum)
 
 	// 複数行のMessageをmaxLineNumごとのMessage配列に分割する
 	tmp := []string{}
@@ -99,7 +100,7 @@ func (w *MessageWindow) Draw() {
 	for i, msg := range w.messages[w.page] {
 		last := w.cursor - readNum
 		if last > 0 {
-			msg = common.SliceJAMsg(msg, last)
+			msg = ja.SliceMsg(msg, last)
 			draw.MessageText(120, 220+i*30, 0x000000, msg)
 			readNum += utf8.RuneCount([]byte(msg))
 		}
