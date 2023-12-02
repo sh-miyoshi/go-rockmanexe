@@ -3,7 +3,7 @@ package event
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
 const (
@@ -51,7 +51,7 @@ func SetScenarios(s []Scenario) {
 
 	current = 0
 	if err := setHandler(scenarios[current]); err != nil {
-		common.SetError(fmt.Sprintf("failed to set handler: %v", err))
+		system.SetError(fmt.Sprintf("failed to set handler: %v", err))
 	}
 	resultCode = ResultContinue
 }

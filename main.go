@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -16,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -90,7 +90,7 @@ func main() {
 
 	if err := appInit(); err != nil {
 		logger.Error("Failed to init application: %+v", err)
-		common.IrreversibleError = errors.New("ゲーム初期化時")
+		system.SetError("ゲーム初期化時")
 	}
 
 	logger.Info("Successfully init application.")
@@ -100,11 +100,11 @@ func main() {
 		time.Sleep(tm)
 	}
 MAIN:
-	for common.IrreversibleError == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
+	for system.Error() == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
 		if err := game.Process(); err != nil {
 			logger.Error("Failed to play game: %+v", err)
-			common.IrreversibleError = errors.New("ゲームプレイ中")
+			system.SetError("ゲームプレイ中")
 			break MAIN
 		}
 		game.Draw()
@@ -124,10 +124,10 @@ MAIN:
 		}
 	}
 
-	if common.IrreversibleError != nil {
+	if err := system.Error(); err != nil {
 		sound.BGMStop()
 		dxlib.ClearDrawScreen()
-		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", common.IrreversibleError.Error())
+		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", err.Error())
 		dxlib.DrawFormatString(10, 40, 0xff0000, "詳細はログを参照してください。")
 		dxlib.ScreenFlip()
 		dxlib.WaitKey()

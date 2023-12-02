@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
 const (
@@ -22,7 +22,7 @@ type rewardInfo struct {
 
 func getReward(all []rewardInfo) rewardInfo {
 	if len(all) == 0 {
-		common.SetError("no reward data")
+		system.SetError("no reward data")
 		return rewardInfo{}
 	}
 

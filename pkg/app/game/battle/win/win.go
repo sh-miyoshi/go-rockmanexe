@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -170,7 +171,7 @@ func Draw() {
 func stateChange(nextState int) {
 	logger.Info("Change battle result win state from %d to %d", state, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next battle result win state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next battle result win state: %d", nextState))
 	}
 	state = nextState
 	count = 0

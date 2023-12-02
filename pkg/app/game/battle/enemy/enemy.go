@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
@@ -181,7 +182,7 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	case IDVolgear:
 		return &enemyVolgear{pm: initParam}
 	case IDRockman:
-		common.SetError("enemy rockman is not implemented yet")
+		system.SetError("enemy rockman is not implemented yet")
 	case IDColdman:
 		return &enemyColdman{pm: initParam}
 	}

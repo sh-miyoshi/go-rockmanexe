@@ -3,7 +3,7 @@ package ncparts
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -115,7 +115,7 @@ func Get(id int) NaviCustomParts {
 		}
 	}
 
-	common.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
+	system.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
 	return NaviCustomParts{}
 }
 
@@ -131,6 +131,6 @@ func GetColorCode(color int) uint {
 		return 0x2880DC
 	}
 
-	common.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
+	system.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
 	return 0
 }

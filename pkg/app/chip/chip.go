@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -123,7 +123,7 @@ func Get(id int) Chip {
 		}
 	}
 
-	common.SetError(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
+	system.SetError(fmt.Sprintf("No such chip ID %d in list %+v", id, chipData))
 	return Chip{}
 }
 
@@ -134,7 +134,7 @@ func GetByName(name string) Chip {
 		}
 	}
 
-	common.SetError(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
+	system.SetError(fmt.Sprintf("No such chip %s in list %+v", name, chipData))
 	return Chip{}
 }
 

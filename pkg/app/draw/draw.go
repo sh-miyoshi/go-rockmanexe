@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -124,7 +125,7 @@ func ExtendString(x int, y int, exRateY float64, color uint, format string, a ..
 func ChipCode(x int, y int, code string, percent int) {
 	index := -1
 	if len(code) != 1 {
-		common.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		system.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
 		return
 	}
 
@@ -136,7 +137,7 @@ func ChipCode(x int, y int, code string, percent int) {
 	} else if rc[0] == '*' {
 		index = 26
 	} else {
-		common.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
+		system.SetError(fmt.Sprintf("Invalid chip code %s is specified.", code))
 		return
 	}
 
@@ -165,7 +166,7 @@ func Number(x int, y int, number int, opts ...NumberOption) {
 		} else if opts[0].RightAligned {
 			n := opts[0].Length - len(nums)
 			if n < 0 {
-				common.SetError(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
+				system.SetError(fmt.Sprintf("Failed to show %d with right aligned. requires more %d length", number, -n))
 				return
 			}
 			x += n * numberSizeX

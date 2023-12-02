@@ -1,10 +1,7 @@
 package common
 
 import (
-	"errors"
 	"unicode/utf8"
-
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 func Abs(a int) int {
@@ -20,14 +17,6 @@ func MountainIndex(i, max int) int {
 	} else {
 		return i
 	}
-}
-
-func SetError(msg string) {
-	// この関数が呼ばれた場所の呼び出し元情報をセットする
-	logger.SetExtraSkipCount(1)
-	logger.Error(msg)
-	logger.SetExtraSkipCount(0)
-	IrreversibleError = errors.New("ゲームプレイ中")
 }
 
 func SplitJAMsg(msg string, max int) []string {

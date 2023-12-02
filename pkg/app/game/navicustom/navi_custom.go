@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -400,7 +401,7 @@ func colorBlock(color int) int {
 		return 2
 	}
 
-	common.SetError(fmt.Sprintf("カラーコード %d に対するブロックは存在しません", color))
+	system.SetError(fmt.Sprintf("カラーコード %d に対するブロックは存在しません", color))
 	return 0
 }
 

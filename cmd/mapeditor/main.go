@@ -6,8 +6,8 @@ import (
 	"runtime"
 
 	origindxlib "github.com/sh-miyoshi/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -84,11 +84,11 @@ MAIN:
 func readWalls() {
 	fp, err := os.Open("info.yaml")
 	if err != nil {
-		common.SetError(err.Error())
+		system.SetError(err.Error())
 	}
 	defer fp.Close()
 
 	if err := yaml.NewDecoder(fp).Decode(&mapInfo); err != nil {
-		common.SetError(err.Error())
+		system.SetError(err.Error())
 	}
 }

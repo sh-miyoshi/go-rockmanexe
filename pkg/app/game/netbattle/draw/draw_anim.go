@@ -8,6 +8,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -73,7 +74,7 @@ func (d *animDraw) Draw() {
 			a.ActCount -= state * 1000
 			d.drawWideShot.Draw(a.Pos, a.ActCount, common.DirectRight, true, resources.SkillWideShotPlayerNextStepCount, state)
 		default:
-			common.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
+			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return
 		}
 	}

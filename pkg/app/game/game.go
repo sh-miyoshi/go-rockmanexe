@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -273,7 +274,7 @@ func Draw() {
 
 func stateChange(nextState int) {
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
 		return
 	}
 	logger.Info("game state change from %d to %d", state, nextState)

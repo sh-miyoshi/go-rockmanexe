@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -14,6 +13,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -50,7 +50,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 
 	switch skillType {
 	case resources.SkillFlamePillarTypeRandom:
-		common.SetError("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	case resources.SkillFlamePillarTypeTracking:
 		pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 		if res.isPlayer {
@@ -101,7 +101,7 @@ func (p *flamePillarManager) Draw() {
 func (p *flamePillarManager) Process() (bool, error) {
 	switch p.skillType {
 	case resources.SkillFlamePillarTypeRandom:
-		common.SetError("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	case resources.SkillFlamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {

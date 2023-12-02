@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/scenario"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -293,6 +294,6 @@ func loadScenarioData(mapType int, eventNo int) {
 	case mapinfo.ID_秋原町:
 		event.SetScenarios(scenario.Scenario_秋原町[eventNo])
 	default:
-		common.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
+		system.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}
 }

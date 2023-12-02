@@ -3,6 +3,7 @@ package skilldraw
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -21,7 +22,7 @@ func (p *DrawBamboolance) Init() {
 func (p *DrawBamboolance) Draw(count int) {
 	// Initを先に呼ばないと動かないようにする
 	if p.imgSizeX <= 0 {
-		common.SetError("実装にバグがあります。DrawBamboolance#Initを先に呼んでください")
+		system.SetError("実装にバグがあります。DrawBamboolance#Initを先に呼んでください")
 		return
 	}
 
