@@ -1,10 +1,10 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 type DrawMiniBomb struct {
 }
 
-func (p *DrawMiniBomb) Draw(objPos, targetPos common.Point, count int) {
+func (p *DrawMiniBomb) Draw(objPos, targetPos point.Point, count int) {
 	imgNo := (count / delayBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 

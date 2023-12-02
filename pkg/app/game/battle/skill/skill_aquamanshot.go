@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -11,15 +10,16 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type aquamanShot struct {
 	ID  string
 	Arg Argument
 
-	pos    common.Point
-	ofs    common.Point
-	target common.Point
+	pos    point.Point
+	ofs    point.Point
+	target point.Point
 	count  int
 	drawer skilldraw.DrawAquamanShot
 }
@@ -31,8 +31,8 @@ func newAquamanShot(objID string, arg Argument) *aquamanShot {
 	return &aquamanShot{
 		ID:     objID,
 		Arg:    arg,
-		pos:    common.Point{X: view.X - 40, Y: view.Y + 10},
-		target: common.Point{X: pos.X - 2, Y: pos.Y},
+		pos:    point.Point{X: view.X - 40, Y: view.Y + 10},
+		target: point.Point{X: pos.X - 2, Y: pos.Y},
 	}
 }
 
@@ -69,7 +69,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			BigDamage:     true,
 			Element:       damage.ElementWater,
 		})
-		target := common.Point{X: p.target.X - 1, Y: p.target.Y}
+		target := point.Point{X: p.target.X - 1, Y: p.target.Y}
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,

@@ -1,7 +1,7 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -9,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type wideShot struct {
@@ -19,17 +20,17 @@ type wideShot struct {
 
 	state    int
 	count    int
-	pos      common.Point
+	pos      point.Point
 	damageID [3]string
 	drawer   skilldraw.DrawWideShot
 }
 
 func newWideShot(objID string, arg Argument) *wideShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-	direct := common.DirectRight
+	direct := config.DirectRight
 	nextStep := resources.SkillWideShotPlayerNextStepCount
 	if arg.TargetType == damage.TargetPlayer {
-		direct = common.DirectLeft
+		direct = config.DirectLeft
 		nextStep = 16
 	}
 
@@ -70,9 +71,9 @@ func (p *wideShot) Process() (bool, error) {
 		}
 	case resources.SkillWideShotStateMove:
 		if p.count%p.NextStepCount == 0 {
-			if p.Direct == common.DirectRight {
+			if p.Direct == config.DirectRight {
 				p.pos.X++
-			} else if p.Direct == common.DirectLeft {
+			} else if p.Direct == config.DirectLeft {
 				p.pos.X--
 			}
 
@@ -88,7 +89,7 @@ func (p *wideShot) Process() (bool, error) {
 
 				p.damageID[i+1] = localanim.DamageManager().New(damage.Damage{
 					DamageType:    damage.TypePosition,
-					Pos:           common.Point{X: p.pos.X, Y: y},
+					Pos:           point.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,
 					TargetObjType: p.Arg.TargetType,

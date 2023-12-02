@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -11,6 +10,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type vulcan struct {
@@ -51,7 +51,7 @@ func (p *vulcan) Process() (bool, error) {
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				target := common.Point{X: x, Y: pos.Y}
+				target := point.Point{X: x, Y: pos.Y}
 				if objID := field.GetPanelInfo(target).ObjectID; objID != "" {
 					localanim.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
@@ -64,7 +64,7 @@ func (p *vulcan) Process() (bool, error) {
 					})
 					localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit1, target, 20))
 					if p.hit && x < battlecommon.FieldNum.X-1 {
-						target = common.Point{X: x + 1, Y: pos.Y}
+						target = point.Point{X: x + 1, Y: pos.Y}
 						localanim.AnimNew(effect.Get(resources.EffectTypeVulcanHit2, target, 20))
 						if objID := field.GetPanelInfo(target).ObjectID; objID != "" {
 							localanim.DamageManager().New(damage.Damage{

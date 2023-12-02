@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -12,6 +11,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type spreadGun struct {
@@ -27,7 +27,7 @@ type spreadHit struct {
 	Arg Argument
 
 	count int
-	pos   common.Point
+	pos   point.Point
 }
 
 func newSpreadGun(objID string, arg Argument) *spreadGun {
@@ -51,7 +51,7 @@ func (p *spreadGun) Process() (bool, error) {
 
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			target := common.Point{X: x, Y: pos.Y}
+			target := point.Point{X: x, Y: pos.Y}
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
 			if len(objs) > 0 {
 				// Hit
@@ -77,7 +77,7 @@ func (p *spreadGun) Process() (bool, error) {
 						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
 							localanim.AnimNew(&spreadHit{
 								Arg: p.Arg,
-								pos: common.Point{X: x + sx, Y: pos.Y + sy},
+								pos: point.Point{X: x + sx, Y: pos.Y + sy},
 							})
 						}
 					}

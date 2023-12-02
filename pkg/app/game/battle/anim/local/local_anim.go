@@ -1,10 +1,10 @@
 package localanim
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
@@ -116,7 +116,7 @@ func ObjAnimDelete(animID string) {
 	objanimInst.Delete(animID)
 }
 
-func ObjAnimGetObjPos(objID string) common.Point {
+func ObjAnimGetObjPos(objID string) point.Point {
 	if objanimInst == nil {
 		objanimInst = objanim.NewManager()
 	}
@@ -156,7 +156,7 @@ func ObjAnimMakeInvisible(id string, count int) {
 	objanimInst.MakeInvisible(id, count)
 }
 
-func ObjAnimExistsObject(pos common.Point) string {
+func ObjAnimExistsObject(pos point.Point) string {
 	if objanimInst == nil {
 		objanimInst = objanim.NewManager()
 	}

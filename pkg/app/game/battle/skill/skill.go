@@ -5,10 +5,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
 const (
@@ -156,7 +156,7 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newQuickGauge(objID, arg)
 	}
 
-	common.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
+	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
 	return nil
 }
 
@@ -228,7 +228,7 @@ func GetSkillID(chipID int) int {
 		return SkillQuickGauge
 	}
 
-	common.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
+	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	return 0
 }
 

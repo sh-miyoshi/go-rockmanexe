@@ -1,8 +1,8 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const delaySpreadGun = 3
@@ -13,7 +13,7 @@ type DrawSpreadGun struct {
 type DrawSpreadHit struct {
 }
 
-func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
+func (p *DrawSpreadGun) Draw(viewPos point.Point, count int) {
 	n := count / delaySpreadGun
 
 	// Show body
@@ -28,7 +28,7 @@ func (p *DrawSpreadGun) Draw(viewPos common.Point, count int) {
 	}
 }
 
-func (p *DrawSpreadHit) Draw(viewPos common.Point, count int) {
+func (p *DrawSpreadHit) Draw(viewPos point.Point, count int) {
 	if count < len(imgSpreadHit) {
 		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+15, 1, 0, imgSpreadHit[count], true)
 	}

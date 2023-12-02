@@ -1,13 +1,13 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -56,7 +56,7 @@ func (p *cannon) Process() (bool, error) {
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					logger.Debug("Add damage by cannon: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
@@ -65,7 +65,7 @@ func (p *cannon) Process() (bool, error) {
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					logger.Debug("Add damage by cannon: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)

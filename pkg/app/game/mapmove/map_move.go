@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/event"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/collision"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/mapmove/scenario"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/vector"
 )
 
 var (
@@ -45,7 +46,7 @@ func Init() error {
 
 	// Load rockman image
 	tmp := make([]int, 40)
-	fname := common.ImagePath + "map/rockman_overworld_move.png"
+	fname := config.ImagePath + "map/rockman_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 6, 5, 64, 64, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -55,13 +56,13 @@ func Init() error {
 		}
 	}
 	rockmanMoveStandImages = make([]int, 5)
-	fname = common.ImagePath + "map/rockman_overworld_stand.png"
+	fname = config.ImagePath + "map/rockman_overworld_stand.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, rockmanMoveStandImages); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
 	// Load net image
-	fname = common.ImagePath + "map/net_overworld_move.png"
+	fname = config.ImagePath + "map/net_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 40, 8, 5, 64, 64, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -71,12 +72,12 @@ func Init() error {
 		}
 	}
 	netMoveStandImages = make([]int, 5)
-	fname = common.ImagePath + "map/net_overworld_stand.png"
+	fname = config.ImagePath + "map/net_overworld_stand.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, netMoveStandImages); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	playerMoveDirect = common.DirectDown
+	playerMoveDirect = config.DirectDown
 	initFlag = true
 	return nil
 }
@@ -105,7 +106,7 @@ func End() {
 	netMoveStandImages = []int{}
 }
 
-func MapChange(mapID int, pos common.Point) error {
+func MapChange(mapID int, pos point.Point) error {
 	var err error
 	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
@@ -121,7 +122,7 @@ func MapChange(mapID int, pos common.Point) error {
 }
 
 func Draw() {
-	var player, window common.Point
+	var player, window point.Point
 	getViewPos(&player, &window)
 
 	dxlib.DrawRectGraph(0, 0, window.X, window.Y, mapInfo.Size.X, mapInfo.Size.Y, mapInfo.Image, true)
@@ -131,7 +132,7 @@ func Draw() {
 	if config.Get().Debug.ShowDebugData {
 		// show debug data
 		const color = 0xff0000
-		dxlib.DrawCircle(player.X, player.Y, common.MapPlayerHitRange, color, true)
+		dxlib.DrawCircle(player.X, player.Y, collision.PlayerHitRange, color, true)
 		for _, w := range mapInfo.CollisionWalls {
 			cx := window.X
 			cy := window.Y
@@ -155,7 +156,7 @@ func Process() error {
 	// デバッグ機能
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
 		// リロードの場合はyamlの情報も含めて再取得する
-		mapinfo.Init(common.MapInfoFilePath)
+		mapinfo.Init(config.MapInfoFilePath)
 		Init()
 		return nil
 	}
@@ -164,18 +165,18 @@ func Process() error {
 	nextDirect := 0
 	if inputs.CheckKey(inputs.KeyRight) != 0 {
 		goVec.X += 4
-		nextDirect |= common.DirectRight
+		nextDirect |= config.DirectRight
 	} else if inputs.CheckKey(inputs.KeyLeft) != 0 {
 		goVec.X -= 4
-		nextDirect |= common.DirectLeft
+		nextDirect |= config.DirectLeft
 	}
 
 	if inputs.CheckKey(inputs.KeyDown) != 0 {
 		goVec.Y += 4
-		nextDirect |= common.DirectDown
+		nextDirect |= config.DirectDown
 	} else if inputs.CheckKey(inputs.KeyUp) != 0 {
 		goVec.Y -= 4
-		nextDirect |= common.DirectUp
+		nextDirect |= config.DirectUp
 	}
 
 	// 斜め移動の場合は速度を調整
@@ -207,9 +208,9 @@ func Process() error {
 	return nil
 }
 
-func getViewPos(player, window *common.Point) {
-	hsX := common.ScreenSize.X / 2
-	hsY := common.ScreenSize.Y / 2
+func getViewPos(player, window *point.Point) {
+	hsX := config.ScreenSize.X / 2
+	hsY := config.ScreenSize.Y / 2
 
 	if absPlayerPosX < float64(hsX) {
 		player.X = int(absPlayerPosX)
@@ -217,7 +218,7 @@ func getViewPos(player, window *common.Point) {
 	} else {
 		s := mapInfo.Size.X - hsX
 		if absPlayerPosX > float64(s) {
-			window.X = mapInfo.Size.X - common.ScreenSize.X
+			window.X = mapInfo.Size.X - config.ScreenSize.X
 			player.X = hsX + int(absPlayerPosX) - s
 		} else {
 			player.X = hsX
@@ -231,7 +232,7 @@ func getViewPos(player, window *common.Point) {
 	} else {
 		s := mapInfo.Size.Y - hsY
 		if absPlayerPosY > float64(s) {
-			window.Y = mapInfo.Size.Y - common.ScreenSize.Y
+			window.Y = mapInfo.Size.Y - config.ScreenSize.Y
 			player.Y = hsY + int(absPlayerPosY) - s
 		} else {
 			player.Y = hsY
@@ -240,24 +241,24 @@ func getViewPos(player, window *common.Point) {
 	}
 }
 
-func drawPlayer(pos common.Point) {
+func drawPlayer(pos point.Point) {
 	dxopts := dxlib.DrawRotaGraphOption{}
 	rlFlag := false
-	if playerMoveDirect&common.DirectLeft != 0 {
+	if playerMoveDirect&config.DirectLeft != 0 {
 		t := int32(dxlib.TRUE)
 		dxopts.ReverseXFlag = &t
 		rlFlag = true
-	} else if playerMoveDirect&common.DirectRight != 0 {
+	} else if playerMoveDirect&config.DirectRight != 0 {
 		rlFlag = true
 	}
 
 	typ := 0
-	if playerMoveDirect&common.DirectUp != 0 {
+	if playerMoveDirect&config.DirectUp != 0 {
 		typ = 0
 		if rlFlag {
 			typ = 1
 		}
-	} else if playerMoveDirect&common.DirectDown != 0 {
+	} else if playerMoveDirect&config.DirectDown != 0 {
 		typ = 4
 		if rlFlag {
 			typ = 3
@@ -292,6 +293,6 @@ func loadScenarioData(mapType int, eventNo int) {
 	case mapinfo.ID_秋原町:
 		event.SetScenarios(scenario.Scenario_秋原町[eventNo])
 	default:
-		common.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
+		system.SetError(fmt.Sprintf("no scenario data for map type %d", mapType))
 	}
 }

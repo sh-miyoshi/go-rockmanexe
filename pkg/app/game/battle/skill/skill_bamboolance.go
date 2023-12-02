@@ -1,13 +1,13 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type bambooLance struct {
@@ -38,7 +38,7 @@ func (p *bambooLance) Process() (bool, error) {
 	if p.count == 5 {
 		dm := damage.Damage{
 			DamageType:    damage.TypePosition,
-			Pos:           common.Point{X: battlecommon.FieldNum.X - 1},
+			Pos:           point.Point{X: battlecommon.FieldNum.X - 1},
 			Power:         int(p.Arg.Power),
 			TTL:           5,
 			TargetObjType: p.Arg.TargetType,

@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 
 type Param struct {
 	ObjID    string
-	Pos      common.Point
+	Pos      point.Point
 	DrawType int
 
 	ExtraInfo []byte

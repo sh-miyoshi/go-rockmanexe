@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -41,9 +41,9 @@ type Damage struct {
 	TargetObjType int // ダメージを受けるObjectのタイプ
 
 	// DamageTypeがTypePositionの時使うパラメータ
-	Pos         common.Point // (TypePosition)発生箇所
-	TTL         int          // (TypePosition)ダメージが残り続ける時間
-	ShowHitArea bool         // (TypePosition)足元にダメージ箇所を表示するか
+	Pos         point.Point // (TypePosition)発生箇所
+	TTL         int         // (TypePosition)ダメージが残り続ける時間
+	ShowHitArea bool        // (TypePosition)足元にダメージ箇所を表示するか
 
 	// DamageTypeがTypeObjectの時使うパラメータ
 	TargetObjID string // (TypeObject)ダメージを受けるObjectのID
@@ -97,7 +97,7 @@ func (m *DamageManager) Process() {
 	}
 }
 
-func (m *DamageManager) GetHitDamage(pos common.Point, objID string) *Damage {
+func (m *DamageManager) GetHitDamage(pos point.Point, objID string) *Damage {
 	for _, d := range m.damages {
 		switch d.DamageType {
 		case TypeObject:

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -33,14 +33,14 @@ func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
 	o.pm.objectID = uuid.New().String()
 	o.count = 0
 
-	fname := common.ImagePath + "battle/skill/カウントボム.png"
+	fname := config.ImagePath + "battle/skill/カウントボム.png"
 	o.imgBody = dxlib.LoadGraph(fname)
 	if o.imgBody == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
 	o.imgNumber = make([]int, 4)
-	fname = common.ImagePath + "battle/skill/カウントボム_数字.png"
+	fname = config.ImagePath + "battle/skill/カウントボム_数字.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, o.imgNumber); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}

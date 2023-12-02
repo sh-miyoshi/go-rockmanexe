@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type Player struct {
 	ID  string
 	HP  int
-	Pos common.Point
+	Pos point.Point
 
 	currentActNo       int
 	currentActInterval int
@@ -28,7 +28,7 @@ func New(clientID string, conn *netconn.NetConn) *Player {
 	res := &Player{
 		ID:                 uuid.New().String(),
 		HP:                 100,
-		Pos:                common.Point{X: 1, Y: 1},
+		Pos:                point.Point{X: 1, Y: 1},
 		currentActNo:       0,
 		currentActInterval: 0,
 		conn:               conn,

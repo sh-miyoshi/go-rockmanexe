@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -14,6 +13,8 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type flamePillar struct {
@@ -21,7 +22,7 @@ type flamePillar struct {
 
 	count  int
 	state  int
-	point  common.Point
+	point  point.Point
 	drawer skilldraw.DrawFlamePiller
 }
 
@@ -49,7 +50,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 
 	switch skillType {
 	case resources.SkillFlamePillarTypeRandom:
-		common.SetError("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	case resources.SkillFlamePillarTypeTracking:
 		pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 		if res.isPlayer {
@@ -75,7 +76,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			res.pillars = append(res.pillars, &flamePillar{
 				Arg:   arg,
 				state: resources.SkillFlamePillarStateWakeup,
-				point: common.Point{X: posX, Y: y},
+				point: point.Point{X: posX, Y: y},
 			})
 		}
 	}
@@ -100,7 +101,7 @@ func (p *flamePillarManager) Draw() {
 func (p *flamePillarManager) Process() (bool, error) {
 	switch p.skillType {
 	case resources.SkillFlamePillarTypeRandom:
-		common.SetError("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	case resources.SkillFlamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {
@@ -146,7 +147,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 			p.pillars = append([]*flamePillar{}, &flamePillar{
 				Arg:   p.Arg,
 				state: resources.SkillFlamePillarStateWakeup,
-				point: common.Point{X: x, Y: y},
+				point: point.Point{X: x, Y: y},
 			})
 		}
 	case resources.SkillFlamePillarTypeLine:

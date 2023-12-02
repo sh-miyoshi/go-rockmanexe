@@ -3,7 +3,7 @@ package skilldraw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -43,7 +43,7 @@ var (
 )
 
 func LoadImages() error {
-	path := common.ImagePath + "battle/skill/"
+	path := config.ImagePath + "battle/skill/"
 
 	tmp := make([]int, 24)
 	fname := path + "キャノン_atk.png"
@@ -239,19 +239,19 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/character/アクアマン_stand.png"
+	fname = config.ImagePath + "battle/character/アクアマン_stand.png"
 	imgAquamanCharStand = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, imgAquamanCharStand); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/character/アクアマン_create.png"
+	fname = config.ImagePath + "battle/character/アクアマン_create.png"
 	imgAquamanCharCreate = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, imgAquamanCharCreate); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
+	fname = config.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
 	imgSpreadHit = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHit); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)

@@ -3,11 +3,11 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -50,7 +50,7 @@ var (
 func Init(plyr *player.Player) error {
 	menuState = stateTop
 
-	fname := common.ImagePath + "menu/back.png"
+	fname := config.ImagePath + "menu/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load menu back image %s", fname)
@@ -184,7 +184,7 @@ func GetBattleEnemies() []enemy.EnemyParam {
 func stateChange(nextState int) {
 	logger.Info("Change menu state from %d to %d", menuState, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	menuState = nextState
 }

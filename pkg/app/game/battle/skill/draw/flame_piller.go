@@ -1,15 +1,15 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type DrawFlamePillerManager struct {
 }
 
-func (p *DrawFlamePillerManager) Draw(viewPos common.Point, count int, skillType int, state int) {
+func (p *DrawFlamePillerManager) Draw(viewPos point.Point, count int, skillType int, state int) {
 	if skillType == resources.SkillFlamePillarTypeLine && state != resources.SkillFlamePillarStateEnd {
 		imageNo := count / 4
 		if imageNo >= len(imgFlameLineBody) {
@@ -24,7 +24,7 @@ func (p *DrawFlamePillerManager) Draw(viewPos common.Point, count int, skillType
 type DrawFlamePiller struct {
 }
 
-func (p *DrawFlamePiller) Draw(viewPos common.Point, count int, state int) {
+func (p *DrawFlamePiller) Draw(viewPos point.Point, count int, state int) {
 	n := 0
 	switch state {
 	case resources.SkillFlamePillarStateWakeup:

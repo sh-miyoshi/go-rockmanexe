@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/stretchr/stew/slice"
 )
@@ -24,7 +24,7 @@ func Init() error {
 			continue
 		}
 
-		fname := fmt.Sprintf("%schipInfo/detail/%d.png", common.ImagePath, id)
+		fname := fmt.Sprintf("%schipInfo/detail/%d.png", config.ImagePath, id)
 		imgDetails[id] = dxlib.LoadGraph(fname)
 		if imgDetails[id] == -1 {
 			return fmt.Errorf("failed to read chip detail image %s", fname)
@@ -33,7 +33,7 @@ func Init() error {
 
 	// Load Type Image
 	tmp := make([]int, 14)
-	fname := common.ImagePath + "chipInfo/chip_type.png"
+	fname := config.ImagePath + "chipInfo/chip_type.png"
 	if res := dxlib.LoadDivGraph(fname, 14, 7, 2, 28, 28, tmp); res == -1 {
 		return fmt.Errorf("failed to read chip type image %s", fname)
 	}
@@ -48,11 +48,11 @@ func Init() error {
 	// Load Icon Image
 	tmp = make([]int, 240)
 	tmp2 := make([]int, 240)
-	fname = common.ImagePath + "chipInfo/chip_icon.png"
+	fname = config.ImagePath + "chipInfo/chip_icon.png"
 	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp); res == -1 {
 		return fmt.Errorf("failed to read chip icon image %s", fname)
 	}
-	fname = common.ImagePath + "chipInfo/chip_icon_mono.png"
+	fname = config.ImagePath + "chipInfo/chip_icon_mono.png"
 	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp2); res == -1 {
 		return fmt.Errorf("failed to read chip monochro icon image %s", fname)
 	}
@@ -72,7 +72,7 @@ func Init() error {
 		imgMonoIcons[id] = tmp2[id-1]
 		used = append(used, id-1)
 	}
-	fname = common.ImagePath + "chipInfo/pa_icon.png"
+	fname = config.ImagePath + "chipInfo/pa_icon.png"
 	imgIcons[chip.IDPAIndex] = dxlib.LoadGraph(fname)
 	if imgIcons[chip.IDPAIndex] == -1 {
 		return fmt.Errorf("failed to load image %s", fname)

@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type MapChangeArgs struct {
 	MapID   int
-	InitPos common.Point
+	InitPos point.Point
 }
 
 type MapChangeHandler struct {

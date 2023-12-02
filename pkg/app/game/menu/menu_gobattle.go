@@ -3,20 +3,20 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/list"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type selectEnemyData struct {
 	BattleParam enemy.EnemyParam
-	View        common.Point
+	View        point.Point
 }
 
 type selectValue struct {
@@ -29,7 +29,7 @@ const (
 )
 
 var (
-	viewCenter = common.Point{X: 350, Y: 150}
+	viewCenter = point.Point{X: 350, Y: 150}
 
 	goBattleSelectData []selectValue
 	goBattleWaitCount  int
@@ -47,10 +47,10 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y + 10},
 				},
 			},
 		},
@@ -60,26 +60,26 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 3, Y: 0},
+						Pos:    point.Point{X: 3, Y: 0},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X, Y: viewCenter.Y - 30},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y - 30},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 10},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 5, Y: 2},
+						Pos:    point.Point{X: 5, Y: 2},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X + 30, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X + 30, Y: viewCenter.Y + 10},
 				},
 			},
 		},
@@ -89,18 +89,18 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDBilly,
-						Pos:    common.Point{X: 5, Y: 1},
+						Pos:    point.Point{X: 5, Y: 1},
 						HP:     50,
 					},
-					View: common.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 10},
+					View: point.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 10},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 3, Y: 0},
+						Pos:    point.Point{X: 3, Y: 0},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 10},
 				},
 			},
 		},
@@ -110,18 +110,18 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDLark,
-						Pos:    common.Point{X: 3, Y: 0},
+						Pos:    point.Point{X: 3, Y: 0},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X + 10, Y: viewCenter.Y - 25},
+					View: point.Point{X: viewCenter.X + 10, Y: viewCenter.Y - 25},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDLark,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X - 10, Y: viewCenter.Y + 25},
+					View: point.Point{X: viewCenter.X - 10, Y: viewCenter.Y + 25},
 				},
 			},
 		},
@@ -131,18 +131,18 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDBoomer,
-						Pos:    common.Point{X: 5, Y: 1},
+						Pos:    point.Point{X: 5, Y: 1},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 5},
+					View: point.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 5},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 4, Y: 0},
+						Pos:    point.Point{X: 4, Y: 0},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 5},
+					View: point.Point{X: viewCenter.X - 30, Y: viewCenter.Y + 5},
 				},
 			},
 		},
@@ -152,26 +152,26 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDGaroo,
-						Pos:    common.Point{X: 5, Y: 0},
+						Pos:    point.Point{X: 5, Y: 0},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 20},
+					View: point.Point{X: viewCenter.X + 20, Y: viewCenter.Y - 20},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDGaroo,
-						Pos:    common.Point{X: 5, Y: 2},
+						Pos:    point.Point{X: 5, Y: 2},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X - 25, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X - 25, Y: viewCenter.Y + 10},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDMetall,
-						Pos:    common.Point{X: 3, Y: 0},
+						Pos:    point.Point{X: 3, Y: 0},
 						HP:     40,
 					},
-					View: common.Point{X: viewCenter.X + 25, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X + 25, Y: viewCenter.Y + 10},
 				},
 			},
 		},
@@ -181,18 +181,18 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDVolgear,
-						Pos:    common.Point{X: 5, Y: 0},
+						Pos:    point.Point{X: 5, Y: 0},
 						HP:     80,
 					},
-					View: common.Point{X: viewCenter.X + 30, Y: viewCenter.Y - 5},
+					View: point.Point{X: viewCenter.X + 30, Y: viewCenter.Y - 5},
 				},
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDGaroo,
-						Pos:    common.Point{X: 3, Y: 2},
+						Pos:    point.Point{X: 3, Y: 2},
 						HP:     60,
 					},
-					View: common.Point{X: viewCenter.X - 20, Y: viewCenter.Y + 25},
+					View: point.Point{X: viewCenter.X - 20, Y: viewCenter.Y + 25},
 				},
 			},
 		},
@@ -202,10 +202,10 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDAquaman,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     500,
 					},
-					View: common.Point{X: viewCenter.X, Y: viewCenter.Y},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y},
 				},
 			},
 		},
@@ -215,10 +215,10 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDColdman,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     700,
 					},
-					View: common.Point{X: viewCenter.X, Y: viewCenter.Y},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y},
 				},
 			},
 		},
@@ -228,10 +228,10 @@ func goBattleInit() error {
 				{
 					BattleParam: enemy.EnemyParam{
 						CharID: enemy.IDTarget,
-						Pos:    common.Point{X: 4, Y: 1},
+						Pos:    point.Point{X: 4, Y: 1},
 						HP:     1000,
 					},
-					View: common.Point{X: viewCenter.X, Y: viewCenter.Y + 10},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y + 10},
 				},
 			},
 		},
@@ -285,7 +285,7 @@ func goBattleProcess() bool {
 }
 
 func goBattleDraw() {
-	dxlib.DrawBox(20, 30, common.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(20, 30, config.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(30, 40, 210, goBattleListShowMax*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i := 0; i < goBattleListShowMax; i++ {
@@ -313,7 +313,7 @@ func battleEnemies() []enemy.EnemyParam {
 		return []enemy.EnemyParam{
 			{
 				CharID: enemy.IDTarget,
-				Pos:    common.Point{X: 4, Y: 1},
+				Pos:    point.Point{X: 4, Y: 1},
 				HP:     1000,
 			},
 		}

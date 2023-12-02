@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -63,34 +62,34 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 	logger.Debug("Player info: %+v", res)
 
-	fname := common.ImagePath + "battle/hp_frame.png"
+	fname := config.ImagePath + "battle/hp_frame.png"
 	res.imgHPFrame = dxlib.LoadGraph(fname)
 	if res.imgHPFrame < 0 {
 		return nil, fmt.Errorf("failed to read hp frame image %s", fname)
 	}
-	fname = common.ImagePath + "battle/gauge.png"
+	fname = config.ImagePath + "battle/gauge.png"
 	res.imgGaugeFrame = dxlib.LoadGraph(fname)
 	if res.imgGaugeFrame < 0 {
 		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
 	}
-	fname = common.ImagePath + "battle/gauge_max.png"
+	fname = config.ImagePath + "battle/gauge_max.png"
 	res.imgGaugeMax = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, res.imgGaugeMax); res == -1 {
 		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/mind_window_frame.png"
+	fname = config.ImagePath + "battle/mind_window_frame.png"
 	if res.imgMindFrame = dxlib.LoadGraph(fname); res.imgMindFrame == -1 {
 		return nil, fmt.Errorf("failed to read mind frame image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/mind_status.png"
+	fname = config.ImagePath + "battle/mind_status.png"
 	res.imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
 	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, res.imgMinds); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/skill/charge.png"
+	fname = config.ImagePath + "battle/skill/charge.png"
 	tmp := make([]int, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
 		return nil, fmt.Errorf("failed to load image %s", fname)
@@ -214,13 +213,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 	// Move
 	moveDirect := -1
 	if inputs.CheckKey(inputs.KeyUp) == 1 {
-		moveDirect = common.DirectUp
+		moveDirect = config.DirectUp
 	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-		moveDirect = common.DirectDown
+		moveDirect = config.DirectDown
 	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
-		moveDirect = common.DirectRight
+		moveDirect = config.DirectRight
 	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
-		moveDirect = common.DirectLeft
+		moveDirect = config.DirectLeft
 	}
 
 	if moveDirect >= 0 {

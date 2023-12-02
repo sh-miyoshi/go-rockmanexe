@@ -5,11 +5,12 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 )
 
 const (
@@ -37,13 +38,13 @@ type MessageWindow struct {
 }
 
 func (w *MessageWindow) Init() error {
-	fname := common.ImagePath + "msg_frame.png"
+	fname := config.ImagePath + "msg_frame.png"
 	w.imgFrame = dxlib.LoadGraph(fname)
 	if w.imgFrame == -1 {
 		return fmt.Errorf("failed to load message frame image %s", fname)
 	}
 
-	fname = common.ImagePath + "face/ロックマン.png"
+	fname = config.ImagePath + "face/ロックマン.png"
 	w.imgFaces[FaceTypeRockman] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 72, w.imgFaces[FaceTypeRockman]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -64,7 +65,7 @@ func (w *MessageWindow) End() {
 }
 
 func (w *MessageWindow) SetMessage(msg string, faceType int) {
-	messages := common.SplitJAMsg(msg, lineCharNum)
+	messages := ja.SplitMsg(msg, lineCharNum)
 
 	// 複数行のMessageをmaxLineNumごとのMessage配列に分割する
 	tmp := []string{}
@@ -99,7 +100,7 @@ func (w *MessageWindow) Draw() {
 	for i, msg := range w.messages[w.page] {
 		last := w.cursor - readNum
 		if last > 0 {
-			msg = common.SliceJAMsg(msg, last)
+			msg = ja.SliceMsg(msg, last)
 			draw.MessageText(120, 220+i*30, 0x000000, msg)
 			readNum += utf8.RuneCount([]byte(msg))
 		}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
@@ -30,7 +30,7 @@ type BeforeMain struct {
 }
 
 func New(selectChips []battleplayer.SelectChip) (*BeforeMain, error) {
-	fname := common.ImagePath + "battle/msg_start.png"
+	fname := config.ImagePath + "battle/msg_start.png"
 	inst, err := titlemsg.New(fname, 0)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize title message instance: %w", err)
@@ -62,7 +62,7 @@ func (b *BeforeMain) End() {
 func (b *BeforeMain) Draw() {
 	if b.paID != -1 {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 
 		draw.PAText(30, 50)

@@ -3,7 +3,7 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
@@ -24,7 +24,7 @@ func netBattleNew() (*menuNetBattle, error) {
 		isConnect: false,
 	}
 
-	fname := common.ImagePath + "msg_frame.png"
+	fname := config.ImagePath + "msg_frame.png"
 	res.imgMsgFrame = dxlib.LoadGraph(fname)
 	if res.imgMsgFrame == -1 {
 		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)

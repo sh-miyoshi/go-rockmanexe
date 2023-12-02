@@ -1,4 +1,6 @@
-package common
+package config
+
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 
 const (
 	SaveFilePath      = "data/save.dat"
@@ -12,24 +14,18 @@ const (
 	MaxUint    = ^uint(0)
 	MaxZenny   = 9999999
 	MaxChipNum = 99
-
-	MapPlayerHitRange = 10
 )
 
 const (
-	// DirectUp ...
 	DirectUp = 1 << iota
-	// DirectLeft ...
 	DirectLeft
-	// DirectDown ...
 	DirectDown
-	// DirectRight ...
 	DirectRight
 )
 
 var (
-	MaxScreenSize = Point{X: 640, Y: 480}
-	ScreenSize    = Point{X: 480, Y: 320}
+	MaxScreenSize = point.Point{X: 640, Y: 480}
+	ScreenSize    = point.Point{X: 480, Y: 320}
 
 	ImagePath = "data/images/"
 	SoundPath = "data/sounds/"

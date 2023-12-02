@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -10,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type dreamSword struct {
@@ -43,7 +43,7 @@ func (p *dreamSword) Process() (bool, error) {
 		userPos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := 1; x <= 2; x++ {
 			for y := -1; y <= 1; y++ {
-				if objID := field.GetPanelInfo(common.Point{X: userPos.X + x, Y: userPos.Y + y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(point.Point{X: userPos.X + x, Y: userPos.Y + y}).ObjectID; objID != "" {
 					dm := damage.Damage{
 						DamageType:    damage.TypeObject,
 						Power:         int(p.Arg.Power),

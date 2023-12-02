@@ -1,12 +1,12 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type wideShot struct {
@@ -15,7 +15,7 @@ type wideShot struct {
 
 	state    int
 	count    int
-	pos      common.Point
+	pos      point.Point
 	damageID [3]string
 }
 
@@ -65,7 +65,7 @@ func (p *wideShot) Process() (bool, error) {
 				p.damageID[i+1] = routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 					DamageType:    damage.TypePosition,
 					OwnerClientID: p.Arg.OwnerClientID,
-					Pos:           common.Point{X: p.pos.X, Y: y},
+					Pos:           point.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           resources.SkillWideShotPlayerNextStepCount,
 					TargetObjType: p.Arg.TargetType,

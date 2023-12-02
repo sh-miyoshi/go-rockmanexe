@@ -3,7 +3,6 @@ package sound
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -18,7 +17,7 @@ func Init() error {
 		return nil
 	}
 
-	basePath := common.SoundPath + "se/"
+	basePath := config.SoundPath + "se/"
 
 	soundEffects[resources.SENone] = 0
 	soundEffects[resources.SETitleEnter] = dxlib.LoadSoundMem(basePath + "title_enter.mp3")

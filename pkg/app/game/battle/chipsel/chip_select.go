@@ -5,7 +5,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -35,13 +35,13 @@ var (
 // Init ...
 func Init(folder []player.ChipInfo) error {
 	if imgFrame == -1 {
-		fname := common.ImagePath + "battle/chip_select_frame.png"
+		fname := config.ImagePath + "battle/chip_select_frame.png"
 		imgFrame = dxlib.LoadGraph(fname)
 		if imgFrame == -1 {
 			return fmt.Errorf("failed to read frame image: %s", fname)
 		}
 
-		fname = common.ImagePath + "battle/pointer.png"
+		fname = config.ImagePath + "battle/pointer.png"
 		res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, imgPointer)
 		if res == -1 {
 			return fmt.Errorf("failed to read pointer image: %s", fname)

@@ -1,13 +1,13 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type garooBreath struct {
@@ -15,9 +15,9 @@ type garooBreath struct {
 	Arg Argument
 
 	count    int
-	pos      common.Point
-	next     common.Point
-	prev     common.Point
+	pos      point.Point
+	next     point.Point
+	prev     point.Point
 	moveVecX int
 	damageID string
 	drawer   skilldraw.DrawGarooBreath
@@ -29,7 +29,7 @@ func newGarooBreath(objID string, arg Argument) *garooBreath {
 	if arg.TargetType == damage.TargetPlayer {
 		vx = -1
 	}
-	first := common.Point{X: pos.X + vx, Y: pos.Y}
+	first := point.Point{X: pos.X + vx, Y: pos.Y}
 
 	return &garooBreath{
 		ID:       objID,

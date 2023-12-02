@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -19,6 +18,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -46,7 +46,7 @@ type enemyAquaman struct {
 	actID           string
 	waterPipeObjIDs []string
 	moveNum         int
-	targetPos       common.Point
+	targetPos       point.Point
 }
 
 func (e *enemyAquaman) Init(objID string) error {
@@ -57,7 +57,7 @@ func (e *enemyAquaman) Init(objID string) error {
 	e.nextState = aquamanActTypeMove
 	e.waterPipeObjIDs = []string{}
 	e.moveNum = rand.Intn(2) + 2
-	e.targetPos = common.Point{X: -1, Y: -1}
+	e.targetPos = point.Point{X: -1, Y: -1}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDAquaman)
@@ -154,7 +154,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 					true,
 					field.GetPanelInfo,
 				) {
-					e.targetPos = common.Point{X: -1, Y: -1}
+					e.targetPos = point.Point{X: -1, Y: -1}
 					e.count = 0
 					e.waitCount = 20
 					e.state = aquamanActTypeStand
@@ -163,7 +163,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 			}
 
 			for i := 0; i < 10; i++ {
-				next := common.Point{
+				next := point.Point{
 					X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
 					Y: rand.Intn(battlecommon.FieldNum.Y),
 				}
@@ -204,7 +204,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		if e.count == 0 {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
-			t := common.Point{X: 1, Y: 1}
+			t := point.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				t = objs[0].Pos
 			}
@@ -318,7 +318,7 @@ func (e *enemyAquaman) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofs := [aquamanActTypeMax]common.Point{
+	ofs := [aquamanActTypeMax]point.Point{
 		{X: 0, Y: 0},    // stand
 		{X: 0, Y: 0},    // move
 		{X: -20, Y: 10}, // shot

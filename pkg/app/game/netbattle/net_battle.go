@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -22,10 +22,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -82,7 +84,7 @@ func Init(plyr *player.Player) error {
 	}
 	var err error
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
-		{CharID: enemy.IDRockman, Pos: common.Point{X: 4, Y: 1}},
+		{CharID: enemy.IDRockman, Pos: point.Point{X: 4, Y: 1}},
 	})
 	if err != nil {
 		return err
@@ -213,9 +215,9 @@ func Process() error {
 		if inst.stateCount == 0 {
 			net.GetInst().Disconnect()
 
-			fname := common.ImagePath + "battle/msg_win.png"
+			fname := config.ImagePath + "battle/msg_win.png"
 			if inst.playerInst.IsDead() {
-				fname = common.ImagePath + "battle/msg_lose.png"
+				fname = config.ImagePath + "battle/msg_lose.png"
 			}
 
 			var err error
@@ -255,7 +257,7 @@ func Draw() {
 	switch inst.state {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
@@ -265,7 +267,7 @@ func Draw() {
 		chipsel.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:
@@ -286,7 +288,7 @@ func Draw() {
 func stateChange(nextState int) {
 	logger.Info("Change battle state from %d to %d", inst.state, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	inst.state = nextState
 	inst.stateCount = 0

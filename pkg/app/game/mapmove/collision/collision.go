@@ -3,10 +3,13 @@ package collision
 import (
 	"math"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/vector"
+)
+
+const (
+	PlayerHitRange = 10
 )
 
 var (
@@ -23,7 +26,7 @@ func SetWalls(w []mapinfo.Wall) {
 }
 
 func GetEvent(currentX, currentY float64) *mapinfo.Event {
-	const r = common.MapPlayerHitRange
+	const r = PlayerHitRange
 	for _, e := range events {
 		x2 := (float64(e.X) - currentX) * (float64(e.X) - currentX)
 		y2 := (float64(e.Y) - currentY) * (float64(e.Y) - currentY)
@@ -72,7 +75,7 @@ func isCollision(x, y float64, wall mapinfo.Wall) bool {
 	b := vector.Sub(a, s)
 	sa := vector.Cross(s, a)
 	d := math.Abs(sa) / vector.Norm(s)
-	const r = common.MapPlayerHitRange
+	const r = PlayerHitRange
 
 	if d > r {
 		return false

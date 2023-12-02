@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -12,7 +12,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -41,7 +43,7 @@ type EnemyParam struct {
 	CharID          int
 	ObjectID        string
 	PlayerID        string
-	Pos             common.Point
+	Pos             point.Point
 	HP              int
 	ActNo           int
 	InvincibleCount int
@@ -125,7 +127,7 @@ func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
 
 func GetStandImageFile(id int) (name, ext string) {
 	ext = ".png"
-	path := common.ImagePath + "battle/character/"
+	path := config.ImagePath + "battle/character/"
 	name = path + GetName(id)
 	return
 }
@@ -180,7 +182,7 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 	case IDVolgear:
 		return &enemyVolgear{pm: initParam}
 	case IDRockman:
-		common.SetError("enemy rockman is not implemented yet")
+		system.SetError("enemy rockman is not implemented yet")
 	case IDColdman:
 		return &enemyColdman{pm: initParam}
 	}
@@ -205,12 +207,12 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, config.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, config.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}

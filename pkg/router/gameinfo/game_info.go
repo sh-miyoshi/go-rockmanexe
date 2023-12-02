@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -27,7 +27,7 @@ type Object struct {
 	Type          int
 	OwnerClientID string
 	HP            int
-	Pos           common.Point
+	Pos           point.Point
 	ActCount      int
 	IsReverse     bool
 	IsInvincible  bool
@@ -35,7 +35,7 @@ type Object struct {
 
 type Anim struct {
 	ObjectID string
-	Pos      common.Point
+	Pos      point.Point
 	DrawType int
 	AnimType int
 	ActCount int
@@ -43,7 +43,7 @@ type Anim struct {
 
 type Effect struct {
 	ID            string
-	Pos           common.Point
+	Pos           point.Point
 	Type          int
 	RandRange     int
 	OwnerClientID string
@@ -84,7 +84,7 @@ func (p *GameInfo) GetObject(id string) *Object {
 	return nil
 }
 
-func (p *GameInfo) GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
+func (p *GameInfo) GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return battlecommon.PanelInfo{}
 	}

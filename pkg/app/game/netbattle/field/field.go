@@ -3,7 +3,6 @@ package field
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -29,14 +28,14 @@ func New() (*Field, error) {
 	// Initialize images
 	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
+		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
 			return nil, fmt.Errorf("failed to read player panel image %s", fname)
 		}
 	}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
+		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return nil, fmt.Errorf("failed to read enemy panel image %s", fname)

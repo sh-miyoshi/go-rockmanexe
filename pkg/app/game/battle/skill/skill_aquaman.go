@@ -3,7 +3,6 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -12,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type aquaman struct {
@@ -20,7 +20,7 @@ type aquaman struct {
 
 	count  int
 	state  int
-	pos    common.Point
+	pos    point.Point
 	atkID  string
 	drawer skilldraw.DrawAquaman
 }
@@ -55,7 +55,7 @@ func (p *aquaman) Process() (bool, error) {
 		if p.count == 10 {
 			obj := &object.WaterPipe{}
 			pm := object.ObjectParam{
-				Pos:           common.Point{X: p.pos.X + 1, Y: p.pos.Y},
+				Pos:           point.Point{X: p.pos.X + 1, Y: p.pos.Y},
 				HP:            500,
 				OnwerCharType: objanim.ObjTypePlayer,
 				AttackNum:     1,

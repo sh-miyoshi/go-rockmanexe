@@ -1,8 +1,8 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -13,7 +13,7 @@ const (
 type DrawCannon struct {
 }
 
-func (p *DrawCannon) Draw(cannonType int, viewPos common.Point, count int) {
+func (p *DrawCannon) Draw(cannonType int, viewPos point.Point, count int) {
 	n := count / delayCannonBody
 	if n < len(imgCannonBody[cannonType]) {
 		if n >= 3 {

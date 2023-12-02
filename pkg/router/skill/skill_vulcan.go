@@ -2,14 +2,14 @@ package skill
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type vulcan struct {
@@ -44,7 +44,7 @@ func (p *vulcan) Process() (bool, error) {
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				target := common.Point{X: x, Y: pos.Y}
+				target := point.Point{X: x, Y: pos.Y}
 				if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
 					routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
 						DamageType:    damage.TypeObject,
@@ -64,7 +64,7 @@ func (p *vulcan) Process() (bool, error) {
 					})
 
 					if p.hit && x < battlecommon.FieldNum.X-1 {
-						target = common.Point{X: x + 1, Y: pos.Y}
+						target = point.Point{X: x + 1, Y: pos.Y}
 						queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
 							ID:            uuid.New().String(),
 							OwnerClientID: p.Arg.GameInfo.ClientID,

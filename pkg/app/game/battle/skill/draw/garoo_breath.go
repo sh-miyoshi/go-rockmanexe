@@ -1,10 +1,10 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 type DrawGarooBreath struct {
 }
 
-func (p *DrawGarooBreath) Draw(prevPos, currentPos, nextPos common.Point, count int) {
+func (p *DrawGarooBreath) Draw(prevPos, currentPos, nextPos point.Point, count int) {
 	view := battlecommon.ViewPos(currentPos)
 	n := (count / delayGarooBreath) % len(imgGarooBreath)
 

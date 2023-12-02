@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
@@ -20,6 +20,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
@@ -235,7 +236,7 @@ func Process() error {
 	case stateResultLose:
 		isRunAnim = true
 		if battleCount == 0 {
-			fname := common.ImagePath + "battle/msg_lose.png"
+			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
 			loseInst, err = titlemsg.New(fname, 0)
 			if err != nil {
@@ -299,7 +300,7 @@ func Draw() {
 func stateChange(nextState int) {
 	logger.Info("Change battle state from %d to %d", battleState, nextState)
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 		return
 	}
 	battleState = nextState
@@ -310,6 +311,6 @@ func drawEnemyNames() {
 	for i, e := range enemyList {
 		name := enemy.GetName(e.CharID)
 		ofs := dxlib.GetDrawStringWidth(name, len(name))
-		draw.String(common.ScreenSize.X-ofs-5, i*20+10, 0xffffff, "%s", name)
+		draw.String(config.ScreenSize.X-ofs-5, i*20+10, 0xffffff, "%s", name)
 	}
 }

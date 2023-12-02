@@ -3,7 +3,8 @@ package ncparts
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 // Memo: 色情報は固定で持たせる。同じ種類で色が異なる場合は別IDを割り当てる
@@ -27,7 +28,7 @@ const (
 type NaviCustomParts struct {
 	ID          int
 	Name        string
-	Blocks      []common.Point
+	Blocks      []point.Point
 	IsPlusParts bool
 	Color       int
 	Description string
@@ -38,7 +39,7 @@ var (
 		{
 			ID:   IDAttack1,
 			Name: "アタック+1",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 				{X: 0, Y: 1},
 			},
@@ -49,7 +50,7 @@ var (
 		{
 			ID:   IDCharge1,
 			Name: "チャージ+1",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 			},
 			IsPlusParts: true,
@@ -59,7 +60,7 @@ var (
 		{
 			ID:   IDHP50,
 			Name: "ＨＰ+50",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 				{X: 1, Y: 0},
 			},
@@ -70,7 +71,7 @@ var (
 		{
 			ID:   IDHP100,
 			Name: "ＨＰ+100",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 				{X: 1, Y: 0},
 				{X: 1, Y: 1},
@@ -82,7 +83,7 @@ var (
 		{
 			ID:   IDUnderShirt,
 			Name: "アンダーシャツ",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 				{X: 0, Y: 1},
 			},
@@ -93,7 +94,7 @@ var (
 		{
 			ID:   IDCustom1,
 			Name: "カスタム１",
-			Blocks: []common.Point{
+			Blocks: []point.Point{
 				{X: 0, Y: 0},
 				{X: 1, Y: 0},
 				{X: 0, Y: 1},
@@ -114,7 +115,7 @@ func Get(id int) NaviCustomParts {
 		}
 	}
 
-	common.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
+	system.SetError(fmt.Sprintf("Navi parts %d is not implemented yet", id))
 	return NaviCustomParts{}
 }
 
@@ -130,6 +131,6 @@ func GetColorCode(color int) uint {
 		return 0x2880DC
 	}
 
-	common.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
+	system.SetError(fmt.Sprintf("Color code %d is not implemented yet", color))
 	return 0
 }

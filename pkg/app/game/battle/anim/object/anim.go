@@ -5,10 +5,10 @@ import (
 	"sort"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -25,7 +25,7 @@ const (
 type Filter struct {
 	ObjID   string
 	ObjType int
-	Pos     *common.Point
+	Pos     *point.Point
 }
 
 type Param struct {
@@ -143,7 +143,7 @@ func (am *AnimManager) Delete(animID string) {
 	}
 }
 
-func (am *AnimManager) GetObjPos(objID string) common.Point {
+func (am *AnimManager) GetObjPos(objID string) point.Point {
 	for _, anim := range am.anims {
 		pm := anim.GetParam()
 		if pm.ObjID == objID {
@@ -151,7 +151,7 @@ func (am *AnimManager) GetObjPos(objID string) common.Point {
 		}
 	}
 
-	return common.Point{X: -1, Y: -1}
+	return point.Point{X: -1, Y: -1}
 }
 
 func (am *AnimManager) GetObjs(filter Filter) []Param {
@@ -195,7 +195,7 @@ func (am *AnimManager) MakeInvisible(id string, count int) {
 	}
 }
 
-func (am *AnimManager) ExistsObject(pos common.Point) string {
+func (am *AnimManager) ExistsObject(pos point.Point) string {
 	objs := am.GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
 	if len(objs) > 0 {
 		return objs[0].ObjID

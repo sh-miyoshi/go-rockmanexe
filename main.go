@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -10,12 +9,12 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
@@ -36,7 +35,7 @@ func main() {
 	fpsMgr := fps.Fps{}
 
 	var confFile string
-	flag.StringVar(&confFile, "config", common.DefaultConfigFile, "file path of config")
+	flag.StringVar(&confFile, "config", config.DefaultConfigFile, "file path of config")
 	flag.Parse()
 
 	if err := config.Init(confFile); err != nil {
@@ -45,13 +44,13 @@ func main() {
 	}
 
 	rand.Seed(time.Now().Unix())
-	dxlib.Init(common.DxlibDLLFilePath)
+	dxlib.Init(config.DxlibDLLFilePath)
 
 	if version != "" {
-		common.ProgramVersion = version
+		config.ProgramVersion = version
 	}
 	if encKey != "" {
-		common.EncryptKey = encKey
+		config.EncryptKey = encKey
 	}
 
 	dxlib.SetDoubleStartValidFlag(dxlib.TRUE)
@@ -60,8 +59,8 @@ func main() {
 	}
 
 	if config.Get().Debug.UsePrivateResource {
-		common.ImagePath = "data/private/images/"
-		common.SoundPath = "data/private/sounds/"
+		config.ImagePath = "data/private/images/"
+		config.SoundPath = "data/private/sounds/"
 	}
 
 	if config.Get().Log.DebugEnabled {
@@ -71,26 +70,26 @@ func main() {
 	}
 	logger.InitLogger(config.Get().Log.DebugEnabled, config.Get().Log.FileName)
 
-	if res := dxlib.AddFontFile(common.FontFilePath); res == nil {
-		logger.Error("Failed to load font data %s", common.FontFilePath)
+	if res := dxlib.AddFontFile(config.FontFilePath); res == nil {
+		logger.Error("Failed to load font data %s", config.FontFilePath)
 		return
 	}
 
 	dxlib.ChangeWindowMode(dxlib.TRUE)
 	dxlib.SetWindowSizeChangeEnableFlag(dxlib.FALSE, dxlib.FALSE)
-	dxlib.SetGraphMode(common.MaxScreenSize.X, common.MaxScreenSize.Y)
-	dxlib.SetWindowSize(int32(common.ScreenSize.X), int32(common.ScreenSize.Y))
+	dxlib.SetGraphMode(config.MaxScreenSize.X, config.MaxScreenSize.Y)
+	dxlib.SetWindowSize(int32(config.ScreenSize.X), int32(config.ScreenSize.Y))
 
 	dxlib.DxLib_Init()
 	dxlib.SetDrawScreen(dxlib.DX_SCREEN_BACK)
 
-	logger.Info("Program version: %s", common.ProgramVersion)
+	logger.Info("Program version: %s", config.ProgramVersion)
 
 	count := 0
 
 	if err := appInit(); err != nil {
 		logger.Error("Failed to init application: %+v", err)
-		common.IrreversibleError = errors.New("ゲーム初期化時")
+		system.SetError("ゲーム初期化時")
 	}
 
 	logger.Info("Successfully init application.")
@@ -100,11 +99,11 @@ func main() {
 		time.Sleep(tm)
 	}
 MAIN:
-	for common.IrreversibleError == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
+	for system.Error() == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
 		if err := game.Process(); err != nil {
 			logger.Error("Failed to play game: %+v", err)
-			common.IrreversibleError = errors.New("ゲームプレイ中")
+			system.SetError("ゲームプレイ中")
 			break MAIN
 		}
 		game.Draw()
@@ -117,17 +116,17 @@ MAIN:
 
 		fpsMgr.Wait()
 		if config.Get().Debug.ShowDebugData {
-			dxlib.DrawFormatString(common.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
+			dxlib.DrawFormatString(config.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
 			var x, y int
 			dxlib.GetMousePoint(&x, &y)
-			dxlib.DrawFormatString(common.ScreenSize.X-90, 30, 0xff0000, "(%d, %d)", x, y)
+			dxlib.DrawFormatString(config.ScreenSize.X-90, 30, 0xff0000, "(%d, %d)", x, y)
 		}
 	}
 
-	if common.IrreversibleError != nil {
+	if err := system.Error(); err != nil {
 		sound.BGMStop()
 		dxlib.ClearDrawScreen()
-		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", common.IrreversibleError.Error())
+		dxlib.DrawFormatString(10, 10, 0xff0000, "%sに回復不可能なエラーが発生しました。", err.Error())
 		dxlib.DrawFormatString(10, 40, 0xff0000, "詳細はログを参照してください。")
 		dxlib.ScreenFlip()
 		dxlib.WaitKey()
@@ -140,7 +139,7 @@ func appInit() error {
 	if err := inputs.Init(config.Get().Input.Type); err != nil {
 		return fmt.Errorf("inputs init failed: %w", err)
 	}
-	if err := chip.Init(common.ChipFilePath); err != nil {
+	if err := chip.Init(config.ChipFilePath); err != nil {
 		return fmt.Errorf("chip init failed: %w", err)
 	}
 	if err := chipimage.Init(); err != nil {
@@ -152,7 +151,7 @@ func appInit() error {
 	if err := sound.Init(); err != nil {
 		return fmt.Errorf("sound init failed: %w", err)
 	}
-	if err := mapinfo.Init(common.MapInfoFilePath); err != nil {
+	if err := mapinfo.Init(config.MapInfoFilePath); err != nil {
 		return fmt.Errorf("map info init failed: %w", err)
 	}
 

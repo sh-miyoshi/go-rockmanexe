@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -14,10 +14,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type playerAct struct {
@@ -25,7 +26,7 @@ type playerAct struct {
 	count         int
 	pObject       *gameinfo.Object
 	info          []byte
-	getPanelInfo  func(pos common.Point) battlecommon.PanelInfo
+	getPanelInfo  func(pos point.Point) battlecommon.PanelInfo
 	ownerClientID string
 	endCount      int
 }
@@ -142,12 +143,12 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	}
 
 	for i := 0; i < dm.PushLeft; i++ {
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 			break
 		}
 	}
 	for i := 0; i < dm.PushRight; i++ {
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 			break
 		}
 	}
@@ -252,7 +253,7 @@ func (a *playerAct) Process() bool {
 			case action.MoveTypeDirect:
 				battlecommon.MoveObject(&a.pObject.Pos, move.Direct, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
 			case action.MoveTypeAbs:
-				target := common.Point{X: move.AbsPosX, Y: move.AbsPosY}
+				target := point.Point{X: move.AbsPosX, Y: move.AbsPosY}
 				battlecommon.MoveObjectDirect(&a.pObject.Pos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
 			}
 
@@ -265,7 +266,7 @@ func (a *playerAct) Process() bool {
 			var buster action.Buster
 			buster.Unmarshal(a.info)
 
-			damageAdd := func(pos common.Point, power int) bool {
+			damageAdd := func(pos point.Point, power int) bool {
 				if objID := a.getPanelInfo(pos).ObjectID; objID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					eff := resources.EffectTypeHitSmall
@@ -289,7 +290,7 @@ func (a *playerAct) Process() bool {
 
 			y := a.pObject.Pos.Y
 			for x := a.pObject.Pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				pos := common.Point{X: x, Y: y}
+				pos := point.Point{X: x, Y: y}
 				if damageAdd(pos, buster.Power) {
 					break
 				}

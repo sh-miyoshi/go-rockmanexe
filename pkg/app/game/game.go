@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
@@ -19,7 +19,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -49,8 +51,8 @@ func Process() error {
 	if playerInfo != nil {
 		playerInfo.PlayCount++
 		// Countermeasures against buffer overflow
-		if playerInfo.PlayCount >= common.MaxUint {
-			playerInfo.PlayCount = common.MaxUint - 1
+		if playerInfo.PlayCount >= config.MaxUint {
+			playerInfo.PlayCount = config.MaxUint - 1
 		}
 	}
 
@@ -66,14 +68,14 @@ func Process() error {
 				playerInfo = player.New()
 			} else if errors.Is(err, title.ErrStartContinue) {
 				var key []byte
-				if common.EncryptKey == "" {
+				if config.EncryptKey == "" {
 					key = nil
 				} else {
-					key = []byte(common.EncryptKey)
+					key = []byte(config.EncryptKey)
 				}
 
 				var err error
-				playerInfo, err = player.NewWithSaveData(common.SaveFilePath, key)
+				playerInfo, err = player.NewWithSaveData(config.SaveFilePath, key)
 				if err != nil {
 					return fmt.Errorf("failed to continue: %w", err)
 				}
@@ -110,7 +112,7 @@ func Process() error {
 			return nil
 		case menu.ResultGoMap:
 			// debug: 初期イベントをセット
-			args := event.MapChangeArgs{MapID: mapinfo.ID_秋原町, InitPos: common.Point{X: 1400, Y: 500}}
+			args := event.MapChangeArgs{MapID: mapinfo.ID_秋原町, InitPos: point.Point{X: 1400, Y: 500}}
 			event.SetScenarios([]event.Scenario{
 				{Type: event.TypeChangeMapArea, Values: args.Marshal()},
 			})
@@ -128,8 +130,8 @@ func Process() error {
 			battle.End()
 			if errors.Is(err, battle.ErrWin) {
 				playerInfo.WinNum++
-				key := []byte(common.EncryptKey)
-				if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+				key := []byte(config.EncryptKey)
+				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
 					return fmt.Errorf("save failed: %w", err)
 				}
 				stateChange(stateMenu)
@@ -159,8 +161,8 @@ func Process() error {
 			if errors.Is(err, battle.ErrWin) {
 				history.IsWin = true
 				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
-				key := []byte(common.EncryptKey)
-				if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+				key := []byte(config.EncryptKey)
+				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
 					return fmt.Errorf("save failed: %w", err)
 				}
 				stateChange(stateMenu)
@@ -168,8 +170,8 @@ func Process() error {
 			} else if errors.Is(err, battle.ErrLose) {
 				history.IsWin = false
 				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
-				key := []byte(common.EncryptKey)
-				if err := playerInfo.Save(common.SaveFilePath, key); err != nil {
+				key := []byte(config.EncryptKey)
+				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
 					return fmt.Errorf("save failed: %w", err)
 				}
 				stateChange(stateMenu)
@@ -272,7 +274,7 @@ func Draw() {
 
 func stateChange(nextState int) {
 	if nextState < 0 || nextState >= stateMax {
-		common.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
+		system.SetError(fmt.Sprintf("Invalid next game state: %d", nextState))
 		return
 	}
 	logger.Info("game state change from %d to %d", state, nextState)

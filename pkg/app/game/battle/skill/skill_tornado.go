@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -9,6 +8,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -23,8 +23,8 @@ type tornado struct {
 	count     int
 	atkCount  int
 	drawer    skilldraw.DrawTurnado
-	objPos    common.Point
-	targetPos common.Point
+	objPos    point.Point
+	targetPos point.Point
 }
 
 func newTornado(objID string, arg Argument) *tornado {
@@ -33,7 +33,7 @@ func newTornado(objID string, arg Argument) *tornado {
 		ID:        objID,
 		Arg:       arg,
 		objPos:    pos,
-		targetPos: common.Point{X: pos.X + 2, Y: pos.Y},
+		targetPos: point.Point{X: pos.X + 2, Y: pos.Y},
 	}
 }
 

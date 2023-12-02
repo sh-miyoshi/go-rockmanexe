@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -11,6 +10,8 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type thunderBall struct {
@@ -21,9 +22,9 @@ type thunderBall struct {
 	count     int
 	moveCount int
 	damageID  string
-	pos       common.Point
-	next      common.Point
-	prev      common.Point
+	pos       point.Point
+	next      point.Point
+	prev      point.Point
 	drawer    skilldraw.DrawThunderBall
 }
 
@@ -34,7 +35,7 @@ func newThunderBall(objID string, arg Argument) *thunderBall {
 		x = pos.X - 1
 	}
 
-	first := common.Point{X: x, Y: pos.Y}
+	first := point.Point{X: x, Y: pos.Y}
 	max := 6 // debug
 	return &thunderBall{
 		ID:           objID,
@@ -118,12 +119,12 @@ func (p *thunderBall) Process() (bool, error) {
 			ydif := objs[0].Pos.Y - t.Y
 
 			if xdif != 0 || ydif != 0 {
-				if common.Abs(xdif) > common.Abs(ydif) {
+				if math.Abs(xdif) > math.Abs(ydif) {
 					// move to x
-					p.next.X += (xdif / common.Abs(xdif))
+					p.next.X += (xdif / math.Abs(xdif))
 				} else {
 					// move to y
-					p.next.Y += (ydif / common.Abs(ydif))
+					p.next.Y += (ydif / math.Abs(ydif))
 				}
 			}
 		}
