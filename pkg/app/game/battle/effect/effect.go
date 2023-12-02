@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -26,13 +27,13 @@ var (
 
 type effect struct {
 	ID   string
-	Pos  common.Point
+	Pos  point.Point
 	Type int
 
 	count  int
 	images []int
 	delay  int
-	ofs    common.Point
+	ofs    point.Point
 }
 
 type noEffect struct{}
@@ -126,8 +127,8 @@ func End() {
 	}
 }
 
-func Get(typ int, pos common.Point, randRange int) anim.Anim {
-	ofs := common.Point{}
+func Get(typ int, pos point.Point, randRange int) anim.Anim {
+	ofs := point.Point{}
 	if randRange > 0 {
 		ofs.X = rand.Intn(2*randRange) - randRange
 		ofs.Y = rand.Intn(2*randRange) - randRange

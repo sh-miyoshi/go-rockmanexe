@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -18,6 +17,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type volgearAtk struct {
@@ -121,7 +121,7 @@ func (e *enemyVolgear) Process() (bool, error) {
 	if e.count%actionInterval == 0 {
 		y := rand.Intn(battlecommon.FieldNum.Y)
 		for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
-			next := common.Point{
+			next := point.Point{
 				X: e.pm.Pos.X,
 				Y: y,
 			}

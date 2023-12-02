@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -10,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 // Note:
@@ -22,7 +22,7 @@ type skillPanelSteal struct {
 
 	count       int
 	state       int
-	target      common.Point
+	target      point.Point
 	myPanelType int
 	drawer      skilldraw.DrawAreaSteal
 }
@@ -44,7 +44,7 @@ func newPanelSteal(objID string, arg Argument) *skillPanelSteal {
 }
 
 func (p *skillPanelSteal) Draw() {
-	p.drawer.Draw(p.count, p.state, []common.Point{p.target})
+	p.drawer.Draw(p.count, p.state, []point.Point{p.target})
 }
 
 func (p *skillPanelSteal) Process() (bool, error) {
@@ -61,7 +61,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
 					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-					target := common.Point{X: x, Y: pos.Y}
+					target := point.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
 					if pn.Type != battlecommon.PanelTypePlayer {
 						p.target = target
@@ -71,7 +71,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			} else {
 				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
 					pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-					target := common.Point{X: x, Y: pos.Y}
+					target := point.Point{X: x, Y: pos.Y}
 					pn := field.GetPanelInfo(target)
 					if pn.Type != battlecommon.PanelTypeEnemy {
 						p.target = target

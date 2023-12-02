@@ -2,23 +2,23 @@ package deleteanim
 
 import (
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type deleteAction struct {
 	id    string
 	image int
-	pos   common.Point
+	pos   point.Point
 	count int
 }
 
-func New(image int, pos common.Point, isPlayer bool) {
+func New(image int, pos point.Point, isPlayer bool) {
 	if isPlayer {
 		sound.On(resources.SEPlayerDeleted)
 	} else {

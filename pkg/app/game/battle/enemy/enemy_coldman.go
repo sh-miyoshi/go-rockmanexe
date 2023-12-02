@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -20,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -48,7 +48,7 @@ type enemyColdman struct {
 	moveNum      int
 	cubeIDs      []string
 	bressIDs     []string
-	targetPos    common.Point
+	targetPos    point.Point
 	targetCubeID string
 	actCount     int
 }
@@ -61,7 +61,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.moveNum = rand.Intn(2) + 2
 	e.cubeIDs = []string{}
 	e.bressIDs = []string{}
-	e.targetPos = common.Point{X: -1, Y: -1}
+	e.targetPos = point.Point{X: -1, Y: -1}
 	e.actCount = 0
 
 	// Load Images
@@ -159,7 +159,7 @@ func (e *enemyColdman) Process() (bool, error) {
 					e.moveNum = rand.Intn(2) + 2
 					e.targetCubeID = ""
 				}
-				e.targetPos = common.Point{X: -1, Y: -1}
+				e.targetPos = point.Point{X: -1, Y: -1}
 				e.waitCount = 20
 				return e.stateChange(aquamanActTypeStand)
 			}
@@ -230,7 +230,7 @@ func (e *enemyColdman) Process() (bool, error) {
 			dm := damage.Damage{
 				ID:            uuid.New().String(),
 				DamageType:    damage.TypePosition,
-				Pos:           common.Point{X: e.pm.Pos.X - 1, Y: e.pm.Pos.Y},
+				Pos:           point.Point{X: e.pm.Pos.X - 1, Y: e.pm.Pos.Y},
 				Power:         1, // debug(0でもいいかも)
 				TTL:           1,
 				TargetObjType: damage.TargetPlayer | damage.TargetEnemy,
@@ -251,7 +251,7 @@ func (e *enemyColdman) Process() (bool, error) {
 	case coldmanActTypeBodyBlow:
 		panic("TODO: not implemented yet")
 	case coldmanActTypeBless:
-		targetPos := common.Point{X: 5, Y: 1}
+		targetPos := point.Point{X: 5, Y: 1}
 		if !targetPos.Equal(e.pm.Pos) {
 			e.targetPos = targetPos
 			e.nextState = coldmanActTypeBless
@@ -285,7 +285,7 @@ func (e *enemyColdman) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofs := [coldmanActTypeMax]common.Point{
+	ofs := [coldmanActTypeMax]point.Point{
 		{X: 0, Y: 0},  // Stand
 		{X: 0, Y: 0},  // IceCreate
 		{X: 0, Y: 0},  // Move
@@ -354,7 +354,7 @@ func (e *enemyColdman) moveRandom() {
 	// 移動先は最後列のどこか
 	x := battlecommon.FieldNum.X - 1
 	for i := 0; i < 10; i++ {
-		next := common.Point{
+		next := point.Point{
 			X: x,
 			Y: rand.Intn(battlecommon.FieldNum.Y),
 		}
@@ -399,14 +399,14 @@ func (e *enemyColdman) createCube() error {
 	//   -------------
 	//   | x |   |   |
 	//   -------------
-	patterns := [][]common.Point{
+	patterns := [][]point.Point{
 		{
-			common.Point{X: 3, Y: 0},
-			common.Point{X: 4, Y: 2},
+			point.Point{X: 3, Y: 0},
+			point.Point{X: 4, Y: 2},
 		},
 		{
-			common.Point{X: 3, Y: 1},
-			common.Point{X: 3, Y: 2},
+			point.Point{X: 3, Y: 1},
+			point.Point{X: 3, Y: 2},
 		},
 	}
 
@@ -441,7 +441,7 @@ func (e *enemyColdman) createBress() error {
 	}
 
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
-		pos := common.Point{X: 4, Y: y}
+		pos := point.Point{X: 4, Y: y}
 		// もしObjectがあれば生成しない
 		if localanim.ObjAnimExistsObject(pos) != "" {
 			continue
@@ -472,14 +472,14 @@ func (e *enemyColdman) stateChange(next int) (bool, error) {
 	return false, nil
 }
 
-func (e *enemyColdman) findShootCube() (common.Point, string, bool) {
+func (e *enemyColdman) findShootCube() (point.Point, string, bool) {
 	playerPos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
 	for _, id := range e.cubeIDs {
 		pos := localanim.ObjAnimGetObjPos(id)
 		if pos.Y == playerPos.Y {
-			targetPos := common.Point{X: pos.X + 1, Y: pos.Y}
+			targetPos := point.Point{X: pos.X + 1, Y: pos.Y}
 			return targetPos, id, true
 		}
 	}
-	return common.Point{X: -1, Y: -1}, "", false
+	return point.Point{X: -1, Y: -1}, "", false
 }

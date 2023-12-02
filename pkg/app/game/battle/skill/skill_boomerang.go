@@ -9,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type boomerang struct {
@@ -18,9 +19,9 @@ type boomerang struct {
 
 	count   int
 	turnNum int
-	pos     common.Point
-	next    common.Point
-	prev    common.Point
+	pos     point.Point
+	next    point.Point
+	prev    point.Point
 	drawer  skilldraw.DrawBoomerang
 }
 
@@ -53,9 +54,9 @@ func newBoomerang(objID string, arg Argument) *boomerang {
 		ActType: act,
 		count:   0,
 		turnNum: 0,
-		pos:     common.Point{X: sx, Y: sy},
-		next:    common.Point{X: sx, Y: sy},
-		prev:    common.Point{X: px, Y: sy},
+		pos:     point.Point{X: sx, Y: sy},
+		next:    point.Point{X: sx, Y: sy},
+		prev:    point.Point{X: px, Y: sy},
 	}
 }
 

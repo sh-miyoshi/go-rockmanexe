@@ -8,6 +8,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -63,7 +64,7 @@ func (b *Boss) Draw() {
 	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
 
 	// debug(初期位置)
-	view := battlecommon.ViewPos(common.Point{X: 1, Y: 1})
+	view := battlecommon.ViewPos(point.Point{X: 1, Y: 1})
 
 	dxlib.SetDrawBright(17, 168, 10)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_INVSRC, 255)

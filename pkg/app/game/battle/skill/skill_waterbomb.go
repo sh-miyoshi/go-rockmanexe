@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -12,6 +11,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type waterBomb struct {
@@ -19,14 +19,14 @@ type waterBomb struct {
 	Arg Argument
 
 	count  int
-	pos    common.Point
-	target common.Point
+	pos    point.Point
+	target point.Point
 	drawer skilldraw.DrawWaterBomb
 }
 
 func newWaterBomb(objID string, arg Argument) *waterBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-	t := common.Point{X: pos.X + 3, Y: pos.Y}
+	t := point.Point{X: pos.X + 3, Y: pos.Y}
 	objType := objanim.ObjTypePlayer
 	if arg.TargetType == damage.TargetEnemy {
 		objType = objanim.ObjTypeEnemy

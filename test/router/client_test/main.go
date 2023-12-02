@@ -8,12 +8,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -120,7 +120,7 @@ MAIN_LOOP:
 			for i := 0; i < 10; i++ {
 				info = conn.GetGameInfo()
 				myObj := info.GetObject(obj.ID)
-				if myObj != nil && myObj.Pos.Equal(common.Point{X: 2, Y: 1}) {
+				if myObj != nil && myObj.Pos.Equal(point.Point{X: 2, Y: 1}) {
 					ok = true
 					logger.Info("Success to move")
 					break

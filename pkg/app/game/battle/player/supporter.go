@@ -18,6 +18,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -29,12 +30,12 @@ const (
 
 type SupporterParam struct {
 	HP      uint
-	InitPos common.Point
+	InitPos point.Point
 }
 
 type Supporter struct {
 	ID              string
-	Pos             common.Point
+	Pos             point.Point
 	HP              uint
 	HPMax           uint
 	ShotPower       uint

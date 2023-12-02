@@ -26,6 +26,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	netobj "github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -82,7 +83,7 @@ func Init(plyr *player.Player) error {
 	}
 	var err error
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
-		{CharID: enemy.IDRockman, Pos: common.Point{X: 4, Y: 1}},
+		{CharID: enemy.IDRockman, Pos: point.Point{X: 4, Y: 1}},
 	})
 	if err != nil {
 		return err

@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"gopkg.in/yaml.v2"
 )
 
@@ -34,7 +35,7 @@ type MapInfo struct {
 	IsCyberWorld     bool    `yaml:"is_cyber_world"`
 
 	Image int
-	Size  common.Point
+	Size  point.Point
 }
 
 const (

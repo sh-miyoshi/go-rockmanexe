@@ -1,12 +1,12 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -20,7 +20,7 @@ type crack struct {
 	Arg Argument
 
 	count     int
-	attackPos []common.Point
+	attackPos []point.Point
 }
 
 func newCrack(objID string, crackType int, arg Argument) *crack {
@@ -33,14 +33,14 @@ func newCrack(objID string, crackType int, arg Argument) *crack {
 
 	switch crackType {
 	case crackType1:
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 1, Y: pos.Y})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
 	case crackType2:
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 1, Y: pos.Y})
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 2, Y: pos.Y})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 2, Y: pos.Y})
 	case crackType3:
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 1, Y: pos.Y - 1})
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 1, Y: pos.Y})
-		res.attackPos = append(res.attackPos, common.Point{X: pos.X + 1, Y: pos.Y + 1})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y - 1})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
+		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y + 1})
 	}
 
 	return &res

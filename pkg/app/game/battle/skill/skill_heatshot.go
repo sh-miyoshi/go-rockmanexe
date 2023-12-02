@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -11,6 +10,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -52,7 +52,7 @@ func (p *heatShot) Process() (bool, error) {
 
 		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			target := common.Point{X: x, Y: pos.Y}
+			target := point.Point{X: x, Y: pos.Y}
 			if objID := field.GetPanelInfo(target).ObjectID; objID != "" {
 				// Hit
 				localanim.DamageManager().New(damage.Damage{
@@ -65,16 +65,16 @@ func (p *heatShot) Process() (bool, error) {
 				})
 
 				// 誘爆
-				targets := []common.Point{}
+				targets := []point.Point{}
 				switch p.Type {
 				case heatShotTypeShot:
-					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y})
+					targets = append(targets, point.Point{X: target.X + 1, Y: target.Y})
 				case heatShotTypeV:
-					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y - 1})
-					targets = append(targets, common.Point{X: target.X + 1, Y: target.Y + 1})
+					targets = append(targets, point.Point{X: target.X + 1, Y: target.Y - 1})
+					targets = append(targets, point.Point{X: target.X + 1, Y: target.Y + 1})
 				case heatShotTypeSide:
-					targets = append(targets, common.Point{X: target.X, Y: target.Y - 1})
-					targets = append(targets, common.Point{X: target.X, Y: target.Y + 1})
+					targets = append(targets, point.Point{X: target.X, Y: target.Y - 1})
+					targets = append(targets, point.Point{X: target.X, Y: target.Y + 1})
 				}
 
 				for _, t := range targets {

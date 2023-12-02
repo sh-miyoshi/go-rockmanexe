@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
 )
 
@@ -105,7 +106,7 @@ func End() {
 	netMoveStandImages = []int{}
 }
 
-func MapChange(mapID int, pos common.Point) error {
+func MapChange(mapID int, pos point.Point) error {
 	var err error
 	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
@@ -121,7 +122,7 @@ func MapChange(mapID int, pos common.Point) error {
 }
 
 func Draw() {
-	var player, window common.Point
+	var player, window point.Point
 	getViewPos(&player, &window)
 
 	dxlib.DrawRectGraph(0, 0, window.X, window.Y, mapInfo.Size.X, mapInfo.Size.Y, mapInfo.Image, true)
@@ -207,7 +208,7 @@ func Process() error {
 	return nil
 }
 
-func getViewPos(player, window *common.Point) {
+func getViewPos(player, window *point.Point) {
 	hsX := common.ScreenSize.X / 2
 	hsY := common.ScreenSize.Y / 2
 
@@ -240,7 +241,7 @@ func getViewPos(player, window *common.Point) {
 	}
 }
 
-func drawPlayer(pos common.Point) {
+func drawPlayer(pos point.Point) {
 	dxopts := dxlib.DrawRotaGraphOption{}
 	rlFlag := false
 	if playerMoveDirect&common.DirectLeft != 0 {

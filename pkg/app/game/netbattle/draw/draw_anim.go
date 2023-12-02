@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type animDraw struct {
@@ -48,7 +49,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeCannonMega:
 			d.drawCannonInst.Draw(resources.SkillTypeMegaCannon, pos, a.ActCount)
 		case anim.TypeMiniBomb:
-			target := common.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
+			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
 			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)

@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -178,7 +179,7 @@ func (a *WaterPipeAtk) IsAttacking() bool {
 	return a.isAttacking
 }
 
-func (a *WaterPipeAtk) Draw(pos common.Point) {
+func (a *WaterPipeAtk) Draw(pos point.Point) {
 	n := 0
 	if a.isAttacking {
 		c := (a.count / delayWaterPipeAttack) % (len(a.images) * 2)

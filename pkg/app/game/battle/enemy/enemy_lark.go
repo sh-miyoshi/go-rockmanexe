@@ -3,7 +3,6 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -16,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -46,8 +46,8 @@ type enemyLark struct {
 	movePointer int
 	moveCount   int
 
-	next common.Point
-	prev common.Point
+	next point.Point
+	prev point.Point
 }
 
 func (e *enemyLark) Init(objID string) error {
@@ -149,7 +149,7 @@ func (e *enemyLark) Process() (bool, error) {
 
 		// 次の移動地点を決定
 		e.moveCount++
-		t := common.Point{X: e.movePoint[np][0], Y: e.movePoint[np][1]}
+		t := point.Point{X: e.movePoint[np][0], Y: e.movePoint[np][1]}
 		if battlecommon.MoveObjectDirect(&e.pm.Pos, t, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 			e.next = t
 		}

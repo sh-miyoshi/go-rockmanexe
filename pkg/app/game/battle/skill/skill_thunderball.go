@@ -11,6 +11,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type thunderBall struct {
@@ -21,9 +22,9 @@ type thunderBall struct {
 	count     int
 	moveCount int
 	damageID  string
-	pos       common.Point
-	next      common.Point
-	prev      common.Point
+	pos       point.Point
+	next      point.Point
+	prev      point.Point
 	drawer    skilldraw.DrawThunderBall
 }
 
@@ -34,7 +35,7 @@ func newThunderBall(objID string, arg Argument) *thunderBall {
 		x = pos.X - 1
 	}
 
-	first := common.Point{X: x, Y: pos.Y}
+	first := point.Point{X: x, Y: pos.Y}
 	max := 6 // debug
 	return &thunderBall{
 		ID:           objID,

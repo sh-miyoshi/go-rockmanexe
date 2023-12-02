@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -17,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -36,7 +36,7 @@ type billyAct struct {
 	count    int
 	typ      int
 	endCount int
-	pPos     *common.Point
+	pPos     *point.Point
 }
 
 type enemyBilly struct {

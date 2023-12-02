@@ -1,15 +1,15 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type DrawAquaman struct {
 }
 
-func (p *DrawAquaman) Draw(viewPos common.Point, count int, state int) {
+func (p *DrawAquaman) Draw(viewPos point.Point, count int, state int) {
 	xflip := int32(dxlib.TRUE)
 
 	switch state {

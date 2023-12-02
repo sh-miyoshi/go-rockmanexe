@@ -1,13 +1,13 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type DrawCountBomb struct{}
 
-func (p *DrawCountBomb) Draw(viewPos common.Point, count int) {
+func (p *DrawCountBomb) Draw(viewPos point.Point, count int) {
 	pm := count * 20
 	if pm >= 256 {
 		pm = 255

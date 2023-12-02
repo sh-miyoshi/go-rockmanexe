@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -18,6 +17,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -42,7 +42,7 @@ type enemyGaroo struct {
 	atkID     string
 	atk       garooAtk
 	moveNum   int
-	targetPos common.Point
+	targetPos point.Point
 	waitCount int
 }
 
@@ -50,7 +50,7 @@ func (e *enemyGaroo) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementFire
 	e.moveNum = 3
-	e.targetPos = common.Point{X: -1, Y: -1}
+	e.targetPos = point.Point{X: -1, Y: -1}
 	e.waitCount = garooInitWait
 
 	// Load Images
@@ -127,7 +127,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 				true,
 				field.GetPanelInfo,
 			) {
-				e.targetPos = common.Point{X: -1, Y: -1}
+				e.targetPos = point.Point{X: -1, Y: -1}
 
 				// Set attack
 				e.moveNum = 2 + rand.Intn(3)
@@ -139,7 +139,7 @@ func (e *enemyGaroo) Process() (bool, error) {
 		}
 
 		for i := 0; i < 10; i++ {
-			next := common.Point{
+			next := point.Point{
 				X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
 				Y: rand.Intn(battlecommon.FieldNum.Y),
 			}
@@ -156,14 +156,14 @@ func (e *enemyGaroo) Process() (bool, error) {
 		e.moveNum--
 		if e.moveNum <= 0 {
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
-			pos := common.Point{X: 1, Y: 1}
+			pos := point.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				pos = objs[0].Pos
 			}
 			// set attack pos to {X: random, Y: same as player}
 			rnd := rand.Intn(3)
 			for i := 0; i < 3; i++ {
-				pos = common.Point{X: (rnd+i)%3 + 3, Y: pos.Y}
+				pos = point.Point{X: (rnd+i)%3 + 3, Y: pos.Y}
 				if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
 					e.targetPos = pos
 				}

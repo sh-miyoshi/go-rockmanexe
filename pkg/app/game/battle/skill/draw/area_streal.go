@@ -1,10 +1,10 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 type DrawAreaSteal struct {
 }
 
-func (p *DrawAreaSteal) Draw(count int, state int, targets []common.Point) {
+func (p *DrawAreaSteal) Draw(count int, state int, targets []point.Point) {
 	switch state {
 	case resources.SkillAreaStealStateBlackout:
 	case resources.SkillAreaStealStateActing:

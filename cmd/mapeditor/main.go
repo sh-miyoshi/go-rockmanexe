@@ -10,11 +10,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	window  common.Point
+	window  point.Point
 	mapInfo mapinfo.MapInfo
 )
 
@@ -38,7 +39,7 @@ func main() {
 		return
 	}
 
-	var imgSize common.Point
+	var imgSize point.Point
 	dxlib.GetGraphSize(image, &imgSize.X, &imgSize.Y)
 
 	readWalls()

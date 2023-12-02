@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -41,7 +42,7 @@ type EnemyParam struct {
 	CharID          int
 	ObjectID        string
 	PlayerID        string
-	Pos             common.Point
+	Pos             point.Point
 	HP              int
 	ActNo           int
 	InvincibleCount int

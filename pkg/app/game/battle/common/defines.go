@@ -1,6 +1,9 @@
 package common
 
-import "github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+)
 
 const (
 	GaugeMaxCount           = 1200
@@ -52,8 +55,8 @@ const (
 )
 
 var (
-	FieldNum      = common.Point{X: 6, Y: 3}
-	PanelSize     = common.Point{X: 80, Y: 50}
+	FieldNum      = point.Point{X: 6, Y: 3}
+	PanelSize     = point.Point{X: 80, Y: 50}
 	DrawPanelTopY = common.ScreenSize.Y - (PanelSize.Y * FieldNum.Y) - 30
 )
 

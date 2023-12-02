@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
@@ -79,7 +79,7 @@ func ObjAnimGetObjs(clientID string, filter objanim.Filter) []objanim.Param {
 	return objanimManagers[mgrID].GetObjs(filter)
 }
 
-func ObjAnimGetObjPos(clientID string, objID string) common.Point {
+func ObjAnimGetObjPos(clientID string, objID string) point.Point {
 	mgrID := clientAnimMgrMap[clientID]
 	return objanimManagers[mgrID].GetObjPos(objID)
 }

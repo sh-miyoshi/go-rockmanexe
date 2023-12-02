@@ -26,6 +26,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -49,14 +50,14 @@ type act struct {
 	typ       int
 	count     int
 	keepCount int
-	pPos      *common.Point
+	pPos      *point.Point
 	skillID   string
 	skillInst skill.SkillAnim
 }
 
 type BattlePlayer struct {
 	ID            string
-	Pos           common.Point
+	Pos           point.Point
 	HP            uint
 	HPMax         uint
 	ChargeCount   uint
@@ -95,7 +96,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		ID:           uuid.New().String(),
 		HP:           plyr.HP,
 		HPMax:        plyr.HP, // TODO HPは引き継がない
-		Pos:          common.Point{X: 1, Y: 1},
+		Pos:          point.Point{X: 1, Y: 1},
 		ShotPower:    plyr.ShotPower,
 		ChargeTime:   plyr.ChargeTime,
 		EnableAct:    true,
@@ -640,7 +641,7 @@ func (a *act) Process() bool {
 			y := a.pPos.Y
 			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
-				if objID := field.GetPanelInfo(common.Point{X: x, Y: y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(point.Point{X: x, Y: y}).ObjectID; objID != "" {
 					localanim.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						TargetObjID:   objID,

@@ -3,13 +3,13 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type spreadGun struct {
@@ -23,7 +23,7 @@ type spreadHit struct {
 	Arg Argument
 
 	count int
-	pos   common.Point
+	pos   point.Point
 }
 
 func newSpreadGun(arg Argument) *spreadGun {
@@ -52,7 +52,7 @@ func (p *spreadGun) Process() (bool, error) {
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := p.Arg.GameInfo.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					logger.Debug("Add damage by spread gun: %+v", dm)
 					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
@@ -69,7 +69,7 @@ func (p *spreadGun) Process() (bool, error) {
 							if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
 								routeranim.AnimNew(p.Arg.OwnerClientID, &spreadHit{
 									Arg: p.Arg,
-									pos: common.Point{X: x + sx, Y: pos.Y + sy},
+									pos: point.Point{X: x + sx, Y: pos.Y + sy},
 								})
 							}
 						}

@@ -9,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type wideShot struct {
@@ -19,7 +20,7 @@ type wideShot struct {
 
 	state    int
 	count    int
-	pos      common.Point
+	pos      point.Point
 	damageID [3]string
 	drawer   skilldraw.DrawWideShot
 }
@@ -88,7 +89,7 @@ func (p *wideShot) Process() (bool, error) {
 
 				p.damageID[i+1] = localanim.DamageManager().New(damage.Damage{
 					DamageType:    damage.TypePosition,
-					Pos:           common.Point{X: p.pos.X, Y: y},
+					Pos:           point.Point{X: p.pos.X, Y: y},
 					Power:         int(p.Arg.Power),
 					TTL:           p.NextStepCount,
 					TargetObjType: p.Arg.TargetType,

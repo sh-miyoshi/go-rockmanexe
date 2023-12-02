@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -25,8 +26,8 @@ type ColdBress struct {
 	images   []int
 	count    int
 	damageID string
-	next     common.Point
-	prev     common.Point
+	next     point.Point
+	prev     point.Point
 }
 
 func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
@@ -35,7 +36,7 @@ func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
 
 	o.next = o.pm.Pos
-	o.prev = common.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
+	o.prev = point.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
 
 	// Load Images
 	o.images = make([]int, 7)
@@ -99,12 +100,12 @@ func (o *ColdBress) Process() (bool, error) {
 		})
 
 		// Update next pos
-		left := common.Point{X: o.next.X - 1, Y: o.next.Y}
+		left := point.Point{X: o.next.X - 1, Y: o.next.Y}
 		if o.checkMove(left) {
 			o.next = left
 		} else {
-			up := common.Point{X: o.next.X, Y: o.next.Y - 1}
-			down := common.Point{X: o.next.X, Y: o.next.Y + 1}
+			up := point.Point{X: o.next.X, Y: o.next.Y - 1}
+			down := point.Point{X: o.next.X, Y: o.next.Y + 1}
 			if up.Y >= 0 && o.checkMove(up) {
 				o.next = up
 			} else if down.Y < battlecommon.FieldNum.Y && o.checkMove(down) {
@@ -176,7 +177,7 @@ func (o *ColdBress) GetObjectType() int {
 
 func (o *ColdBress) MakeInvisible(count int) {}
 
-func (o *ColdBress) checkMove(next common.Point) bool {
+func (o *ColdBress) checkMove(next point.Point) bool {
 	objID := localanim.ObjAnimExistsObject(next)
 	if objID == "" {
 		return true

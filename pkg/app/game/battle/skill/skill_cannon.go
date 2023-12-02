@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -10,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type cannon struct {
@@ -52,7 +52,7 @@ func (p *cannon) Process() (bool, error) {
 
 		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break
@@ -60,7 +60,7 @@ func (p *cannon) Process() (bool, error) {
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				if objID := field.GetPanelInfo(common.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := field.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
 					localanim.DamageManager().New(dm)
 					break

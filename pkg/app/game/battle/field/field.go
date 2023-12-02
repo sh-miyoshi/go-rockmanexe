@@ -13,6 +13,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type extendPanelInfo struct {
@@ -129,7 +130,7 @@ func Draw() {
 
 			dxlib.DrawGraph(vx, vy, img, true)
 
-			if dm := localanim.DamageManager().GetHitDamage(common.Point{X: x, Y: y}, ""); dm != nil && dm.ShowHitArea {
+			if dm := localanim.DamageManager().GetHitDamage(point.Point{X: x, Y: y}, ""); dm != nil && dm.ShowHitArea {
 				x1 := vx
 				y1 := vy
 				x2 := vx + battlecommon.PanelSize.X
@@ -194,7 +195,7 @@ func Update() {
 	}
 }
 
-func GetPanelInfo(pos common.Point) battlecommon.PanelInfo {
+func GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return battlecommon.PanelInfo{}
 	}
@@ -213,7 +214,7 @@ func IsBlackout() bool {
 	return blackoutCount > 0
 }
 
-func ChangePanelType(pos common.Point, pnType int) {
+func ChangePanelType(pos point.Point, pnType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
@@ -221,7 +222,7 @@ func ChangePanelType(pos common.Point, pnType int) {
 	panels[pos.X][pos.Y].info.Type = pnType
 }
 
-func PanelBreak(pos common.Point) {
+func PanelBreak(pos point.Point) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
@@ -238,7 +239,7 @@ func PanelBreak(pos common.Point) {
 	}
 }
 
-func PanelCrack(pos common.Point) {
+func PanelCrack(pos point.Point) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
@@ -251,21 +252,21 @@ func PanelCrack(pos common.Point) {
 }
 
 func Set4x4Area() {
-	battlecommon.FieldNum = common.Point{X: 8, Y: 4}
-	common.ScreenSize = common.Point{X: 640, Y: 480}
+	battlecommon.FieldNum = point.Point{X: 8, Y: 4}
+	common.ScreenSize = point.Point{X: 640, Y: 480}
 	battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
 	if Is4x4Area() {
-		battlecommon.FieldNum = common.Point{X: 6, Y: 3}
-		common.ScreenSize = common.Point{X: 480, Y: 320}
+		battlecommon.FieldNum = point.Point{X: 6, Y: 3}
+		common.ScreenSize = point.Point{X: 480, Y: 320}
 		battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }
 
 func Is4x4Area() bool {
-	return battlecommon.FieldNum.Equal(common.Point{X: 8, Y: 4})
+	return battlecommon.FieldNum.Equal(point.Point{X: 8, Y: 4})
 }

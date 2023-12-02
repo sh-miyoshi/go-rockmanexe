@@ -14,6 +14,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type flamePillar struct {
@@ -21,7 +22,7 @@ type flamePillar struct {
 
 	count  int
 	state  int
-	point  common.Point
+	point  point.Point
 	drawer skilldraw.DrawFlamePiller
 }
 
@@ -75,7 +76,7 @@ func newFlamePillar(objID string, arg Argument, skillType int) *flamePillarManag
 			res.pillars = append(res.pillars, &flamePillar{
 				Arg:   arg,
 				state: resources.SkillFlamePillarStateWakeup,
-				point: common.Point{X: posX, Y: y},
+				point: point.Point{X: posX, Y: y},
 			})
 		}
 	}
@@ -146,7 +147,7 @@ func (p *flamePillarManager) Process() (bool, error) {
 			p.pillars = append([]*flamePillar{}, &flamePillar{
 				Arg:   p.Arg,
 				state: resources.SkillFlamePillarStateWakeup,
-				point: common.Point{X: x, Y: y},
+				point: point.Point{X: x, Y: y},
 			})
 		}
 	case resources.SkillFlamePillarTypeLine:

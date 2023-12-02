@@ -20,6 +20,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -110,7 +111,7 @@ func Process() error {
 			return nil
 		case menu.ResultGoMap:
 			// debug: 初期イベントをセット
-			args := event.MapChangeArgs{MapID: mapinfo.ID_秋原町, InitPos: common.Point{X: 1400, Y: 500}}
+			args := event.MapChangeArgs{MapID: mapinfo.ID_秋原町, InitPos: point.Point{X: 1400, Y: 500}}
 			event.SetScenarios([]event.Scenario{
 				{Type: event.TypeChangeMapArea, Values: args.Marshal()},
 			})

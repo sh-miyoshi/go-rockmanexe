@@ -1,11 +1,11 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type sword struct {
@@ -43,7 +43,7 @@ func (p *sword) Process() (bool, error) {
 
 		userPos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
 
-		targetPos := common.Point{X: userPos.X + 1, Y: userPos.Y}
+		targetPos := point.Point{X: userPos.X + 1, Y: userPos.Y}
 		if objID := p.Arg.GameInfo.GetPanelInfo(targetPos).ObjectID; objID != "" {
 			dm.TargetObjID = objID
 			routeranim.DamageNew(p.Arg.OwnerClientID, dm)

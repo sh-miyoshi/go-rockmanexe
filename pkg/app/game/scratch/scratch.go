@@ -5,6 +5,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
@@ -71,10 +72,10 @@ func Init() {
 func Draw() {
 	field.Draw()
 
-	view := battlecommon.ViewPos(common.Point{X: 1, Y: 1})
+	view := battlecommon.ViewPos(point.Point{X: 1, Y: 1})
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgPlayers[battlecommon.PlayerActMove][0], true)
 
-	view = battlecommon.ViewPos(common.Point{X: 4, Y: 1})
+	view = battlecommon.ViewPos(point.Point{X: 4, Y: 1})
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgMetall, true)
 }
 

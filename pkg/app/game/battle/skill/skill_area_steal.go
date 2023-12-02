@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -10,6 +9,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type skillAreaSteal struct {
@@ -40,9 +40,9 @@ func newAreaSteal(objID string, arg Argument) *skillAreaSteal {
 }
 
 func (p *skillAreaSteal) Draw() {
-	targets := []common.Point{}
+	targets := []point.Point{}
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
-		targets = append(targets, common.Point{X: p.targetLineX, Y: y})
+		targets = append(targets, point.Point{X: p.targetLineX, Y: y})
 	}
 
 	p.drawer.Draw(p.count, p.state, targets)
@@ -62,7 +62,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 			if p.myPanelType == battlecommon.PanelTypePlayer {
 				for x := 1; x < battlecommon.FieldNum.X; x++ {
 					for y := 0; y < battlecommon.FieldNum.Y; y++ {
-						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
+						pn := field.GetPanelInfo(point.Point{X: x, Y: y})
 						if pn.Type != battlecommon.PanelTypePlayer {
 							p.targetLineX = x
 							return false, nil
@@ -72,7 +72,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 			} else {
 				for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
 					for y := 0; y < battlecommon.FieldNum.Y; y++ {
-						pn := field.GetPanelInfo(common.Point{X: x, Y: y})
+						pn := field.GetPanelInfo(point.Point{X: x, Y: y})
 						if pn.Type != battlecommon.PanelTypeEnemy {
 							p.targetLineX = x
 							return false, nil
@@ -92,7 +92,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 	case resources.SkillAreaStealStateHit:
 		if p.count >= resources.SkillAreaStealHitEndCount {
 			for y := 0; y < battlecommon.FieldNum.Y; y++ {
-				pos := common.Point{X: p.targetLineX, Y: y}
+				pos := point.Point{X: p.targetLineX, Y: y}
 				pn := field.GetPanelInfo(pos)
 				if pn.ObjectID != "" {
 					// ダメージ

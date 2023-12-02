@@ -1,7 +1,6 @@
 package menu
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -10,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -68,7 +68,7 @@ func (t *menuDevFeature) Process() (Result, error) {
 			specificEnemy = []enemy.EnemyParam{
 				{
 					CharID: enemy.IDAquaman,
-					Pos:    common.Point{X: 6, Y: 2},
+					Pos:    point.Point{X: 6, Y: 2},
 					HP:     1000,
 				},
 			}
@@ -81,12 +81,12 @@ func (t *menuDevFeature) Process() (Result, error) {
 			specificEnemy = []enemy.EnemyParam{
 				{
 					CharID: enemy.IDAquaman,
-					Pos:    common.Point{X: 6, Y: 2},
+					Pos:    point.Point{X: 6, Y: 2},
 					HP:     1000,
 				},
 				{
 					CharID: enemy.IDSupportNPC,
-					Pos:    common.Point{X: 0, Y: 0},
+					Pos:    point.Point{X: 0, Y: 0},
 					HP:     100,
 				},
 			}

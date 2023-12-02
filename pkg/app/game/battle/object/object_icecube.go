@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -99,7 +100,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, -1, true, field.GetPanelInfo) {
-				pos := common.Point{X: o.pm.Pos.X - 1, Y: o.pm.Pos.Y}
+				pos := point.Point{X: o.pm.Pos.X - 1, Y: o.pm.Pos.Y}
 				if pos.X < 0 {
 					o.pm.HP = 0 // 画面外のため終了
 					return false
@@ -131,7 +132,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		}
 		for i := 0; i < dm.PushRight; i++ {
 			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectRight, -1, true, field.GetPanelInfo) {
-				pos := common.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
+				pos := point.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
 				if pos.X >= battlecommon.FieldNum.X {
 					o.pm.HP = 0 // 画面外のため終了
 					return false

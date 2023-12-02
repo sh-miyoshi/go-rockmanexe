@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -16,6 +15,7 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type gameObject struct {
@@ -87,7 +87,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 		Type:          gameobj.TypePlayerStand,
 		OwnerClientID: clientID,
 		HP:            param.HP,
-		Pos:           common.Point{X: param.X, Y: param.Y},
+		Pos:           point.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
 	}, ginfo, g.objects[clientID].queueIDs)
 	g.objects[clientID].animObject = plyr
@@ -174,7 +174,7 @@ func (g *GameHandler) updateGameInfo() {
 					Type:          *g.objects[info.OwnerClientID].currentObjectType,
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
-					Pos:           common.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
+					Pos:           point.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
 					ActCount:      info.ActCount,
 					IsReverse:     true,
 					IsInvincible:  info.IsInvincible,

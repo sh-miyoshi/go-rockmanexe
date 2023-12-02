@@ -10,6 +10,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type shockWave struct {
@@ -21,7 +22,7 @@ type shockWave struct {
 	InitWait int
 
 	count      int
-	pos        common.Point
+	pos        point.Point
 	showWave   bool
 	drawer     skilldraw.DrawShockWave
 	pickDrawer skilldraw.DrawPick

@@ -1,7 +1,6 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -11,6 +10,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type miniBomb struct {
@@ -18,8 +18,8 @@ type miniBomb struct {
 	Arg Argument
 
 	count  int
-	pos    common.Point
-	target common.Point
+	pos    point.Point
+	target point.Point
 	drawer skilldraw.DrawMiniBomb
 }
 
@@ -29,7 +29,7 @@ func newMiniBomb(objID string, arg Argument) *miniBomb {
 		ID:     objID,
 		Arg:    arg,
 		pos:    pos,
-		target: common.Point{X: pos.X + 3, Y: pos.Y},
+		target: point.Point{X: pos.X + 3, Y: pos.Y},
 	}
 }
 

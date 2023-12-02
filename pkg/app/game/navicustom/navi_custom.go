@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/list"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -53,7 +54,7 @@ var (
 	setParts       []partsInfo
 	itemList       list.ItemList
 	selected       int
-	setPointerPos  common.Point
+	setPointerPos  point.Point
 )
 
 func Init(plyr *player.Player) error {
@@ -62,7 +63,7 @@ func Init(plyr *player.Player) error {
 	beforeState = stateOpening
 	count = 0
 	selected = -1
-	setPointerPos = common.Point{X: 2, Y: 2}
+	setPointerPos = point.Point{X: 2, Y: 2}
 	allParts = []partsInfo{}
 	for _, p := range plyr.AllNaviCustomParts {
 		allParts = append(allParts, partsInfo{
@@ -159,7 +160,7 @@ func Draw() {
 	// セット済みのパーツを描画
 	for _, s := range setParts {
 		parts := ncparts.Get(s.rawData.ID)
-		drawBoardParts(common.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
+		drawBoardParts(point.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
 	}
 
 	// TODO: ミニウィンドウ
@@ -403,7 +404,7 @@ func colorBlock(color int) int {
 	return 0
 }
 
-func drawBoardParts(basePos common.Point, parts ncparts.NaviCustomParts) {
+func drawBoardParts(basePos point.Point, parts ncparts.NaviCustomParts) {
 	baseX := basePos.X*40 + 34
 	baseY := basePos.Y*40 + 65
 
@@ -507,10 +508,10 @@ func checkBugs() bool {
 	return true // ok
 }
 
-func getSetPartsIndex(pos common.Point) int {
+func getSetPartsIndex(pos point.Point) int {
 	for i, s := range setParts {
 		parts := ncparts.Get(s.rawData.ID)
-		drawBoardParts(common.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
+		drawBoardParts(point.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
 
 		for _, b := range parts.Blocks {
 			tx := s.rawData.X + b.X

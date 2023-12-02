@@ -1,5 +1,7 @@
 package common
 
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+
 const (
 	SaveFilePath      = "data/save.dat"
 	DefaultLogFile    = "application.log"
@@ -28,8 +30,8 @@ const (
 )
 
 var (
-	MaxScreenSize = Point{X: 640, Y: 480}
-	ScreenSize    = Point{X: 480, Y: 320}
+	MaxScreenSize = point.Point{X: 640, Y: 480}
+	ScreenSize    = point.Point{X: 480, Y: 320}
 
 	ImagePath = "data/images/"
 	SoundPath = "data/sounds/"

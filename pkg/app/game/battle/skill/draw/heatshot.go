@@ -1,8 +1,8 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 type DrawHeatShot struct {
 }
 
-func (p *DrawHeatShot) Draw(viewPos common.Point, count int) {
+func (p *DrawHeatShot) Draw(viewPos point.Point, count int) {
 	n := count / delayHeatShot
 
 	// Show body

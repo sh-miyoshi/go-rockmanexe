@@ -1,19 +1,19 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type shockWave struct {
 	ID    string
 	Arg   Argument
 	count int
-	pos   common.Point
+	pos   point.Point
 }
 
 func newShockWave(arg Argument) *shockWave {

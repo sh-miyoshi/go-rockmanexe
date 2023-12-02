@@ -1,8 +1,8 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -13,7 +13,7 @@ const (
 type DrawTurnado struct {
 }
 
-func (p *DrawTurnado) Draw(viewPos, targetPos common.Point, count int) {
+func (p *DrawTurnado) Draw(viewPos, targetPos point.Point, count int) {
 	n := (count / delayTurnadoBody) % len(imgTornadoBody)
 	dxlib.DrawRotaGraph(viewPos.X+48, viewPos.Y-12, 1, 0, imgTornadoBody[n], true)
 

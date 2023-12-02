@@ -2,10 +2,11 @@ package common
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 // MoveObject ...
-func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
+func MoveObject(pos *point.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos point.Point) PanelInfo) bool {
 	next := *pos
 
 	// Check field out
@@ -35,7 +36,7 @@ func MoveObject(pos *common.Point, direct int, objPanelType int, isMove bool, Ge
 	return MoveObjectDirect(pos, next, objPanelType, isMove, GetPanelInfo)
 }
 
-func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, isMove bool, GetPanelInfo func(pos common.Point) PanelInfo) bool {
+func MoveObjectDirect(pos *point.Point, target point.Point, objPanelType int, isMove bool, GetPanelInfo func(pos point.Point) PanelInfo) bool {
 	pn := GetPanelInfo(target)
 	// Object exists?
 	if pn.ObjectID != "" {
@@ -57,8 +58,8 @@ func MoveObjectDirect(pos *common.Point, target common.Point, objPanelType int, 
 	return true
 }
 
-func ViewPos(pos common.Point) common.Point {
-	return common.Point{
+func ViewPos(pos point.Point) point.Point {
+	return point.Point{
 		X: PanelSize.X*pos.X + PanelSize.X/2,
 		Y: DrawPanelTopY + PanelSize.Y*pos.Y - 10,
 	}

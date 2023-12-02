@@ -3,7 +3,6 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -11,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -22,7 +22,7 @@ type countBomb struct {
 	Arg Argument
 
 	count  int
-	pos    common.Point
+	pos    point.Point
 	drawer skilldraw.DrawCountBomb
 }
 
@@ -31,7 +31,7 @@ func newCountBomb(objID string, arg Argument) *countBomb {
 	return &countBomb{
 		ID:  objID,
 		Arg: arg,
-		pos: common.Point{X: pos.X + 1, Y: pos.Y},
+		pos: point.Point{X: pos.X + 1, Y: pos.Y},
 	}
 }
 
