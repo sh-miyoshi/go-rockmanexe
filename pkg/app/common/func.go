@@ -40,8 +40,11 @@ func SplitJAMsg(msg string, max int) []string {
 		tmp := []byte{}
 		for i := 0; i < max; i++ {
 			r, size := utf8.DecodeRuneInString(msg)
-			tmp = utf8.AppendRune(tmp, r)
 			msg = msg[size:]
+			if string(r) == "\n" {
+				break
+			}
+			tmp = utf8.AppendRune(tmp, r)
 			if len(msg) <= 0 {
 				break
 			}

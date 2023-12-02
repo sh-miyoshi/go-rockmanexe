@@ -53,6 +53,14 @@ func TestSplitMsg(t *testing.T) {
 				"テスト",
 			},
 		},
+		{
+			input:    "改行\nテスト",
+			splitNum: 100,
+			expect: []string{
+				"改行",
+				"テスト",
+			},
+		},
 	}
 
 	for _, tc := range tt {
