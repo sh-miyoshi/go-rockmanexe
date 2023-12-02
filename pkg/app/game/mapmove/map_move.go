@@ -133,7 +133,7 @@ func Draw() {
 	if config.Get().Debug.ShowDebugData {
 		// show debug data
 		const color = 0xff0000
-		dxlib.DrawCircle(player.X, player.Y, common.MapPlayerHitRange, color, true)
+		dxlib.DrawCircle(player.X, player.Y, collision.PlayerHitRange, color, true)
 		for _, w := range mapInfo.CollisionWalls {
 			cx := window.X
 			cy := window.Y

@@ -14,18 +14,12 @@ const (
 	MaxUint    = ^uint(0)
 	MaxZenny   = 9999999
 	MaxChipNum = 99
-
-	MapPlayerHitRange = 10
 )
 
 const (
-	// DirectUp ...
 	DirectUp = 1 << iota
-	// DirectLeft ...
 	DirectLeft
-	// DirectDown ...
 	DirectDown
-	// DirectRight ...
 	DirectRight
 )
 
