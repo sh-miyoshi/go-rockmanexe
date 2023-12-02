@@ -8,6 +8,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -104,7 +105,7 @@ func (b *Boss) Draw() {
 		x := (i + 1) * battlecommon.PanelSize.X
 		len := (b.count - 40) * 40
 		s := 0
-		delay := 45 + common.MountainIndex(i, battlecommon.FieldNum.X-1)*5
+		delay := 45 + math.MountainIndex(i, battlecommon.FieldNum.X-1)*5
 		if b.count >= delay {
 			s = (b.count - delay) * 20
 			if s > battlecommon.DrawPanelTopY {

@@ -1,4 +1,4 @@
-package common
+package math
 
 func Abs(a int) int {
 	if a < 0 {
