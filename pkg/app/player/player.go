@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -146,7 +145,7 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 func (p *Player) Save(fname string, key []byte) error {
 	dst, err := json.Marshal(SaveData{
 		Player:         *p,
-		ProgramVersion: common.ProgramVersion,
+		ProgramVersion: config.ProgramVersion,
 	})
 	if err != nil {
 		return fmt.Errorf("save data marshal failed: %w", err)
@@ -180,8 +179,8 @@ func (p *Player) Save(fname string, key []byte) error {
 
 func (p *Player) UpdateMoney(diff int) {
 	tmp := int(p.Zenny) + diff
-	if tmp > common.MaxZenny {
-		tmp = common.MaxZenny
+	if tmp > config.MaxZenny {
+		tmp = config.MaxZenny
 	} else if tmp < 0 {
 		tmp = 0
 	}
@@ -202,7 +201,7 @@ func (p *Player) AddChip(id int, code string) error {
 		}
 	}
 
-	if n >= common.MaxChipNum {
+	if n >= config.MaxChipNum {
 		return fmt.Errorf("reached to max chip num")
 	}
 

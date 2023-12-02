@@ -1,7 +1,6 @@
 package net
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 )
@@ -16,7 +15,7 @@ func Init() {
 		StreamAddr:     c.Net.StreamAddr,
 		ClientID:       c.Net.ClientID,
 		ClientKey:      c.Net.ClientKey,
-		ProgramVersion: common.ProgramVersion,
+		ProgramVersion: config.ProgramVersion,
 		Insecure:       c.Net.Insecure,
 	})
 }

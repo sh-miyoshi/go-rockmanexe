@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -155,12 +155,12 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		localanim.AnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&s.Pos, common.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&s.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
 				break
 			}
 		}
@@ -221,10 +221,10 @@ func (s *Supporter) setAction(interval int, next int) {
 
 func (s *Supporter) moveRandom() {
 	candidates := []int{
-		common.DirectUp,
-		common.DirectLeft,
-		common.DirectDown,
-		common.DirectRight,
+		config.DirectUp,
+		config.DirectLeft,
+		config.DirectDown,
+		config.DirectRight,
 	}
 	// shuffule candidates
 	for i := 0; i < 10; i++ {

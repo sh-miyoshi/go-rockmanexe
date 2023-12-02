@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -40,7 +40,7 @@ func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
 
 	// Load Images
 	o.images = make([]int, 7)
-	fname := common.ImagePath + "battle/skill/コールドマン_ブレス.png"
+	fname := config.ImagePath + "battle/skill/コールドマン_ブレス.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 76, 78, o.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}

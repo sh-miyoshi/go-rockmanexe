@@ -1,7 +1,7 @@
 package skill
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -33,13 +33,13 @@ func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
 	res := &shockWave{
 		ID:     objID,
 		Arg:    arg,
-		Direct: common.DirectLeft,
+		Direct: config.DirectLeft,
 		Speed:  5,
 		pos:    pos,
 	}
 
 	if isPlayer {
-		res.Direct = common.DirectRight
+		res.Direct = config.DirectRight
 		res.Speed = resources.SkillShockWavePlayerSpeed
 		res.ShowPick = true
 		res.InitWait = resources.SkillShockWaveInitWait
@@ -70,9 +70,9 @@ func (p *shockWave) Process() (bool, error) {
 	n := resources.SkillShockWaveImageNum * p.Speed
 	if p.count%n == 0 {
 		p.showWave = true
-		if p.Direct == common.DirectLeft {
+		if p.Direct == config.DirectLeft {
 			p.pos.X--
-		} else if p.Direct == common.DirectRight {
+		} else if p.Direct == config.DirectRight {
 			p.pos.X++
 		}
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
@@ -54,19 +54,19 @@ func Init(args WinArg, plyr *player.Player) error {
 	}
 	count = 0
 
-	fname := common.ImagePath + "battle/result_frame.png"
+	fname := config.ImagePath + "battle/result_frame.png"
 	imgFrame = dxlib.LoadGraph(fname)
 	if imgFrame == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/zenny.png"
+	fname = config.ImagePath + "battle/zenny.png"
 	imgZenny = dxlib.LoadGraph(fname)
 	if imgZenny == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
-	fname = common.ImagePath + "battle/msg_win.png"
+	fname = config.ImagePath + "battle/msg_win.png"
 	var err error
 	winMsgInst, err = titlemsg.New(fname, 0)
 
@@ -140,8 +140,8 @@ func Process() bool {
 }
 
 func Draw() {
-	baseX := common.ScreenSize.X/2 - 195
-	baseY := common.ScreenSize.Y/2 - 130
+	baseX := config.ScreenSize.X/2 - 195
+	baseY := config.ScreenSize.Y/2 - 130
 
 	switch state {
 	case stateMsg:

@@ -3,7 +3,7 @@ package enemy
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -57,7 +57,7 @@ func (e *enemyBoomer) Init(objID string) error {
 	e.atk.ownerID = objID
 	e.nextY = e.pm.Pos.Y
 	e.prevY = e.pm.Pos.Y
-	e.direct = common.DirectUp
+	e.direct = config.DirectUp
 	e.waitCount = 20
 	e.state = boomerStateWait
 	e.nextState = boomerStateMove
@@ -136,13 +136,13 @@ func (e *enemyBoomer) Process() (bool, error) {
 				e.atk.Init()
 			}
 
-			if e.direct == common.DirectUp {
+			if e.direct == config.DirectUp {
 				if e.nextY > 0 {
 					e.nextY--
 				}
 
 				if e.nextY == 0 {
-					e.direct = common.DirectDown
+					e.direct = config.DirectDown
 				}
 			} else { // Down
 				if e.nextY < battlecommon.FieldNum.Y-1 {
@@ -150,7 +150,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 				}
 
 				if e.nextY == battlecommon.FieldNum.Y-1 {
-					e.direct = common.DirectUp
+					e.direct = config.DirectUp
 				}
 			}
 		}

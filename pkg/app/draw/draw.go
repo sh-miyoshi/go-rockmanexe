@@ -3,7 +3,7 @@ package draw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -73,14 +73,14 @@ func Init() error {
 
 	// Load chip code
 	imgCode = make([]int, 27)
-	fname := common.ImagePath + "chipInfo/chip_code.png"
+	fname := config.ImagePath + "chipInfo/chip_code.png"
 	if res := dxlib.LoadDivGraph(fname, 27, 9, 3, 20, 26, imgCode); res == -1 {
 		return fmt.Errorf("failed to load chip code image %s", fname)
 	}
 
 	// Load number data
 	tmp := make([]int, 3*10)
-	fname = common.ImagePath + "number.png"
+	fname = config.ImagePath + "number.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 10, 3, numberSizeX, 26, tmp); res == -1 {
 		return fmt.Errorf("failed to load number image %s", fname)
 	}
@@ -92,7 +92,7 @@ func Init() error {
 			imgNumber[i][n+1] = tmp[i*10+n]
 		}
 	}
-	fname = common.ImagePath + "number_small.png"
+	fname = config.ImagePath + "number_small.png"
 	if res := dxlib.LoadDivGraph(fname, 10, 10, 1, numberSizeX, 20, tmp); res == -1 {
 		return fmt.Errorf("failed to load small number image %s", fname)
 	}

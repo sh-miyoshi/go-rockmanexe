@@ -1,7 +1,7 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -35,7 +35,7 @@ func (p *DrawBamboolance) Draw(count int) {
 	if xd > battlecommon.PanelSize.X {
 		xd = battlecommon.PanelSize.X
 	}
-	x := common.ScreenSize.X + p.imgSizeX/2 - xd
+	x := config.ScreenSize.X + p.imgSizeX/2 - xd
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		v := battlecommon.ViewPos(point.Point{X: 0, Y: y})
 		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)

@@ -1,4 +1,4 @@
-package common
+package config
 
 import "github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 

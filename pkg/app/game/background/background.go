@@ -3,7 +3,7 @@ package background
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -46,7 +46,7 @@ func (i *info) Init(typ int) error {
 	i.Count = 0
 	i.Type = typ
 
-	basePath := common.ImagePath + "battle/background/"
+	basePath := config.ImagePath + "battle/background/"
 
 	switch typ {
 	case Type秋原町:
@@ -93,14 +93,14 @@ func (i *info) Draw() {
 
 	switch i.Type {
 	case Type秋原町, Typeアッフリク:
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, i.BGColor, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, i.BGColor, true)
 
 		n := (i.Count / 50) % len(i.Images)
 		index := 0
 		spaceX := 140
 		spaceY := 80
-		for y := 60; y < common.ScreenSize.Y; y += spaceY {
-			for x := 0; x < common.ScreenSize.X; x += spaceX {
+		for y := 60; y < config.ScreenSize.Y; y += spaceY {
+			for x := 0; x < config.ScreenSize.X; x += spaceX {
 				ofsX := (y / spaceY) * (spaceX / 2)
 				n = (n + index) % len(i.Images)
 				index++
@@ -108,8 +108,8 @@ func (i *info) Draw() {
 			}
 		}
 	case Typeブラックアース:
-		scroll := (i.Count / 10) % common.ScreenSize.X
-		dxlib.DrawGraph(scroll-common.ScreenSize.X, 0, i.Images[0], false)
+		scroll := (i.Count / 10) % config.ScreenSize.X
+		dxlib.DrawGraph(scroll-config.ScreenSize.X, 0, i.Images[0], false)
 		xflag := int32(dxlib.TRUE)
 		dxlib.DrawRotaGraph(scroll, 0, 1, 0, i.Images[0], false, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflag})
 	}

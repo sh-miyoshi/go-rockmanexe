@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -11,22 +11,22 @@ func MoveObject(pos *point.Point, direct int, objPanelType int, isMove bool, Get
 
 	// Check field out
 	switch direct {
-	case common.DirectUp:
+	case config.DirectUp:
 		if next.Y <= 0 {
 			return false
 		}
 		next.Y--
-	case common.DirectDown:
+	case config.DirectDown:
 		if next.Y >= FieldNum.Y-1 {
 			return false
 		}
 		next.Y++
-	case common.DirectLeft:
+	case config.DirectLeft:
 		if next.X <= 0 {
 			return false
 		}
 		next.X--
-	case common.DirectRight:
+	case config.DirectRight:
 		if next.X >= FieldNum.X-1 {
 			return false
 		}

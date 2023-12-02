@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -51,14 +51,14 @@ func Init() error {
 	// Initialize images
 	files := [tmpPanelStatusMax]string{"normal", "crack", "hole"}
 	for i := 0; i < tmpPanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", common.ImagePath, files[i])
+		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
 			return fmt.Errorf("failed to read player panel image %s", fname)
 		}
 	}
 	for i := 0; i < tmpPanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", common.ImagePath, files[i])
+		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return fmt.Errorf("failed to read enemy panel image %s", fname)
@@ -145,7 +145,7 @@ func Draw() {
 func DrawBlackout() {
 	if blackoutCount > 0 {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 128)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 	}
 }
@@ -253,16 +253,16 @@ func PanelCrack(pos point.Point) {
 
 func Set4x4Area() {
 	battlecommon.FieldNum = point.Point{X: 8, Y: 4}
-	common.ScreenSize = point.Point{X: 640, Y: 480}
-	battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
+	config.ScreenSize = point.Point{X: 640, Y: 480}
+	battlecommon.DrawPanelTopY = config.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 	dxlib.SetWindowSize(640, 480)
 }
 
 func ResetSet4x4Area() {
 	if Is4x4Area() {
 		battlecommon.FieldNum = point.Point{X: 6, Y: 3}
-		common.ScreenSize = point.Point{X: 480, Y: 320}
-		battlecommon.DrawPanelTopY = common.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
+		config.ScreenSize = point.Point{X: 480, Y: 320}
+		battlecommon.DrawPanelTopY = config.ScreenSize.Y - (battlecommon.PanelSize.Y * battlecommon.FieldNum.Y) - 30
 		dxlib.SetWindowSize(480, 320)
 	}
 }

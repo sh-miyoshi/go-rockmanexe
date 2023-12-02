@@ -3,7 +3,6 @@ package opening
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -36,7 +35,7 @@ func NewWithBoss(enemyList []enemy.EnemyParam) (*Boss, error) {
 		res.enemyImages = append(res.enemyImages, dxlib.LoadGraph(fname))
 	}
 
-	res.playerImage = dxlib.LoadGraph(common.ImagePath + "battle/character/ロックマン_player_side.png")
+	res.playerImage = dxlib.LoadGraph(config.ImagePath + "battle/character/ロックマン_player_side.png")
 	if res.playerImage == -1 {
 		return nil, fmt.Errorf("failed to load player image")
 	}
@@ -62,7 +61,7 @@ func (b *Boss) Process() bool {
 }
 
 func (b *Boss) Draw() {
-	dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
+	dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0x000000, true)
 
 	// debug(初期位置)
 	view := battlecommon.ViewPos(point.Point{X: 1, Y: 1})
@@ -93,8 +92,8 @@ func (b *Boss) Draw() {
 	for i := 0; i < battlecommon.FieldNum.Y+1; i++ {
 		y := battlecommon.DrawPanelTopY + i*battlecommon.PanelSize.Y
 		len := (b.count - i*10) * 40
-		if len > common.ScreenSize.X {
-			len = common.ScreenSize.X
+		if len > config.ScreenSize.X {
+			len = config.ScreenSize.X
 		}
 
 		drawLine(0, y, len, horizontal, color)
@@ -113,7 +112,7 @@ func (b *Boss) Draw() {
 			}
 		}
 
-		maxLen := common.ScreenSize.Y - battlecommon.DrawPanelTopY
+		maxLen := config.ScreenSize.Y - battlecommon.DrawPanelTopY
 		if len > maxLen {
 			len = maxLen
 		}

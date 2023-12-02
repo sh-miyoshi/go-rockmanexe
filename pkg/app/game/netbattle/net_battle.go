@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -215,9 +215,9 @@ func Process() error {
 		if inst.stateCount == 0 {
 			net.GetInst().Disconnect()
 
-			fname := common.ImagePath + "battle/msg_win.png"
+			fname := config.ImagePath + "battle/msg_win.png"
 			if inst.playerInst.IsDead() {
-				fname = common.ImagePath + "battle/msg_lose.png"
+				fname = config.ImagePath + "battle/msg_lose.png"
 			}
 
 			var err error
@@ -257,7 +257,7 @@ func Draw() {
 	switch inst.state {
 	case stateWaiting:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
@@ -267,7 +267,7 @@ func Draw() {
 		chipsel.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:

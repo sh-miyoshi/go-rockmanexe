@@ -7,7 +7,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -59,25 +59,25 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 	res.listNum[folderWindowTypeBackPack] = len(plyr.BackPack)
 
 	// Load images
-	fname := common.ImagePath + "menu/chip_frame.png"
+	fname := config.ImagePath + "menu/chip_frame.png"
 	res.imgChipFrame = dxlib.LoadGraph(fname)
 	if res.imgChipFrame == -1 {
 		return nil, fmt.Errorf("failed to load menu chip frame image %s", fname)
 	}
 
-	fname = common.ImagePath + "menu/pointer.png"
+	fname = config.ImagePath + "menu/pointer.png"
 	res.imgPointer = dxlib.LoadGraph(fname)
 	if res.imgPointer == -1 {
 		return nil, fmt.Errorf("failed to load menu pointer image %s", fname)
 	}
 
-	fname = common.ImagePath + "menu/arrow.png"
+	fname = config.ImagePath + "menu/arrow.png"
 	res.imgArrow = dxlib.LoadGraph(fname)
 	if res.imgArrow == -1 {
 		return nil, fmt.Errorf("failed to load menu arrow image %s", fname)
 	}
 
-	fname = common.ImagePath + "menu/scroll_point.png"
+	fname = config.ImagePath + "menu/scroll_point.png"
 	res.imgScrollPointer = dxlib.LoadGraph(fname)
 	if res.imgScrollPointer == -1 {
 		return nil, fmt.Errorf("failed to load menu scroll point image %s", fname)

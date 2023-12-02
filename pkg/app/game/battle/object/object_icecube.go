@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -34,7 +34,7 @@ func (o *IceCube) Init(ownerID string, initParam ObjectParam) error {
 
 	// Load Images
 	o.images = make([]int, 6)
-	fname := common.ImagePath + "battle/character/アイスキューブ.png"
+	fname := config.ImagePath + "battle/character/アイスキューブ.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 76, 90, o.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
@@ -99,7 +99,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 		target = ^target
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectLeft, -1, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&o.pm.Pos, config.DirectLeft, -1, true, field.GetPanelInfo) {
 				pos := point.Point{X: o.pm.Pos.X - 1, Y: o.pm.Pos.Y}
 				if pos.X < 0 {
 					o.pm.HP = 0 // 画面外のため終了
@@ -131,7 +131,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&o.pm.Pos, common.DirectRight, -1, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&o.pm.Pos, config.DirectRight, -1, true, field.GetPanelInfo) {
 				pos := point.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
 				if pos.X >= battlecommon.FieldNum.X {
 					o.pm.HP = 0 // 画面外のため終了

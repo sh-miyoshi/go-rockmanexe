@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -45,7 +45,7 @@ func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
 
 	// Load Images
 	o.imgSet = make([]int, 4)
-	fname := common.ImagePath + "battle/character/水道管_set.png"
+	fname := config.ImagePath + "battle/character/水道管_set.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 72, 88, o.imgSet); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
@@ -158,7 +158,7 @@ func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.isAttacking = false
 	a.pm = pm
 	a.images = make([]int, 9)
-	fname := common.ImagePath + "battle/character/水道管_atk.png"
+	fname := config.ImagePath + "battle/character/水道管_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 234, 110, a.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}

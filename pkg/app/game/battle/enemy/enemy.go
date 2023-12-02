@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -127,7 +127,7 @@ func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
 
 func GetStandImageFile(id int) (name, ext string) {
 	ext = ".png"
-	path := common.ImagePath + "battle/character/"
+	path := config.ImagePath + "battle/character/"
 	name = path + GetName(id)
 	return
 }
@@ -207,12 +207,12 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 		pm.HP -= dm.Power
 
 		for i := 0; i < dm.PushLeft; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, config.DirectLeft, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}
 		for i := 0; i < dm.PushRight; i++ {
-			if !battlecommon.MoveObject(&pm.Pos, common.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			if !battlecommon.MoveObject(&pm.Pos, config.DirectRight, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
 				break
 			}
 		}

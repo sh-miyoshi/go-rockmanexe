@@ -3,7 +3,6 @@ package sound
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -40,7 +39,7 @@ func BGMPlay(typ int) error {
 
 	BGMStop()
 
-	fname := common.SoundPath + "bgm/" + bgmFiles[typ]
+	fname := config.SoundPath + "bgm/" + bgmFiles[typ]
 	if bgmHandle = dxlib.LoadSoundMem(fname); bgmHandle == -1 {
 		return fmt.Errorf("failed to load BGM: %s", fname)
 	}

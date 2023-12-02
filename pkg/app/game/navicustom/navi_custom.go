@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/list"
@@ -76,31 +76,31 @@ func Init(plyr *player.Player) error {
 
 	initParts()
 
-	fname := common.ImagePath + "naviCustom/back.png"
+	fname := config.ImagePath + "naviCustom/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load back image")
 	}
-	fname = common.ImagePath + "naviCustom/board.png"
+	fname = config.ImagePath + "naviCustom/board.png"
 	imgBoard = dxlib.LoadGraph(fname)
 	if imgBoard == -1 {
 		return fmt.Errorf("failed to load board image")
 	}
-	fname = common.ImagePath + "naviCustom/pointer.png"
+	fname = config.ImagePath + "naviCustom/pointer.png"
 	imgListPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
 		return fmt.Errorf("failed to load list pointer image")
 	}
-	fname = common.ImagePath + "naviCustom/pointer2.png"
+	fname = config.ImagePath + "naviCustom/pointer2.png"
 	imgSetPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
 		return fmt.Errorf("failed to load set pointer image")
 	}
-	fname = common.ImagePath + "naviCustom/block_white.png"
+	fname = config.ImagePath + "naviCustom/block_white.png"
 	imgBlocks[colorBlock(ncparts.ColorWhite)] = dxlib.LoadGraph(fname)
-	fname = common.ImagePath + "naviCustom/block_yellow.png"
+	fname = config.ImagePath + "naviCustom/block_yellow.png"
 	imgBlocks[colorBlock(ncparts.ColorYellow)] = dxlib.LoadGraph(fname)
-	fname = common.ImagePath + "naviCustom/block_pink.png"
+	fname = config.ImagePath + "naviCustom/block_pink.png"
 	imgBlocks[colorBlock(ncparts.ColorPink)] = dxlib.LoadGraph(fname)
 	for i, b := range imgBlocks {
 		if b == -1 {

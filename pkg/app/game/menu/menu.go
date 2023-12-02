@@ -3,7 +3,6 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -51,7 +50,7 @@ var (
 func Init(plyr *player.Player) error {
 	menuState = stateTop
 
-	fname := common.ImagePath + "menu/back.png"
+	fname := config.ImagePath + "menu/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load menu back image %s", fname)

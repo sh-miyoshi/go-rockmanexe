@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -38,18 +37,18 @@ func Init() error {
 	waiting = 0
 
 	selectMax = 1
-	if _, err := os.Stat(common.SaveFilePath); err == nil {
+	if _, err := os.Stat(config.SaveFilePath); err == nil {
 		selectMax = 2
 	}
 
 	cursor = selectMax - 1
 
-	fname := common.ImagePath + "title/logo.png"
+	fname := config.ImagePath + "title/logo.png"
 	imgLogo = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
-	fname = common.ImagePath + "title/back.png"
+	fname = config.ImagePath + "title/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
@@ -68,15 +67,15 @@ func End() {
 }
 
 func Draw() {
-	x := -count % common.ScreenSize.X
+	x := -count % config.ScreenSize.X
 	dxlib.DrawGraph(x, 0, imgBack, false)
-	dxlib.DrawGraph(x+common.ScreenSize.X, 0, imgBack, false)
+	dxlib.DrawGraph(x+config.ScreenSize.X, 0, imgBack, false)
 	dxlib.DrawGraph(0, 0, imgLogo, true)
 
 	switch state {
 	case stateSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
-		dxlib.DrawBox(0, 0, common.ScreenSize.X, common.ScreenSize.Y, 0x000000, true)
+		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0x000000, true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 
 		msgs := []string{"はじめから", "つづきから"}

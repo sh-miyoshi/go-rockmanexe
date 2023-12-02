@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -72,7 +72,7 @@ func Load(id int) (MapInfo, error) {
 	}
 
 	if mapInfo[id].Image == -1 {
-		fname := fmt.Sprintf("%smap/field/%d_%s.png", common.ImagePath, id, mapInfo[id].Name)
+		fname := fmt.Sprintf("%smap/field/%d_%s.png", config.ImagePath, id, mapInfo[id].Name)
 		mapInfo[id].Image = dxlib.LoadGraph(fname)
 		if mapInfo[id].Image == -1 {
 			return MapInfo{}, fmt.Errorf("failed to load image: %s", fname)

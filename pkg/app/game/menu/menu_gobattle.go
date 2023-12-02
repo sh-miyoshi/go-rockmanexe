@@ -3,7 +3,6 @@ package menu
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -286,7 +285,7 @@ func goBattleProcess() bool {
 }
 
 func goBattleDraw() {
-	dxlib.DrawBox(20, 30, common.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
+	dxlib.DrawBox(20, 30, config.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(30, 40, 210, goBattleListShowMax*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i := 0; i < goBattleListShowMax; i++ {

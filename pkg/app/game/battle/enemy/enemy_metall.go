@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -138,9 +138,9 @@ func (e *enemyMetall) Process() (bool, error) {
 			// Move
 			moved := false
 			if pos.Y > e.pm.Pos.Y {
-				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectDown, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
+				moved = battlecommon.MoveObject(&e.pm.Pos, config.DirectDown, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 			} else {
-				moved = battlecommon.MoveObject(&e.pm.Pos, common.DirectUp, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
+				moved = battlecommon.MoveObject(&e.pm.Pos, config.DirectUp, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 			}
 			if moved {
 				e.moveFailedCount = 0

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -40,32 +40,32 @@ type noEffect struct{}
 
 func Init() error {
 	images[resources.EffectTypeHitSmall] = make([]int, 4)
-	fname := common.ImagePath + "battle/effect/hit_small.png"
+	fname := config.ImagePath + "battle/effect/hit_small.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[resources.EffectTypeHitSmall]); res == -1 {
 		return fmt.Errorf("failed to load hit small effect image %s", fname)
 	}
 	images[resources.EffectTypeHitBig] = make([]int, 6)
-	fname = common.ImagePath + "battle/effect/hit_big.png"
+	fname = config.ImagePath + "battle/effect/hit_big.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 90, 76, images[resources.EffectTypeHitBig]); res == -1 {
 		return fmt.Errorf("failed to load hit big effect image %s", fname)
 	}
 	images[resources.EffectTypeExplode] = make([]int, 16)
-	fname = common.ImagePath + "battle/effect/explode.png"
+	fname = config.ImagePath + "battle/effect/explode.png"
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 110, 124, images[resources.EffectTypeExplode]); res == -1 {
 		return fmt.Errorf("failed to load explode effect image %s", fname)
 	}
 	images[resources.EffectTypeCannonHit] = make([]int, 7)
-	fname = common.ImagePath + "battle/effect/cannon_hit.png"
+	fname = config.ImagePath + "battle/effect/cannon_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 110, 136, images[resources.EffectTypeCannonHit]); res == -1 {
 		return fmt.Errorf("failed to load cannon hit effect image %s", fname)
 	}
 	images[resources.EffectTypeSpreadHit] = make([]int, 6)
-	fname = common.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
+	fname = config.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, images[resources.EffectTypeSpreadHit]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	tmp := make([]int, 8)
-	fname = common.ImagePath + "battle/effect/vulcan_hit.png"
+	fname = config.ImagePath + "battle/effect/vulcan_hit.png"
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 50, 58, tmp); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -76,7 +76,7 @@ func Init() error {
 		images[resources.EffectTypeVulcanHit2] = append(images[resources.EffectTypeVulcanHit2], tmp[i+4])
 	}
 	images[resources.EffectTypeWaterBomb] = make([]int, 12)
-	fname = common.ImagePath + "battle/effect/water_bomb.png"
+	fname = config.ImagePath + "battle/effect/water_bomb.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 112, 94, images[resources.EffectTypeWaterBomb]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -85,7 +85,7 @@ func Init() error {
 	}
 
 	images[resources.EffectTypeBlock] = make([]int, 4)
-	fname = common.ImagePath + "battle/effect/block.png"
+	fname = config.ImagePath + "battle/effect/block.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 40, 44, images[resources.EffectTypeBlock]); res == -1 {
 		return fmt.Errorf("failed to load block effect image %s", fname)
 	}
@@ -93,7 +93,7 @@ func Init() error {
 	images[resources.EffectTypeBambooHit] = append([]int{}, images[resources.EffectTypeSpreadHit]...)
 	images[resources.EffectTypeHeatHit] = append([]int{}, images[resources.EffectTypeCannonHit]...)
 	images[resources.EffectTypeExclamation] = make([]int, 6)
-	fname = common.ImagePath + "battle/effect/exclamation.png"
+	fname = config.ImagePath + "battle/effect/exclamation.png"
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 104, 102, images[resources.EffectTypeExclamation]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
@@ -101,7 +101,7 @@ func Init() error {
 		images[resources.EffectTypeExclamation][i] = images[resources.EffectTypeExclamation][2]
 	}
 	images[resources.EffectTypeFailed] = make([]int, 8)
-	fname = common.ImagePath + "battle/effect/failed.png"
+	fname = config.ImagePath + "battle/effect/failed.png"
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 38, 38, images[resources.EffectTypeFailed]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
