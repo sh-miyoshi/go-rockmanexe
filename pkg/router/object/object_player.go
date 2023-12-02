@@ -14,11 +14,11 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type playerAct struct {

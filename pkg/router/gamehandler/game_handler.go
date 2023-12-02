@@ -11,11 +11,11 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/queue"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type gameObject struct {
