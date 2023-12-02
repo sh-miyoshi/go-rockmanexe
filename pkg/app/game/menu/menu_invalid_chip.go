@@ -4,20 +4,19 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/stretchr/stew/slice"
 )
 
 type menuInvalidChip struct {
-	playerInfo  *player.Player
-	imgMsgFrame int
+	playerInfo *player.Player
+	win        window.MessageWindow
 }
 
 func invalidChipNew(plyr *player.Player) (*menuInvalidChip, error) {
@@ -25,21 +24,21 @@ func invalidChipNew(plyr *player.Player) (*menuInvalidChip, error) {
 		playerInfo: plyr,
 	}
 
-	fname := common.ImagePath + "msg_frame.png"
-	res.imgMsgFrame = dxlib.LoadGraph(fname)
-	if res.imgMsgFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
+	if err := res.win.Init(); err != nil {
+		return nil, err
 	}
+	msg := "これらのチップはまだ通信対戦では使えないんだ。チップフォルダを編集しよう"
+	res.win.SetMessage(msg, window.FaceTypeRockman)
 
 	return &res, nil
 }
 
 func (i *menuInvalidChip) End() {
-	dxlib.DeleteGraph(i.imgMsgFrame)
+	i.win.End()
 }
 
 func (i *menuInvalidChip) Process() {
-	if inputs.CheckKey(inputs.KeyCancel) == 1 || inputs.CheckKey(inputs.KeyEnter) == 1 {
+	if i.win.Process() {
 		sound.On(resources.SECancel)
 		stateChange(stateTop)
 	}
@@ -52,10 +51,7 @@ func (i *menuInvalidChip) Draw() {
 		draw.MessageText(35, 80+(i*30), 0x000000, fmt.Sprintf("・%s", name))
 	}
 
-	dxlib.DrawGraph(40, 205, i.imgMsgFrame, true)
-	draw.MessageText(120, 220, 0x000000, "これらのチップはまだ通信対戦では使えな")
-	draw.MessageText(120, 220+28, 0x000000, "いんだ。")
-	draw.MessageText(120, 220+56, 0x000000, "チップフォルダを編集しよう")
+	i.win.Draw()
 }
 
 func (i *menuInvalidChip) invalidChips() []string {

@@ -30,7 +30,7 @@ func SetError(msg string) {
 	IrreversibleError = errors.New("ゲームプレイ中")
 }
 
-func SplitMsg(msg string, max int) []string {
+func SplitJAMsg(msg string, max int) []string {
 	if max <= 0 {
 		return []string{msg}
 	}
@@ -40,8 +40,11 @@ func SplitMsg(msg string, max int) []string {
 		tmp := []byte{}
 		for i := 0; i < max; i++ {
 			r, size := utf8.DecodeRuneInString(msg)
-			tmp = utf8.AppendRune(tmp, r)
 			msg = msg[size:]
+			if string(r) == "\n" {
+				break
+			}
+			tmp = utf8.AppendRune(tmp, r)
 			if len(msg) <= 0 {
 				break
 			}
@@ -50,4 +53,21 @@ func SplitMsg(msg string, max int) []string {
 	}
 
 	return res
+}
+
+func SliceJAMsg(msg string, end int) string {
+	tmp := []byte{}
+	for i := 0; i < end; i++ {
+		if len(msg) <= 0 {
+			break
+		}
+
+		r, size := utf8.DecodeRuneInString(msg)
+		if string(r) == "\n" {
+			break
+		}
+		tmp = utf8.AppendRune(tmp, r)
+		msg = msg[size:]
+	}
+	return string(tmp)
 }

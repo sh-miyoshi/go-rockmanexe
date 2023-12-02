@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -31,7 +32,6 @@ type menuFolder struct {
 	imgChipFrame     int
 	imgArrow         int
 	imgPointer       int
-	imgMsgFrame      int
 	imgScrollPointer int
 
 	pointer       [folderWindowTypeMax]int
@@ -40,6 +40,7 @@ type menuFolder struct {
 	selected      int
 	currentWindow int
 	count         int
+	win           window.MessageWindow
 
 	msg string
 
@@ -76,16 +77,14 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 		return nil, fmt.Errorf("failed to load menu arrow image %s", fname)
 	}
 
-	fname = common.ImagePath + "msg_frame.png"
-	res.imgMsgFrame = dxlib.LoadGraph(fname)
-	if res.imgMsgFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
-	}
-
 	fname = common.ImagePath + "menu/scroll_point.png"
 	res.imgScrollPointer = dxlib.LoadGraph(fname)
-	if res.imgMsgFrame == -1 {
+	if res.imgScrollPointer == -1 {
 		return nil, fmt.Errorf("failed to load menu scroll point image %s", fname)
+	}
+
+	if err := res.win.Init(); err != nil {
+		return nil, err
 	}
 
 	return res, nil
@@ -95,13 +94,12 @@ func (f *menuFolder) End() {
 	dxlib.DeleteGraph(f.imgChipFrame)
 	dxlib.DeleteGraph(f.imgPointer)
 	dxlib.DeleteGraph(f.imgArrow)
-	dxlib.DeleteGraph(f.imgMsgFrame)
 	dxlib.DeleteGraph(f.imgScrollPointer)
 }
 
 func (f *menuFolder) Process() {
 	if f.msg != "" {
-		if inputs.CheckKey(inputs.KeyEnter) == 1 || inputs.CheckKey(inputs.KeyCancel) == 1 {
+		if f.win.Process() {
 			sound.On(resources.SECancel)
 			f.msg = ""
 		}
@@ -128,6 +126,7 @@ func (f *menuFolder) Process() {
 				sound.On(resources.SEDenied)
 				logger.Info("Failed to exchange chip: %v", err)
 				f.msg = err.Error()
+				f.win.SetMessage(f.msg, window.FaceTypeNone)
 				return
 			}
 
@@ -259,8 +258,7 @@ func (f *menuFolder) Draw() {
 
 	// Show message
 	if f.msg != "" {
-		dxlib.DrawGraph(40, 205, f.imgMsgFrame, true)
-		draw.MessageText(120, 220, 0x000000, f.msg)
+		f.win.Draw()
 	}
 }
 
