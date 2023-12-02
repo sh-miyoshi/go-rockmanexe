@@ -63,6 +63,9 @@ func SliceJAMsg(msg string, end int) string {
 		}
 
 		r, size := utf8.DecodeRuneInString(msg)
+		if string(r) == "\n" {
+			break
+		}
 		tmp = utf8.AppendRune(tmp, r)
 		msg = msg[size:]
 	}
