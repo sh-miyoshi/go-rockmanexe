@@ -13,7 +13,8 @@ func (h *MessageHandler) Init(values []byte) error {
 	if err := h.win.Init(); err != nil {
 		return err
 	}
-	h.win.SetMessage(string(values))
+	// TODO: 適切なface typeを設定できるようにする
+	h.win.SetMessage(string(values), window.FaceTypeNone)
 
 	logger.Info("init message handler with %s", string(values))
 	return nil

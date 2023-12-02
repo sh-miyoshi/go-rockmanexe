@@ -28,7 +28,7 @@ func invalidChipNew(plyr *player.Player) (*menuInvalidChip, error) {
 		return nil, err
 	}
 	msg := "これらのチップはまだ通信対戦では使えないんだ。チップフォルダを編集しよう"
-	res.win.SetMessage(msg)
+	res.win.SetMessage(msg, window.FaceTypeRockman)
 
 	return &res, nil
 }

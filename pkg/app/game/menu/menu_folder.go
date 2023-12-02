@@ -126,7 +126,7 @@ func (f *menuFolder) Process() {
 				sound.On(resources.SEDenied)
 				logger.Info("Failed to exchange chip: %v", err)
 				f.msg = err.Error()
-				f.win.SetMessage(f.msg)
+				f.win.SetMessage(f.msg, window.FaceTypeNone)
 				return
 			}
 

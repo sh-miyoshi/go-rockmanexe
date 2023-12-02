@@ -13,34 +13,57 @@ import (
 )
 
 const (
+	FaceTypeNone = iota
+	FaceTypeRockman
+
+	faceTypeMax
+)
+
+const (
 	messageSpeed = 2
 	lineCharNum  = 19
 	maxLineNum   = 3
 )
 
 type MessageWindow struct {
-	image    int
+	imgFrame int
+	imgFaces [faceTypeMax][]int
 	messages [][]string
 	msgNum   int
 	cursor   int
 	count    int
 	page     int
+	faceType int
 }
 
 func (w *MessageWindow) Init() error {
 	fname := common.ImagePath + "msg_frame.png"
-	w.image = dxlib.LoadGraph(fname)
-	if w.image == -1 {
+	w.imgFrame = dxlib.LoadGraph(fname)
+	if w.imgFrame == -1 {
 		return fmt.Errorf("failed to load message frame image %s", fname)
 	}
+
+	fname = common.ImagePath + "face/ロックマン.png"
+	w.imgFaces[FaceTypeRockman] = make([]int, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 72, w.imgFaces[FaceTypeRockman]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+
+	w.faceType = FaceTypeNone
 	return nil
 }
 
 func (w *MessageWindow) End() {
-	dxlib.DeleteGraph(w.image)
+	dxlib.DeleteGraph(w.imgFrame)
+	for i := 0; i < faceTypeMax; i++ {
+		for _, img := range w.imgFaces[i] {
+			dxlib.DeleteGraph(img)
+		}
+		w.imgFaces[i] = []int{}
+	}
 }
 
-func (w *MessageWindow) SetMessage(msg string) {
+func (w *MessageWindow) SetMessage(msg string, faceType int) {
 	messages := common.SplitJAMsg(msg, lineCharNum)
 
 	// 複数行のMessageをmaxLineNumごとのMessage配列に分割する
@@ -62,10 +85,16 @@ func (w *MessageWindow) SetMessage(msg string) {
 
 	w.cursor = 0
 	w.page = 0
+	w.faceType = faceType
 }
 
 func (w *MessageWindow) Draw() {
-	dxlib.DrawGraph(40, 205, w.image, true)
+	dxlib.DrawGraph(40, 205, w.imgFrame, true)
+	if w.faceType != FaceTypeNone {
+		n := (w.count / 10) % len(w.imgFaces[w.faceType])
+		dxlib.DrawGraph(50, 225, w.imgFaces[w.faceType][n], false)
+	}
+
 	readNum := 0
 	for i, msg := range w.messages[w.page] {
 		last := w.cursor - readNum
