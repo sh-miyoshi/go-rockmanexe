@@ -15,7 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/vector"
 )
 
 var (

@@ -6,7 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/vector"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/vector"
 )
 
 var (
