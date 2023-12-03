@@ -16,6 +16,7 @@ const (
 	devFeatureSelectMapMove = iota
 	devFeatureSelectWideArea
 	devFeatureSelectSupportNPC
+	devFeatureSelectTalkAI
 )
 
 type menuDevFeature struct {
@@ -28,6 +29,7 @@ func devFeatureNew() (*menuDevFeature, error) {
 		"マップ移動",
 		"4x4 対戦",
 		"味方NPC",
+		"AIと会話",
 	}, -1)
 
 	return res, nil
@@ -92,6 +94,8 @@ func (t *menuDevFeature) Process() (Result, error) {
 			}
 
 			return ResultGoBattle, nil
+		case devFeatureSelectTalkAI:
+			return ResultGoTalkAI, nil
 		}
 		return ResultContinue, nil
 	}
