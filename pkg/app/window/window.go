@@ -96,6 +96,10 @@ func (w *MessageWindow) Draw() {
 		dxlib.DrawGraph(50, 225, w.imgFaces[w.faceType][n], false)
 	}
 
+	if len(w.messages) == 0 {
+		return
+	}
+
 	readNum := 0
 	for i, msg := range w.messages[w.page] {
 		last := w.cursor - readNum
