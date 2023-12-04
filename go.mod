@@ -7,7 +7,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
-	github.com/sh-miyoshi/dxlib v1.3.4
+	github.com/sh-miyoshi/dxlib v1.3.5
 	github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/net v0.19.0 // indirect

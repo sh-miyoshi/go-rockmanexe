@@ -1416,6 +1416,8 @@ github.com/sh-miyoshi/dxlib v1.3.3 h1:VVS6PwkTAP/d1tfUS+Ow4ush3PTIa4AxUhhznTbo2J
 github.com/sh-miyoshi/dxlib v1.3.3/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
 github.com/sh-miyoshi/dxlib v1.3.4 h1:61jIJmQVM7G2dtsjIqgLzy1ovzX7DlqP9Vq28zYeoQw=
 github.com/sh-miyoshi/dxlib v1.3.4/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
+github.com/sh-miyoshi/dxlib v1.3.5 h1:gbScBceJz/Otj4h1CmzHqzbgm2KFCKuJx8bfvitg4dk=
+github.com/sh-miyoshi/dxlib v1.3.5/go.mod h1:eYlq0yASGJkyLgQoEa7kqqpvuOi0uJg7E8UXckDHwOo=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.3.3/go.mod h1:5KUK8ByomD5Ti5Artl0RtHeI5pTF7MIDuXL3yY520V4=
 github.com/spf13/afero v1.6.0/go.mod h1:Ai8FlHk4v/PARR026UzYexafAt9roJ7LcLMAmO6Z93I=

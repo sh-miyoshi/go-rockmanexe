@@ -244,6 +244,7 @@ func Process() error {
 			talkai.Init()
 		}
 		if talkai.Process() {
+			talkai.End()
 			stateChange(stateMenu)
 			return nil
 		}
