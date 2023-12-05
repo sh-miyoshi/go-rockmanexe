@@ -1,14 +1,22 @@
 package talkai
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/transform"
 )
 
 const (
 	stateInput = iota
 	stateOutput
+)
+
+const (
+	inputMaxLen = 80
 )
 
 var (
@@ -19,7 +27,7 @@ var (
 
 func Init() {
 	state = stateInput
-	inputHandle = dxlib.MakeKeyInput(80, false, false, false, false, false)
+	inputHandle = dxlib.MakeKeyInput(inputMaxLen, false, false, false, false, false)
 	win.Init()
 	background.Set(background.Type秋原町)
 	win.SetMessage("", window.FaceTypeRockman)
@@ -54,8 +62,29 @@ func Process() bool {
 
 	switch state {
 	case stateInput:
+		if dxlib.CheckKeyInput(inputHandle) {
+			str := fmt.Sprintf("%sって入力されたよ", inputString(inputHandle))
+			win.SetMessage(str, window.FaceTypeRockman)
+			state = stateOutput
+		}
 	case stateOutput:
 		return win.Process()
 	}
 	return false
+}
+
+func inputString(handle int) string {
+	buf := make([]byte, inputMaxLen)
+	dxlib.GetKeyInputString(buf, inputHandle)
+	slicedBuf := []byte{}
+	for i := 0; i < inputMaxLen; i++ {
+		if buf[i] == 0 {
+			break
+		}
+		slicedBuf = append(slicedBuf, buf[i])
+	}
+
+	t := japanese.ShiftJIS.NewDecoder()
+	str, _, _ := transform.Bytes(t, slicedBuf)
+	return string(str)
 }
