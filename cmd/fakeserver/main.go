@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -121,6 +123,41 @@ func setAPI(r *mux.Router) {
 		logger.Info("Failed to get session for: %s", sessionID)
 		http.Error(w, "No such session", http.StatusNotFound)
 	}).Methods("GET")
+
+	r.HandleFunc("/chat/completions", func(w http.ResponseWriter, r *http.Request) {
+		reqBuf := new(bytes.Buffer)
+		reqBuf.ReadFrom(r.Body)
+		logger.Info("Request data: %+v", reqBuf.String())
+
+		sec := 5 * time.Second
+		logger.Info("Waiting %d[sec] ...", sec)
+		time.Sleep(sec)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		res := `{
+	"id": "chatcmpl-123",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "gpt-3.5-turbo-0613",
+  "system_fingerprint": "fp_44709d6fcb",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "テストメッセージ",
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 12,
+    "total_tokens": 21
+  }
+}`
+
+		w.Write([]byte(res))
+	}).Methods("POST")
 }
 
 func main() {
