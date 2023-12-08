@@ -6,7 +6,7 @@ input:
 debug:
   show_debug_data: true
   skip_title: true
-  skip_menu: false
+  skip_menu: true
   skip_battle_opening: true
   start_continue: false
   init_sleep_sec: 0
@@ -24,3 +24,6 @@ net:
   client_id: "tester1"
   client_key: "testtest"
   addr: "localhost:16283"
+ai:
+  url: "http://localhost:3000/chat/completions"
+  api_key: ""
