@@ -145,7 +145,7 @@ func setAPI(r *mux.Router) {
     "index": 0,
     "message": {
       "role": "assistant",
-      "content": "テストメッセージ",
+      "content": "テストメッセージ"
     },
     "finish_reason": "stop"
   }],
