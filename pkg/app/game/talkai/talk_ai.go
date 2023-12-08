@@ -1,11 +1,15 @@
 package talkai
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"net/http"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/transform"
 )
@@ -13,6 +17,7 @@ import (
 const (
 	stateInput = iota
 	stateOutput
+	stateWaiting
 )
 
 const (
@@ -20,9 +25,12 @@ const (
 )
 
 var (
-	state       int
-	inputHandle int
-	win         window.MessageWindow
+	state             int
+	inputHandle       int
+	win               window.MessageWindow
+	question          string
+	serverReqError    error
+	serverReqResponse *Response
 )
 
 func Init() {
@@ -53,7 +61,6 @@ func Draw() {
 	switch state {
 	case stateInput:
 		dxlib.DrawKeyInputString(65, 110, inputHandle, true)
-	case stateOutput:
 	}
 }
 
@@ -63,12 +70,29 @@ func Process() bool {
 	switch state {
 	case stateInput:
 		if dxlib.CheckKeyInput(inputHandle) {
-			str := fmt.Sprintf("%sって入力されたよ", inputString(inputHandle))
-			win.SetMessage(str, window.FaceTypeRockman)
-			state = stateOutput
+			win.SetMessage("ええと・・・", window.FaceTypeRockman)
+			question = inputString(inputHandle)
+			serverReqError = nil
+			serverReqResponse = nil
+			state = stateWaiting
+			serverSend()
 		}
 	case stateOutput:
 		return win.Process()
+	case stateWaiting:
+		win.Process()
+		if serverReqError != nil {
+			logger.Error("Failed to request server: %v", serverReqError)
+			win.SetMessage("送信に失敗しました", window.FaceTypeNone)
+			state = stateOutput
+			return false
+		}
+		if serverReqResponse != nil {
+			logger.Info("Success to request server: %+v", serverReqResponse)
+			// TODO
+			win.SetMessage("送信に成功しました", window.FaceTypeNone)
+			state = stateOutput
+		}
 	}
 	return false
 }
@@ -87,4 +111,41 @@ func inputString(handle int) string {
 	t := japanese.ShiftJIS.NewDecoder()
 	str, _, _ := transform.Bytes(t, slicedBuf)
 	return string(str)
+}
+
+func serverSend() {
+	reqBody := Request{
+		Model: "gpt-3.5-turbo",
+		Messages: []Message{
+			{
+				Role:    "user",
+				Content: question,
+			},
+		},
+	}
+
+	conf := config.Get()
+
+	reqJSON, _ := json.Marshal(reqBody)
+	req, err := http.NewRequest("POST", conf.AI.URL, bytes.NewBuffer(reqJSON))
+	if err != nil {
+		panic(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+conf.AI.APIKey)
+
+	client := &http.Client{}
+	go func() {
+		resp, err := client.Do(req)
+		if err != nil {
+			serverReqError = err
+			return
+		}
+		var res Response
+		if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+			serverReqError = err
+		}
+		serverReqResponse = &res
+	}()
 }
