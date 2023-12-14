@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
@@ -89,8 +90,11 @@ func Process() bool {
 		}
 		if serverReqResponse != nil {
 			logger.Info("Success to request server: %+v", serverReqResponse)
-			// TODO
-			win.SetMessage("送信に成功しました", window.FaceTypeNone)
+			msg := ""
+			for _, c := range serverReqResponse.Choices {
+				msg += strings.ReplaceAll(c.Messages.Content, "\n", "")
+			}
+			win.SetMessage(msg, window.FaceTypeRockman)
 			state = stateOutput
 		}
 	}
@@ -117,6 +121,10 @@ func serverSend() {
 	reqBody := Request{
 		Model: "gpt-3.5-turbo",
 		Messages: []Message{
+			{
+				Role:    "user",
+				Content: "10行以内で簡潔に答えてください",
+			},
 			{
 				Role:    "user",
 				Content: question,
