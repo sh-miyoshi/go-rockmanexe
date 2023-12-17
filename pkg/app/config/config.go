@@ -41,6 +41,10 @@ type Config struct {
 		ClientKey  string `yaml:"client_key"`
 		StreamAddr string `yaml:"addr"`
 	} `yaml:"net"`
+	AI struct {
+		URL    string `yaml:"url"`
+		APIKey string `yaml:"api_key"`
+	} `yaml:"ai"`
 }
 
 var (

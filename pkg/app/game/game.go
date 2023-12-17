@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/scratch"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/talkai"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/title"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/mapinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -34,6 +35,7 @@ const (
 	stateScratch
 	stateEvent
 	stateNaviCustom
+	stateTalkAI
 
 	stateMax
 )
@@ -123,6 +125,9 @@ func Process() error {
 			return nil
 		case menu.ResultGoNaviCustom:
 			stateChange(stateNaviCustom)
+			return nil
+		case menu.ResultGoTalkAI:
+			stateChange(stateTalkAI)
 			return nil
 		}
 	case stateBattle:
@@ -234,6 +239,15 @@ func Process() error {
 			stateChange(stateMenu)
 			return nil
 		}
+	case stateTalkAI:
+		if count == 0 {
+			talkai.Init()
+		}
+		if talkai.Process() {
+			talkai.End()
+			stateChange(stateMenu)
+			return nil
+		}
 	}
 	count++
 	return nil
@@ -267,6 +281,8 @@ func Draw() {
 		event.Draw()
 	case stateNaviCustom:
 		navicustom.Draw()
+	case stateTalkAI:
+		talkai.Draw()
 	}
 
 	fade.Draw()

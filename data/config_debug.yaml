@@ -24,3 +24,6 @@ net:
   client_id: "tester1"
   client_key: "testtest"
   addr: "localhost:16283"
+ai:
+  url: "http://localhost:3000/chat/completions"
+  api_key: ""

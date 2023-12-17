@@ -33,6 +33,7 @@ const (
 	ResultGoMap
 	ResultGoScratch
 	ResultGoNaviCustom
+	ResultGoTalkAI
 )
 
 var (

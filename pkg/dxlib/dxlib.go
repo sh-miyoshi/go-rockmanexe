@@ -364,3 +364,31 @@ func GetMousePoint(x, y *int) {
 	*x = int(tx)
 	*y = int(ty)
 }
+
+func MakeKeyInput(maxStrLength int, cancelValidFlag bool, singleCharOnlyFlag bool, numCharOnlyFlag bool, doubleCharOnlyFlag bool, enableNewLineFlag bool) int {
+	return int(dxlib.MakeKeyInput(int32(maxStrLength), makeFlag(cancelValidFlag), makeFlag(singleCharOnlyFlag), makeFlag(numCharOnlyFlag), makeFlag(doubleCharOnlyFlag), makeFlag(enableNewLineFlag)))
+}
+
+func SetActiveKeyInput(inputHandle int) {
+	dxlib.SetActiveKeyInput(int32(inputHandle))
+}
+
+func CheckKeyInput(inputHandle int) bool {
+	return dxlib.CheckKeyInput(int32(inputHandle)) != 0
+}
+
+func DrawKeyInputString(x, y int, inputHandle int, drawCandidateList bool) {
+	dxlib.DrawKeyInputString(int32(x), int32(y), int32(inputHandle), makeFlag(drawCandidateList))
+}
+
+func GetKeyInputString(strBuffer []byte, inputHandle int) {
+	dxlib.GetKeyInputString(strBuffer, int32(inputHandle))
+}
+
+func DeleteKeyInput(inputHandle int) {
+	dxlib.DeleteKeyInput(int32(inputHandle))
+}
+
+func SetKeyInputStringColor(nmlStr uint, nmlCur uint, imeStrBack uint, imeCur uint, imeLine uint, imeSelectStr uint, imeModeStr uint, nmlStrE uint, imeSelectStrE uint, imeModeStrE uint, imeSelectWinE uint, imeSelectWinF uint, selectStrBackColor uint, selectStrColor uint, selectStrEdgeColor uint, imeStr uint, imeStrE uint) {
+	dxlib.SetKeyInputStringColor(uint32(nmlStr), uint32(nmlCur), uint32(imeStrBack), uint32(imeCur), uint32(imeLine), uint32(imeSelectStr), uint32(imeModeStr), uint32(nmlStrE), uint32(imeSelectStrE), uint32(imeModeStrE), uint32(imeSelectWinE), uint32(imeSelectWinF), uint32(selectStrBackColor), uint32(selectStrColor), uint32(selectStrEdgeColor), uint32(imeStr), uint32(imeStrE))
+}
