@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -18,26 +19,22 @@ import (
 
 const (
 	delayCirkillMove   = 8
-	delayCirkillAttack = 2
+	delayCirkillAttack = 6
 
-	cirkillMoveNextStepCount = 80
+	cirkillMoveNextStepCount = 40
 )
 
 type cirKillAttack struct {
 	count     int
 	attacking bool
+	images    []int
 }
 
 type enemyCirKill struct {
-	pm        EnemyParam
-	atk       cirKillAttack
-	imgMove   []int
-	imgAttack []int
-	count     int
-
-	movePoint   [6][2]int
-	movePointer int
-	moveCount   int
+	pm      EnemyParam
+	atk     cirKillAttack
+	imgMove []int
+	count   int
 
 	next point.Point
 	prev point.Point
@@ -45,32 +42,9 @@ type enemyCirKill struct {
 
 func (e *enemyCirKill) Init(objID string) error {
 	e.pm.ObjectID = objID
-	e.next = e.pm.Pos
+	e.next = e.getNextPos()
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
-
-	// TODO: check
-	for i := 0; i < 6; i++ {
-		// x座標
-		if e.pm.Pos.X == 3 {
-			// Pattern 1. 前2列を周回
-			e.movePoint[i][0] = (i / 3) + 3
-		} else {
-			// Pattern 2. 後2列を周回
-			e.movePoint[i][0] = (i / 3) + 4
-		}
-
-		// y座標
-		if i < 3 {
-			e.movePoint[i][1] = i
-		} else {
-			e.movePoint[i][1] = 5 - i
-		}
-
-		if e.movePoint[i][0] == e.pm.Pos.X && e.movePoint[i][1] == e.pm.Pos.Y {
-			e.movePointer = i
-		}
-	}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDCirKill)
@@ -80,9 +54,9 @@ func (e *enemyCirKill) Init(objID string) error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
-	e.imgAttack = make([]int, 2)
+	e.atk.images = make([]int, 2)
 	fname = name + "_atk" + ext
-	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 140, 104, e.imgAttack); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 140, 104, e.atk.images); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
@@ -94,7 +68,7 @@ func (e *enemyCirKill) End() {
 	for _, img := range e.imgMove {
 		dxlib.DeleteGraph(img)
 	}
-	for _, img := range e.imgAttack {
+	for _, img := range e.atk.images {
 		dxlib.DeleteGraph(img)
 	}
 }
@@ -120,15 +94,26 @@ func (e *enemyCirKill) Process() (bool, error) {
 
 	if e.atk.attacking {
 		e.atk.Process()
-		return false, nil
 	}
 
-	const waitCount = 20
+	const waitCount = 60
 	if e.count < waitCount {
 		return false, nil
 	}
 
-	// TODO: move
+	cnt := e.count % cirkillMoveNextStepCount
+	if cnt == 0 {
+		// 実際に移動
+		e.prev = e.pm.Pos
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, e.next, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			e.next = e.getNextPos()
+		}
+	} else if cnt == cirkillMoveNextStepCount/2 {
+		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+		if e.pm.Pos.Y == pos.Y {
+			e.atk.Set()
+		}
+	}
 
 	return false, nil
 }
@@ -138,33 +123,30 @@ func (e *enemyCirKill) Draw() {
 		return
 	}
 
-	defaultOfsX := -10
-	defaultOfsY := 15
+	c := e.count % cirkillMoveNextStepCount
+	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, cirkillMoveNextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, cirkillMoveNextStepCount, battlecommon.PanelSize.Y)
+	ofsx -= 10
+	ofsy += 15
 
 	view := battlecommon.ViewPos(e.pm.Pos)
 	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		dxlib.DrawRotaGraph(view.X+defaultOfsX, view.Y+defaultOfsY, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-		return
+		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	} else {
+		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		drawParalysis(view.X+ofsx, view.Y+ofsy, *img, e.pm.ParalyzedCount)
 	}
-
-	c := e.count % cirkillMoveNextStepCount
-	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, cirkillMoveNextStepCount, battlecommon.PanelSize.X)
-	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, cirkillMoveNextStepCount, battlecommon.PanelSize.Y)
-
-	dxlib.DrawRotaGraph(view.X+ofsx+defaultOfsX, view.Y+ofsy+defaultOfsY, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-	drawParalysis(view.X+ofsx+defaultOfsX, view.Y+ofsy+defaultOfsY, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {
-		draw.Number(view.X, view.Y+40, e.pm.HP, draw.NumberOption{
+		draw.Number(view.X+ofsx+10, view.Y+ofsy+25, e.pm.HP, draw.NumberOption{
 			Color:    draw.NumberColorWhiteSmall,
 			Centered: true,
 		})
 	}
-
 }
 
 func (e *enemyCirKill) DamageProc(dm *damage.Damage) bool {
@@ -192,19 +174,50 @@ func (e *enemyCirKill) MakeInvisible(count int) {
 
 func (e *enemyCirKill) getCurrentImagePointer() *int {
 	if e.atk.attacking {
-		n := (e.count / delayLarkAtk)
-		if n >= len(e.imgAttack) {
-			n = len(e.imgAttack) - 1
+		n := (e.count / delayCirkillAttack)
+		if n >= len(e.atk.images) {
+			n = len(e.atk.images) - 1
 		}
-		return &e.imgAttack[n]
+		return &e.atk.images[n]
 	}
 
-	n := (e.count / delayLarkMove) % len(e.imgMove)
+	n := (e.count / delayCirkillMove) % len(e.imgMove)
 	return &e.imgMove[n]
+}
+
+func (e *enemyCirKill) getNextPos() point.Point {
+	// 外周時計回り
+	if e.pm.Pos.X == battlecommon.FieldNum.X/2 {
+		if e.pm.Pos.Y != 0 {
+			return point.Point{X: e.pm.Pos.X, Y: e.pm.Pos.Y - 1}
+		}
+	}
+	if e.pm.Pos.X == battlecommon.FieldNum.X-1 {
+		if e.pm.Pos.Y != battlecommon.FieldNum.Y-1 {
+			return point.Point{X: e.pm.Pos.X, Y: e.pm.Pos.Y + 1}
+		}
+	}
+	if e.pm.Pos.Y == 0 {
+		return point.Point{X: e.pm.Pos.X + 1, Y: e.pm.Pos.Y}
+	}
+	if e.pm.Pos.Y == battlecommon.FieldNum.Y-1 {
+		return point.Point{X: e.pm.Pos.X - 1, Y: e.pm.Pos.Y}
+	}
+
+	return point.Point{}
+}
+
+func (a *cirKillAttack) Set() {
+	a.attacking = true
+	a.count = 0
 }
 
 func (a *cirKillAttack) Process() {
 	// TODO: attack
+	dxlib.DrawFormatString(100, 100, 0xffff00, "test attack")
 
 	a.count++
+	if a.count > delayCirkillAttack*len(a.images) {
+		a.attacking = false
+	}
 }
