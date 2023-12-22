@@ -23,6 +23,7 @@ const (
 	delayCirkillAttack = 6
 
 	cirkillMoveNextStepCount = 40
+	initialWaitCount         = 60
 )
 
 type cirKillAttack struct {
@@ -98,7 +99,6 @@ func (e *enemyCirKill) Process() (bool, error) {
 
 	/*
 		TODO: バグ
-		- 初期位置に戻る
 		- 攻撃が止まってる
 	*/
 
@@ -111,8 +111,7 @@ func (e *enemyCirKill) Process() (bool, error) {
 		e.atk.Process()
 	}
 
-	const waitCount = 65
-	if e.count < waitCount {
+	if e.count < initialWaitCount {
 		return false, nil
 	}
 
@@ -138,9 +137,14 @@ func (e *enemyCirKill) Draw() {
 		return
 	}
 
-	c := e.count % cirkillMoveNextStepCount
-	ofsx := battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, cirkillMoveNextStepCount, battlecommon.PanelSize.X)
-	ofsy := battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, cirkillMoveNextStepCount, battlecommon.PanelSize.Y)
+	ofsx := 0
+	ofsy := 0
+	if e.count > initialWaitCount {
+		c := e.count % cirkillMoveNextStepCount
+		ofsx = battlecommon.GetOffset(e.next.X, e.pm.Pos.X, e.prev.X, c, cirkillMoveNextStepCount, battlecommon.PanelSize.X)
+		ofsy = battlecommon.GetOffset(e.next.Y, e.pm.Pos.Y, e.prev.Y, c, cirkillMoveNextStepCount, battlecommon.PanelSize.Y)
+	}
+
 	ofsx -= 10
 	ofsy += 15
 
