@@ -25,7 +25,6 @@ func (p *DrawCirkillShot) Draw(prevPos, currentPos, nextPos point.Point, count i
 	}
 
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, resources.SkillCirkillShotNextStepCount, battlecommon.PanelSize.X)
-	ofsy := -15
 	xflip := int32(dxlib.TRUE)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgCirkillShot[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y, 1, 0, imgCirkillShot[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
 }

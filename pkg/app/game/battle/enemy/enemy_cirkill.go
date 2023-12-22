@@ -97,19 +97,7 @@ func (e *enemyCirKill) Process() (bool, error) {
 
 	e.count++
 
-	/*
-		TODO: バグ
-		- 攻撃が止まってる
-	*/
-
-	// TODO refactoring
-	if e.atk.animID != "" && !localanim.AnimIsProcessing(e.atk.animID) {
-		e.atk.animID = ""
-	}
-
-	if e.atk.attacking {
-		e.atk.Process()
-	}
+	e.atk.Process()
 
 	if e.count < initialWaitCount {
 		return false, nil
@@ -234,16 +222,22 @@ func (a *cirKillAttack) Set() {
 }
 
 func (a *cirKillAttack) Process() {
-	if a.count == 0 {
-		a.animID = localanim.AnimNew(skill.Get(skill.SkillCirkillShot, skill.Argument{
-			OwnerID:    a.ownerID,
-			Power:      10,
-			TargetType: damage.TargetPlayer,
-		}))
+	if a.animID != "" && !localanim.AnimIsProcessing(a.animID) {
+		a.animID = ""
 	}
 
-	a.count++
-	if a.count > delayCirkillAttack*len(a.images) {
-		a.attacking = false
+	if a.attacking {
+		if a.count == 0 {
+			a.animID = localanim.AnimNew(skill.Get(skill.SkillCirkillShot, skill.Argument{
+				OwnerID:    a.ownerID,
+				Power:      10,
+				TargetType: damage.TargetPlayer,
+			}))
+		}
+
+		a.count++
+		if a.count > delayCirkillAttack*len(a.images) {
+			a.attacking = false
+		}
 	}
 }
