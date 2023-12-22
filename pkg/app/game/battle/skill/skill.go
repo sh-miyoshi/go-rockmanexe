@@ -48,6 +48,7 @@ const (
 	SkillCountBomb
 	SkillTornado
 	SkillQuickGauge
+	SkillCirkillShot
 
 	SkillFailed
 )
@@ -154,6 +155,8 @@ func Get(skillID int, arg Argument) SkillAnim {
 		return newFailed(objID, arg)
 	case SkillQuickGauge:
 		return newQuickGauge(objID, arg)
+	case SkillCirkillShot:
+		return newCirkillShot(objID, arg)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

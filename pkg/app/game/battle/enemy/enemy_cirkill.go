@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -25,9 +26,11 @@ const (
 )
 
 type cirKillAttack struct {
+	ownerID   string
 	count     int
 	attacking bool
 	images    []int
+	animID    string
 }
 
 type enemyCirKill struct {
@@ -45,6 +48,7 @@ func (e *enemyCirKill) Init(objID string) error {
 	e.next = e.getNextPos()
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
+	e.atk.ownerID = objID
 
 	// Load Images
 	name, ext := GetStandImageFile(IDCirKill)
@@ -92,11 +96,22 @@ func (e *enemyCirKill) Process() (bool, error) {
 
 	e.count++
 
+	/*
+		TODO: バグ
+		- 初期位置に戻る
+		- 攻撃が止まってる
+	*/
+
+	// TODO refactoring
+	if e.atk.animID != "" && !localanim.AnimIsProcessing(e.atk.animID) {
+		e.atk.animID = ""
+	}
+
 	if e.atk.attacking {
 		e.atk.Process()
 	}
 
-	const waitCount = 60
+	const waitCount = 65
 	if e.count < waitCount {
 		return false, nil
 	}
@@ -208,13 +223,20 @@ func (e *enemyCirKill) getNextPos() point.Point {
 }
 
 func (a *cirKillAttack) Set() {
-	a.attacking = true
-	a.count = 0
+	if a.animID == "" {
+		a.attacking = true
+		a.count = 0
+	}
 }
 
 func (a *cirKillAttack) Process() {
-	// TODO: attack
-	dxlib.DrawFormatString(100, 100, 0xffff00, "test attack")
+	if a.count == 0 {
+		a.animID = localanim.AnimNew(skill.Get(skill.SkillCirkillShot, skill.Argument{
+			OwnerID:    a.ownerID,
+			Power:      10,
+			TargetType: damage.TargetPlayer,
+		}))
+	}
 
 	a.count++
 	if a.count > delayCirkillAttack*len(a.images) {

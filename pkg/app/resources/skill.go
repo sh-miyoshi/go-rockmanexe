@@ -38,6 +38,7 @@ const (
 	SkillBoomerangNextStepCount      = 6
 	SkillGarooBreathNextStepCount    = 10
 	SkillThunderBallNextStepCount    = 80
+	SkillCirkillShotNextStepCount    = 40
 
 	SkillSwordDelay       = 3
 	SkillVulcanDelay      = 2
