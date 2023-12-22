@@ -115,12 +115,14 @@ MAIN:
 		count++
 
 		fpsMgr.Wait()
-		if config.Get().Debug.ShowDebugData {
-			dxlib.DrawFormatString(config.ScreenSize.X-60, 10, 0xff0000, "[%.1f]", fpsMgr.Get())
-			var x, y int
-			dxlib.GetMousePoint(&x, &y)
-			dxlib.DrawFormatString(config.ScreenSize.X-90, 30, 0xff0000, "(%d, %d)", x, y)
-		}
+
+		// debug情報
+		system.AddDebugMessage("[%.1f]", fpsMgr.Get())
+		var x, y int
+		dxlib.GetMousePoint(&x, &y)
+		system.AddDebugMessage("(%d, %d)", x, y)
+
+		system.DebugDraw()
 	}
 
 	if err := system.Error(); err != nil {

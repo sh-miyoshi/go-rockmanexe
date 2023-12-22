@@ -64,7 +64,7 @@ func (r *menuPlayerStatus) Draw() {
 		},
 		{
 			key:   "",
-			value: fmt.Sprintf(""),
+			value: "",
 		},
 		{
 			key:   "ＨＰ",
