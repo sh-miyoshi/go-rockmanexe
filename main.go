@@ -22,8 +22,9 @@ import (
 )
 
 var (
-	version = ""
-	encKey  = ""
+	version     = ""
+	encKey      = ""
+	font    int = -1
 )
 
 func init() {
@@ -122,7 +123,7 @@ MAIN:
 		dxlib.GetMousePoint(&x, &y)
 		system.AddDebugMessage("(%d, %d)", x, y)
 
-		system.DebugDraw()
+		debugDraw()
 	}
 
 	if err := system.Error(); err != nil {
@@ -158,4 +159,21 @@ func appInit() error {
 	}
 
 	return nil
+}
+
+func debugDraw() {
+	if config.Get().Debug.ShowDebugData {
+		if font == -1 {
+			font = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
+				FontName: nil,
+				Size:     dxlib.Int32Ptr(22),
+				Thick:    dxlib.Int32Ptr(7),
+				FontType: dxlib.Int32Ptr(dxlib.DX_FONTTYPE_EDGE),
+			})
+		}
+
+		for i, msg := range system.PopAllDebugMessages() {
+			dxlib.DrawFormatStringToHandle(0, i*25, 0xffffff, font, msg)
+		}
+	}
 }
