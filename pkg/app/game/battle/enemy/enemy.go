@@ -30,6 +30,7 @@ const (
 	IDRockman
 	IDSupportNPC
 	IDColdman
+	IDCirKill
 )
 
 type EnemyChipInfo struct {
@@ -71,7 +72,7 @@ var (
 		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
 		{CharID: IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
 		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
-		// TODO: コールドマンのチップ
+		// TODO: コールドマン、サーキラーのチップ
 	}
 )
 
@@ -154,6 +155,8 @@ func GetName(id int) string {
 		return "ロックマン"
 	case IDColdman:
 		return "コールドマン"
+	case IDCirKill:
+		return "サーキラー"
 	}
 	return ""
 }
@@ -185,6 +188,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		system.SetError("enemy rockman is not implemented yet")
 	case IDColdman:
 		return &enemyColdman{pm: initParam}
+	case IDCirKill:
+		return &enemyCirKill{pm: initParam}
 	}
 	return nil
 }

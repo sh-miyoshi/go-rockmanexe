@@ -197,6 +197,27 @@ func goBattleInit() error {
 			},
 		},
 		{
+			Name: "回る殺戮者",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDCirKill,
+						Pos:    point.Point{X: 5, Y: 0},
+						HP:     150,
+					},
+					View: point.Point{X: viewCenter.X + 30, Y: viewCenter.Y - 5},
+				},
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDCirKill,
+						Pos:    point.Point{X: 3, Y: 2},
+						HP:     150,
+					},
+					View: point.Point{X: viewCenter.X - 20, Y: viewCenter.Y + 25},
+				},
+			},
+		},
+		{
 			Name: "水を操りし者",
 			Enemies: []selectEnemyData{
 				{
