@@ -60,3 +60,7 @@ func (p *Cannon) Process() (bool, error) {
 func (p *Cannon) GetCount() int {
 	return p.count
 }
+
+func (p *Cannon) GetEndCount() int {
+	return cannonEndCount
+}

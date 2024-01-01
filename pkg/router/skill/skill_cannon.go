@@ -2,7 +2,6 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
@@ -66,5 +65,5 @@ func (p *cannon) StopByOwner() {
 }
 
 func (p *cannon) GetEndCount() int {
-	return resources.SkillCannonEndCount
+	return p.Core.GetEndCount()
 }

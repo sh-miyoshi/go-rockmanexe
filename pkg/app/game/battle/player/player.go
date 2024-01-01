@@ -668,6 +668,7 @@ func (a *act) Process() bool {
 
 	a.count++
 
+	// TODO: refactoring
 	num := len(imgPlayers[a.typ]) + a.keepCount
 	if a.count > num*imgDelays[a.typ] {
 		// Reset params
