@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -213,7 +214,7 @@ func (a *billyAct) Process() bool {
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			localanim.AnimNew(skill.Get(skill.SkillThunderBall, skill.Argument{
+			localanim.AnimNew(skill.Get(skillcore.SkillThunderBall, skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,

@@ -4,12 +4,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
 	animInst    *anim.AnimManager
 	objanimInst *objanim.AnimManager
+	skillMgr    *skillcore.Manager
 )
 
 func AnimMgrProcess() error {
@@ -170,4 +172,11 @@ func DamageManager() *damage.DamageManager {
 	}
 
 	return objanimInst.DamageManager()
+}
+
+func SkillManager() *skillcore.Manager {
+	if skillMgr == nil {
+		skillMgr = skillcore.NewManager(DamageManager(), ObjAnimGetObjPos)
+	}
+	return skillMgr
 }

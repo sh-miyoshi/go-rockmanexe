@@ -2,12 +2,9 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -22,15 +19,15 @@ type cannon struct {
 	ID   string
 	Type int
 	Arg  Argument
-
-	count int
+	Core skillcore.SkillCore
 }
 
-func newCannon(cannonType int, arg Argument) *cannon {
+func newCannon(cannonType int, arg Argument, core skillcore.SkillCore) *cannon {
 	return &cannon{
 		ID:   arg.AnimObjID,
 		Type: cannonType,
 		Arg:  arg,
+		Core: core,
 	}
 }
 
@@ -39,52 +36,13 @@ func (p *cannon) Draw() {
 }
 
 func (p *cannon) Process() (bool, error) {
-	p.count++
-
-	if p.count == 20 {
-		// Add damage
-		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
-		dm := damage.Damage{
-			DamageType:    damage.TypeObject,
-			OwnerClientID: p.Arg.OwnerClientID,
-			Power:         int(p.Arg.Power),
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeCannonHit,
-			BigDamage:     true,
-			Element:       damage.ElementNone,
-		}
-
-		if p.Arg.TargetType == damage.TargetEnemy {
-			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
-					dm.TargetObjID = objID
-					logger.Debug("Add damage by cannon: %+v", dm)
-					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
-					break
-				}
-			}
-		} else {
-			for x := pos.X - 1; x >= 0; x-- {
-				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
-					dm.TargetObjID = objID
-					logger.Debug("Add damage by cannon: %+v", dm)
-					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
-					break
-				}
-			}
-		}
-	}
-
-	if p.count > p.GetEndCount() {
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *cannon) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
 	switch p.Type {
 	case TypeNormalCannon:

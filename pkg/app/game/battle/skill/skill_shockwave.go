@@ -9,13 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type shockWave struct {
 	ID       string
-	Arg      Argument
+	Arg      skillcore.Argument
 	Direct   int
 	ShowPick bool
 	Speed    int
@@ -28,7 +29,7 @@ type shockWave struct {
 	pickDrawer skilldraw.DrawPick
 }
 
-func newShockWave(objID string, isPlayer bool, arg Argument) *shockWave {
+func newShockWave(objID string, isPlayer bool, arg skillcore.Argument) *shockWave {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	res := &shockWave{
 		ID:     objID,

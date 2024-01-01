@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -117,7 +118,7 @@ func (s *Supporter) Process() (bool, error) {
 		}
 
 		sid := skill.GetSkillID(c.ID)
-		s.act.skillInst = skill.Get(sid, skill.Argument{
+		s.act.skillInst = skill.Get(sid, skillcore.Argument{
 			OwnerID:    s.ID,
 			Power:      c.Power,
 			TargetType: target,

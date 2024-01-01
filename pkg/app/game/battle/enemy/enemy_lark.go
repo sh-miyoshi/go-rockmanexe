@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -227,8 +228,8 @@ func (a *larkAtk) SetAttack() {
 func (a *larkAtk) Process() {
 	if a.count == 1*delayLarkAtk {
 		localanim.AnimNew(skill.Get(
-			skill.SkillWideShot,
-			skill.Argument{
+			skillcore.SkillWideShot,
+			skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,

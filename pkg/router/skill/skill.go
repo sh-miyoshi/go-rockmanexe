@@ -6,6 +6,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
@@ -29,12 +31,22 @@ type SkillAnim interface {
 
 func GetByChip(chipID int, arg Argument) SkillAnim {
 	switch chipID {
-	case chip.IDCannon:
-		return newCannon(TypeNormalCannon, arg)
-	case chip.IDHighCannon:
-		return newCannon(TypeHighCannon, arg)
-	case chip.IDMegaCannon:
-		return newCannon(TypeMegaCannon, arg)
+	case chip.IDCannon, chip.IDHighCannon, chip.IDMegaCannon:
+		a := skillcore.Argument{
+			Power:        arg.Power,
+			OwnerID:      arg.OwnerObjectID,
+			TargetType:   arg.TargetType,
+			GetPanelInfo: arg.GameInfo.GetPanelInfo,
+		}
+		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillCannon, a)
+		switch chipID {
+		case chip.IDCannon:
+			return newCannon(TypeNormalCannon, arg, core)
+		case chip.IDHighCannon:
+			return newCannon(TypeHighCannon, arg, core)
+		case chip.IDMegaCannon:
+			return newCannon(TypeMegaCannon, arg, core)
+		}
 	case chip.IDMiniBomb:
 		return newMiniBomb(arg)
 	case chip.IDRecover10, chip.IDRecover30:
@@ -53,7 +65,6 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 		return newVulcan(3, arg)
 	case chip.IDWideShot:
 		return newWideShot(arg)
-	default:
-		panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
 	}
+	panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
 }

@@ -5,15 +5,16 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type failed struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 }
 
-func newFailed(objID string, arg Argument) *failed {
+func newFailed(objID string, arg skillcore.Argument) *failed {
 	return &failed{
 		ID:  objID,
 		Arg: arg,

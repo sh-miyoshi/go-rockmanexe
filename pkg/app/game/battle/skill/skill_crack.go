@@ -5,6 +5,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -17,13 +18,13 @@ const (
 
 type crack struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count     int
 	attackPos []point.Point
 }
 
-func newCrack(objID string, crackType int, arg Argument) *crack {
+func newCrack(objID string, crackType int, arg skillcore.Argument) *crack {
 	res := crack{
 		ID:  objID,
 		Arg: arg,

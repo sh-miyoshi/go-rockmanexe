@@ -9,13 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type miniBomb struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	pos    point.Point
@@ -23,7 +24,7 @@ type miniBomb struct {
 	drawer skilldraw.DrawMiniBomb
 }
 
-func newMiniBomb(objID string, arg Argument) *miniBomb {
+func newMiniBomb(objID string, arg skillcore.Argument) *miniBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	return &miniBomb{
 		ID:     objID,

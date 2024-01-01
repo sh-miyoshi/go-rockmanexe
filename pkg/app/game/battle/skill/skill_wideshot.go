@@ -8,13 +8,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type wideShot struct {
 	ID            string
-	Arg           Argument
+	Arg           skillcore.Argument
 	Direct        int
 	NextStepCount int
 
@@ -25,7 +26,7 @@ type wideShot struct {
 	drawer   skilldraw.DrawWideShot
 }
 
-func newWideShot(objID string, arg Argument) *wideShot {
+func newWideShot(objID string, arg skillcore.Argument) *wideShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	direct := config.DirectRight
 	nextStep := resources.SkillWideShotPlayerNextStepCount

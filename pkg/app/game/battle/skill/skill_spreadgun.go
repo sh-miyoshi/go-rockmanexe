@@ -10,13 +10,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type spreadGun struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	drawer skilldraw.DrawSpreadGun
@@ -24,13 +25,13 @@ type spreadGun struct {
 
 type spreadHit struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count int
 	pos   point.Point
 }
 
-func newSpreadGun(objID string, arg Argument) *spreadGun {
+func newSpreadGun(objID string, arg skillcore.Argument) *spreadGun {
 	res := &spreadGun{
 		ID:  objID,
 		Arg: arg,

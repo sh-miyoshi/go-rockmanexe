@@ -21,6 +21,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -444,7 +445,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skill.GetSkillID(c.ID)
-			p.act.skillInst = skill.Get(sid, skill.Argument{
+			p.act.skillInst = skill.Get(sid, skillcore.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,

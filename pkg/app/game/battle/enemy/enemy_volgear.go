@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -244,7 +245,7 @@ func (a *volgearAtk) Process() (bool, error) {
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = localanim.AnimNew(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+		a.atkID = localanim.AnimNew(skill.Get(skillcore.SkillFlamePillarTracking, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
