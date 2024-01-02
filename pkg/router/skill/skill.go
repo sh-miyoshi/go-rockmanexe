@@ -52,7 +52,8 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillMiniBomb, coreArg)
 		return newMiniBomb(arg, core)
 	case chip.IDRecover10, chip.IDRecover30:
-		return newRecover(arg)
+		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillRecover, coreArg)
+		return newRecover(arg, core)
 	case chip.IDShockWave:
 		return newShockWave(arg)
 	case chip.IDSpreadGun:

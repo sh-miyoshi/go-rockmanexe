@@ -33,9 +33,6 @@ func (p *MiniBomb) Process() (bool, error) {
 			return true, nil
 		}
 
-		// sound.On(resources.SEExplode) // TODO
-		// TODO
-		// localanim.AnimNew(effect.Get(resources.EffectTypeExplode, p.target, 0))
 		if objID := p.arg.GetPanelInfo(p.target).ObjectID; objID != "" {
 			p.mgrInst.damageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
