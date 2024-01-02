@@ -2,29 +2,26 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type miniBomb struct {
-	ID  string
-	Arg Argument
+	ID   string
+	Arg  Argument
+	Core skillcore.SkillCore
 
-	count  int
-	pos    point.Point
-	target point.Point
+	pos point.Point
 }
 
-func newMiniBomb(arg Argument) *miniBomb {
+func newMiniBomb(arg Argument, core skillcore.SkillCore) *miniBomb {
 	pos := routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID)
 	return &miniBomb{
-		ID:     arg.AnimObjID,
-		Arg:    arg,
-		pos:    pos,
-		target: point.Point{X: pos.X + 3, Y: pos.Y},
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core,
+		pos:  pos,
 	}
 }
 
@@ -33,36 +30,14 @@ func (p *miniBomb) Draw() {
 }
 
 func (p *miniBomb) Process() (bool, error) {
-	p.count++
-
-	if p.count == resources.SkillMiniBombEndCount {
-		pn := p.Arg.GameInfo.GetPanelInfo(p.target)
-		if pn.Status == battlecommon.PanelStatusHole {
-			return true, nil
-		}
-
-		if objID := pn.ObjectID; objID != "" {
-			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-				DamageType:    damage.TypeObject,
-				OwnerClientID: p.Arg.OwnerClientID,
-				Power:         int(p.Arg.Power),
-				TargetObjType: p.Arg.TargetType,
-				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
-				Element:       damage.ElementNone,
-				TargetObjID:   objID,
-			})
-		}
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *miniBomb) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeMiniBomb,
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
 
 	return anim.Param{
@@ -74,11 +49,11 @@ func (p *miniBomb) GetParam() anim.Param {
 }
 
 func (p *miniBomb) StopByOwner() {
-	if p.count < 5 {
+	if p.Core.GetCount() < 5 {
 		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 
 func (p *miniBomb) GetEndCount() int {
-	return resources.SkillMiniBombEndCount
+	return p.Core.GetEndCount()
 }

@@ -30,15 +30,16 @@ type SkillAnim interface {
 }
 
 func GetByChip(chipID int, arg Argument) SkillAnim {
+	coreArg := skillcore.Argument{
+		Power:        arg.Power,
+		OwnerID:      arg.OwnerObjectID,
+		TargetType:   arg.TargetType,
+		GetPanelInfo: arg.GameInfo.GetPanelInfo,
+	}
+
 	switch chipID {
 	case chip.IDCannon, chip.IDHighCannon, chip.IDMegaCannon:
-		a := skillcore.Argument{
-			Power:        arg.Power,
-			OwnerID:      arg.OwnerObjectID,
-			TargetType:   arg.TargetType,
-			GetPanelInfo: arg.GameInfo.GetPanelInfo,
-		}
-		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillCannon, a)
+		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillCannon, coreArg)
 		switch chipID {
 		case chip.IDCannon:
 			return newCannon(TypeNormalCannon, arg, core)
@@ -48,7 +49,8 @@ func GetByChip(chipID int, arg Argument) SkillAnim {
 			return newCannon(TypeMegaCannon, arg, core)
 		}
 	case chip.IDMiniBomb:
-		return newMiniBomb(arg)
+		core := routeranim.SKillManager(arg.OwnerClientID).Get(skillcore.SkillMiniBomb, coreArg)
+		return newMiniBomb(arg, core)
 	case chip.IDRecover10, chip.IDRecover30:
 		return newRecover(arg)
 	case chip.IDShockWave:

@@ -2,6 +2,12 @@
 
 ## v0.12でやりたいこと
 
+### スキルリファクタリング
+
+- sound handler
+- player end count
+- mini bomb end count
+
 ## ネットワーク対戦のリファクタリング
 
 - 後回し
