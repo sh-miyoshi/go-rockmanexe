@@ -241,7 +241,7 @@ func (a *garooAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayGarooAtk*4 {
-		localanim.AnimNew(skill.Get(skill.SkillGarooBreath, skill.Argument{
+		localanim.AnimNew(skill.Get(resources.SkillGarooBreath, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

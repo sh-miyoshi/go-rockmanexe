@@ -213,7 +213,7 @@ func (a *billyAct) Process() bool {
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			localanim.AnimNew(skill.Get(skill.SkillThunderBall, skill.Argument{
+			localanim.AnimNew(skill.Get(resources.SkillThunderBall, skill.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,

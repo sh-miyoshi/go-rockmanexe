@@ -25,7 +25,7 @@
       - resources.NextStepCount, Delay
       - resources.SkillState
     - 移動
-      - From: battle/skill/skill.go, To: resources.Skill
+      - [x] From: battle/skill/skill.go, To: resources.Skill
       - skill.Argument -> skillcore.Argument?
       - skill.GetByChipID -> skillcore.GetByChipID?
 - Phase2

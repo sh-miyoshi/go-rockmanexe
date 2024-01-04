@@ -244,7 +244,7 @@ func (a *volgearAtk) Process() (bool, error) {
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = localanim.AnimNew(skill.Get(skill.SkillFlamePillarTracking, skill.Argument{
+		a.atkID = localanim.AnimNew(skill.Get(resources.SkillFlamePillarTracking, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

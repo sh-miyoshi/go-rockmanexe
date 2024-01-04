@@ -1,6 +1,48 @@
 package resources
 
 const (
+	SkillCannon int = iota
+	SkillHighCannon
+	SkillMegaCannon
+	SkillMiniBomb
+	SkillSword
+	SkillWideSword
+	SkillLongSword
+	SkillShockWave
+	SkillRecover
+	SkillSpreadGun
+	SkillVulcan1
+	SkillPlayerShockWave
+	SkillThunderBall
+	SkillWideShot
+	SkillBoomerang
+	SkillWaterBomb
+	SkillAquamanShot
+	SkillAquaman
+	SkillCrackout
+	SkillDoubleCrack
+	SkillTripleCrack
+	SkillBambooLance
+	SkillDreamSword
+	SkillInvisible
+	SkillGarooBreath
+	SkillFlamePillarRandom
+	SkillFlamePillarTracking
+	SkillHeatShot
+	SkillHeatV
+	SkillHeatSide
+	SkillFlamePillarLine
+	SkillAreaSteal
+	SkillPanelSteal
+	SkillCountBomb
+	SkillTornado
+	SkillQuickGauge
+	SkillCirkillShot
+
+	SkillFailed
+)
+
+const (
 	SkillTypeNormalCannon int = iota
 	SkillTypeHighCannon
 	SkillTypeMegaCannon

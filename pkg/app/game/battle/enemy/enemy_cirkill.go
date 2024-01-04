@@ -228,7 +228,7 @@ func (a *cirKillAttack) Process() {
 
 	if a.attacking {
 		if a.count == 0 {
-			a.animID = localanim.AnimNew(skill.Get(skill.SkillCirkillShot, skill.Argument{
+			a.animID = localanim.AnimNew(skill.Get(resources.SkillCirkillShot, skill.Argument{
 				OwnerID:    a.ownerID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,

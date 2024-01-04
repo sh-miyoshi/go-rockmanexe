@@ -206,7 +206,7 @@ func (a *metallAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		localanim.AnimNew(skill.Get(skill.SkillShockWave, skill.Argument{
+		localanim.AnimNew(skill.Get(resources.SkillShockWave, skill.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

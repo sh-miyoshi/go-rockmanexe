@@ -248,7 +248,7 @@ func (a *boomerAtk) Init() {
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
 		a.atkID = localanim.AnimNew(skill.Get(
-			skill.SkillBoomerang,
+			resources.SkillBoomerang,
 			skill.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
