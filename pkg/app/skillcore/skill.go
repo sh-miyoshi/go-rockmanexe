@@ -4,14 +4,23 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type Argument struct {
-	OwnerID    string
-	Power      uint
-	TargetType int
+	OwnerID      string
+	Power        uint
+	TargetType   int
+	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
+}
+
+type SkillCore interface {
+	Process() (bool, error)
+	GetCount() int
+	GetEndCount() int
 }
 
 func GetIDByChipID(chipID int) int {
