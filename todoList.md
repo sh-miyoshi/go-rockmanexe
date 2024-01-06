@@ -26,7 +26,7 @@
       - resources.SkillState
     - 移動
       - [x] From: battle/skill/skill.go, To: resources.Skill
-      - skill.Argument -> skillcore.Argument?
+      - [x] skill.Argument -> skillcore.Argument?
       - [x] skill.GetByChipID -> skillcore.GetByChipID?
 - Phase2
   - skillcoreの実装

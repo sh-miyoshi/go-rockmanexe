@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -206,7 +207,7 @@ func (a *metallAtk) Process() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		localanim.AnimNew(skill.Get(resources.SkillShockWave, skill.Argument{
+		localanim.AnimNew(skill.Get(resources.SkillShockWave, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

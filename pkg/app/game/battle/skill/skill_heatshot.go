@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -25,14 +26,14 @@ const (
 
 type heatShot struct {
 	ID   string
-	Arg  Argument
+	Arg  skillcore.Argument
 	Type int
 
 	count  int
 	drawer skilldraw.DrawHeatShot
 }
 
-func newHeatShot(objID string, arg Argument, shotType int) *heatShot {
+func newHeatShot(objID string, arg skillcore.Argument, shotType int) *heatShot {
 	return &heatShot{
 		ID:   objID,
 		Arg:  arg,

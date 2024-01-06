@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -219,7 +220,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 		}
 
 		if e.count == 0 {
-			e.actID = localanim.AnimNew(skill.Get(resources.SkillAquamanShot, skill.Argument{
+			e.actID = localanim.AnimNew(skill.Get(resources.SkillAquamanShot, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,
@@ -244,7 +245,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 	case aquamanActTypeBomb:
 		if e.count == 3*aquamanDelays[aquamanActTypeBomb] {
 			// ボム登録
-			localanim.AnimNew(skill.Get(resources.SkillWaterBomb, skill.Argument{
+			localanim.AnimNew(skill.Get(resources.SkillWaterBomb, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,

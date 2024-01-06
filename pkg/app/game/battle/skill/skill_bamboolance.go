@@ -7,18 +7,19 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type bambooLance struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	drawer skilldraw.DrawBamboolance
 }
 
-func newBambooLance(objID string, arg Argument) *bambooLance {
+func newBambooLance(objID string, arg skillcore.Argument) *bambooLance {
 	res := &bambooLance{
 		ID:  objID,
 		Arg: arg,

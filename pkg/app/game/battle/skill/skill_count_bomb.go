@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -19,14 +20,14 @@ const (
 
 type countBomb struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	pos    point.Point
 	drawer skilldraw.DrawCountBomb
 }
 
-func newCountBomb(objID string, arg Argument) *countBomb {
+func newCountBomb(objID string, arg skillcore.Argument) *countBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	return &countBomb{
 		ID:  objID,

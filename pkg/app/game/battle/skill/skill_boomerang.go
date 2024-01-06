@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -14,7 +15,7 @@ import (
 
 type boomerang struct {
 	ID      string
-	Arg     Argument
+	Arg     skillcore.Argument
 	ActType int
 
 	count   int
@@ -32,7 +33,7 @@ const (
 	boomerangActTypeRightStraight
 )
 
-func newBoomerang(objID string, arg Argument) *boomerang {
+func newBoomerang(objID string, arg skillcore.Argument) *boomerang {
 	// TODO(直線移動)
 	sx := 0
 	sy := battlecommon.FieldNum.Y - 1

@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -228,7 +229,7 @@ func (a *cirKillAttack) Process() {
 
 	if a.attacking {
 		if a.count == 0 {
-			a.animID = localanim.AnimNew(skill.Get(resources.SkillCirkillShot, skill.Argument{
+			a.animID = localanim.AnimNew(skill.Get(resources.SkillCirkillShot, skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,

@@ -9,13 +9,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type vulcan struct {
 	ID    string
-	Arg   Argument
+	Arg   skillcore.Argument
 	Times int
 
 	count    int
@@ -24,7 +25,7 @@ type vulcan struct {
 	drawer   skilldraw.DrawVulcan
 }
 
-func newVulcan(objID string, arg Argument) *vulcan {
+func newVulcan(objID string, arg skillcore.Argument) *vulcan {
 	return &vulcan{
 		ID:    objID,
 		Arg:   arg,

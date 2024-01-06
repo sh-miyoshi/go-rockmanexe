@@ -7,12 +7,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type cirkillShot struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count    int
 	pos      point.Point
@@ -23,7 +24,7 @@ type cirkillShot struct {
 	drawer   skilldraw.DrawCirkillShot
 }
 
-func newCirkillShot(objID string, arg Argument) *cirkillShot {
+func newCirkillShot(objID string, arg skillcore.Argument) *cirkillShot {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	vx := 1
 	if arg.TargetType == damage.TargetPlayer {

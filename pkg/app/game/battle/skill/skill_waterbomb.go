@@ -10,13 +10,14 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type waterBomb struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	pos    point.Point
@@ -24,7 +25,7 @@ type waterBomb struct {
 	drawer skilldraw.DrawWaterBomb
 }
 
-func newWaterBomb(objID string, arg Argument) *waterBomb {
+func newWaterBomb(objID string, arg skillcore.Argument) *waterBomb {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	t := point.Point{X: pos.X + 3, Y: pos.Y}
 	objType := objanim.ObjTypePlayer

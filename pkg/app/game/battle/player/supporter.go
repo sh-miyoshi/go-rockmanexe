@@ -118,7 +118,7 @@ func (s *Supporter) Process() (bool, error) {
 		}
 
 		sid := skillcore.GetIDByChipID(c.ID)
-		s.act.skillInst = skill.Get(sid, skill.Argument{
+		s.act.skillInst = skill.Get(sid, skillcore.Argument{
 			OwnerID:    s.ID,
 			Power:      c.Power,
 			TargetType: target,

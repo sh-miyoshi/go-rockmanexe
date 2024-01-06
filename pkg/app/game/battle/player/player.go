@@ -445,7 +445,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skillcore.GetIDByChipID(c.ID)
-			p.act.skillInst = skill.Get(sid, skill.Argument{
+			p.act.skillInst = skill.Get(sid, skillcore.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,

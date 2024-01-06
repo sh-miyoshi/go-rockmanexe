@@ -8,6 +8,12 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
+type Argument struct {
+	OwnerID    string
+	Power      uint
+	TargetType int
+}
+
 func GetIDByChipID(chipID int) int {
 	switch chipID {
 	case chip.IDCannon:

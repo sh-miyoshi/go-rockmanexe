@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -18,7 +19,7 @@ import (
 
 type skillPanelSteal struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count       int
 	state       int
@@ -27,7 +28,7 @@ type skillPanelSteal struct {
 	drawer      skilldraw.DrawAreaSteal
 }
 
-func newPanelSteal(objID string, arg Argument) *skillPanelSteal {
+func newPanelSteal(objID string, arg skillcore.Argument) *skillPanelSteal {
 	res := &skillPanelSteal{
 		ID:    objID,
 		Arg:   arg,

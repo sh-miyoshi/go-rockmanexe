@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -16,7 +17,7 @@ import (
 
 type thunderBall struct {
 	ID           string
-	Arg          Argument
+	Arg          skillcore.Argument
 	MaxMoveCount int
 
 	count     int
@@ -28,7 +29,7 @@ type thunderBall struct {
 	drawer    skilldraw.DrawThunderBall
 }
 
-func newThunderBall(objID string, arg Argument) *thunderBall {
+func newThunderBall(objID string, arg skillcore.Argument) *thunderBall {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	x := pos.X + 1
 	if arg.TargetType == damage.TargetPlayer {

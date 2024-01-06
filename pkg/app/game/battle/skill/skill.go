@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
@@ -14,12 +15,6 @@ type SkillAnim interface {
 	anim.Anim
 
 	StopByOwner()
-}
-
-type Argument struct {
-	OwnerID    string
-	Power      uint
-	TargetType int
 }
 
 func Init() error {
@@ -34,7 +29,7 @@ func End() {
 	skilldraw.ClearImages()
 }
 
-func Get(skillID int, arg Argument) SkillAnim {
+func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 
 	switch skillID {
@@ -131,12 +126,12 @@ import (
 
 type tmpskill struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count int
 }
 
-func newTmpSkill(objID string, arg Argument) *tmpskill {
+func newTmpSkill(objID string, arg skillcore.Argument) *tmpskill {
 	return &tmpskill{
 		ID:  objID,
 		Arg: arg,
