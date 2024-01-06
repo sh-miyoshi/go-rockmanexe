@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -18,7 +19,7 @@ const (
 
 type tornado struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count     int
 	atkCount  int
@@ -27,7 +28,7 @@ type tornado struct {
 	targetPos point.Point
 }
 
-func newTornado(objID string, arg Argument) *tornado {
+func newTornado(objID string, arg skillcore.Argument) *tornado {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	return &tornado{
 		ID:        objID,

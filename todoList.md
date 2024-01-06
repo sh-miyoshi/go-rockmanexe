@@ -16,6 +16,21 @@
     - バルカン発射時など
   - 麻痺状態
 
+## スキルリファクタリング
+
+- Phase1
+  - 変数、定義の整理
+    - 消したい
+      - resources.EndCount
+      - resources.NextStepCount, Delay
+      - resources.SkillState
+    - 移動
+      - [x] From: battle/skill/skill.go, To: resources.Skill
+      - [x] skill.Argument -> skillcore.Argument?
+      - [x] skill.GetByChipID -> skillcore.GetByChipID?
+- Phase2
+  - skillcoreの実装
+
 ## 新機能
 
 - ココロウィンドウ

@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -15,13 +16,13 @@ import (
 type cannon struct {
 	ID   string
 	Type int
-	Arg  Argument
+	Arg  skillcore.Argument
 
 	count  int
 	drawer skilldraw.DrawCannon
 }
 
-func newCannon(objID string, cannonType int, arg Argument) *cannon {
+func newCannon(objID string, cannonType int, arg skillcore.Argument) *cannon {
 	return &cannon{
 		ID:   objID,
 		Type: cannonType,

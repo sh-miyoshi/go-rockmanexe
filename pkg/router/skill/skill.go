@@ -3,7 +3,6 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
@@ -27,33 +26,33 @@ type SkillAnim interface {
 	GetEndCount() int
 }
 
-func GetByChip(chipID int, arg Argument) SkillAnim {
-	switch chipID {
-	case chip.IDCannon:
+func Get(id int, arg Argument) SkillAnim {
+	switch id {
+	case resources.SkillCannon:
 		return newCannon(TypeNormalCannon, arg)
-	case chip.IDHighCannon:
+	case resources.SkillHighCannon:
 		return newCannon(TypeHighCannon, arg)
-	case chip.IDMegaCannon:
+	case resources.SkillMegaCannon:
 		return newCannon(TypeMegaCannon, arg)
-	case chip.IDMiniBomb:
+	case resources.SkillMiniBomb:
 		return newMiniBomb(arg)
-	case chip.IDRecover10, chip.IDRecover30:
+	case resources.SkillRecover:
 		return newRecover(arg)
-	case chip.IDShockWave:
+	case resources.SkillShockWave:
 		return newShockWave(arg)
-	case chip.IDSpreadGun:
+	case resources.SkillSpreadGun:
 		return newSpreadGun(arg)
-	case chip.IDSword:
+	case resources.SkillSword:
 		return newSword(resources.SkillTypeSword, arg)
-	case chip.IDWideSword:
+	case resources.SkillWideSword:
 		return newSword(resources.SkillTypeWideSword, arg)
-	case chip.IDLongSword:
+	case resources.SkillLongSword:
 		return newSword(resources.SkillTypeLongSword, arg)
-	case chip.IDVulcan1:
+	case resources.SkillVulcan1:
 		return newVulcan(3, arg)
-	case chip.IDWideShot:
+	case resources.SkillWideShot:
 		return newWideShot(arg)
 	default:
-		panic(fmt.Sprintf("chip %d is not implemented yet", chipID))
+		panic(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
 }

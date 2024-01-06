@@ -4,16 +4,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
 type invisible struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count int
 }
 
-func newInvisible(objID string, arg Argument) *invisible {
+func newInvisible(objID string, arg skillcore.Argument) *invisible {
 	return &invisible{
 		ID:  objID,
 		Arg: arg,

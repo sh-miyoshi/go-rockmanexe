@@ -11,12 +11,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type aquaman struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	state  int
@@ -25,7 +26,7 @@ type aquaman struct {
 	drawer skilldraw.DrawAquaman
 }
 
-func newAquaman(objID string, arg Argument) *aquaman {
+func newAquaman(objID string, arg skillcore.Argument) *aquaman {
 	return &aquaman{
 		ID:    objID,
 		Arg:   arg,

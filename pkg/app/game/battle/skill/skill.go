@@ -4,65 +4,17 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
-)
-
-const (
-	SkillCannon int = iota
-	SkillHighCannon
-	SkillMegaCannon
-	SkillMiniBomb
-	SkillSword
-	SkillWideSword
-	SkillLongSword
-	SkillShockWave
-	SkillRecover
-	SkillSpreadGun
-	SkillVulcan1
-	SkillPlayerShockWave
-	SkillThunderBall
-	SkillWideShot
-	SkillBoomerang
-	SkillWaterBomb
-	SkillAquamanShot
-	SkillAquaman
-	SkillCrackout
-	SkillDoubleCrack
-	SkillTripleCrack
-	SkillBambooLance
-	SkillDreamSword
-	SkillInvisible
-	SkillGarooBreath
-	SkillFlamePillarRandom
-	SkillFlamePillarTracking
-	SkillHeatShot
-	SkillHeatV
-	SkillHeatSide
-	SkillFlamePillarLine
-	SkillAreaSteal
-	SkillPanelSteal
-	SkillCountBomb
-	SkillTornado
-	SkillQuickGauge
-	SkillCirkillShot
-
-	SkillFailed
 )
 
 type SkillAnim interface {
 	anim.Anim
 
 	StopByOwner()
-}
-
-type Argument struct {
-	OwnerID    string
-	Power      uint
-	TargetType int
 }
 
 func Init() error {
@@ -77,162 +29,90 @@ func End() {
 	skilldraw.ClearImages()
 }
 
-func Get(skillID int, arg Argument) SkillAnim {
+func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 
 	switch skillID {
-	case SkillCannon:
+	case resources.SkillCannon:
 		return newCannon(objID, resources.SkillTypeNormalCannon, arg)
-	case SkillHighCannon:
+	case resources.SkillHighCannon:
 		return newCannon(objID, resources.SkillTypeHighCannon, arg)
-	case SkillMegaCannon:
+	case resources.SkillMegaCannon:
 		return newCannon(objID, resources.SkillTypeMegaCannon, arg)
-	case SkillMiniBomb:
+	case resources.SkillMiniBomb:
 		return newMiniBomb(objID, arg)
-	case SkillSword:
+	case resources.SkillSword:
 		return newSword(objID, resources.SkillTypeSword, arg)
-	case SkillWideSword:
+	case resources.SkillWideSword:
 		return newSword(objID, resources.SkillTypeWideSword, arg)
-	case SkillLongSword:
+	case resources.SkillLongSword:
 		return newSword(objID, resources.SkillTypeLongSword, arg)
-	case SkillShockWave:
+	case resources.SkillShockWave:
 		return newShockWave(objID, false, arg)
-	case SkillRecover:
+	case resources.SkillRecover:
 		return newRecover(objID, arg)
-	case SkillSpreadGun:
+	case resources.SkillSpreadGun:
 		return newSpreadGun(objID, arg)
-	case SkillVulcan1:
+	case resources.SkillVulcan1:
 		return newVulcan(objID, arg)
-	case SkillPlayerShockWave:
+	case resources.SkillPlayerShockWave:
 		return newShockWave(objID, true, arg)
-	case SkillThunderBall:
+	case resources.SkillThunderBall:
 		return newThunderBall(objID, arg)
-	case SkillWideShot:
+	case resources.SkillWideShot:
 		return newWideShot(objID, arg)
-	case SkillBoomerang:
+	case resources.SkillBoomerang:
 		return newBoomerang(objID, arg)
-	case SkillWaterBomb:
+	case resources.SkillWaterBomb:
 		return newWaterBomb(objID, arg)
-	case SkillAquamanShot:
+	case resources.SkillAquamanShot:
 		return newAquamanShot(objID, arg)
-	case SkillAquaman:
+	case resources.SkillAquaman:
 		return newAquaman(objID, arg)
-	case SkillCrackout:
+	case resources.SkillCrackout:
 		return newCrack(objID, crackType1, arg)
-	case SkillDoubleCrack:
+	case resources.SkillDoubleCrack:
 		return newCrack(objID, crackType2, arg)
-	case SkillTripleCrack:
+	case resources.SkillTripleCrack:
 		return newCrack(objID, crackType3, arg)
-	case SkillBambooLance:
+	case resources.SkillBambooLance:
 		return newBambooLance(objID, arg)
-	case SkillDreamSword:
+	case resources.SkillDreamSword:
 		return newDreamSword(objID, arg)
-	case SkillInvisible:
+	case resources.SkillInvisible:
 		return newInvisible(objID, arg)
-	case SkillGarooBreath:
+	case resources.SkillGarooBreath:
 		return newGarooBreath(objID, arg)
-	case SkillFlamePillarTracking:
+	case resources.SkillFlamePillarTracking:
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeTracking)
-	case SkillFlamePillarRandom:
+	case resources.SkillFlamePillarRandom:
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeRandom)
-	case SkillHeatShot:
+	case resources.SkillHeatShot:
 		return newHeatShot(objID, arg, heatShotTypeShot)
-	case SkillHeatV:
+	case resources.SkillHeatV:
 		return newHeatShot(objID, arg, heatShotTypeV)
-	case SkillHeatSide:
+	case resources.SkillHeatSide:
 		return newHeatShot(objID, arg, heatShotTypeSide)
-	case SkillFlamePillarLine:
+	case resources.SkillFlamePillarLine:
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeLine)
-	case SkillAreaSteal:
+	case resources.SkillAreaSteal:
 		return newAreaSteal(objID, arg)
-	case SkillPanelSteal:
+	case resources.SkillPanelSteal:
 		return newPanelSteal(objID, arg)
-	case SkillCountBomb:
+	case resources.SkillCountBomb:
 		return newCountBomb(objID, arg)
-	case SkillTornado:
+	case resources.SkillTornado:
 		return newTornado(objID, arg)
-	case SkillFailed:
+	case resources.SkillFailed:
 		return newFailed(objID, arg)
-	case SkillQuickGauge:
+	case resources.SkillQuickGauge:
 		return newQuickGauge(objID, arg)
-	case SkillCirkillShot:
+	case resources.SkillCirkillShot:
 		return newCirkillShot(objID, arg)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
 	return nil
-}
-
-func GetSkillID(chipID int) int {
-	switch chipID {
-	case chip.IDCannon:
-		return SkillCannon
-	case chip.IDHighCannon:
-		return SkillHighCannon
-	case chip.IDMegaCannon:
-		return SkillMegaCannon
-	case chip.IDSword:
-		return SkillSword
-	case chip.IDWideSword:
-		return SkillWideSword
-	case chip.IDLongSword:
-		return SkillLongSword
-	case chip.IDMiniBomb:
-		return SkillMiniBomb
-	case chip.IDRecover10:
-		return SkillRecover
-	case chip.IDRecover30:
-		return SkillRecover
-	case chip.IDSpreadGun:
-		return SkillSpreadGun
-	case chip.IDVulcan1:
-		return SkillVulcan1
-	case chip.IDShockWave:
-		return SkillPlayerShockWave
-	case chip.IDThunderBall:
-		return SkillThunderBall
-	case chip.IDWideShot:
-		return SkillWideShot
-	case chip.IDBoomerang1:
-		return SkillBoomerang
-	case chip.IDAquaman:
-		return SkillAquaman
-	case chip.IDCrackout:
-		return SkillCrackout
-	case chip.IDDoubleCrack:
-		return SkillDoubleCrack
-	case chip.IDTripleCrack:
-		return SkillTripleCrack
-	case chip.IDBambooLance:
-		return SkillBambooLance
-	case chip.IDDreamSword:
-		return SkillDreamSword
-	case chip.IDInvisible:
-		return SkillInvisible
-	case chip.IDHeatShot:
-		return SkillHeatShot
-	case chip.IDHeatV:
-		return SkillHeatV
-	case chip.IDHeatSide:
-		return SkillHeatSide
-	case chip.IDFlameLine1, chip.IDFlameLine2, chip.IDFlameLine3:
-		return SkillFlamePillarLine
-	case chip.IDAreaSteal:
-		return SkillAreaSteal
-	case chip.IDPanelSteal:
-		return SkillPanelSteal
-	case chip.IDCountBomb:
-		return SkillCountBomb
-	case chip.IDTornado:
-		return SkillTornado
-	case chip.IDAttack10:
-		return SkillFailed
-	case chip.IDQuickGauge:
-		return SkillQuickGauge
-	}
-
-	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
-	return 0
 }
 
 /*
@@ -246,12 +126,12 @@ import (
 
 type tmpskill struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count int
 }
 
-func newTmpSkill(objID string, arg Argument) *tmpskill {
+func newTmpSkill(objID string, arg skillcore.Argument) *tmpskill {
 	return &tmpskill{
 		ID:  objID,
 		Arg: arg,

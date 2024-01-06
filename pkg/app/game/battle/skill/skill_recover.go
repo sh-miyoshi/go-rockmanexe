@@ -7,18 +7,19 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type recover struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count  int
 	drawer skilldraw.DrawRecover
 }
 
-func newRecover(objID string, arg Argument) *recover {
+func newRecover(objID string, arg skillcore.Argument) *recover {
 	return &recover{
 		ID:  objID,
 		Arg: arg,

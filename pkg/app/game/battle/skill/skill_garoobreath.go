@@ -7,12 +7,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type garooBreath struct {
 	ID  string
-	Arg Argument
+	Arg skillcore.Argument
 
 	count    int
 	pos      point.Point
@@ -23,7 +24,7 @@ type garooBreath struct {
 	drawer   skilldraw.DrawGarooBreath
 }
 
-func newGarooBreath(objID string, arg Argument) *garooBreath {
+func newGarooBreath(objID string, arg skillcore.Argument) *garooBreath {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	vx := 1
 	if arg.TargetType == damage.TargetPlayer {

@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
@@ -248,8 +249,8 @@ func (a *boomerAtk) Init() {
 func (a *boomerAtk) Process() bool {
 	if a.count == 0 {
 		a.atkID = localanim.AnimNew(skill.Get(
-			skill.SkillBoomerang,
-			skill.Argument{
+			resources.SkillBoomerang,
+			skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
