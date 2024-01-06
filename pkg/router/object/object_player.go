@@ -11,6 +11,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -219,7 +220,8 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		target = damage.TargetPlayer
 	}
 
-	s := skill.GetByChip(chipInfo.ChipID, skill.Argument{
+	id := skillcore.GetIDByChipID(chipInfo.ChipID)
+	s := skill.Get(id, skill.Argument{
 		AnimObjID:     chipInfo.AnimID,
 		OwnerObjectID: p.objectInfo.ID,
 		OwnerClientID: chipInfo.ChipUserClientID,
