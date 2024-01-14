@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	imgCannonAtk         [resources.SkillTypeCannonMax][]int
-	imgCannonBody        [resources.SkillTypeCannonMax][]int
+	imgCannonAtk         [3][]int
+	imgCannonBody        [3][]int
 	imgSword             [resources.SkillTypeSwordMax][]int
 	imgBombThrow         []int
 	imgShockWave         []int

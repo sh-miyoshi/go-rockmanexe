@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -31,14 +33,12 @@ func End() {
 
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
+	arg.GetPanelInfo = field.GetPanelInfo
+	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
-	case resources.SkillCannon:
-		return newCannon(objID, resources.SkillTypeNormalCannon, arg)
-	case resources.SkillHighCannon:
-		return newCannon(objID, resources.SkillTypeHighCannon, arg)
-	case resources.SkillMegaCannon:
-		return newCannon(objID, resources.SkillTypeMegaCannon, arg)
+	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
+		return newCannon(objID, skillID, arg, core)
 	case resources.SkillMiniBomb:
 		return newMiniBomb(objID, arg)
 	case resources.SkillSword:

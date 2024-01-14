@@ -5,6 +5,8 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
@@ -27,13 +29,17 @@ type SkillAnim interface {
 }
 
 func Get(id int, arg Argument) SkillAnim {
+	coreArg := skillcore.Argument{
+		Power:        arg.Power,
+		OwnerID:      arg.OwnerObjectID,
+		TargetType:   arg.TargetType,
+		GetPanelInfo: arg.GameInfo.GetPanelInfo,
+	}
+	core := routeranim.SKillManager(arg.OwnerClientID).Get(id, coreArg)
+
 	switch id {
-	case resources.SkillCannon:
-		return newCannon(TypeNormalCannon, arg)
-	case resources.SkillHighCannon:
-		return newCannon(TypeHighCannon, arg)
-	case resources.SkillMegaCannon:
-		return newCannon(TypeMegaCannon, arg)
+	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
+		return newCannon(id, arg, core)
 	case resources.SkillMiniBomb:
 		return newMiniBomb(arg)
 	case resources.SkillRecover:

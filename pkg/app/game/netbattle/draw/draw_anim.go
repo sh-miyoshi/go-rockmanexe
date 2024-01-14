@@ -44,11 +44,11 @@ func (d *animDraw) Draw() {
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal:
-			d.drawCannonInst.Draw(resources.SkillTypeNormalCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillCannon, pos, a.ActCount)
 		case anim.TypeCannonHigh:
-			d.drawCannonInst.Draw(resources.SkillTypeHighCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillHighCannon, pos, a.ActCount)
 		case anim.TypeCannonMega:
-			d.drawCannonInst.Draw(resources.SkillTypeMegaCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillMegaCannon, pos, a.ActCount)
 		case anim.TypeMiniBomb:
 			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
 			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount)
