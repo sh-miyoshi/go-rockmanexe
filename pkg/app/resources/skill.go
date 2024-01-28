@@ -51,7 +51,6 @@ const (
 )
 
 const (
-	SkillRecoverEndCount      = 8
 	SkillSpreadGunEndCount    = 8 // imgAtkNum*delay
 	SkillSwordEndCount        = 12
 	SkillWideShotEndCount     = 16

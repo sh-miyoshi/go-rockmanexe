@@ -26,6 +26,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.Cannon{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
 	case resources.SkillMiniBomb:
 		return &processor.MiniBomb{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+	case resources.SkillRecover:
+		return &processor.Recover{Arg: arg, DamageMgr: m.damageMgr}
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする

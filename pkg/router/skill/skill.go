@@ -43,7 +43,7 @@ func Get(id int, arg Argument) SkillAnim {
 	case resources.SkillMiniBomb:
 		return newMiniBomb(arg, core)
 	case resources.SkillRecover:
-		return newRecover(arg)
+		return newRecover(arg, core)
 	case resources.SkillShockWave:
 		return newShockWave(arg)
 	case resources.SkillSpreadGun:
