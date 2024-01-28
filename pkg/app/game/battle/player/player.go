@@ -110,6 +110,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
 
+	if config.Get().Debug.AlwaysInvisible {
+		logger.Debug("enable inbisible mode")
+		res.invincibleCount = 1
+	}
+
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
 	}
@@ -392,7 +397,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
-	if p.invincibleCount > 0 {
+	if p.invincibleCount > 0 && !config.Get().Debug.AlwaysInvisible {
 		p.invincibleCount--
 	}
 
