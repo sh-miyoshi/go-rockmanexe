@@ -8,9 +8,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	cannonTypeNum = 3
+)
+
 var (
-	imgCannonAtk         [3][]int
-	imgCannonBody        [3][]int
+	imgCannonAtk         [cannonTypeNum][]int
+	imgCannonBody        [cannonTypeNum][]int
 	imgSword             [resources.SkillTypeSwordMax][]int
 	imgBombThrow         []int
 	imgShockWave         []int
