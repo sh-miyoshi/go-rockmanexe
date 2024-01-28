@@ -8,14 +8,14 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
 	animManagers     = make(map[string]*anim.AnimManager)
 	objanimManagers  = make(map[string]*objanim.AnimManager)
-	skillManagers    = make(map[string]*skillcore.Manager)
+	skillManagers    = make(map[string]*skillmanager.Manager)
 	clientAnimMgrMap = make(map[string]string) // Key: clientID, Value: animManagerID
 )
 
@@ -26,7 +26,7 @@ func NewManager(clientIDs [2]string) string {
 	for i := 0; i < len(clientIDs); i++ {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
-	skillManagers[id] = skillcore.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos)
+	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos)
 	return id
 }
 
@@ -101,7 +101,7 @@ func DamageNew(clientID string, dm damage.Damage) string {
 	return DamageManager(clientID).New(dm)
 }
 
-func SKillManager(clientID string) *skillcore.Manager {
+func SkillManager(clientID string) *skillmanager.Manager {
 	mgrID := clientAnimMgrMap[clientID]
 	return skillManagers[mgrID]
 }

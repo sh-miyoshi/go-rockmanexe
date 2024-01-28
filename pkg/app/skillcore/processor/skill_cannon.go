@@ -1,9 +1,10 @@
-package skillcore
+package processor
 
 import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -12,38 +13,40 @@ const (
 )
 
 type Cannon struct {
-	arg     Argument
-	count   int
-	mgrInst *Manager
+	GetObjectPos func(objID string) point.Point
+	DamageMgr    *damage.DamageManager
+	Arg          skillcore.Argument
+
+	count int
 }
 
 func (p *Cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
-		pos := p.mgrInst.GetObjectPos(p.arg.OwnerID)
+		pos := p.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,
-			Power:         int(p.arg.Power),
-			TargetObjType: p.arg.TargetType,
+			Power:         int(p.Arg.Power),
+			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
 			BigDamage:     true,
 			Element:       damage.ElementNone,
 		}
 
-		if p.arg.TargetType == damage.TargetEnemy {
+		if p.Arg.TargetType == damage.TargetEnemy {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := p.arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := p.Arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
-					p.mgrInst.damageMgr.New(dm)
+					p.DamageMgr.New(dm)
 					break
 				}
 			}
 		} else {
 			for x := pos.X - 1; x >= 0; x-- {
-				if objID := p.arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
+				if objID := p.Arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
-					p.mgrInst.damageMgr.New(dm)
+					p.DamageMgr.New(dm)
 					break
 				}
 			}

@@ -1,8 +1,10 @@
-package skillcore
+package skillmanager
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -18,12 +20,12 @@ func NewManager(damageMgr *damage.DamageManager, GetObjectPos func(objID string)
 	}
 }
 
-func (m *Manager) Get(id int, arg Argument) SkillCore {
+func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return &Cannon{arg: arg, mgrInst: m}
+		return &processor.Cannon{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
 	case resources.SkillMiniBomb:
-		return &MiniBomb{arg: arg, mgrInst: m}
+		return &processor.MiniBomb{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする

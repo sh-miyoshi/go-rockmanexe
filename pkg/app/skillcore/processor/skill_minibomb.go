@@ -1,9 +1,10 @@
-package skillcore
+package processor
 
 import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -12,10 +13,12 @@ const (
 )
 
 type MiniBomb struct {
-	arg     Argument
-	count   int
-	mgrInst *Manager
-	target  point.Point
+	GetObjectPos func(objID string) point.Point
+	DamageMgr    *damage.DamageManager
+	Arg          skillcore.Argument
+
+	count  int
+	target point.Point
 }
 
 func (p *MiniBomb) Process() (bool, error) {
@@ -23,21 +26,21 @@ func (p *MiniBomb) Process() (bool, error) {
 
 	if p.count == 1 {
 		// sound.On(resources.SEBombThrow)// TODO
-		pos := p.mgrInst.GetObjectPos(p.arg.OwnerID)
+		pos := p.GetObjectPos(p.Arg.OwnerID)
 		p.target = point.Point{X: pos.X + 3, Y: pos.Y}
 	}
 
 	if p.count == miniBombEndCount {
-		pn := p.arg.GetPanelInfo(p.target)
+		pn := p.Arg.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
 		}
 
-		if objID := p.arg.GetPanelInfo(p.target).ObjectID; objID != "" {
-			p.mgrInst.damageMgr.New(damage.Damage{
+		if objID := p.Arg.GetPanelInfo(p.target).ObjectID; objID != "" {
+			p.DamageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
-				Power:         int(p.arg.Power),
-				TargetObjType: p.arg.TargetType,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
 				HitEffectType: resources.EffectTypeNone,
 				BigDamage:     true,
 				Element:       damage.ElementNone,

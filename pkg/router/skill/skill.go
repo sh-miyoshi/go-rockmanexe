@@ -35,7 +35,7 @@ func Get(id int, arg Argument) SkillAnim {
 		TargetType:   arg.TargetType,
 		GetPanelInfo: arg.GameInfo.GetPanelInfo,
 	}
-	core := routeranim.SKillManager(arg.OwnerClientID).Get(id, coreArg)
+	core := routeranim.SkillManager(arg.OwnerClientID).Get(id, coreArg)
 
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
