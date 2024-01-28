@@ -51,7 +51,8 @@ func (d *animDraw) Draw() {
 			d.drawCannonInst.Draw(resources.SkillMegaCannon, pos, a.ActCount)
 		case anim.TypeMiniBomb:
 			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
-			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount)
+			endCount := 60 // TODO: 要調整
+			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount, endCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:

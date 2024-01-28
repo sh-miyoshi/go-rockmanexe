@@ -42,14 +42,6 @@ const (
 	SkillFailed
 )
 
-// const (
-// 	SkillTypeNormalCannon int = iota
-// 	SkillTypeHighCannon
-// 	SkillTypeMegaCannon
-
-// 	SkillTypeCannonMax
-// )
-
 const (
 	SkillTypeSword int = iota
 	SkillTypeWideSword
@@ -59,7 +51,6 @@ const (
 )
 
 const (
-	SkillMiniBombEndCount     = 60
 	SkillRecoverEndCount      = 8
 	SkillSpreadGunEndCount    = 8 // imgAtkNum*delay
 	SkillSwordEndCount        = 12
