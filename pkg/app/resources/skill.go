@@ -8,7 +8,7 @@ const (
 	SkillSword
 	SkillWideSword
 	SkillLongSword
-	SkillShockWave
+	SkillEnemyShockWave
 	SkillRecover
 	SkillSpreadGun
 	SkillVulcan1
@@ -61,10 +61,6 @@ const (
 )
 
 const (
-	SkillShockWaveInitWait    = 9
-	SkillShockWavePlayerSpeed = 3
-	SkillShockWaveImageNum    = 7
-
 	SkillWideShotPlayerNextStepCount = 8
 	SkillBoomerangNextStepCount      = 6
 	SkillGarooBreathNextStepCount    = 10

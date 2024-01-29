@@ -47,8 +47,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newSword(objID, resources.SkillTypeWideSword, arg)
 	case resources.SkillLongSword:
 		return newSword(objID, resources.SkillTypeLongSword, arg)
-	case resources.SkillShockWave:
-		return newShockWave(objID, false, arg)
+	case resources.SkillEnemyShockWave:
+		return newShockWave(objID, false, arg, core)
 	case resources.SkillRecover:
 		return newRecover(objID, arg, core)
 	case resources.SkillSpreadGun:
@@ -56,7 +56,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillVulcan1:
 		return newVulcan(objID, arg)
 	case resources.SkillPlayerShockWave:
-		return newShockWave(objID, true, arg)
+		return newShockWave(objID, true, arg, core)
 	case resources.SkillThunderBall:
 		return newThunderBall(objID, arg)
 	case resources.SkillWideShot:

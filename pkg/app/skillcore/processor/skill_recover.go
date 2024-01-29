@@ -19,7 +19,6 @@ type Recover struct {
 
 func (p *Recover) Process() (bool, error) {
 	if p.count == 0 {
-		// sound.On(resources.SERecover)
 		p.DamageMgr.New(damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         -int(p.Arg.Power),
