@@ -24,6 +24,33 @@
 
 ## スキルリファクタリング
 
+- 全体構成
+  - app/skill
+    - processer
+      - local
+      - net
+    - drawer
+      - 使う変数一覧
+        - 渡さないとどうにもならないやつ
+          - count
+          - viewPos
+          - state
+          - targetPos
+          - objPos, currentPos
+          - prevPos
+          - nextPos
+          - targetPoints
+        - 固定値
+          - ofs
+          - direct
+          - showBody
+          - nextStepCount
+          - endCount
+          - delay
+          - swordType, cannonType
+          - speed
+          - skillType
+
 - Phase1
   - 変数、定義の整理
     - 消したい
@@ -36,6 +63,12 @@
       - [x] skill.GetByChipID -> skillcore.GetByChipID?
 - Phase2
   - skillcoreの実装
+  - sound handlerを持つ
+  - skilldefinesをやめてキャストにする
+- Phase3
+  - drawerへの移行
+  - 呼び出し元の整理
+    - 特にnetのlocal処理
 
 ## 新機能
 
