@@ -77,6 +77,8 @@ type BattlePlayer struct {
 	act             act
 	invincibleCount int
 	visible         bool
+	isShiftFrame    bool
+	isShowGauge     bool
 }
 
 var (
@@ -107,6 +109,11 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
+
+	if config.Get().Debug.AlwaysInvisible {
+		logger.Debug("enable inbisible mode")
+		res.invincibleCount = 1
+	}
 
 	for _, c := range plyr.ChipFolder {
 		res.ChipFolder = append(res.ChipFolder, c)
@@ -269,6 +276,19 @@ func (p *BattlePlayer) Draw() {
 		return
 	}
 
+	frameX := 7
+	frameY := 5
+	if field.Is4x4Area() {
+		frameY = 25
+	}
+	if p.isShiftFrame {
+		frameX += 235
+	}
+
+	// Show Mind Status
+	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
+	dxlib.DrawGraph(frameX, frameY+35, imgMinds[p.MindStatus], true)
+
 	// Show selected chip icons
 	n := len(p.SelectedChips)
 	if n > 0 {
@@ -325,51 +345,40 @@ func (p *BattlePlayer) Draw() {
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
-}
-
-func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
-	x := 7
-	y := 5
-	if field.Is4x4Area() {
-		y = 25
-	}
-
-	if xShift {
-		x += 235
-	}
 
 	// Show HP
-	dxlib.DrawGraph(x, y, imgHPFrame, true)
+	dxlib.DrawGraph(frameX, frameY, imgHPFrame, true)
 	col := draw.NumberColorWhite
 	if p.HP*3 < p.HPMax {
 		// HPが1/3未満の時はオレンジ色にする
 		col = draw.NumberColorRed
 	}
-	draw.Number(x+2, y+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4, Color: col})
-
-	// Show Mind Status
-	dxlib.DrawGraph(x, y+35, imgMindFrame, true)
-	dxlib.DrawGraph(x, y+35, imgMinds[p.MindStatus], true)
+	draw.Number(frameX+2, frameY+2, int(p.HP), draw.NumberOption{RightAligned: true, Length: 4, Color: col})
 
 	// Show Custom Gauge
-	if showGauge {
+	if p.isShowGauge {
 		baseX := 5
 		if field.Is4x4Area() {
 			baseX = 80
 		}
 
 		if p.GaugeCount < battlecommon.GaugeMaxCount {
-			dxlib.DrawGraph(96+baseX, y, imgGaugeFrame, true)
+			dxlib.DrawGraph(96+baseX, frameY, imgGaugeFrame, true)
 			const gaugeMaxSize = 256
 			size := int(gaugeMaxSize * p.GaugeCount / battlecommon.GaugeMaxCount)
-			dxlib.DrawBox(112+baseX, y+14, 112+baseX+size, y+16, dxlib.GetColor(123, 154, 222), true)
-			dxlib.DrawBox(112+baseX, y+16, 112+baseX+size, y+24, dxlib.GetColor(231, 235, 255), true)
-			dxlib.DrawBox(112+baseX, y+24, 112+baseX+size, y+26, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112+baseX, frameY+14, 112+baseX+size, frameY+16, dxlib.GetColor(123, 154, 222), true)
+			dxlib.DrawBox(112+baseX, frameY+16, 112+baseX+size, frameY+24, dxlib.GetColor(231, 235, 255), true)
+			dxlib.DrawBox(112+baseX, frameY+24, 112+baseX+size, frameY+26, dxlib.GetColor(123, 154, 222), true)
 		} else {
 			i := (p.GaugeCount / 40) % 4
-			dxlib.DrawGraph(96+baseX, y, imgGaugeMax[i], true)
+			dxlib.DrawGraph(96+baseX, frameY, imgGaugeMax[i], true)
 		}
 	}
+}
+
+func (p *BattlePlayer) SetFrameInfo(xShift bool, showGauge bool) {
+	p.isShiftFrame = xShift
+	p.isShowGauge = showGauge
 }
 
 func (p *BattlePlayer) Process() (bool, error) {
@@ -388,7 +397,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 		return false, nil
 	}
 
-	if p.invincibleCount > 0 {
+	if p.invincibleCount > 0 && !config.Get().Debug.AlwaysInvisible {
 		p.invincibleCount--
 	}
 

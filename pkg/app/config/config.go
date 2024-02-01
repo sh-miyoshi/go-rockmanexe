@@ -26,6 +26,7 @@ type Config struct {
 		EnableDevFeature   bool `yaml:"enable_dev_feature"`
 		UsePrivateResource bool `yaml:"use_private_res"`
 		UseDebugFolder     bool `yaml:"use_debug_folder"`
+		AlwaysInvisible    bool `yaml:"always_inbisible"`
 	} `yaml:"debug"`
 	Sound struct {
 		SE struct {

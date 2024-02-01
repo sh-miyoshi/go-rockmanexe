@@ -14,6 +14,7 @@ debug:
   enable_dev_feature: true
   use_private_res: true
   use_debug_folder: true
+  always_inbisible: false
 sound:
   se:
     disabled: false

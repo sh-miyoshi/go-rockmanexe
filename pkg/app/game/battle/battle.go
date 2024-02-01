@@ -162,6 +162,7 @@ func Process() error {
 			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
 				return fmt.Errorf("failed to initialize chip select: %w", err)
 			}
+			playerInst.SetFrameInfo(true, false)
 		}
 		if chipsel.Process() {
 			// set selected chips
@@ -177,6 +178,7 @@ func Process() error {
 				return fmt.Errorf("failed to initialize before main: %w", err)
 			}
 			playerInst.UpdateChipInfo()
+			playerInst.SetFrameInfo(false, true)
 		}
 
 		if b4mainInst.Process() {
@@ -242,6 +244,7 @@ func Process() error {
 			if err != nil {
 				return fmt.Errorf("failed to initialize lose: %w", err)
 			}
+			playerInst.SetFrameInfo(false, false)
 		}
 
 		if loseInst.Process() {
@@ -275,20 +278,15 @@ func Draw() {
 			openingInst.Draw()
 		}
 	case stateChipSelect:
-		playerInst.DrawFrame(true, false)
 		chipsel.Draw()
 	case stateBeforeMain:
-		playerInst.DrawFrame(false, true)
 		if b4mainInst != nil {
 			b4mainInst.Draw()
 		}
 	case stateMain:
-		playerInst.DrawFrame(false, true)
 	case stateResultWin:
-		playerInst.DrawFrame(false, true)
 		win.Draw()
 	case stateResultLose:
-		playerInst.DrawFrame(false, false)
 		if loseInst != nil {
 			loseInst.Draw()
 		}
