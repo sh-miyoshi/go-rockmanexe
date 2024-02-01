@@ -63,10 +63,12 @@ func (p *SpreadGun) Process() (bool, error) {
 							continue
 						}
 						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
+							pos := point.Point{X: x + sx, Y: pos.Y + sy}
+							logger.Debug("Add spread hit to %s", pos.String())
 							p.hits = append(p.hits, SpreadHit{
 								DamageMgr: p.DamageMgr,
 								Arg:       p.Arg,
-								Pos:       point.Point{X: x + sx, Y: pos.Y + sy},
+								Pos:       pos,
 							})
 						}
 					}
@@ -103,7 +105,6 @@ func (p *SpreadGun) PopSpreadHits() []SpreadHit {
 }
 
 func (p *SpreadHit) Process() (bool, error) {
-	p.count++
 	if p.count == 10 {
 		if objID := p.Arg.GetPanelInfo(p.Pos).ObjectID; objID != "" {
 			p.DamageMgr.New(damage.Damage{
@@ -118,6 +119,7 @@ func (p *SpreadHit) Process() (bool, error) {
 
 		return true, nil
 	}
+	p.count++
 	return false, nil
 }
 
