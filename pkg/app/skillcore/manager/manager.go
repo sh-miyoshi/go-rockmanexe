@@ -36,6 +36,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.ShockWave{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
 		res.Init(true)
 		return res
+	case resources.SkillSpreadGun:
+		return &processor.SpreadGun{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする

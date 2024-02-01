@@ -52,7 +52,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillRecover:
 		return newRecover(objID, arg, core)
 	case resources.SkillSpreadGun:
-		return newSpreadGun(objID, arg)
+		return newSpreadGun(objID, arg, core)
 	case resources.SkillVulcan1:
 		return newVulcan(objID, arg)
 	case resources.SkillPlayerShockWave:
