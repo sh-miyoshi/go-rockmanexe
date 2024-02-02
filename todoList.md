@@ -51,20 +51,14 @@
           - speed
           - skillType
 
-- Phase1
+- Phase2
   - 変数、定義の整理
     - 消したい
       - resources.EndCount
       - resources.NextStepCount, Delay
       - resources.SkillState
-    - 移動
-      - [x] From: battle/skill/skill.go, To: resources.Skill
-      - [x] skill.Argument -> skillcore.Argument?
-      - [x] skill.GetByChipID -> skillcore.GetByChipID?
-- Phase2
-  - skillcoreの実装
-  - sound handlerを持つ
-  - skilldefinesをやめてキャストにする
+  - draw_animのリファクタリング
+    - pkg/app/game/netbattle/draw/draw_anim.go
 - Phase3
   - drawerへの移行
   - 呼び出し元の整理
