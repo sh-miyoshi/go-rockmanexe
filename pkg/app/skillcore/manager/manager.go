@@ -34,13 +34,9 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.MiniBomb{Arg: arg}
 	case resources.SkillRecover:
 		return &processor.Recover{Arg: arg}
-	case resources.SkillEnemyShockWave:
+	case resources.SkillPlayerShockWave, resources.SkillEnemyShockWave:
 		res := &processor.ShockWave{Arg: arg}
-		res.Init(false)
-		return res
-	case resources.SkillPlayerShockWave:
-		res := &processor.ShockWave{Arg: arg}
-		res.Init(true)
+		res.Init(id == resources.SkillPlayerShockWave)
 		return res
 	case resources.SkillSpreadGun:
 		return &processor.SpreadGun{Arg: arg}
@@ -48,6 +44,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.Sword{Arg: arg, SkillID: id}
 	case resources.SkillVulcan1:
 		return &processor.Vulcan{Arg: arg, Times: 3}
+	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
+		res := &processor.WideShot{Arg: arg}
+		res.Init(id == resources.SkillPlayerWideShot)
+		return res
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする

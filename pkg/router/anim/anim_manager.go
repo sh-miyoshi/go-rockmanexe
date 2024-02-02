@@ -27,7 +27,8 @@ func NewManager(clientIDs [2]string) string {
 	for i := 0; i < len(clientIDs); i++ {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
-	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, func(typ resources.SEType) {})
+	noSound := func(resources.SEType) {}
+	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, noSound)
 	return id
 }
 

@@ -73,7 +73,8 @@ func (d *animDraw) Draw() {
 			// TODO: refactoring
 			state := a.ActCount / 1000
 			a.ActCount -= state * 1000
-			d.drawWideShot.Draw(a.Pos, a.ActCount, config.DirectRight, true, resources.SkillWideShotPlayerNextStepCount, state)
+			nextStepCount := 8
+			d.drawWideShot.Draw(a.Pos, a.ActCount, config.DirectRight, true, nextStepCount, state)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

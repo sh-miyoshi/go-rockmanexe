@@ -57,7 +57,7 @@ func GetIDByChipID(chipID int) int {
 	case chip.IDThunderBall:
 		return resources.SkillThunderBall
 	case chip.IDWideShot:
-		return resources.SkillWideShot
+		return resources.SkillPlayerWideShot
 	case chip.IDBoomerang1:
 		return resources.SkillBoomerang
 	case chip.IDAquaman:

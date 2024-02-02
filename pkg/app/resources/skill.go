@@ -14,7 +14,7 @@ const (
 	SkillVulcan1
 	SkillPlayerShockWave
 	SkillThunderBall
-	SkillWideShot
+	SkillPlayerWideShot
 	SkillBoomerang
 	SkillWaterBomb
 	SkillAquamanShot
@@ -38,12 +38,12 @@ const (
 	SkillTornado
 	SkillQuickGauge
 	SkillCirkillShot
+	SkillEnemyWideShot
 
 	SkillFailed
 )
 
 const (
-	SkillWideShotEndCount     = 16
 	SkillWaterBombEndCount    = 60
 	SkillAreaStealHitEndCount = 12
 	SkillHeatShotEndCount     = 15
@@ -51,11 +51,10 @@ const (
 )
 
 const (
-	SkillWideShotPlayerNextStepCount = 8
-	SkillBoomerangNextStepCount      = 6
-	SkillGarooBreathNextStepCount    = 10
-	SkillThunderBallNextStepCount    = 80
-	SkillCirkillShotNextStepCount    = 20
+	SkillBoomerangNextStepCount   = 6
+	SkillGarooBreathNextStepCount = 10
+	SkillThunderBallNextStepCount = 80
+	SkillCirkillShotNextStepCount = 20
 
 	SkillFlamePillarDelay = 4
 )
