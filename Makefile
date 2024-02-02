@@ -26,6 +26,6 @@ docker:
 	docker build -t smiyoshi/rockmanexe-matcher -f build/Dockerfile.matcher .
 	docker build -t asia-northeast1-docker.pkg.dev/rockmanexe/router/router -f build/Dockerfile.router .
 localnet:
-	cd test/helpers/localnet-boot && \
+	cd tools/localnet-boot && \
 	go build -o localnet-boot.exe && \
 	localnet-boot.exe

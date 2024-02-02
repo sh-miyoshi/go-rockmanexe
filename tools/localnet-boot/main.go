@@ -26,7 +26,7 @@ func build(wg *sync.WaitGroup, dir string) {
 }
 
 func main() {
-	os.Chdir("../../../")
+	os.Chdir("../../")
 
 	fmt.Println("building binaries ...")
 	var wg sync.WaitGroup
