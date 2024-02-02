@@ -1,35 +1,30 @@
 package skill
 
 import (
-	"fmt"
-
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type spreadGun struct {
-	ID    string
-	Arg   Argument
-	count int
+	ID   string
+	Arg  Argument
+	Core *processor.SpreadGun
 }
 
 type spreadHit struct {
-	ID  string
-	Arg Argument
-
-	count int
-	pos   point.Point
+	ID   string
+	Arg  Argument
+	Core processor.SpreadHit
 }
 
-func newSpreadGun(arg Argument) *spreadGun {
+func newSpreadGun(arg Argument, core skillcore.SkillCore) *spreadGun {
 	return &spreadGun{
-		ID:  arg.AnimObjID,
-		Arg: arg,
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core.(*processor.SpreadGun),
 	}
 }
 
@@ -38,64 +33,26 @@ func (p *spreadGun) Draw() {
 }
 
 func (p *spreadGun) Process() (bool, error) {
-	if p.count == 5 {
-		pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
-		dm := damage.Damage{
-			DamageType:    damage.TypeObject,
-			OwnerClientID: p.Arg.OwnerClientID,
-			Power:         int(p.Arg.Power),
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeHitBig,
-			BigDamage:     true,
-			Element:       damage.ElementNone,
-		}
-
-		if p.Arg.TargetType == damage.TargetEnemy {
-			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				if objID := p.Arg.GameInfo.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
-					dm.TargetObjID = objID
-					logger.Debug("Add damage by spread gun: %+v", dm)
-					routeranim.DamageNew(p.Arg.OwnerClientID, dm)
-
-					// Spreading
-					for sy := -1; sy <= 1; sy++ {
-						if pos.Y+sy < 0 || pos.Y+sy >= battlecommon.FieldNum.Y {
-							continue
-						}
-						for sx := -1; sx <= 1; sx++ {
-							if sy == 0 && sx == 0 {
-								continue
-							}
-							if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-								routeranim.AnimNew(p.Arg.OwnerClientID, &spreadHit{
-									Arg: p.Arg,
-									pos: point.Point{X: x + sx, Y: pos.Y + sy},
-								})
-							}
-						}
-					}
-					break
-				}
-			}
-		} else {
-			logger.Error("unexpected target type for spread gun: %+v", p.Arg)
-			return false, fmt.Errorf("unexpected target type")
-		}
+	res, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+	for _, hit := range p.Core.PopSpreadHits() {
+		routeranim.AnimNew(p.Arg.OwnerClientID, &spreadHit{
+			ID:   uuid.New().String(),
+			Arg:  p.Arg,
+			Core: hit,
+		})
 	}
 
-	p.count++
-
-	if p.count > p.GetEndCount() {
-		return true, nil
-	}
-	return false, nil
+	return res, nil
 }
 
 func (p *spreadGun) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeSpreadGun,
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
 
 	return anim.Param{
@@ -107,13 +64,13 @@ func (p *spreadGun) GetParam() anim.Param {
 }
 
 func (p *spreadGun) StopByOwner() {
-	if p.count < 5 {
+	if p.Core.GetCount() < 5 {
 		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 
 func (p *spreadGun) GetEndCount() int {
-	return resources.SkillSpreadGunEndCount
+	return p.Core.GetEndCount()
 }
 
 func (p *spreadHit) Draw() {
@@ -121,34 +78,19 @@ func (p *spreadHit) Draw() {
 }
 
 func (p *spreadHit) Process() (bool, error) {
-	p.count++
-	if p.count == 10 {
-		if objID := p.Arg.GameInfo.GetPanelInfo(p.pos).ObjectID; objID != "" {
-			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-				DamageType:    damage.TypeObject,
-				Power:         int(p.Arg.Power),
-				TargetObjType: p.Arg.TargetType,
-				HitEffectType: resources.EffectTypeNone,
-				Element:       damage.ElementNone,
-				TargetObjID:   objID,
-			})
-		}
-
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *spreadHit) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeSpreadHit,
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       p.pos,
+		Pos:       p.Core.Pos,
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}

@@ -1,7 +1,6 @@
 package skilldraw
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -9,10 +8,10 @@ import (
 type DrawVulcan struct {
 }
 
-func (p *DrawVulcan) Draw(viewPos point.Point, count int) {
+func (p *DrawVulcan) Draw(viewPos point.Point, count int, delay int) {
 	imgNo := 0
-	if count > resources.SkillVulcanDelay*1 {
-		imgNo = (count/(resources.SkillVulcanDelay*5))%2 + 1
+	if count > delay*1 {
+		imgNo = (count/(delay*5))%2 + 1
 	}
 
 	// Show body

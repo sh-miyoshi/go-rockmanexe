@@ -4,14 +4,18 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
 
+const (
+	cannonTypeNum = 3
+	swordTypeNum  = 3
+)
+
 var (
-	imgCannonAtk         [resources.SkillTypeCannonMax][]int
-	imgCannonBody        [resources.SkillTypeCannonMax][]int
-	imgSword             [resources.SkillTypeSwordMax][]int
+	imgCannonAtk         [cannonTypeNum][]int
+	imgCannonBody        [cannonTypeNum][]int
+	imgSword             [swordTypeNum][]int
 	imgBombThrow         []int
 	imgShockWave         []int
 	imgRecover           []int

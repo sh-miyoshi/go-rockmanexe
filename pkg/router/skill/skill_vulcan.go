@@ -1,32 +1,33 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
-type vulcan struct {
-	ID    string
-	Arg   Argument
-	Times int
-
-	count    int
-	atkCount int
-	hit      bool
+type VulcanDrawParam struct {
+	Delay int
 }
 
-func newVulcan(times int, arg Argument) *vulcan {
+type vulcan struct {
+	ID   string
+	Arg  Argument
+	Core (*processor.Vulcan)
+}
+
+func newVulcan(arg Argument, core skillcore.SkillCore) *vulcan {
 	return &vulcan{
-		ID:    arg.AnimObjID,
-		Arg:   arg,
-		Times: times,
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core.(*processor.Vulcan),
 	}
 }
 
@@ -35,77 +36,31 @@ func (p *vulcan) Draw() {
 }
 
 func (p *vulcan) Process() (bool, error) {
-	p.count++
-	if p.count >= resources.SkillVulcanDelay*1 {
-		if p.count%(resources.SkillVulcanDelay*5) == resources.SkillVulcanDelay*1 {
-			// Add damage
-			pos := routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID)
-			hit := false
-			p.atkCount++
-			lastAtk := p.atkCount == p.Times
-			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				target := point.Point{X: x, Y: pos.Y}
-				if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
-					routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-						DamageType:    damage.TypeObject,
-						Power:         int(p.Arg.Power),
-						TargetObjType: p.Arg.TargetType,
-						HitEffectType: resources.EffectTypeSpreadHit,
-						BigDamage:     lastAtk,
-						Element:       damage.ElementNone,
-						TargetObjID:   objID,
-					})
-					queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
-						ID:            uuid.New().String(),
-						OwnerClientID: p.Arg.GameInfo.ClientID,
-						Pos:           target,
-						Type:          resources.EffectTypeVulcanHit1,
-						RandRange:     20,
-					})
-
-					if p.hit && x < battlecommon.FieldNum.X-1 {
-						target = point.Point{X: x + 1, Y: pos.Y}
-						queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
-							ID:            uuid.New().String(),
-							OwnerClientID: p.Arg.GameInfo.ClientID,
-							Pos:           target,
-							Type:          resources.EffectTypeVulcanHit2,
-							RandRange:     20,
-						})
-
-						if objID := p.Arg.GameInfo.GetPanelInfo(target).ObjectID; objID != "" {
-							routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-								DamageType:    damage.TypeObject,
-								Power:         int(p.Arg.Power),
-								TargetObjType: p.Arg.TargetType,
-								HitEffectType: resources.EffectTypeNone,
-								BigDamage:     lastAtk,
-								Element:       damage.ElementNone,
-								TargetObjID:   objID,
-							})
-						}
-					}
-					hit = true
-					break
-				}
-			}
-			p.hit = hit
-			if lastAtk {
-				return true, nil
-			}
-		}
-
+	res, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+	for _, eff := range p.Core.PopEffects() {
+		queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
+			ID:            uuid.New().String(),
+			OwnerClientID: p.Arg.GameInfo.ClientID,
+			Pos:           eff.Pos,
+			Type:          eff.Type,
+			RandRange:     eff.RandRange,
+		})
 	}
 
-	return false, nil
+	return res, nil
 }
 
 func (p *vulcan) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		AnimType:      routeranim.TypeVulcan,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
+	drawPm := VulcanDrawParam{Delay: p.Core.GetDelay()}
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
@@ -120,5 +75,16 @@ func (p *vulcan) StopByOwner() {
 }
 
 func (p *vulcan) GetEndCount() int {
-	return resources.SkillVulcanDelay*5*(p.Times-1) + resources.SkillVulcanDelay*1
+	return p.Core.GetEndCount()
+}
+
+func (p *VulcanDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *VulcanDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }

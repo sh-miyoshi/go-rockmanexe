@@ -4,27 +4,24 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type dreamSword struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.Sword
 
-	count  int
 	drawer skilldraw.DrawDreamSword
 }
 
-func newDreamSword(objID string, arg skillcore.Argument) *dreamSword {
+func newDreamSword(objID string, arg skillcore.Argument, core skillcore.SkillCore) *dreamSword {
 	return &dreamSword{
-		ID:  objID,
-		Arg: arg,
+		ID:   objID,
+		Arg:  arg,
+		Core: core.(*processor.Sword),
 	}
 }
 
@@ -32,38 +29,11 @@ func (p *dreamSword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	p.drawer.Draw(view, p.count)
+	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetDelay())
 }
 
 func (p *dreamSword) Process() (bool, error) {
-	p.count++
-
-	if p.count == 1*resources.SkillSwordDelay {
-		sound.On(resources.SEDreamSword)
-
-		userPos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		for x := 1; x <= 2; x++ {
-			for y := -1; y <= 1; y++ {
-				if objID := field.GetPanelInfo(point.Point{X: userPos.X + x, Y: userPos.Y + y}).ObjectID; objID != "" {
-					dm := damage.Damage{
-						DamageType:    damage.TypeObject,
-						Power:         int(p.Arg.Power),
-						TargetObjType: p.Arg.TargetType,
-						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     true,
-						Element:       damage.ElementNone,
-						TargetObjID:   objID,
-					}
-					localanim.DamageManager().New(dm)
-				}
-			}
-		}
-	}
-
-	if p.count > resources.SkillSwordEndCount {
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *dreamSword) GetParam() anim.Param {

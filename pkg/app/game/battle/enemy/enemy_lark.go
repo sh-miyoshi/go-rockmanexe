@@ -228,7 +228,7 @@ func (a *larkAtk) SetAttack() {
 func (a *larkAtk) Process() {
 	if a.count == 1*delayLarkAtk {
 		localanim.AnimNew(skill.Get(
-			resources.SkillWideShot,
+			resources.SkillEnemyWideShot,
 			skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,

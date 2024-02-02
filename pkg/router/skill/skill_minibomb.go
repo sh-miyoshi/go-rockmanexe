@@ -1,30 +1,32 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-type miniBomb struct {
-	ID  string
-	Arg Argument
-
-	count  int
-	pos    point.Point
-	target point.Point
+type MiniBombDrawParam struct {
+	EndCount int
+	Target   point.Point
 }
 
-func newMiniBomb(arg Argument) *miniBomb {
-	pos := routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID)
+type miniBomb struct {
+	ID   string
+	Arg  Argument
+	Core *processor.MiniBomb
+}
+
+func newMiniBomb(arg Argument, core skillcore.SkillCore) *miniBomb {
 	return &miniBomb{
-		ID:     arg.AnimObjID,
-		Arg:    arg,
-		pos:    pos,
-		target: point.Point{X: pos.X + 3, Y: pos.Y},
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core.(*processor.MiniBomb),
 	}
 }
 
@@ -33,52 +35,47 @@ func (p *miniBomb) Draw() {
 }
 
 func (p *miniBomb) Process() (bool, error) {
-	p.count++
-
-	if p.count == resources.SkillMiniBombEndCount {
-		pn := p.Arg.GameInfo.GetPanelInfo(p.target)
-		if pn.Status == battlecommon.PanelStatusHole {
-			return true, nil
-		}
-
-		if objID := pn.ObjectID; objID != "" {
-			routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-				DamageType:    damage.TypeObject,
-				OwnerClientID: p.Arg.OwnerClientID,
-				Power:         int(p.Arg.Power),
-				TargetObjType: p.Arg.TargetType,
-				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
-				Element:       damage.ElementNone,
-				TargetObjID:   objID,
-			})
-		}
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *miniBomb) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeMiniBomb,
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
+	current, target := p.Core.GetPointParams()
+	drawPm := MiniBombDrawParam{
+		EndCount: p.Core.GetEndCount(),
+		Target:   target,
+	}
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       p.pos,
+		Pos:       current,
 		DrawType:  anim.DrawTypeSkill,
 		ExtraInfo: info.Marshal(),
 	}
 }
 
 func (p *miniBomb) StopByOwner() {
-	if p.count < 5 {
+	if p.Core.GetCount() < 5 {
 		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 	}
 }
 
 func (p *miniBomb) GetEndCount() int {
-	return resources.SkillMiniBombEndCount
+	return p.Core.GetEndCount()
+}
+
+func (p *MiniBombDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *MiniBombDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }

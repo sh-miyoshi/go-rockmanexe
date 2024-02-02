@@ -8,12 +8,15 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
 	animManagers     = make(map[string]*anim.AnimManager)
 	objanimManagers  = make(map[string]*objanim.AnimManager)
+	skillManagers    = make(map[string]*skillmanager.Manager)
 	clientAnimMgrMap = make(map[string]string) // Key: clientID, Value: animManagerID
 )
 
@@ -24,6 +27,8 @@ func NewManager(clientIDs [2]string) string {
 	for i := 0; i < len(clientIDs); i++ {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
+	noSound := func(resources.SEType) {}
+	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, noSound)
 	return id
 }
 
@@ -32,6 +37,7 @@ func Cleanup(mgrID string) {
 	objanimManagers[mgrID].Cleanup()
 	delete(animManagers, mgrID)
 	delete(objanimManagers, mgrID)
+	delete(skillManagers, mgrID)
 }
 
 func MgrProcess(mgrID string) error {
@@ -95,4 +101,9 @@ func DamageNew(clientID string, dm damage.Damage) string {
 		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
 	}
 	return DamageManager(clientID).New(dm)
+}
+
+func SkillManager(clientID string) *skillmanager.Manager {
+	mgrID := clientAnimMgrMap[clientID]
+	return skillManagers[mgrID]
 }

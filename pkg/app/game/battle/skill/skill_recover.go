@@ -4,53 +4,34 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type recover struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core skillcore.SkillCore
 
-	count  int
 	drawer skilldraw.DrawRecover
 }
 
-func newRecover(objID string, arg skillcore.Argument) *recover {
+func newRecover(objID string, arg skillcore.Argument, core skillcore.SkillCore) *recover {
 	return &recover{
-		ID:  objID,
-		Arg: arg,
+		ID:   objID,
+		Arg:  arg,
+		Core: core,
 	}
 }
 
 func (p *recover) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(view, p.count)
+	p.drawer.Draw(view, p.Core.GetCount())
 }
 
 func (p *recover) Process() (bool, error) {
-	if p.count == 0 {
-		sound.On(resources.SERecover)
-		localanim.DamageManager().New(damage.Damage{
-			DamageType:    damage.TypeObject,
-			Power:         -int(p.Arg.Power),
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			Element:       damage.ElementNone,
-			TargetObjID:   p.Arg.OwnerID,
-		})
-	}
-
-	p.count++
-
-	if p.count > resources.SkillRecoverEndCount {
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *recover) GetParam() anim.Param {

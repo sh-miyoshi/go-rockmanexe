@@ -2,21 +2,21 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
 type recover struct {
-	ID    string
-	Arg   Argument
-	count int
+	ID   string
+	Arg  Argument
+	Core skillcore.SkillCore
 }
 
-func newRecover(arg Argument) *recover {
+func newRecover(arg Argument, core skillcore.SkillCore) *recover {
 	return &recover{
-		ID:  arg.AnimObjID,
-		Arg: arg,
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core,
 	}
 }
 
@@ -25,31 +25,14 @@ func (p *recover) Draw() {
 }
 
 func (p *recover) Process() (bool, error) {
-	p.count++
-
-	if p.count == 1 {
-		routeranim.DamageNew(p.Arg.OwnerClientID, damage.Damage{
-			DamageType:    damage.TypeObject,
-			OwnerClientID: p.Arg.OwnerClientID,
-			Power:         -int(p.Arg.Power),
-			TargetObjType: p.Arg.TargetType,
-			HitEffectType: resources.EffectTypeNone,
-			Element:       damage.ElementNone,
-			TargetObjID:   p.Arg.OwnerObjectID,
-		})
-	}
-
-	if p.count > p.GetEndCount() {
-		return true, nil
-	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *recover) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		AnimType:      routeranim.TypeRecover,
 		OwnerClientID: p.Arg.OwnerClientID,
-		ActCount:      p.count,
+		ActCount:      p.Core.GetCount(),
 	}
 
 	return anim.Param{
@@ -64,5 +47,5 @@ func (p *recover) StopByOwner() {
 }
 
 func (p *recover) GetEndCount() int {
-	return resources.SkillRecoverEndCount
+	return p.Core.GetEndCount()
 }

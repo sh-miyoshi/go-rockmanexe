@@ -3,14 +3,12 @@ package draw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 )
 
 type animDraw struct {
@@ -43,36 +41,36 @@ func (d *animDraw) Draw() {
 		pos := battlecommon.ViewPos(a.Pos)
 
 		switch a.AnimType {
-		case anim.TypeCannonNormal:
-			d.drawCannonInst.Draw(resources.SkillTypeNormalCannon, pos, a.ActCount)
-		case anim.TypeCannonHigh:
-			d.drawCannonInst.Draw(resources.SkillTypeHighCannon, pos, a.ActCount)
-		case anim.TypeCannonMega:
-			d.drawCannonInst.Draw(resources.SkillTypeMegaCannon, pos, a.ActCount)
+		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
+			var drawPm skill.CannonDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
 		case anim.TypeMiniBomb:
-			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
-			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount)
+			var drawPm skill.MiniBombDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawMiniBombInst.Draw(a.Pos, drawPm.Target, a.ActCount, drawPm.EndCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:
-			d.drawShockWave.Draw(pos, a.ActCount, 3, config.DirectRight) // debug
+			var drawPm skill.ShockWaveDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
-		case anim.TypeSword:
-			d.drawSword.Draw(resources.SkillTypeSword, pos, a.ActCount)
-		case anim.TypeWideSword:
-			d.drawSword.Draw(resources.SkillTypeWideSword, pos, a.ActCount)
-		case anim.TypeLongSword:
-			d.drawSword.Draw(resources.SkillTypeLongSword, pos, a.ActCount)
+		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:
+			var drawPm skill.SwordDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay)
 		case anim.TypeVulcan:
-			d.drawVulcan.Draw(pos, a.ActCount)
+			var drawPm skill.VulcanDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
 		case anim.TypeWideShot:
-			// TODO: refactoring
-			state := a.ActCount / 1000
-			a.ActCount -= state * 1000
-			d.drawWideShot.Draw(a.Pos, a.ActCount, config.DirectRight, true, resources.SkillWideShotPlayerNextStepCount, state)
+			var drawPm skill.WideShotDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

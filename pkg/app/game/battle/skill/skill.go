@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -31,36 +33,28 @@ func End() {
 
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
+	arg.GetPanelInfo = field.GetPanelInfo
+	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
-	case resources.SkillCannon:
-		return newCannon(objID, resources.SkillTypeNormalCannon, arg)
-	case resources.SkillHighCannon:
-		return newCannon(objID, resources.SkillTypeHighCannon, arg)
-	case resources.SkillMegaCannon:
-		return newCannon(objID, resources.SkillTypeMegaCannon, arg)
+	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
+		return newCannon(objID, arg, core)
 	case resources.SkillMiniBomb:
-		return newMiniBomb(objID, arg)
-	case resources.SkillSword:
-		return newSword(objID, resources.SkillTypeSword, arg)
-	case resources.SkillWideSword:
-		return newSword(objID, resources.SkillTypeWideSword, arg)
-	case resources.SkillLongSword:
-		return newSword(objID, resources.SkillTypeLongSword, arg)
-	case resources.SkillShockWave:
-		return newShockWave(objID, false, arg)
+		return newMiniBomb(objID, arg, core)
+	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:
+		return newSword(objID, arg, core)
+	case resources.SkillPlayerShockWave, resources.SkillEnemyShockWave:
+		return newShockWave(objID, arg, core, skillID == resources.SkillPlayerShockWave)
 	case resources.SkillRecover:
-		return newRecover(objID, arg)
+		return newRecover(objID, arg, core)
 	case resources.SkillSpreadGun:
-		return newSpreadGun(objID, arg)
+		return newSpreadGun(objID, arg, core)
 	case resources.SkillVulcan1:
-		return newVulcan(objID, arg)
-	case resources.SkillPlayerShockWave:
-		return newShockWave(objID, true, arg)
+		return newVulcan(objID, arg, core)
 	case resources.SkillThunderBall:
 		return newThunderBall(objID, arg)
-	case resources.SkillWideShot:
-		return newWideShot(objID, arg)
+	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
+		return newWideShot(objID, arg, core, skillID == resources.SkillPlayerWideShot)
 	case resources.SkillBoomerang:
 		return newBoomerang(objID, arg)
 	case resources.SkillWaterBomb:
@@ -77,8 +71,6 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newCrack(objID, crackType3, arg)
 	case resources.SkillBambooLance:
 		return newBambooLance(objID, arg)
-	case resources.SkillDreamSword:
-		return newDreamSword(objID, arg)
 	case resources.SkillInvisible:
 		return newInvisible(objID, arg)
 	case resources.SkillGarooBreath:

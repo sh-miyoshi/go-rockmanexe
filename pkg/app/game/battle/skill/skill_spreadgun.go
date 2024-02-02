@@ -1,40 +1,35 @@
 package skill
 
 import (
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type spreadGun struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.SpreadGun
 
-	count  int
 	drawer skilldraw.DrawSpreadGun
 }
 
 type spreadHit struct {
-	ID  string
-	Arg skillcore.Argument
-
-	count int
-	pos   point.Point
+	ID   string
+	Core processor.SpreadHit
 }
 
-func newSpreadGun(objID string, arg skillcore.Argument) *spreadGun {
+func newSpreadGun(objID string, arg skillcore.Argument, core skillcore.SkillCore) *spreadGun {
 	res := &spreadGun{
-		ID:  objID,
-		Arg: arg,
+		ID:   objID,
+		Arg:  arg,
+		Core: core.(*processor.SpreadGun),
 	}
 
 	return res
@@ -43,58 +38,19 @@ func newSpreadGun(objID string, arg skillcore.Argument) *spreadGun {
 func (p *spreadGun) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(view, p.count)
+	p.drawer.Draw(view, p.Core.GetCount())
 }
 
 func (p *spreadGun) Process() (bool, error) {
-	if p.count == 5 {
-		sound.On(resources.SEGun)
-
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
-			target := point.Point{X: x, Y: pos.Y}
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &target, ObjType: p.Arg.TargetType})
-			if len(objs) > 0 {
-				// Hit
-				sound.On(resources.SESpreadHit)
-
-				localanim.DamageManager().New(damage.Damage{
-					DamageType:    damage.TypeObject,
-					Power:         int(p.Arg.Power),
-					TargetObjType: p.Arg.TargetType,
-					HitEffectType: resources.EffectTypeHitBig,
-					Element:       damage.ElementNone,
-					TargetObjID:   objs[0].ObjID,
-				})
-				// Spreading
-				for sy := -1; sy <= 1; sy++ {
-					if pos.Y+sy < 0 || pos.Y+sy >= battlecommon.FieldNum.Y {
-						continue
-					}
-					for sx := -1; sx <= 1; sx++ {
-						if sy == 0 && sx == 0 {
-							continue
-						}
-						if x+sx >= 0 && x+sx < battlecommon.FieldNum.X {
-							localanim.AnimNew(&spreadHit{
-								Arg: p.Arg,
-								pos: point.Point{X: x + sx, Y: pos.Y + sy},
-							})
-						}
-					}
-				}
-
-				break
-			}
-		}
+	res, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+	for _, hit := range p.Core.PopSpreadHits() {
+		localanim.AnimNew(&spreadHit{ID: uuid.New().String(), Core: hit})
 	}
 
-	p.count++
-
-	if p.count > resources.SkillSpreadGunEndCount {
-		return true, nil
-	}
-	return false, nil
+	return res, nil
 }
 
 func (p *spreadGun) GetParam() anim.Param {
@@ -105,7 +61,7 @@ func (p *spreadGun) GetParam() anim.Param {
 }
 
 func (p *spreadGun) StopByOwner() {
-	if p.count < 5 {
+	if p.Core.GetCount() < 5 {
 		localanim.AnimDelete(p.ID)
 	}
 }
@@ -114,22 +70,10 @@ func (p *spreadHit) Draw() {
 }
 
 func (p *spreadHit) Process() (bool, error) {
-	p.count++
-	if p.count == 10 {
-		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.pos, 5))
-		if objID := field.GetPanelInfo(p.pos).ObjectID; objID != "" {
-			localanim.DamageManager().New(damage.Damage{
-				DamageType:    damage.TypeObject,
-				Power:         int(p.Arg.Power),
-				TargetObjType: p.Arg.TargetType,
-				HitEffectType: resources.EffectTypeNone,
-				Element:       damage.ElementNone,
-			})
-		}
-
-		return true, nil
+	if p.Core.GetCount() == 1 {
+		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.Core.Pos, 5))
 	}
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *spreadHit) GetParam() anim.Param {

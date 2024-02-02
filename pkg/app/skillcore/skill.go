@@ -4,14 +4,28 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type Argument struct {
 	OwnerID    string
 	Power      uint
 	TargetType int
+
+	DamageMgr    *damage.DamageManager
+	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
+	GetObjectPos func(objID string) point.Point
+	SoundOn      func(typ resources.SEType)
+}
+
+type SkillCore interface {
+	Process() (bool, error)
+	GetCount() int
+	GetEndCount() int
 }
 
 func GetIDByChipID(chipID int) int {
@@ -43,7 +57,7 @@ func GetIDByChipID(chipID int) int {
 	case chip.IDThunderBall:
 		return resources.SkillThunderBall
 	case chip.IDWideShot:
-		return resources.SkillWideShot
+		return resources.SkillPlayerWideShot
 	case chip.IDBoomerang1:
 		return resources.SkillBoomerang
 	case chip.IDAquaman:

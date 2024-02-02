@@ -5,6 +5,8 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
@@ -27,31 +29,31 @@ type SkillAnim interface {
 }
 
 func Get(id int, arg Argument) SkillAnim {
+	coreArg := skillcore.Argument{
+		Power:        arg.Power,
+		OwnerID:      arg.OwnerObjectID,
+		TargetType:   arg.TargetType,
+		GetPanelInfo: arg.GameInfo.GetPanelInfo,
+	}
+	core := routeranim.SkillManager(arg.OwnerClientID).Get(id, coreArg)
+
 	switch id {
-	case resources.SkillCannon:
-		return newCannon(TypeNormalCannon, arg)
-	case resources.SkillHighCannon:
-		return newCannon(TypeHighCannon, arg)
-	case resources.SkillMegaCannon:
-		return newCannon(TypeMegaCannon, arg)
+	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
+		return newCannon(arg, core)
 	case resources.SkillMiniBomb:
-		return newMiniBomb(arg)
+		return newMiniBomb(arg, core)
 	case resources.SkillRecover:
-		return newRecover(arg)
-	case resources.SkillShockWave:
-		return newShockWave(arg)
+		return newRecover(arg, core)
+	case resources.SkillEnemyShockWave:
+		return newShockWave(arg, core)
 	case resources.SkillSpreadGun:
-		return newSpreadGun(arg)
-	case resources.SkillSword:
-		return newSword(resources.SkillTypeSword, arg)
-	case resources.SkillWideSword:
-		return newSword(resources.SkillTypeWideSword, arg)
-	case resources.SkillLongSword:
-		return newSword(resources.SkillTypeLongSword, arg)
+		return newSpreadGun(arg, core)
+	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword:
+		return newSword(id, arg, core)
 	case resources.SkillVulcan1:
-		return newVulcan(3, arg)
-	case resources.SkillWideShot:
-		return newWideShot(arg)
+		return newVulcan(arg, core)
+	case resources.SkillPlayerWideShot:
+		return newWideShot(arg, core)
 	default:
 		panic(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
