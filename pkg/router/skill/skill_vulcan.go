@@ -1,6 +1,9 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -9,6 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
+
+type VulcanDrawParam struct {
+	Delay int
+}
 
 type vulcan struct {
 	ID   string
@@ -52,6 +59,8 @@ func (p *vulcan) GetParam() anim.Param {
 		AnimType:      routeranim.TypeVulcan,
 		ActCount:      p.Core.GetCount(),
 	}
+	drawPm := VulcanDrawParam{Delay: p.Core.GetDelay()}
+	info.SkillInfo = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
@@ -67,4 +76,15 @@ func (p *vulcan) StopByOwner() {
 
 func (p *vulcan) GetEndCount() int {
 	return p.Core.GetEndCount()
+}
+
+func (p *VulcanDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *VulcanDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }

@@ -65,7 +65,9 @@ func (d *animDraw) Draw() {
 			drawPm.Unmarshal(a.SkillInfo)
 			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay)
 		case anim.TypeVulcan:
-			d.drawVulcan.Draw(pos, a.ActCount, 2) // TODO: 要調整
+			var drawPm skill.VulcanDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
 		case anim.TypeWideShot:
 			// TODO: refactoring
 			state := a.ActCount / 1000
