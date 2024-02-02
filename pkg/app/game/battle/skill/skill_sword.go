@@ -10,20 +10,18 @@ import (
 )
 
 type sword struct {
-	ID      string
-	Arg     skillcore.Argument
-	Core    *processor.Sword
-	SkillID int
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.Sword
 
 	drawer skilldraw.DrawSword
 }
 
-func newSword(objID string, skillID int, arg skillcore.Argument, core skillcore.SkillCore) *sword {
+func newSword(objID string, arg skillcore.Argument, core skillcore.SkillCore) *sword {
 	return &sword{
-		ID:      objID,
-		Arg:     arg,
-		SkillID: skillID,
-		Core:    core.(*processor.Sword),
+		ID:   objID,
+		Arg:  arg,
+		Core: core.(*processor.Sword),
 	}
 }
 
