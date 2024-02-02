@@ -57,6 +57,7 @@
       - resources.EndCount
       - resources.NextStepCount, Delay
       - resources.SkillState
+  - skillcoreの実装
   - drawerへの移行
 
 ## 新機能
