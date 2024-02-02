@@ -8,6 +8,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -26,7 +27,7 @@ func NewManager(clientIDs [2]string) string {
 	for i := 0; i < len(clientIDs); i++ {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
-	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos)
+	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, func(typ resources.SEType) {})
 	return id
 }
 

@@ -13,10 +13,8 @@ const (
 )
 
 type Sword struct {
-	SkillID      int
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
+	SkillID int
+	Arg     skillcore.Argument
 
 	count int
 }
@@ -36,12 +34,12 @@ func (p *Sword) Process() (bool, error) {
 			Element:       damage.ElementNone,
 		}
 
-		userPos := p.GetObjectPos(p.Arg.OwnerID)
+		userPos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 
 		targetPos := point.Point{X: userPos.X + 1, Y: userPos.Y}
 		if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 			dm.TargetObjID = objID
-			p.DamageMgr.New(dm)
+			p.Arg.DamageMgr.New(dm)
 		}
 
 		switch p.SkillID {
@@ -51,18 +49,18 @@ func (p *Sword) Process() (bool, error) {
 			targetPos.Y = userPos.Y - 1
 			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
-				p.DamageMgr.New(dm)
+				p.Arg.DamageMgr.New(dm)
 			}
 			targetPos.Y = userPos.Y + 1
 			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
-				p.DamageMgr.New(dm)
+				p.Arg.DamageMgr.New(dm)
 			}
 		case resources.SkillLongSword:
 			targetPos.X = userPos.X + 2
 			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
-				p.DamageMgr.New(dm)
+				p.Arg.DamageMgr.New(dm)
 			}
 		case resources.SkillDreamSword:
 			for x := 1; x <= 2; x++ {
@@ -73,7 +71,7 @@ func (p *Sword) Process() (bool, error) {
 					}
 					if objID := p.Arg.GetPanelInfo(point.Point{X: userPos.X + x, Y: userPos.Y + y}).ObjectID; objID != "" {
 						dm.TargetObjID = objID
-						p.DamageMgr.New(dm)
+						p.Arg.DamageMgr.New(dm)
 					}
 				}
 			}

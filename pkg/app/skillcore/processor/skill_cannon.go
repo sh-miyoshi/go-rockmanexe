@@ -13,9 +13,7 @@ const (
 )
 
 type Cannon struct {
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
+	Arg skillcore.Argument
 
 	count int
 }
@@ -24,7 +22,7 @@ func (p *Cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
-		pos := p.GetObjectPos(p.Arg.OwnerID)
+		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
@@ -38,7 +36,7 @@ func (p *Cannon) Process() (bool, error) {
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				if objID := p.Arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
-					p.DamageMgr.New(dm)
+					p.Arg.DamageMgr.New(dm)
 					break
 				}
 			}
@@ -46,7 +44,7 @@ func (p *Cannon) Process() (bool, error) {
 			for x := pos.X - 1; x >= 0; x-- {
 				if objID := p.Arg.GetPanelInfo(point.Point{X: x, Y: pos.Y}).ObjectID; objID != "" {
 					dm.TargetObjID = objID
-					p.DamageMgr.New(dm)
+					p.Arg.DamageMgr.New(dm)
 					break
 				}
 			}

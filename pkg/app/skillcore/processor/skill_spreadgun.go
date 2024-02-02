@@ -14,16 +14,13 @@ const (
 )
 
 type SpreadHit struct {
-	DamageMgr *damage.DamageManager
-	Arg       skillcore.Argument
-	Pos       point.Point
-	count     int
+	Arg   skillcore.Argument
+	Pos   point.Point
+	count int
 }
 
 type SpreadGun struct {
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
+	Arg skillcore.Argument
 
 	count int
 	hits  []SpreadHit
@@ -33,7 +30,7 @@ func (p *SpreadGun) Process() (bool, error) {
 	if p.count == 5 {
 		// sound.On(resources.SEGun) // TODO
 
-		pos := p.GetObjectPos(p.Arg.OwnerID)
+		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
@@ -51,7 +48,7 @@ func (p *SpreadGun) Process() (bool, error) {
 
 				dm.TargetObjID = objID
 				logger.Debug("Add damage by spread gun: %+v", dm)
-				p.DamageMgr.New(dm)
+				p.Arg.DamageMgr.New(dm)
 
 				// Spreading
 				for sy := -1; sy <= 1; sy++ {
@@ -66,9 +63,8 @@ func (p *SpreadGun) Process() (bool, error) {
 							pos := point.Point{X: x + sx, Y: pos.Y + sy}
 							logger.Debug("Add spread hit to %s", pos.String())
 							p.hits = append(p.hits, SpreadHit{
-								DamageMgr: p.DamageMgr,
-								Arg:       p.Arg,
-								Pos:       pos,
+								Arg: p.Arg,
+								Pos: pos,
 							})
 						}
 					}
@@ -107,7 +103,7 @@ func (p *SpreadGun) PopSpreadHits() []SpreadHit {
 func (p *SpreadHit) Process() (bool, error) {
 	if p.count == 10 {
 		if objID := p.Arg.GetPanelInfo(p.Pos).ObjectID; objID != "" {
-			p.DamageMgr.New(damage.Damage{
+			p.Arg.DamageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,

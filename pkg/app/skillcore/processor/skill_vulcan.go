@@ -19,10 +19,8 @@ type VulcanEffect struct {
 }
 
 type Vulcan struct {
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
-	Times        int
+	Arg   skillcore.Argument
+	Times int
 
 	count    int
 	isHit    bool
@@ -37,14 +35,14 @@ func (p *Vulcan) Process() (bool, error) {
 			// sound.On(resources.SEGun) // TODO
 
 			// Add damage
-			pos := p.GetObjectPos(p.Arg.OwnerID)
+			pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := point.Point{X: x, Y: pos.Y}
 				if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
-					p.DamageMgr.New(damage.Damage{
+					p.Arg.DamageMgr.New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						Power:         int(p.Arg.Power),
 						TargetObjType: p.Arg.TargetType,
@@ -66,7 +64,7 @@ func (p *Vulcan) Process() (bool, error) {
 							RandRange: 20,
 						})
 						if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
-							p.DamageMgr.New(damage.Damage{
+							p.Arg.DamageMgr.New(damage.Damage{
 								DamageType:    damage.TypeObject,
 								Power:         int(p.Arg.Power),
 								TargetObjType: p.Arg.TargetType,

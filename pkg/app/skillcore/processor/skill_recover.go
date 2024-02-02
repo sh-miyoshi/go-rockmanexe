@@ -11,15 +11,14 @@ const (
 )
 
 type Recover struct {
-	DamageMgr *damage.DamageManager
-	Arg       skillcore.Argument
+	Arg skillcore.Argument
 
 	count int
 }
 
 func (p *Recover) Process() (bool, error) {
 	if p.count == 0 {
-		p.DamageMgr.New(damage.Damage{
+		p.Arg.DamageMgr.New(damage.Damage{
 			DamageType:    damage.TypeObject,
 			Power:         -int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,

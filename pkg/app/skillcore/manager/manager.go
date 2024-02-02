@@ -11,37 +11,43 @@ import (
 type Manager struct {
 	damageMgr    *damage.DamageManager
 	GetObjectPos func(objID string) point.Point
+	SoundOn      func(typ resources.SEType)
 }
 
-func NewManager(damageMgr *damage.DamageManager, GetObjectPos func(objID string) point.Point) *Manager {
+func NewManager(damageMgr *damage.DamageManager, GetObjectPos func(objID string) point.Point, SoundOn func(typ resources.SEType)) *Manager {
 	return &Manager{
 		damageMgr:    damageMgr,
 		GetObjectPos: GetObjectPos,
+		SoundOn:      SoundOn,
 	}
 }
 
 func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
+	arg.GetObjectPos = m.GetObjectPos
+	arg.SoundOn = m.SoundOn
+	arg.DamageMgr = m.damageMgr
+
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return &processor.Cannon{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+		return &processor.Cannon{Arg: arg}
 	case resources.SkillMiniBomb:
-		return &processor.MiniBomb{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+		return &processor.MiniBomb{Arg: arg}
 	case resources.SkillRecover:
-		return &processor.Recover{Arg: arg, DamageMgr: m.damageMgr}
+		return &processor.Recover{Arg: arg}
 	case resources.SkillEnemyShockWave:
-		res := &processor.ShockWave{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+		res := &processor.ShockWave{Arg: arg}
 		res.Init(false)
 		return res
 	case resources.SkillPlayerShockWave:
-		res := &processor.ShockWave{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+		res := &processor.ShockWave{Arg: arg}
 		res.Init(true)
 		return res
 	case resources.SkillSpreadGun:
-		return &processor.SpreadGun{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+		return &processor.SpreadGun{Arg: arg}
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:
-		return &processor.Sword{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos, SkillID: id}
+		return &processor.Sword{Arg: arg, SkillID: id}
 	case resources.SkillVulcan1:
-		return &processor.Vulcan{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos, Times: 3}
+		return &processor.Vulcan{Arg: arg, Times: 3}
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする

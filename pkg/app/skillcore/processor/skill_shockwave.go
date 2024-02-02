@@ -11,9 +11,7 @@ import (
 )
 
 type ShockWave struct {
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
+	Arg skillcore.Argument
 
 	count int
 	pm    skilldefines.ShockWaveParam
@@ -22,7 +20,7 @@ type ShockWave struct {
 
 func (p *ShockWave) Init(isPlayer bool) {
 	p.pm = skilldefines.GetShockWaveParam(isPlayer)
-	p.pos = p.GetObjectPos(p.Arg.OwnerID)
+	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
 }
 
 func (p *ShockWave) Process() (bool, error) {
@@ -44,7 +42,7 @@ func (p *ShockWave) Process() (bool, error) {
 			return true, nil
 		}
 
-		p.DamageMgr.New(damage.Damage{
+		p.Arg.DamageMgr.New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),

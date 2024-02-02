@@ -5,6 +5,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -176,7 +177,7 @@ func DamageManager() *damage.DamageManager {
 
 func SkillManager() *skillmanager.Manager {
 	if skillMgr == nil {
-		skillMgr = skillmanager.NewManager(DamageManager(), ObjAnimGetObjPos)
+		skillMgr = skillmanager.NewManager(DamageManager(), ObjAnimGetObjPos, sound.On)
 	}
 	return skillMgr
 }

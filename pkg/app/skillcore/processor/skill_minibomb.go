@@ -13,9 +13,7 @@ const (
 )
 
 type MiniBomb struct {
-	GetObjectPos func(objID string) point.Point
-	DamageMgr    *damage.DamageManager
-	Arg          skillcore.Argument
+	Arg skillcore.Argument
 
 	count  int
 	target point.Point
@@ -26,7 +24,7 @@ func (p *MiniBomb) Process() (bool, error) {
 
 	if p.count == 1 {
 		// sound.On(resources.SEBombThrow)// TODO
-		pos := p.GetObjectPos(p.Arg.OwnerID)
+		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		p.target = point.Point{X: pos.X + 3, Y: pos.Y}
 	}
 
@@ -37,7 +35,7 @@ func (p *MiniBomb) Process() (bool, error) {
 		}
 
 		if objID := p.Arg.GetPanelInfo(p.target).ObjectID; objID != "" {
-			p.DamageMgr.New(damage.Damage{
+			p.Arg.DamageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,
