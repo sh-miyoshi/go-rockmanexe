@@ -43,15 +43,6 @@ const (
 )
 
 const (
-	SkillTypeSword int = iota
-	SkillTypeWideSword
-	SkillTypeLongSword
-
-	SkillTypeSwordMax
-)
-
-const (
-	SkillSwordEndCount        = 12
 	SkillWideShotEndCount     = 16
 	SkillWaterBombEndCount    = 60
 	SkillAreaStealHitEndCount = 12
@@ -66,7 +57,6 @@ const (
 	SkillThunderBallNextStepCount    = 80
 	SkillCirkillShotNextStepCount    = 20
 
-	SkillSwordDelay       = 3
 	SkillVulcanDelay      = 2
 	SkillFlamePillarDelay = 4
 )

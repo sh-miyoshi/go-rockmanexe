@@ -44,7 +44,7 @@ func (d *animDraw) Draw() {
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal:
-			d.drawCannonInst.Draw(resources.SkillCannon, pos, a.ActCount)
+			d.drawCannonInst.Draw(resources.SkillCannon, pos, a.ActCount) // TODO: 要調整
 		case anim.TypeCannonHigh:
 			d.drawCannonInst.Draw(resources.SkillHighCannon, pos, a.ActCount)
 		case anim.TypeCannonMega:
@@ -62,11 +62,11 @@ func (d *animDraw) Draw() {
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword:
-			d.drawSword.Draw(resources.SkillTypeSword, pos, a.ActCount)
+			d.drawSword.Draw(0, pos, a.ActCount) // TODO: 要調整
 		case anim.TypeWideSword:
-			d.drawSword.Draw(resources.SkillTypeWideSword, pos, a.ActCount)
+			d.drawSword.Draw(1, pos, a.ActCount)
 		case anim.TypeLongSword:
-			d.drawSword.Draw(resources.SkillTypeLongSword, pos, a.ActCount)
+			d.drawSword.Draw(2, pos, a.ActCount)
 		case anim.TypeVulcan:
 			d.drawVulcan.Draw(pos, a.ActCount)
 		case anim.TypeWideShot:

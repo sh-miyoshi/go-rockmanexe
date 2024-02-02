@@ -5,7 +5,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-const delaySword = 3
+const delaySword = 3 // TODO: 要調整
 
 type DrawSword struct {
 }

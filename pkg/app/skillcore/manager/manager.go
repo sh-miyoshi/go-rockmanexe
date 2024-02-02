@@ -38,6 +38,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillSpreadGun:
 		return &processor.SpreadGun{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos}
+	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:
+		return &processor.Sword{Arg: arg, DamageMgr: m.damageMgr, GetObjectPos: m.GetObjectPos, SkillID: id}
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
