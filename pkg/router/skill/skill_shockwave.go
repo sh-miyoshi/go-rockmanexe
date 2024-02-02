@@ -3,23 +3,21 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	skilldefines "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/defines"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
 type shockWave struct {
 	ID   string
 	Arg  Argument
-	Core skillcore.SkillCore
-	pm   skilldefines.ShockWaveParam
+	Core *processor.ShockWave
 }
 
 func newShockWave(arg Argument, core skillcore.SkillCore) *shockWave {
 	return &shockWave{
 		ID:   arg.AnimObjID,
 		Arg:  arg,
-		Core: core,
-		pm:   skilldefines.GetShockWaveParam(true),
+		Core: core.(*processor.ShockWave),
 	}
 }
 

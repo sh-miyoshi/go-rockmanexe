@@ -6,20 +6,40 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	skilldefines "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/defines"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
+
+type ShockWaveParam struct {
+	InitWait int
+	Speed    int
+	Direct   int
+	ImageNum int
+}
 
 type ShockWave struct {
 	Arg skillcore.Argument
 
 	count int
-	pm    skilldefines.ShockWaveParam
+	pm    ShockWaveParam
 	pos   point.Point
 }
 
 func (p *ShockWave) Init(isPlayer bool) {
-	p.pm = skilldefines.GetShockWaveParam(isPlayer)
+	if isPlayer {
+		p.pm = ShockWaveParam{
+			InitWait: 9,
+			Speed:    3,
+			Direct:   config.DirectRight,
+			ImageNum: 9,
+		}
+	} else {
+		p.pm = ShockWaveParam{
+			InitWait: 0,
+			Speed:    5,
+			Direct:   config.DirectLeft,
+			ImageNum: 9,
+		}
+	}
 	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
 }
 
@@ -69,4 +89,8 @@ func (p *ShockWave) GetCount() int {
 
 func (p *ShockWave) GetEndCount() int {
 	return 6 * 4
+}
+
+func (p *ShockWave) GetParam() ShockWaveParam {
+	return p.pm
 }

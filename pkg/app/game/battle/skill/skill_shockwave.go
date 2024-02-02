@@ -6,7 +6,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	skilldefines "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/defines"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -14,9 +14,8 @@ type shockWave struct {
 	ID       string
 	Arg      skillcore.Argument
 	ShowPick bool
-	Core     skillcore.SkillCore
+	Core     (*processor.ShockWave)
 
-	pm         skilldefines.ShockWaveParam
 	pos        point.Point
 	showWave   bool
 	drawer     skilldraw.DrawShockWave
@@ -28,9 +27,8 @@ func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore
 	res := &shockWave{
 		ID:   objID,
 		Arg:  arg,
-		Core: core,
+		Core: core.(*processor.ShockWave),
 		pos:  pos,
-		pm:   skilldefines.GetShockWaveParam(isPlayer),
 	}
 
 	return res
@@ -38,8 +36,9 @@ func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore
 
 func (p *shockWave) Draw() {
 	if p.showWave {
+		pm := p.Core.GetParam()
 		view := battlecommon.ViewPos(p.pos)
-		p.drawer.Draw(view, p.Core.GetCount(), p.pm.Speed, p.pm.Direct)
+		p.drawer.Draw(view, p.Core.GetCount(), pm.Speed, pm.Direct)
 	}
 
 	if p.ShowPick {
@@ -61,7 +60,7 @@ func (p *shockWave) GetParam() anim.Param {
 }
 
 func (p *shockWave) StopByOwner() {
-	if p.Core.GetCount() <= p.pm.InitWait {
+	if p.Core.GetCount() <= p.Core.GetParam().InitWait {
 		localanim.AnimDelete(p.ID)
 	}
 }
