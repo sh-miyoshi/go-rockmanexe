@@ -16,7 +16,13 @@ type MiniBomb struct {
 	Arg skillcore.Argument
 
 	count  int
+	pos    point.Point
 	target point.Point
+}
+
+func (p *MiniBomb) Init() {
+	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
+	p.target = point.Point{X: p.pos.X + 3, Y: p.pos.Y}
 }
 
 func (p *MiniBomb) Process() (bool, error) {
@@ -24,8 +30,6 @@ func (p *MiniBomb) Process() (bool, error) {
 
 	if p.count == 1 {
 		p.Arg.SoundOn(resources.SEBombThrow)
-		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
-		p.target = point.Point{X: pos.X + 3, Y: pos.Y}
 	}
 
 	if p.count == miniBombEndCount {
@@ -56,4 +60,8 @@ func (p *MiniBomb) GetCount() int {
 
 func (p *MiniBomb) GetEndCount() int {
 	return miniBombEndCount
+}
+
+func (p *MiniBomb) GetPointParams() (current, target point.Point) {
+	return p.pos, p.target
 }

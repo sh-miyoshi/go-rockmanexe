@@ -1,29 +1,32 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+type MiniBombDrawParam struct {
+	EndCount int
+	Target   point.Point
+}
+
 type miniBomb struct {
 	ID   string
 	Arg  Argument
-	Core skillcore.SkillCore
-
-	pos    point.Point
-	target point.Point
+	Core *processor.MiniBomb
 }
 
 func newMiniBomb(arg Argument, core skillcore.SkillCore) *miniBomb {
-	pos := routeranim.ObjAnimGetObjPos(arg.OwnerClientID, arg.OwnerObjectID)
 	return &miniBomb{
-		ID:     arg.AnimObjID,
-		Arg:    arg,
-		Core:   core,
-		pos:    pos,
-		target: point.Point{X: pos.X + 3, Y: pos.Y},
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core.(*processor.MiniBomb),
 	}
 }
 
@@ -41,10 +44,16 @@ func (p *miniBomb) GetParam() anim.Param {
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
 	}
+	current, target := p.Core.GetPointParams()
+	drawPm := MiniBombDrawParam{
+		EndCount: p.Core.GetEndCount(),
+		Target:   target,
+	}
+	info.SkillInfo = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       p.pos,
+		Pos:       current,
 		DrawType:  anim.DrawTypeSkill,
 		ExtraInfo: info.Marshal(),
 	}
@@ -58,4 +67,15 @@ func (p *miniBomb) StopByOwner() {
 
 func (p *miniBomb) GetEndCount() int {
 	return p.Core.GetEndCount()
+}
+
+func (p *MiniBombDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *MiniBombDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }

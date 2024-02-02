@@ -10,7 +10,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type animDraw struct {
@@ -48,9 +47,9 @@ func (d *animDraw) Draw() {
 			drawPm.Unmarshal(a.SkillInfo)
 			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
 		case anim.TypeMiniBomb:
-			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
-			endCount := 60 // TODO: 要調整
-			d.drawMiniBombInst.Draw(a.Pos, target, a.ActCount, endCount)
+			var drawPm skill.MiniBombDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawMiniBombInst.Draw(a.Pos, drawPm.Target, a.ActCount, drawPm.EndCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:

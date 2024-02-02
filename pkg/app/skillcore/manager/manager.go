@@ -31,7 +31,9 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
 		return &processor.Cannon{SkillID: id, Arg: arg}
 	case resources.SkillMiniBomb:
-		return &processor.MiniBomb{Arg: arg}
+		res := &processor.MiniBomb{Arg: arg}
+		res.Init()
+		return res
 	case resources.SkillRecover:
 		return &processor.Recover{Arg: arg}
 	case resources.SkillPlayerShockWave, resources.SkillEnemyShockWave:
