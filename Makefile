@@ -29,3 +29,7 @@ localnet:
 	cd tools/localnet-boot && \
 	go build -o localnet-boot.exe && \
 	localnet-boot.exe
+localnet-mac:
+	cd tools/localnet-boot-mac && \
+	go build -o localnet-boot.out && \
+	./localnet-boot.out
