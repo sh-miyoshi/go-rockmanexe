@@ -49,7 +49,7 @@ func (p *miniBomb) GetParam() anim.Param {
 		EndCount: p.Core.GetEndCount(),
 		Target:   target,
 	}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,

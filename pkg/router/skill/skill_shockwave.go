@@ -48,7 +48,7 @@ func (p *shockWave) GetParam() anim.Param {
 		Speed:  pm.Speed,
 		Direct: pm.Direct,
 	}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,

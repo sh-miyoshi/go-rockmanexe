@@ -43,17 +43,17 @@ func (d *animDraw) Draw() {
 		switch a.AnimType {
 		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
 			var drawPm skill.CannonDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
 		case anim.TypeMiniBomb:
 			var drawPm skill.MiniBombDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawMiniBombInst.Draw(a.Pos, drawPm.Target, a.ActCount, drawPm.EndCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:
 			var drawPm skill.ShockWaveDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
@@ -61,15 +61,15 @@ func (d *animDraw) Draw() {
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:
 			var drawPm skill.SwordDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay)
 		case anim.TypeVulcan:
 			var drawPm skill.VulcanDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
 		case anim.TypeWideShot:
 			var drawPm skill.WideShotDrawParam
-			drawPm.Unmarshal(a.SkillInfo)
+			drawPm.Unmarshal(a.DrawParam)
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))

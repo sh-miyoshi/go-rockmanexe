@@ -39,7 +39,7 @@ type Anim struct {
 	DrawType  int
 	AnimType  int
 	ActCount  int
-	SkillInfo []byte
+	DrawParam []byte
 }
 
 type Effect struct {

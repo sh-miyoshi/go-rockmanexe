@@ -200,7 +200,7 @@ func (g *GameHandler) updateGameInfo() {
 				DrawType:  a.DrawType,
 				AnimType:  info.AnimType,
 				ActCount:  info.ActCount,
-				SkillInfo: info.SkillInfo[:],
+				DrawParam: info.DrawParam[:],
 			})
 		}
 	}

@@ -50,7 +50,7 @@ func (p *wideShot) GetParam() anim.Param {
 		NextStepCount: pm.NextStepCount,
 		Direct:        pm.Direct,
 	}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,

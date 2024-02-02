@@ -52,7 +52,7 @@ func (p *cannon) GetParam() anim.Param {
 		info.AnimType = routeranim.TypeCannonMega
 	}
 	drawPm := CannonDrawParam{Type: p.Core.GetCannonType()}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,

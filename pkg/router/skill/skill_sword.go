@@ -57,7 +57,7 @@ func (p *sword) GetParam() anim.Param {
 		Type:  p.Core.GetSwordType(),
 		Delay: p.Core.GetDelay(),
 	}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,

@@ -60,7 +60,7 @@ func (p *vulcan) GetParam() anim.Param {
 		ActCount:      p.Core.GetCount(),
 	}
 	drawPm := VulcanDrawParam{Delay: p.Core.GetDelay()}
-	info.SkillInfo = drawPm.Marshal()
+	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
