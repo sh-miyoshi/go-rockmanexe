@@ -70,7 +70,7 @@ func (p *spreadHit) Draw() {
 }
 
 func (p *spreadHit) Process() (bool, error) {
-	if p.Core.GetCount() == 10 {
+	if p.Core.GetCount() == 1 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.Core.Pos, 5))
 	}
 	return p.Core.Process()

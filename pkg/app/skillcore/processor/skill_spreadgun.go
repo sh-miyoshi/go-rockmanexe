@@ -101,7 +101,8 @@ func (p *SpreadGun) PopSpreadHits() []SpreadHit {
 }
 
 func (p *SpreadHit) Process() (bool, error) {
-	if p.count == 10 {
+	p.count++
+	if p.count == 1 {
 		if objID := p.Arg.GetPanelInfo(p.Pos).ObjectID; objID != "" {
 			p.Arg.DamageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
@@ -112,11 +113,9 @@ func (p *SpreadHit) Process() (bool, error) {
 				TargetObjID:   objID,
 			})
 		}
-
-		return true, nil
 	}
-	p.count++
-	return false, nil
+
+	return p.count >= 10, nil
 }
 
 func (p *SpreadHit) GetCount() int {
