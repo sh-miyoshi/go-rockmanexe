@@ -51,19 +51,13 @@
           - speed
           - skillType
 
-- Phase2
+- Phase3
   - 変数、定義の整理
     - 消したい
       - resources.EndCount
       - resources.NextStepCount, Delay
       - resources.SkillState
-  - draw_animのリファクタリング
-    - pkg/app/game/netbattle/draw/draw_anim.go
-    - rename SkillInfo
-- Phase3
   - drawerへの移行
-  - 呼び出し元の整理
-    - 特にnetのlocal処理
 
 ## 新機能
 
