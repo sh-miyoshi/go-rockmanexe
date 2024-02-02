@@ -5,10 +5,8 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skilldefines "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/defines"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -52,10 +50,6 @@ func (p *shockWave) Draw() {
 }
 
 func (p *shockWave) Process() (bool, error) {
-	n := p.pm.ImageNum * p.pm.Speed
-	if p.Core.GetCount()%n == 0 {
-		sound.On(resources.SEShockWave)
-	}
 	return p.Core.Process()
 }
 

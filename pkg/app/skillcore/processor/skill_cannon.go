@@ -22,6 +22,7 @@ func (p *Cannon) Process() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
+		p.Arg.SoundOn(resources.SECannon)
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,

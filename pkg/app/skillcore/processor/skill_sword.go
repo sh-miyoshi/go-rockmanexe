@@ -23,7 +23,11 @@ func (p *Sword) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1*swordDelay {
-		// sound.On(resources.SESword) or SEDreamSword // TODO
+		if p.SkillID == resources.SkillDreamSword {
+			p.Arg.SoundOn(resources.SEDreamSword)
+		} else {
+			p.Arg.SoundOn(resources.SESword)
+		}
 
 		dm := damage.Damage{
 			DamageType:    damage.TypeObject,

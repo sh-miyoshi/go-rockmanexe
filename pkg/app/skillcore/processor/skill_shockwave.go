@@ -31,6 +31,7 @@ func (p *ShockWave) Process() (bool, error) {
 
 	n := p.pm.ImageNum * p.pm.Speed
 	if p.count%n == 0 {
+		p.Arg.SoundOn(resources.SEShockWave)
 		if p.pm.Direct == config.DirectLeft {
 			p.pos.X--
 		} else if p.pm.Direct == config.DirectRight {

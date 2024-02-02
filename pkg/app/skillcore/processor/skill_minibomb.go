@@ -23,7 +23,7 @@ func (p *MiniBomb) Process() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
-		// sound.On(resources.SEBombThrow)// TODO
+		p.Arg.SoundOn(resources.SEBombThrow)
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		p.target = point.Point{X: pos.X + 3, Y: pos.Y}
 	}

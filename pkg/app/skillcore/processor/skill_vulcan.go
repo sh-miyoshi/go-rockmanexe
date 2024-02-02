@@ -32,7 +32,7 @@ func (p *Vulcan) Process() (bool, error) {
 	p.count++
 	if p.count >= vulcanDelay*1 {
 		if p.count%(vulcanDelay*5) == vulcanDelay*1 {
-			// sound.On(resources.SEGun) // TODO
+			p.Arg.SoundOn(resources.SEGun)
 
 			// Add damage
 			pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
@@ -76,7 +76,7 @@ func (p *Vulcan) Process() (bool, error) {
 						}
 					}
 					hit = true
-					// sound.On(resources.SECannonHit) // TODO
+					p.Arg.SoundOn(resources.SECannonHit)
 					break
 				}
 			}

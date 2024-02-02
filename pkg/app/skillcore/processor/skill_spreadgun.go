@@ -28,7 +28,7 @@ type SpreadGun struct {
 
 func (p *SpreadGun) Process() (bool, error) {
 	if p.count == 5 {
-		// sound.On(resources.SEGun) // TODO
+		p.Arg.SoundOn(resources.SEGun)
 
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
@@ -44,7 +44,7 @@ func (p *SpreadGun) Process() (bool, error) {
 			target := point.Point{X: x, Y: pos.Y}
 			if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
 				// Hit
-				// sound.On(resources.SESpreadHit) // TODO
+				p.Arg.SoundOn(resources.SESpreadHit)
 
 				dm.TargetObjID = objID
 				logger.Debug("Add damage by spread gun: %+v", dm)

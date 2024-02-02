@@ -5,9 +5,7 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 )
 
 type recover struct {
@@ -33,10 +31,6 @@ func (p *recover) Draw() {
 }
 
 func (p *recover) Process() (bool, error) {
-	if p.Core.GetCount() == 0 {
-		sound.On(resources.SERecover)
-	}
-
 	return p.Core.Process()
 }
 

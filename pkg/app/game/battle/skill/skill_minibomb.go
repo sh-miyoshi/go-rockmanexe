@@ -4,9 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -36,10 +34,6 @@ func (p *miniBomb) Draw() {
 }
 
 func (p *miniBomb) Process() (bool, error) {
-	if p.Core.GetCount() == 1 {
-		sound.On(resources.SEBombThrow)
-	}
-
 	return p.Core.Process()
 }
 
