@@ -59,6 +59,7 @@
       - resources.SkillState
   - draw_animのリファクタリング
     - pkg/app/game/netbattle/draw/draw_anim.go
+    - rename SkillInfo
 - Phase3
   - drawerへの移行
   - 呼び出し元の整理

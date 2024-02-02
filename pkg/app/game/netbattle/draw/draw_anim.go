@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -61,12 +62,10 @@ func (d *animDraw) Draw() {
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
-		case anim.TypeSword:
-			d.drawSword.Draw(0, pos, a.ActCount, 3) // TODO: 要調整
-		case anim.TypeWideSword:
-			d.drawSword.Draw(1, pos, a.ActCount, 3)
-		case anim.TypeLongSword:
-			d.drawSword.Draw(2, pos, a.ActCount, 3)
+		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:
+			var drawPm skill.SwordDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay)
 		case anim.TypeVulcan:
 			d.drawVulcan.Draw(pos, a.ActCount, 2) // TODO: 要調整
 		case anim.TypeWideShot:

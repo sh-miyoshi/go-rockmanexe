@@ -1,12 +1,20 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
+
+type SwordDrawParam struct {
+	Type  int
+	Delay int
+}
 
 type sword struct {
 	ID      string
@@ -45,6 +53,11 @@ func (p *sword) GetParam() anim.Param {
 	case resources.SkillLongSword:
 		info.AnimType = routeranim.TypeLongSword
 	}
+	drawPm := SwordDrawParam{
+		Type:  p.Core.GetSwordType(),
+		Delay: p.Core.GetDelay(),
+	}
+	info.SkillInfo = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
@@ -60,4 +73,15 @@ func (p *sword) StopByOwner() {
 
 func (p *sword) GetEndCount() int {
 	return p.Core.GetEndCount()
+}
+
+func (p *SwordDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *SwordDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }

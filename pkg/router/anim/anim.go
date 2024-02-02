@@ -27,6 +27,7 @@ type NetInfo struct {
 	AnimType      int
 	ActCount      int
 	OwnerClientID string
+	SkillInfo     []byte
 }
 
 func (p *NetInfo) Marshal() []byte {
