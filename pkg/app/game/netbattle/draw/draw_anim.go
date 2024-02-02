@@ -3,7 +3,6 @@ package draw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -69,11 +68,9 @@ func (d *animDraw) Draw() {
 			drawPm.Unmarshal(a.SkillInfo)
 			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
 		case anim.TypeWideShot:
-			// TODO: refactoring
-			state := a.ActCount / 1000
-			a.ActCount -= state * 1000
-			nextStepCount := 8
-			d.drawWideShot.Draw(a.Pos, a.ActCount, config.DirectRight, true, nextStepCount, state)
+			var drawPm skill.WideShotDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

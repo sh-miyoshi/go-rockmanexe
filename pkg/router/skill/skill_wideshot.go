@@ -1,11 +1,20 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
+
+type WideShotDrawParam struct {
+	State         int
+	NextStepCount int
+	Direct        int
+}
 
 type wideShot struct {
 	ID   string
@@ -34,8 +43,14 @@ func (p *wideShot) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		AnimType:      routeranim.TypeWideShot,
-		ActCount:      pm.State*1000 + p.Core.GetCount(),
+		ActCount:      p.Core.GetCount(),
 	}
+	drawPm := WideShotDrawParam{
+		State:         pm.State,
+		NextStepCount: pm.NextStepCount,
+		Direct:        pm.Direct,
+	}
+	info.SkillInfo = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
@@ -50,5 +65,16 @@ func (p *wideShot) StopByOwner() {
 }
 
 func (p *wideShot) GetEndCount() int {
-	return 0
+	return p.Core.GetEndCount()
+}
+
+func (p *WideShotDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *WideShotDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }
