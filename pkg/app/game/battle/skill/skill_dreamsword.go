@@ -29,7 +29,7 @@ func (p *dreamSword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	p.drawer.Draw(view, p.Core.GetCount())
+	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetDelay())
 }
 
 func (p *dreamSword) Process() (bool, error) {

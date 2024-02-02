@@ -5,17 +5,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-const (
-	delayVulcan = 2 // TODO: 要調整
-)
-
 type DrawVulcan struct {
 }
 
-func (p *DrawVulcan) Draw(viewPos point.Point, count int) {
+func (p *DrawVulcan) Draw(viewPos point.Point, count int, delay int) {
 	imgNo := 0
-	if count > delayVulcan*1 {
-		imgNo = (count/(delayVulcan*5))%2 + 1
+	if count > delay*1 {
+		imgNo = (count/(delay*5))%2 + 1
 	}
 
 	// Show body

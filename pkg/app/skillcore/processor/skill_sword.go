@@ -109,3 +109,7 @@ func (p *Sword) GetSwordType() int {
 	}
 	return 0
 }
+
+func (p *Sword) GetDelay() int {
+	return swordDelay
+}

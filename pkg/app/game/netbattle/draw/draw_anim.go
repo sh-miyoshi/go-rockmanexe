@@ -62,13 +62,13 @@ func (d *animDraw) Draw() {
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword:
-			d.drawSword.Draw(0, pos, a.ActCount) // TODO: 要調整
+			d.drawSword.Draw(0, pos, a.ActCount, 3) // TODO: 要調整
 		case anim.TypeWideSword:
-			d.drawSword.Draw(1, pos, a.ActCount)
+			d.drawSword.Draw(1, pos, a.ActCount, 3)
 		case anim.TypeLongSword:
-			d.drawSword.Draw(2, pos, a.ActCount)
+			d.drawSword.Draw(2, pos, a.ActCount, 3)
 		case anim.TypeVulcan:
-			d.drawVulcan.Draw(pos, a.ActCount)
+			d.drawVulcan.Draw(pos, a.ActCount, 2) // TODO: 要調整
 		case anim.TypeWideShot:
 			// TODO: refactoring
 			state := a.ActCount / 1000

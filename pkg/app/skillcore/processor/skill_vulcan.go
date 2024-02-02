@@ -107,3 +107,7 @@ func (p *Vulcan) PopEffects() []VulcanEffect {
 	}
 	return []VulcanEffect{}
 }
+
+func (p *Vulcan) GetDelay() int {
+	return vulcanDelay
+}
