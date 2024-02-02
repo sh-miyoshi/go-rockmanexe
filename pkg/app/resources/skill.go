@@ -57,7 +57,6 @@ const (
 	SkillThunderBallNextStepCount    = 80
 	SkillCirkillShotNextStepCount    = 20
 
-	SkillVulcanDelay      = 2
 	SkillFlamePillarDelay = 4
 )
 

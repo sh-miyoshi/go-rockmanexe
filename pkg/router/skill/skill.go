@@ -51,7 +51,7 @@ func Get(id int, arg Argument) SkillAnim {
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword:
 		return newSword(id, arg, core)
 	case resources.SkillVulcan1:
-		return newVulcan(3, arg)
+		return newVulcan(arg, core)
 	case resources.SkillWideShot:
 		return newWideShot(arg)
 	default:
