@@ -29,7 +29,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return &processor.Cannon{Arg: arg}
+		return &processor.Cannon{SkillID: id, Arg: arg}
 	case resources.SkillMiniBomb:
 		return &processor.MiniBomb{Arg: arg}
 	case resources.SkillRecover:

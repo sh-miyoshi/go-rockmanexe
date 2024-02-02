@@ -13,7 +13,8 @@ const (
 )
 
 type Cannon struct {
-	Arg skillcore.Argument
+	SkillID int
+	Arg     skillcore.Argument
 
 	count int
 }
@@ -64,4 +65,16 @@ func (p *Cannon) GetCount() int {
 
 func (p *Cannon) GetEndCount() int {
 	return cannonEndCount
+}
+
+func (p *Cannon) GetCannonType() int {
+	switch p.SkillID {
+	case resources.SkillCannon:
+		return 0
+	case resources.SkillHighCannon:
+		return 1
+	case resources.SkillMegaCannon:
+		return 2
+	}
+	return 0
 }

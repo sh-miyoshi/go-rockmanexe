@@ -7,7 +7,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
@@ -44,12 +43,10 @@ func (d *animDraw) Draw() {
 		pos := battlecommon.ViewPos(a.Pos)
 
 		switch a.AnimType {
-		case anim.TypeCannonNormal:
-			d.drawCannonInst.Draw(resources.SkillCannon, pos, a.ActCount) // TODO: 要調整
-		case anim.TypeCannonHigh:
-			d.drawCannonInst.Draw(resources.SkillHighCannon, pos, a.ActCount)
-		case anim.TypeCannonMega:
-			d.drawCannonInst.Draw(resources.SkillMegaCannon, pos, a.ActCount)
+		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
+			var drawPm skill.CannonDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
 		case anim.TypeMiniBomb:
 			target := point.Point{X: a.Pos.X + 3, Y: a.Pos.Y}
 			endCount := 60 // TODO: 要調整

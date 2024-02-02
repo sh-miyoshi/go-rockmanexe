@@ -1,25 +1,31 @@
 package skill
 
 import (
+	"bytes"
+	"encoding/gob"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-type cannon struct {
-	ID   string
+type CannonDrawParam struct {
 	Type int
-	Arg  Argument
-	Core skillcore.SkillCore
 }
 
-func newCannon(cannonType int, arg Argument, core skillcore.SkillCore) *cannon {
+type cannon struct {
+	ID   string
+	Arg  Argument
+	Core *processor.Cannon
+}
+
+func newCannon(arg Argument, core skillcore.SkillCore) *cannon {
 	return &cannon{
 		ID:   arg.AnimObjID,
-		Type: cannonType,
 		Arg:  arg,
-		Core: core,
+		Core: core.(*processor.Cannon),
 	}
 }
 
@@ -36,7 +42,8 @@ func (p *cannon) GetParam() anim.Param {
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
 	}
-	switch p.Type {
+
+	switch p.Core.GetCannonType() {
 	case resources.SkillCannon:
 		info.AnimType = routeranim.TypeCannonNormal
 	case resources.SkillHighCannon:
@@ -44,6 +51,8 @@ func (p *cannon) GetParam() anim.Param {
 	case resources.SkillMegaCannon:
 		info.AnimType = routeranim.TypeCannonMega
 	}
+	drawPm := CannonDrawParam{Type: p.Core.GetCannonType()}
+	info.SkillInfo = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
@@ -59,4 +68,15 @@ func (p *cannon) StopByOwner() {
 
 func (p *cannon) GetEndCount() int {
 	return p.Core.GetEndCount()
+}
+
+func (p *CannonDrawParam) Marshal() []byte {
+	buf := bytes.NewBuffer(nil)
+	gob.NewEncoder(buf).Encode(p)
+	return buf.Bytes()
+}
+
+func (p *CannonDrawParam) Unmarshal(data []byte) {
+	buf := bytes.NewBuffer(data)
+	_ = gob.NewDecoder(buf).Decode(p)
 }
