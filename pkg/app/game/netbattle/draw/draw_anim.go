@@ -53,7 +53,9 @@ func (d *animDraw) Draw() {
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
 		case anim.TypeShockWave:
-			d.drawShockWave.Draw(pos, a.ActCount, 3, config.DirectRight) // debug
+			var drawPm skill.ShockWaveDrawParam
+			drawPm.Unmarshal(a.SkillInfo)
+			d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:
