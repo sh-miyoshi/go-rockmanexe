@@ -5,19 +5,23 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 )
 
-func build(wg *sync.WaitGroup, dir string) {
+func build(wg *sync.WaitGroup, dir string, outName string) {
 	defer wg.Done()
 
 	var stderr bytes.Buffer
-	cmd := exec.Command("go", "build")
+	cmd := exec.Command("go", "build", "-o", outName)
 	if dir != "." {
 		cmd.Dir = dir
 	}
 	cmd.Stderr = &stderr
+	if strings.Contains(outName, ".exe") {
+		cmd.Env = append(os.Environ(), "GOOS=windows")
+	}
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("go build in %s error: %v\n", dir, err)
 		fmt.Println(stderr.String())
@@ -26,21 +30,21 @@ func build(wg *sync.WaitGroup, dir string) {
 }
 
 func main() {
-	os.Chdir("../../../")
+	os.Chdir("../../")
 
 	fmt.Println("building binaries ...")
 	var wg sync.WaitGroup
 	wg.Add(4)
-	go build(&wg, ".")
-	go build(&wg, "cmd/fakeserver")
-	go build(&wg, "cmd/router")
-	go build(&wg, "cmd/botclient")
+	go build(&wg, ".", "rockman.exe")
+	go build(&wg, "cmd/fakeserver", "fakeserver.out")
+	go build(&wg, "cmd/router", "router.out")
+	go build(&wg, "cmd/botclient", "botclient.exe")
 	wg.Wait()
 	fmt.Println("done")
 
 	fmt.Println("Run fakeserver")
 	var fakeserverStderr bytes.Buffer
-	fakeserverCmd := exec.Command("./fakeserver.exe", "--config", "config.yaml")
+	fakeserverCmd := exec.Command("./fakeserver.out", "--config", "config.yaml")
 	fakeserverCmd.Dir = "cmd/fakeserver"
 	fakeserverCmd.Stderr = &fakeserverStderr
 	if err := fakeserverCmd.Start(); err != nil {
@@ -51,7 +55,7 @@ func main() {
 
 	fmt.Println("Run router")
 	var routerStderr bytes.Buffer
-	routerCmd := exec.Command("./router.exe", "--config", "config.yaml")
+	routerCmd := exec.Command("./router.out", "--config", "config.yaml")
 	routerCmd.Dir = "cmd/router"
 	routerCmd.Stderr = &routerStderr
 	if err := routerCmd.Start(); err != nil {
@@ -65,7 +69,7 @@ func main() {
 
 	fmt.Println("Run botclient")
 	var clientStderr bytes.Buffer
-	clientCmd := exec.Command("./botclient.exe", "-c", "tester2", "-log", "botclient.log")
+	clientCmd := exec.Command("wine64", "botclient.exe", "-c", "tester2", "-log", "botclient.log")
 	clientCmd.Dir = "cmd/botclient"
 	clientCmd.Stderr = &clientStderr
 	if err := clientCmd.Start(); err != nil {
@@ -76,7 +80,7 @@ func main() {
 
 	fmt.Println("Run main app")
 	var appStderr bytes.Buffer
-	appCmd := exec.Command("./go-rockmanexe.exe", "--config", "data/config_debug.yaml")
+	appCmd := exec.Command("wine64", "rockman.exe", "--config", "data/config_debug.yaml")
 	appCmd.Stderr = &appStderr
 	if err := appCmd.Run(); err != nil {
 		fmt.Printf("Failed to run main app: %v\n", err)
