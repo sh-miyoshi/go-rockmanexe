@@ -31,7 +31,7 @@ func newWaterBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore
 
 func (p *waterBomb) Draw() {
 	current, target := p.Core.GetPointParams()
-	p.drawer.Draw(current, target, p.Core.GetCount())
+	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetEndCount())
 }
 
 func (p *waterBomb) Process() (bool, error) {

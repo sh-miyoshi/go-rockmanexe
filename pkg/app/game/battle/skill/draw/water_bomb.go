@@ -2,7 +2,6 @@ package skilldraw
 
 import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -10,7 +9,7 @@ import (
 type DrawWaterBomb struct {
 }
 
-func (p *DrawWaterBomb) Draw(objPos, targetPos point.Point, count int) {
+func (p *DrawWaterBomb) Draw(objPos, targetPos point.Point, count int, endCount int) {
 	imgNo := (count / delayBombThrow) % len(imgBombThrow)
 	view := battlecommon.ViewPos(objPos)
 
@@ -18,13 +17,13 @@ func (p *DrawWaterBomb) Draw(objPos, targetPos point.Point, count int) {
 	// (0,0), (d/2, ymax), (d, 0)
 	// y = (4 * ymax / d^2)x^2 + (4 * ymax / d)x
 	size := battlecommon.PanelSize.X * (targetPos.X - objPos.X)
-	ofsx := size * count / resources.SkillWaterBombEndCount
+	ofsx := size * count / endCount
 	const ymax = 100
 	ofsy := ymax*4*ofsx*ofsx/(size*size) - ymax*4*ofsx/size
 
 	if targetPos.Y != objPos.Y {
 		size = battlecommon.PanelSize.Y * (targetPos.Y - objPos.Y)
-		dy := size * count / resources.SkillWaterBombEndCount
+		dy := size * count / endCount
 		ofsy += dy
 	}
 

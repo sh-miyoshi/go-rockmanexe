@@ -44,7 +44,6 @@ const (
 )
 
 const (
-	SkillWaterBombEndCount    = 60
 	SkillAreaStealHitEndCount = 12
 	SkillHeatShotEndCount     = 15
 	SkillFlamePillarEndCount  = 20
