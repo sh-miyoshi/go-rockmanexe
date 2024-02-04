@@ -63,7 +63,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.WaterBomb{Arg: arg}
 		res.Init()
 		return res
-	case resources.SkillHeatShot:
+	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return &processor.HeatShot{Arg: arg, SkillID: id}
 	}
 
