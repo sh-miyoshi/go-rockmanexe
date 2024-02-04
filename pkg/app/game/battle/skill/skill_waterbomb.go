@@ -19,8 +19,6 @@ type waterBomb struct {
 	drawer skilldraw.DrawWaterBomb
 }
 
-// TODO
-
 func newWaterBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *waterBomb {
 	return &waterBomb{
 		ID:   objID,

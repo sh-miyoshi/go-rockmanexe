@@ -51,8 +51,6 @@ func (p *WaterBomb) Process() (bool, error) {
 
 		p.Arg.SoundOn(resources.SEWaterLanding)
 		p.hits = append(p.hits, p.target)
-		// TODO
-		// localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
 		if objID := p.Arg.GetPanelInfo(p.target).ObjectID; objID != "" {
 			p.Arg.DamageMgr.New(damage.Damage{
 				DamageType:    damage.TypeObject,
@@ -64,7 +62,6 @@ func (p *WaterBomb) Process() (bool, error) {
 				TargetObjID:   objID,
 			})
 		}
-		// field.PanelCrack(p.target)
 		return true, nil
 	}
 	return false, nil

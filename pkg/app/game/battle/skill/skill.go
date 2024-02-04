@@ -79,12 +79,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeTracking)
 	case resources.SkillFlamePillarRandom:
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeRandom)
-	case resources.SkillHeatShot:
-		return newHeatShot(objID, arg, heatShotTypeShot)
-	case resources.SkillHeatV:
-		return newHeatShot(objID, arg, heatShotTypeV)
-	case resources.SkillHeatSide:
-		return newHeatShot(objID, arg, heatShotTypeSide)
+	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
+		return newHeatShot(objID, arg, core)
 	case resources.SkillFlamePillarLine:
 		return newFlamePillar(objID, arg, resources.SkillFlamePillarTypeLine)
 	case resources.SkillAreaSteal:
