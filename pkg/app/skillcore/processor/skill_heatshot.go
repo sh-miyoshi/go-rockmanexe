@@ -37,6 +37,7 @@ func (p *HeatShot) Process() (bool, error) {
 					HitEffectType: resources.EffectTypeHeatHit,
 					Element:       damage.ElementFire,
 					TargetObjID:   objID,
+					BigDamage:     true,
 				})
 
 				// 誘爆
@@ -61,6 +62,7 @@ func (p *HeatShot) Process() (bool, error) {
 							HitEffectType: resources.EffectTypeNone,
 							Element:       damage.ElementFire,
 							TargetObjID:   objID,
+							BigDamage:     true,
 						})
 					}
 				}
