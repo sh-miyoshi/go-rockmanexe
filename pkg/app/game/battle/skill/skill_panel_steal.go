@@ -90,7 +90,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			p.setState(resources.SkillAreaStealStateHit)
 		}
 	case resources.SkillAreaStealStateHit:
-		if p.count >= resources.SkillAreaStealHitEndCount {
+		if p.count >= areaStealHitEndCount {
 			pn := field.GetPanelInfo(p.target)
 			if pn.ObjectID != "" {
 				// ダメージ

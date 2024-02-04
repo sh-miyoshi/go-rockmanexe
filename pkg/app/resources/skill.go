@@ -44,8 +44,7 @@ const (
 )
 
 const (
-	SkillAreaStealHitEndCount = 12
-	SkillFlamePillarEndCount  = 20
+	SkillFlamePillarEndCount = 20
 )
 
 const (
