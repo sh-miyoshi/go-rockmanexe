@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -20,6 +21,7 @@ type Argument struct {
 	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
 	GetObjectPos func(objID string) point.Point
 	SoundOn      func(typ resources.SEType)
+	GetObjects   func(filter objanim.Filter) []objanim.Param
 }
 
 type SkillCore interface {

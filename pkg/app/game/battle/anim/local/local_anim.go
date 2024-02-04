@@ -177,7 +177,7 @@ func DamageManager() *damage.DamageManager {
 
 func SkillManager() *skillmanager.Manager {
 	if skillMgr == nil {
-		skillMgr = skillmanager.NewManager(DamageManager(), ObjAnimGetObjPos, sound.On)
+		skillMgr = skillmanager.NewManager(DamageManager(), ObjAnimGetObjPos, ObjAnimGetObjs, sound.On)
 	}
 	return skillMgr
 }

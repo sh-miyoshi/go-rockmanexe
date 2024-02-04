@@ -3,83 +3,47 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type waterBomb struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.WaterBomb
 
-	count  int
-	pos    point.Point
-	target point.Point
 	drawer skilldraw.DrawWaterBomb
 }
 
-func newWaterBomb(objID string, arg skillcore.Argument) *waterBomb {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-	t := point.Point{X: pos.X + 3, Y: pos.Y}
-	objType := objanim.ObjTypePlayer
-	if arg.TargetType == damage.TargetEnemy {
-		objType = objanim.ObjTypeEnemy
-	}
+// TODO
 
-	objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objType})
-	if len(objs) > 0 {
-		t = objs[0].Pos
-	}
-
+func newWaterBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *waterBomb {
 	return &waterBomb{
-		ID:     objID,
-		Arg:    arg,
-		target: t,
-		pos:    pos,
+		ID:   objID,
+		Arg:  arg,
+		Core: core.(*processor.WaterBomb),
 	}
 }
 
 func (p *waterBomb) Draw() {
-	p.drawer.Draw(p.pos, p.target, p.count)
+	current, target := p.Core.GetPointParams()
+	p.drawer.Draw(current, target, p.Core.GetCount())
 }
 
 func (p *waterBomb) Process() (bool, error) {
-	p.count++
-
-	if p.count == 1 {
-		sound.On(resources.SEBombThrow)
+	res, err := p.Core.Process()
+	if err != nil {
+		return false, err
 	}
-
-	if p.count == resources.SkillWaterBombEndCount {
-		pn := field.GetPanelInfo(p.target)
-		if pn.Status == battlecommon.PanelStatusHole {
-			return true, nil
-		}
-
-		sound.On(resources.SEWaterLanding)
-		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
-		if objID := field.GetPanelInfo(p.target).ObjectID; objID != "" {
-			localanim.DamageManager().New(damage.Damage{
-				DamageType:    damage.TypeObject,
-				Power:         int(p.Arg.Power),
-				TargetObjType: p.Arg.TargetType,
-				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
-				Element:       damage.ElementWater,
-				TargetObjID:   objID,
-			})
-		}
-		field.PanelCrack(p.target)
-		return true, nil
+	for _, hit := range p.Core.PopHits() {
+		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
+		field.PanelCrack(hit)
 	}
-	return false, nil
+	return res, nil
 }
 
 func (p *waterBomb) GetParam() anim.Param {
@@ -90,7 +54,7 @@ func (p *waterBomb) GetParam() anim.Param {
 }
 
 func (p *waterBomb) StopByOwner() {
-	if p.count < 5 {
+	if p.Core.GetCount() < 5 {
 		localanim.AnimDelete(p.ID)
 	}
 }
