@@ -68,21 +68,24 @@ func (p *FlamePillarManager) Init(skillID int) {
 	case resources.SkillFlamePillarLine:
 		p.actType = flamePillarTypeLine
 
-		posX := p.Arg.GetObjectPos(p.Arg.OwnerID).X
+		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		if isPlayer {
-			posX += 2
+			pos.X += 2
 		} else {
-			posX -= 2
+			pos.X -= 2
 		}
 
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			p.pillars = append(p.pillars, &FlamePillar{
-				Arg: p.Arg,
-				pm: FlamePillerParam{
-					State: resources.SkillFlamePillarStateWakeup,
-					Point: point.Point{X: posX, Y: y},
-				},
-			})
+		for y := -1; y <= 1; y++ {
+			posY := pos.Y + y
+			if posY >= 0 && posY < battlecommon.FieldNum.Y {
+				p.pillars = append(p.pillars, &FlamePillar{
+					Arg: p.Arg,
+					pm: FlamePillerParam{
+						State: resources.SkillFlamePillarStateWakeup,
+						Point: point.Point{X: pos.X, Y: posY},
+					},
+				})
+			}
 		}
 	}
 }
