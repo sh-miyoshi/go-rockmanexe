@@ -44,16 +44,10 @@ const (
 )
 
 const (
-	SkillFlamePillarEndCount = 20
-)
-
-const (
 	SkillBoomerangNextStepCount   = 6
 	SkillGarooBreathNextStepCount = 10
 	SkillThunderBallNextStepCount = 80
 	SkillCirkillShotNextStepCount = 20
-
-	SkillFlamePillarDelay = 4
 )
 
 const (
@@ -79,10 +73,4 @@ const (
 	SkillFlamePillarStateDoing
 	SkillFlamePillarStateEnd
 	SkillFlamePillarStateDeleted
-)
-
-const (
-	SkillFlamePillarTypeRandom int = iota
-	SkillFlamePillarTypeTracking
-	SkillFlamePillarTypeLine
 )

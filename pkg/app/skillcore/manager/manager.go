@@ -65,6 +65,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return &processor.HeatShot{Arg: arg, SkillID: id}
+	case resources.SkillFlamePillarLine, resources.SkillFlamePillarTracking:
+		res := &processor.FlamePillarManager{Arg: arg}
+		res.Init(id)
+		return res
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
