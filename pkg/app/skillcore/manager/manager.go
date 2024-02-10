@@ -1,6 +1,7 @@
 package skillmanager
 
 import (
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -11,19 +12,27 @@ import (
 type Manager struct {
 	damageMgr    *damage.DamageManager
 	GetObjectPos func(objID string) point.Point
+	GetObjects   func(filter objanim.Filter) []objanim.Param
 	SoundOn      func(typ resources.SEType)
 }
 
-func NewManager(damageMgr *damage.DamageManager, GetObjectPos func(objID string) point.Point, SoundOn func(typ resources.SEType)) *Manager {
+func NewManager(
+	damageMgr *damage.DamageManager,
+	GetObjectPos func(objID string) point.Point,
+	GetObjects func(filter objanim.Filter) []objanim.Param,
+	SoundOn func(typ resources.SEType),
+) *Manager {
 	return &Manager{
 		damageMgr:    damageMgr,
 		GetObjectPos: GetObjectPos,
+		GetObjects:   GetObjects,
 		SoundOn:      SoundOn,
 	}
 }
 
 func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 	arg.GetObjectPos = m.GetObjectPos
+	arg.GetObjects = m.GetObjects
 	arg.SoundOn = m.SoundOn
 	arg.DamageMgr = m.damageMgr
 
@@ -49,6 +58,16 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
 		res := &processor.WideShot{Arg: arg}
 		res.Init(id == resources.SkillPlayerWideShot)
+		return res
+	case resources.SkillWaterBomb:
+		res := &processor.WaterBomb{Arg: arg}
+		res.Init()
+		return res
+	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
+		return &processor.HeatShot{Arg: arg, SkillID: id}
+	case resources.SkillFlamePillarLine, resources.SkillFlamePillarTracking:
+		res := &processor.FlamePillarManager{Arg: arg}
+		res.Init(id)
 		return res
 	}
 

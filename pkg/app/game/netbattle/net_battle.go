@@ -69,6 +69,9 @@ var (
 		chip.IDLongSword,
 		chip.IDVulcan1,
 		chip.IDWideShot,
+		chip.IDHeatShot,
+		chip.IDHeatV,
+		chip.IDHeatSide,
 	}
 
 	inst NetBattle

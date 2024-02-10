@@ -21,6 +21,7 @@ type animDraw struct {
 	drawSword        skilldraw.DrawSword
 	drawVulcan       skilldraw.DrawVulcan
 	drawWideShot     skilldraw.DrawWideShot
+	drawHeatShot     skilldraw.DrawHeatShot
 }
 
 func (d *animDraw) Init() error {
@@ -71,6 +72,8 @@ func (d *animDraw) Draw() {
 			var drawPm skill.WideShotDrawParam
 			drawPm.Unmarshal(a.DrawParam)
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
+		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
+			d.drawHeatShot.Draw(pos, a.ActCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

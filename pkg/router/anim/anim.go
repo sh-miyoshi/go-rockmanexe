@@ -19,6 +19,9 @@ const (
 	TypeLongSword
 	TypeVulcan
 	TypeWideShot
+	TypeHeatShot
+	TypeHeatV
+	TypeHeatSide
 
 	TypeMax
 )

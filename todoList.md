@@ -38,6 +38,8 @@
       - resources.SkillState
   - skillcoreの実装
   - drawerへの移行
+  - spreadHitをeffectにする
+    - もしかしたらeffectMgrを渡すようにしてもいいかも
 
 ## 新機能
 

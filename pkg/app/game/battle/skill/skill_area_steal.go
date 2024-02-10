@@ -13,6 +13,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+const (
+	areaStealHitEndCount = 12
+)
+
 type skillAreaSteal struct {
 	ID  string
 	Arg skillcore.Argument
@@ -91,7 +95,7 @@ func (p *skillAreaSteal) Process() (bool, error) {
 			p.setState(resources.SkillAreaStealStateHit)
 		}
 	case resources.SkillAreaStealStateHit:
-		if p.count >= resources.SkillAreaStealHitEndCount {
+		if p.count >= areaStealHitEndCount {
 			for y := 0; y < battlecommon.FieldNum.Y; y++ {
 				pos := point.Point{X: p.targetLineX, Y: y}
 				pn := field.GetPanelInfo(pos)
