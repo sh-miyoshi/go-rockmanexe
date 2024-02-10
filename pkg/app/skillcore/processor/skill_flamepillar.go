@@ -188,6 +188,13 @@ func (p *FlamePillarManager) GetDelay() int {
 	return flamePillarDelay
 }
 
+func (p *FlamePillarManager) IsShowBody() bool {
+	if len(p.pillars) > 0 {
+		return p.Arg.TargetType == damage.TargetEnemy && p.pillars[0].pm.State != resources.SkillFlamePillarStateEnd
+	}
+	return false
+}
+
 func (p *FlamePillar) Process() (bool, error) {
 	switch p.pm.State {
 	case resources.SkillFlamePillarStateWakeup:
