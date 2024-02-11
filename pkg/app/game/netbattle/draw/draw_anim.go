@@ -22,6 +22,7 @@ type animDraw struct {
 	drawVulcan       skilldraw.DrawVulcan
 	drawWideShot     skilldraw.DrawWideShot
 	drawHeatShot     skilldraw.DrawHeatShot
+	drawFlameLine    skilldraw.DrawFlamePillerManager
 }
 
 func (d *animDraw) Init() error {
@@ -74,6 +75,10 @@ func (d *animDraw) Draw() {
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
 			d.drawHeatShot.Draw(pos, a.ActCount)
+		case anim.TypeFlameLine:
+			var drawPm skill.FlameLineDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

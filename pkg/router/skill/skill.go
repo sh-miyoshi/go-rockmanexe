@@ -56,6 +56,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newWideShot(arg, core)
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return newHeatShot(id, arg, core)
+	case resources.SkillFlamePillarLine:
+		return newFlameLine(arg, core)
 	default:
 		panic(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
