@@ -55,7 +55,7 @@ func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       pm.Pos,
 		ExtraInfo: info.Marshal(),
 	}
 }
