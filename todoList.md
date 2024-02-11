@@ -3,7 +3,6 @@
 ## バグ
 
 - TypePositionの場合、ダメージが入らない
-- WideShotとShockwaveがまともに動かない
 
 ## v0.12でやりたいこと
 
