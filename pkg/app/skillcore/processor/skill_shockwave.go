@@ -94,3 +94,7 @@ func (p *ShockWave) GetEndCount() int {
 func (p *ShockWave) GetParam() ShockWaveParam {
 	return p.pm
 }
+
+func (p *ShockWave) GetPos() point.Point {
+	return p.pos
+}

@@ -7,7 +7,6 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type shockWave struct {
@@ -16,28 +15,25 @@ type shockWave struct {
 	ShowPick bool
 	Core     (*processor.ShockWave)
 
-	pos        point.Point
-	showWave   bool
 	drawer     skilldraw.DrawShockWave
 	pickDrawer skilldraw.DrawPick
 }
 
 func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore, isPlayer bool) *shockWave {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	res := &shockWave{
 		ID:   objID,
 		Arg:  arg,
 		Core: core.(*processor.ShockWave),
-		pos:  pos,
 	}
 
 	return res
 }
 
 func (p *shockWave) Draw() {
-	if p.showWave {
-		pm := p.Core.GetParam()
-		view := battlecommon.ViewPos(p.pos)
+	pm := p.Core.GetParam()
+	showWave := p.Core.GetCount() > pm.InitWait
+	if showWave {
+		view := battlecommon.ViewPos(p.Core.GetPos())
 		p.drawer.Draw(view, p.Core.GetCount(), pm.Speed, pm.Direct)
 	}
 

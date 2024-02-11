@@ -56,7 +56,9 @@ func (d *animDraw) Draw() {
 		case anim.TypeShockWave:
 			var drawPm skill.ShockWaveDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
+			if a.ActCount >= drawPm.InitWait {
+				d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
+			}
 		case anim.TypeSpreadGun:
 			d.drawSpreadGun.Draw(pos, a.ActCount)
 		case anim.TypeSpreadHit:
