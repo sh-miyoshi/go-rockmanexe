@@ -1,6 +1,14 @@
 # TODO List
 
+## バグ
+
+- TypePositionの場合、ダメージが入らない
+- WideShotとShockwaveがまともに動かない
+
 ## v0.12でやりたいこと
+
+- ネットバトルで使えるチップを増やす
+- コールドマンのバグ修正
 
 ## コールドマンのバグ修正
 
@@ -16,11 +24,28 @@
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
   - Panel Statusを反映
-  - Thunder Ballの実装
   - Field情報をServerから取得する
   - skill使用時のsound
     - バルカン発射時など
   - 麻痺状態
+- 未実装チップ
+  - IDFlameLine1  
+  - IDFlameLine2  
+  - IDFlameLine3  
+  - IDTornado
+  - IDBoomerang1  
+  - IDBambooLance
+  - IDAttack10
+  - IDThunderBall
+  - IDCountBomb
+  - IDCrackout
+  - IDDoubleCrack
+  - IDTripleCrack
+  - IDPanelSteal  
+  - IDAreaSteal
+  - IDQuickGauge  
+  - IDInvisible
+  - IDAquaman  
 
 ## スキルリファクタリング
 
