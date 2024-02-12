@@ -53,6 +53,7 @@ func (p *WaterBomb) Process() (bool, error) {
 		p.hits = append(p.hits, p.target)
 		if objID := p.Arg.GetPanelInfo(p.target).ObjectID; objID != "" {
 			p.Arg.DamageMgr.New(damage.Damage{
+				OwnerClientID: p.Arg.OwnerClientID,
 				DamageType:    damage.TypeObject,
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,

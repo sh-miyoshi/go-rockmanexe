@@ -64,6 +64,7 @@ func (p *ShockWave) Process() (bool, error) {
 		}
 
 		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),

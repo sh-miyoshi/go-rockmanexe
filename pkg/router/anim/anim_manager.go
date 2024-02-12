@@ -28,7 +28,8 @@ func NewManager(clientIDs [2]string) string {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
 	noSound := func(resources.SEType) {}
-	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, objanimManagers[id].GetObjs, noSound)
+	dmMgr := newDamageMgr(objanimManagers[id].DamageManager())
+	skillManagers[id] = skillmanager.NewManager(dmMgr, objanimManagers[id].GetObjPos, objanimManagers[id].GetObjs, noSound)
 	return id
 }
 
@@ -90,17 +91,14 @@ func ObjAnimGetObjPos(clientID string, objID string) point.Point {
 	return objanimManagers[mgrID].GetObjPos(objID)
 }
 
-func DamageManager(clientID string) *damage.DamageManager {
-	mgrID := clientAnimMgrMap[clientID]
-	return objanimManagers[mgrID].DamageManager()
-}
-
+// TODO: 要調整
 func DamageNew(clientID string, dm damage.Damage) string {
 	if dm.TargetObjType == damage.TargetEnemy {
 		// ダメージでは反転させる
 		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
 	}
-	return DamageManager(clientID).New(dm)
+	mgrID := clientAnimMgrMap[clientID]
+	return objanimManagers[mgrID].DamageManager().New(dm)
 }
 
 func SkillManager(clientID string) *skillmanager.Manager {

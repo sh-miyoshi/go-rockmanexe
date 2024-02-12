@@ -26,6 +26,7 @@ func (p *Cannon) Process() (bool, error) {
 		p.Arg.SoundOn(resources.SECannon)
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,

@@ -30,10 +30,11 @@ type SkillAnim interface {
 
 func Get(id int, arg Argument) SkillAnim {
 	coreArg := skillcore.Argument{
-		Power:        arg.Power,
-		OwnerID:      arg.OwnerObjectID,
-		TargetType:   arg.TargetType,
-		GetPanelInfo: arg.GameInfo.GetPanelInfo,
+		OwnerID:       arg.OwnerObjectID,
+		OwnerClientID: arg.OwnerClientID,
+		Power:         arg.Power,
+		TargetType:    arg.TargetType,
+		GetPanelInfo:  arg.GameInfo.GetPanelInfo,
 	}
 	core := routeranim.SkillManager(arg.OwnerClientID).Get(id, coreArg)
 

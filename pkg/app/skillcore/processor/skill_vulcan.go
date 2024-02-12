@@ -43,6 +43,7 @@ func (p *Vulcan) Process() (bool, error) {
 				target := point.Point{X: x, Y: pos.Y}
 				if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
 					p.Arg.DamageMgr.New(damage.Damage{
+						OwnerClientID: p.Arg.OwnerClientID,
 						DamageType:    damage.TypeObject,
 						Power:         int(p.Arg.Power),
 						TargetObjType: p.Arg.TargetType,
@@ -65,6 +66,7 @@ func (p *Vulcan) Process() (bool, error) {
 						})
 						if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
 							p.Arg.DamageMgr.New(damage.Damage{
+								OwnerClientID: p.Arg.OwnerClientID,
 								DamageType:    damage.TypeObject,
 								Power:         int(p.Arg.Power),
 								TargetObjType: p.Arg.TargetType,

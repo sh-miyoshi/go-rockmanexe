@@ -20,6 +20,7 @@ func (p *Recover) Process() (bool, error) {
 	if p.count == 0 {
 		p.Arg.SoundOn(resources.SERecover)
 		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypeObject,
 			Power:         -int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,

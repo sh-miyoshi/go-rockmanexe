@@ -31,6 +31,7 @@ func (p *HeatShot) Process() (bool, error) {
 			if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
 				// Hit
 				p.Arg.DamageMgr.New(damage.Damage{
+					OwnerClientID: p.Arg.OwnerClientID,
 					DamageType:    damage.TypeObject,
 					Power:         int(p.Arg.Power),
 					TargetObjType: p.Arg.TargetType,
@@ -56,6 +57,7 @@ func (p *HeatShot) Process() (bool, error) {
 				for _, t := range p.targets {
 					if objID := p.Arg.GetPanelInfo(t).ObjectID; objID != "" {
 						p.Arg.DamageMgr.New(damage.Damage{
+							OwnerClientID: p.Arg.OwnerClientID,
 							DamageType:    damage.TypeObject,
 							Power:         int(p.Arg.Power),
 							TargetObjType: p.Arg.TargetType,

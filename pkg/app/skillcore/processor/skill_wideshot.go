@@ -81,6 +81,7 @@ func (p *WideShot) Process() (bool, error) {
 				}
 
 				p.damageID[i+1] = p.Arg.DamageMgr.New(damage.Damage{
+					OwnerClientID: p.Arg.OwnerClientID,
 					DamageType:    damage.TypePosition,
 					Pos:           point.Point{X: p.pm.Pos.X, Y: y},
 					Power:         int(p.Arg.Power),
