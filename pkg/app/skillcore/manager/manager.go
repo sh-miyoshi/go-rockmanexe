@@ -2,7 +2,6 @@ package skillmanager
 
 import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -10,14 +9,14 @@ import (
 )
 
 type Manager struct {
-	damageMgr    *damage.DamageManager
+	damageMgr    skillcore.DamageManager
 	GetObjectPos func(objID string) point.Point
 	GetObjects   func(filter objanim.Filter) []objanim.Param
 	SoundOn      func(typ resources.SEType)
 }
 
 func NewManager(
-	damageMgr *damage.DamageManager,
+	damageMgr skillcore.DamageManager,
 	GetObjectPos func(objID string) point.Point,
 	GetObjects func(filter objanim.Filter) []objanim.Param,
 	SoundOn func(typ resources.SEType),

@@ -30,6 +30,7 @@ func (p *Sword) Process() (bool, error) {
 		}
 
 		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,

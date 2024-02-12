@@ -10,71 +10,68 @@ import (
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
 
-type WideShotDrawParam struct {
-	State         int
-	NextStepCount int
-	Direct        int
+type FlameLineDrawParam struct {
+	Pillars []processor.FlamePillerParam
+	Delay   int
 }
 
-type wideShot struct {
+type flameLine struct {
 	ID   string
 	Arg  Argument
-	Core *processor.WideShot
+	Core *processor.FlamePillarManager
 }
 
-func newWideShot(arg Argument, core skillcore.SkillCore) *wideShot {
-	return &wideShot{
+func newFlameLine(arg Argument, core skillcore.SkillCore) *flameLine {
+	return &flameLine{
 		ID:   arg.AnimObjID,
 		Arg:  arg,
-		Core: core.(*processor.WideShot),
+		Core: core.(*processor.FlamePillarManager),
 	}
 }
 
-func (p *wideShot) Draw() {
+func (p *flameLine) Draw() {
 	// nothing to do at router
 }
 
-func (p *wideShot) Process() (bool, error) {
+func (p *flameLine) Process() (bool, error) {
 	return p.Core.Process()
 }
 
-func (p *wideShot) GetParam() anim.Param {
-	pm := p.Core.GetParam()
+func (p *flameLine) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
-		AnimType:      routeranim.TypeWideShot,
 		ActCount:      p.Core.GetCount(),
+		AnimType:      routeranim.TypeFlameLine,
 	}
-	drawPm := WideShotDrawParam{
-		State:         pm.State,
-		NextStepCount: pm.NextStepCount,
-		Direct:        pm.Direct,
+	drawPm := FlameLineDrawParam{
+		Pillars: p.Core.GetPillars(),
+		Delay:   p.Core.GetDelay(),
 	}
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       pm.Pos,
+		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }
 
-func (p *wideShot) StopByOwner() {
+func (p *flameLine) StopByOwner() {
 	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 }
 
-func (p *wideShot) GetEndCount() int {
+func (p *flameLine) GetEndCount() int {
 	return p.Core.GetEndCount()
 }
 
-func (p *WideShotDrawParam) Marshal() []byte {
+func (p *FlameLineDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)
 	return buf.Bytes()
 }
 
-func (p *WideShotDrawParam) Unmarshal(data []byte) {
+func (p *FlameLineDrawParam) Unmarshal(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(p)
 }

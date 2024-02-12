@@ -2,6 +2,9 @@
 
 ## v0.12でやりたいこと
 
+- ネットバトルで使えるチップを増やす
+- コールドマンのバグ修正
+
 ## コールドマンのバグ修正
 
 - ブレスのモーションがない
@@ -10,17 +13,33 @@
 
 ## ネットワーク対戦のリファクタリング
 
+- ShowHitAreaを表示
+- プレイヤーが選択したチップを表示
 - 後回し
   - gomeInfoPublishをclientからデータ受信時に行う
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
   - Panel Statusを反映
-  - Thunder Ballの実装
   - Field情報をServerから取得する
   - skill使用時のsound
     - バルカン発射時など
   - 麻痺状態
+- 未実装チップ
+  - IDTornado
+  - IDBoomerang1  
+  - IDBambooLance
+  - IDAttack10
+  - IDThunderBall
+  - IDCountBomb
+  - IDCrackout
+  - IDDoubleCrack
+  - IDTripleCrack
+  - IDPanelSteal  
+  - IDAreaSteal
+  - IDQuickGauge  
+  - IDInvisible
+  - IDAquaman  
 
 ## スキルリファクタリング
 

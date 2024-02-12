@@ -11,8 +11,9 @@ import (
 )
 
 type ShockWaveDrawParam struct {
-	Speed  int
-	Direct int
+	Speed    int
+	Direct   int
+	InitWait int
 }
 
 type shockWave struct {
@@ -45,14 +46,15 @@ func (p *shockWave) GetParam() anim.Param {
 	}
 	pm := p.Core.GetParam()
 	drawPm := ShockWaveDrawParam{
-		Speed:  pm.Speed,
-		Direct: pm.Direct,
+		Speed:    pm.Speed,
+		Direct:   pm.Direct,
+		InitWait: pm.InitWait,
 	}
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       p.Core.GetPos(),
 		DrawType:  anim.DrawTypeSkill,
 		ExtraInfo: info.Marshal(),
 	}

@@ -12,12 +12,18 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-type Argument struct {
-	OwnerID    string
-	Power      uint
-	TargetType int
+type DamageManager interface {
+	New(dm damage.Damage) string
+	Exists(id string) bool
+}
 
-	DamageMgr    *damage.DamageManager
+type Argument struct {
+	OwnerID       string
+	OwnerClientID string
+	Power         uint
+	TargetType    int
+
+	DamageMgr    DamageManager
 	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
 	GetObjectPos func(objID string) point.Point
 	SoundOn      func(typ resources.SEType)

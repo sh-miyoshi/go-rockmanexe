@@ -64,6 +64,7 @@ func (p *ShockWave) Process() (bool, error) {
 		}
 
 		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
@@ -93,4 +94,8 @@ func (p *ShockWave) GetEndCount() int {
 
 func (p *ShockWave) GetParam() ShockWaveParam {
 	return p.pm
+}
+
+func (p *ShockWave) GetPos() point.Point {
+	return p.pos
 }

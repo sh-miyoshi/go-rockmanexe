@@ -72,6 +72,9 @@ var (
 		chip.IDHeatShot,
 		chip.IDHeatV,
 		chip.IDHeatSide,
+		chip.IDFlameLine1,
+		chip.IDFlameLine2,
+		chip.IDFlameLine3,
 	}
 
 	inst NetBattle

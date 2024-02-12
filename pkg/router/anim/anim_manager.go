@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
@@ -28,7 +27,8 @@ func NewManager(clientIDs [2]string) string {
 		clientAnimMgrMap[clientIDs[i]] = id
 	}
 	noSound := func(resources.SEType) {}
-	skillManagers[id] = skillmanager.NewManager(objanimManagers[id].DamageManager(), objanimManagers[id].GetObjPos, objanimManagers[id].GetObjs, noSound)
+	dmMgr := newDamageMgr(objanimManagers[id].DamageManager())
+	skillManagers[id] = skillmanager.NewManager(dmMgr, objanimManagers[id].GetObjPos, objanimManagers[id].GetObjs, noSound)
 	return id
 }
 
@@ -90,17 +90,10 @@ func ObjAnimGetObjPos(clientID string, objID string) point.Point {
 	return objanimManagers[mgrID].GetObjPos(objID)
 }
 
-func DamageManager(clientID string) *damage.DamageManager {
-	mgrID := clientAnimMgrMap[clientID]
-	return objanimManagers[mgrID].DamageManager()
-}
-
 func DamageNew(clientID string, dm damage.Damage) string {
-	if dm.TargetObjType == damage.TargetEnemy {
-		// ダメージでは反転させる
-		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
-	}
-	return DamageManager(clientID).New(dm)
+	mgrID := clientAnimMgrMap[clientID]
+	dmMgr := newDamageMgr(objanimManagers[mgrID].DamageManager())
+	return dmMgr.New(dm)
 }
 
 func SkillManager(clientID string) *skillmanager.Manager {

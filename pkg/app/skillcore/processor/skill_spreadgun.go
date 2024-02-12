@@ -32,6 +32,7 @@ func (p *SpreadGun) Process() (bool, error) {
 
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
@@ -105,6 +106,7 @@ func (p *SpreadHit) Process() (bool, error) {
 	if p.count == 1 {
 		if objID := p.Arg.GetPanelInfo(p.Pos).ObjectID; objID != "" {
 			p.Arg.DamageMgr.New(damage.Damage{
+				OwnerClientID: p.Arg.OwnerClientID,
 				DamageType:    damage.TypeObject,
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,

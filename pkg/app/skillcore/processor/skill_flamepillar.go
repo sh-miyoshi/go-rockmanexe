@@ -211,6 +211,7 @@ func (p *FlamePillar) Process() (bool, error) {
 		if p.pm.Count == 3*flamePillarDelay {
 			// Add damage
 			p.Arg.DamageMgr.New(damage.Damage{
+				OwnerClientID: p.Arg.OwnerClientID,
 				DamageType:    damage.TypePosition,
 				Pos:           p.pm.Point,
 				Power:         int(p.Arg.Power),
