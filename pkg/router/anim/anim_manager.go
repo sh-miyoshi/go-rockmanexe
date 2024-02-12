@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
@@ -91,14 +90,10 @@ func ObjAnimGetObjPos(clientID string, objID string) point.Point {
 	return objanimManagers[mgrID].GetObjPos(objID)
 }
 
-// TODO: 要調整
 func DamageNew(clientID string, dm damage.Damage) string {
-	if dm.TargetObjType == damage.TargetEnemy {
-		// ダメージでは反転させる
-		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
-	}
 	mgrID := clientAnimMgrMap[clientID]
-	return objanimManagers[mgrID].DamageManager().New(dm)
+	dmMgr := newDamageMgr(objanimManagers[mgrID].DamageManager())
+	return dmMgr.New(dm)
 }
 
 func SkillManager(clientID string) *skillmanager.Manager {
