@@ -14,9 +14,8 @@
 ## ネットワーク対戦のリファクタリング
 
 - ShowHitAreaを表示
-- プレイヤーが選択したチップを表示
 - 後回し
-  - gomeInfoPublishをclientからデータ受信時に行う
+  - gameInfoPublishをclientからデータ受信時に行う
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
