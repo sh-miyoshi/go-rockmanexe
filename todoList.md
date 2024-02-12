@@ -26,9 +26,6 @@
     - バルカン発射時など
   - 麻痺状態
 - 未実装チップ
-  - IDFlameLine1  
-  - IDFlameLine2  
-  - IDFlameLine3  
   - IDTornado
   - IDBoomerang1  
   - IDBambooLance
