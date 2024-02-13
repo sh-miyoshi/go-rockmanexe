@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	coldmanDelays = [coldmanActTypeMax]int{1, 1, 2, 7, 1, 1, 5}
+	coldmanDelays = [coldmanActTypeMax]int{1, 1, 2, 7, 1, 3, 5}
 )
 
 type enemyColdman struct {
@@ -251,19 +251,23 @@ func (e *enemyColdman) Process() (bool, error) {
 	case coldmanActTypeBodyBlow:
 		panic("TODO: not implemented yet")
 	case coldmanActTypeBless:
-		targetPos := point.Point{X: 5, Y: 1}
-		if !targetPos.Equal(e.pm.Pos) {
-			e.targetPos = targetPos
-			e.nextState = coldmanActTypeBless
-			return e.stateChange(coldmanActTypeMove)
+		if e.count == 0 {
+			targetPos := point.Point{X: 5, Y: 1}
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = coldmanActTypeBless
+				return e.stateChange(coldmanActTypeMove)
+			}
 		}
 
-		e.createBress()
+		if e.count == 2*coldmanDelays[coldmanActTypeBless] {
+			e.createBress()
 
-		e.moveNum = rand.Intn(2) + 2
-		e.waitCount = 60
-		e.nextState = coldmanActTypeMove
-		return e.stateChange(coldmanActTypeStand)
+			e.moveNum = rand.Intn(2) + 2
+			e.waitCount = 60
+			e.nextState = coldmanActTypeMove
+			return e.stateChange(coldmanActTypeStand)
+		}
 	case coldmanActTypeDamage:
 		if e.count == 4*coldmanDelays[coldmanActTypeDamage] {
 			e.waitCount = 20
