@@ -130,13 +130,16 @@ func Draw() {
 
 			dxlib.DrawGraph(vx, vy, img, true)
 
-			if dm := localanim.DamageManager().GetHitDamage(point.Point{X: x, Y: y}, ""); dm != nil && dm.ShowHitArea {
-				x1 := vx
-				y1 := vy
-				x2 := vx + battlecommon.PanelSize.X
-				y2 := vy + battlecommon.PanelSize.Y
-				const s = 5
-				dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
+			damages := localanim.DamageManager().GetHitDamages(point.Point{X: x, Y: y}, "")
+			for _, dm := range damages {
+				if dm != nil && dm.ShowHitArea {
+					x1 := vx
+					y1 := vy
+					x2 := vx + battlecommon.PanelSize.X
+					y2 := vy + battlecommon.PanelSize.Y
+					const s = 5
+					dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
+				}
 			}
 		}
 	}

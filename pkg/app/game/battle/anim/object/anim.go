@@ -82,7 +82,8 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 		hit := []string{}
 		for _, anim := range am.anims {
 			pm := anim.GetParam()
-			if dm := am.dmMgr.GetHitDamage(pm.Pos, pm.ObjID); dm != nil {
+			damages := am.dmMgr.GetHitDamages(pm.Pos, pm.ObjID)
+			for _, dm := range damages {
 				if anim.DamageProc(dm) {
 					hit = append(hit, dm.ID)
 				}

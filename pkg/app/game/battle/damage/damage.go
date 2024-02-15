@@ -97,20 +97,22 @@ func (m *DamageManager) Process() {
 	}
 }
 
-func (m *DamageManager) GetHitDamage(pos point.Point, objID string) *Damage {
+func (m *DamageManager) GetHitDamages(pos point.Point, objID string) []*Damage {
+	res := []*Damage{}
+
 	for _, d := range m.damages {
 		switch d.DamageType {
 		case TypeObject:
 			if d.TargetObjID == objID {
-				return d
+				res = append(res, d)
 			}
 		case TypePosition:
 			if d.Pos.Equal(pos) {
-				return d
+				res = append(res, d)
 			}
 		}
 	}
-	return nil
+	return res
 }
 
 func (m *DamageManager) Exists(id string) bool {
