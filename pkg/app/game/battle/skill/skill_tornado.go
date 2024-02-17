@@ -14,7 +14,7 @@ type tornado struct {
 	Arg  skillcore.Argument
 	Core *processor.Tornado
 
-	drawer skilldraw.DrawTurnado
+	drawer skilldraw.DrawTornado
 }
 
 func newTornado(objID string, arg skillcore.Argument, core skillcore.SkillCore) *tornado {

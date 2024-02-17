@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	delayTurnadoBody = 4
-	delayTurnadoAtk  = 2
+	delayTornadoBody = 4
+	delayTornadoAtk  = 2
 )
 
-type DrawTurnado struct {
+type DrawTornado struct {
 }
 
-func (p *DrawTurnado) Draw(viewPos, targetPos point.Point, count int) {
-	n := (count / delayTurnadoBody) % len(imgTornadoBody)
+func (p *DrawTornado) Draw(viewPos, targetPos point.Point, count int) {
+	n := (count / delayTornadoBody) % len(imgTornadoBody)
 	dxlib.DrawRotaGraph(viewPos.X+48, viewPos.Y-12, 1, 0, imgTornadoBody[n], true)
 
-	n = (count / delayTurnadoAtk) % len(imgTornadoAtk)
+	n = (count / delayTornadoAtk) % len(imgTornadoAtk)
 	dxlib.DrawRotaGraph(targetPos.X, targetPos.Y, 1, 0, imgTornadoAtk[n], true)
 }
