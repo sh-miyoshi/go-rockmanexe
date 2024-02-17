@@ -7,7 +7,6 @@
 
 ## コールドマンのバグ修正
 
-- ブレスオブジェクトが氷を貫通する
 - 氷破壊モーション
 
 ## ネットワーク対戦のリファクタリング
@@ -57,6 +56,9 @@
   - drawerへの移行
   - spreadHitをeffectにする
     - もしかしたらeffectMgrを渡すようにしてもいいかも
+  - GetEndCountの削除
+    - minibombのendCountは別の値を使う
+    - pkg/router/object/object_player.goのendCountの調整
 
 ## 新機能
 
