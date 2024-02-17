@@ -86,7 +86,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillCountBomb:
 		return newCountBomb(objID, arg)
 	case resources.SkillTornado:
-		return newTornado(objID, arg)
+		return newTornado(objID, arg, core)
 	case resources.SkillFailed:
 		return newFailed(objID, arg)
 	case resources.SkillQuickGauge:
