@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type animDraw struct {
@@ -23,6 +24,7 @@ type animDraw struct {
 	drawWideShot     skilldraw.DrawWideShot
 	drawHeatShot     skilldraw.DrawHeatShot
 	drawFlameLine    skilldraw.DrawFlamePillerManager
+	drawTornado      skilldraw.DrawTornado
 }
 
 func (d *animDraw) Init() error {
@@ -81,6 +83,11 @@ func (d *animDraw) Draw() {
 			var drawPm skill.FlameLineDrawParam
 			drawPm.Unmarshal(a.DrawParam)
 			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay)
+		case anim.TypeTornado:
+			// Note: DrawParamで渡すようにしてもいいが、targetの決定アルゴリズムが変わることはないのでここに直接書く
+			targetPos := point.Point{X: a.Pos.X + 2, Y: a.Pos.Y}
+			target := battlecommon.ViewPos(targetPos)
+			d.drawTornado.Draw(pos, target, a.ActCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

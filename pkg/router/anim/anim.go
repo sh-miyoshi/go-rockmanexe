@@ -23,6 +23,7 @@ const (
 	TypeHeatV
 	TypeHeatSide
 	TypeFlameLine
+	TypeTornado
 
 	TypeMax
 )

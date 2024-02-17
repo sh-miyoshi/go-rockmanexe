@@ -75,6 +75,7 @@ var (
 		chip.IDFlameLine1,
 		chip.IDFlameLine2,
 		chip.IDFlameLine3,
+		chip.IDTornado,
 	}
 
 	inst NetBattle
