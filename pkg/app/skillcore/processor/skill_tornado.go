@@ -8,13 +8,12 @@ import (
 )
 
 const (
-	hitNum      = 8
-	atkInterval = 4
+	tornadoHitNum      = 8
+	tornadoAtkInterval = 4
 )
 
 type Tornado struct {
-	SkillID int
-	Arg     skillcore.Argument
+	Arg skillcore.Argument
 
 	count     int
 	atkCount  int
@@ -34,8 +33,8 @@ func (p *Tornado) Process() (bool, error) {
 		p.Arg.SoundOn(resources.SETornado)
 	}
 
-	if p.count%atkInterval == 0 {
-		lastAtk := p.atkCount == hitNum-1
+	if p.count%tornadoAtkInterval == 0 {
+		lastAtk := p.atkCount == tornadoHitNum-1
 		p.Arg.DamageMgr.New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
@@ -43,12 +42,12 @@ func (p *Tornado) Process() (bool, error) {
 			BigDamage:     lastAtk,
 			Element:       damage.ElementNone,
 			Pos:           p.targetPos,
-			TTL:           atkInterval,
+			TTL:           tornadoAtkInterval,
 			ShowHitArea:   false,
 		})
 
 		p.atkCount++
-		return p.atkCount >= hitNum, nil
+		return p.atkCount >= tornadoHitNum, nil
 	}
 
 	return false, nil
