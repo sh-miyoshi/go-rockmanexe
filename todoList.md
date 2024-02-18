@@ -54,7 +54,6 @@
   - spreadHitをeffectにする
     - もしかしたらeffectMgrを渡すようにしてもいいかも
   - GetEndCountの削除
-    - minibombのendCountは別の値を使う
     - pkg/router/object/object_player.goのendCountの調整
 
 ## 新機能

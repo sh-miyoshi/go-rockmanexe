@@ -12,8 +12,8 @@ import (
 )
 
 type MiniBombDrawParam struct {
-	EndCount int
-	Target   point.Point
+	LandCount int
+	Target    point.Point
 }
 
 type miniBomb struct {
@@ -46,8 +46,8 @@ func (p *miniBomb) GetParam() anim.Param {
 	}
 	current, target := p.Core.GetPointParams()
 	drawPm := MiniBombDrawParam{
-		EndCount: p.Core.GetEndCount(),
-		Target:   target,
+		LandCount: p.Core.GetLandCount(),
+		Target:    target,
 	}
 	info.DrawParam = drawPm.Marshal()
 

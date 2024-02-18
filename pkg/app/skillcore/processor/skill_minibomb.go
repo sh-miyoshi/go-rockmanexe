@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	miniBombEndCount = 60
+	miniBombLandCount = 60
 )
 
 type MiniBomb struct {
@@ -32,7 +32,7 @@ func (p *MiniBomb) Process() (bool, error) {
 		p.Arg.SoundOn(resources.SEBombThrow)
 	}
 
-	if p.count == miniBombEndCount {
+	if p.count == miniBombLandCount {
 		pn := p.Arg.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
@@ -60,7 +60,11 @@ func (p *MiniBomb) GetCount() int {
 }
 
 func (p *MiniBomb) GetEndCount() int {
-	return miniBombEndCount
+	return 28
+}
+
+func (p *MiniBomb) GetLandCount() int {
+	return miniBombLandCount
 }
 
 func (p *MiniBomb) GetPointParams() (current, target point.Point) {
