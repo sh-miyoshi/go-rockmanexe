@@ -25,6 +25,7 @@ const (
 	TypeFlameLine
 	TypeTornado
 	TypeBoomerang
+	TypeBambooLance
 
 	TypeMax
 )

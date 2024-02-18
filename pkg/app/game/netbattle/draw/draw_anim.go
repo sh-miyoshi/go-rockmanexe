@@ -26,12 +26,14 @@ type animDraw struct {
 	drawFlameLine    skilldraw.DrawFlamePillerManager
 	drawTornado      skilldraw.DrawTornado
 	drawBoomerang    skilldraw.DrawBoomerang
+	drawBamboolance  skilldraw.DrawBamboolance
 }
 
 func (d *animDraw) Init() error {
 	if err := skilldraw.LoadImages(); err != nil {
 		return fmt.Errorf("failed to load skill image: %w", err)
 	}
+	d.drawBamboolance.Init()
 
 	return nil
 }
@@ -93,6 +95,8 @@ func (d *animDraw) Draw() {
 			var drawPm skill.BoomerangDrawParam
 			drawPm.Unmarshal(a.DrawParam)
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
+		case anim.TypeBambooLance:
+			d.drawBamboolance.Draw(a.ActCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return
