@@ -70,7 +70,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillTripleCrack:
 		return newCrack(objID, crackType3, arg)
 	case resources.SkillBambooLance:
-		return newBambooLance(objID, arg)
+		return newBambooLance(objID, arg, core)
 	case resources.SkillInvisible:
 		return newInvisible(objID, arg)
 	case resources.SkillGarooBreath:

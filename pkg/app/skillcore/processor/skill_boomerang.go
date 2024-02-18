@@ -149,7 +149,7 @@ func (p *Boomerang) GetCount() int {
 }
 
 func (p *Boomerang) GetEndCount() int {
-	return 0
+	return 1
 }
 
 func (p *Boomerang) GetPos() (prev, current, next point.Point) {
