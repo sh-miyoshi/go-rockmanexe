@@ -23,7 +23,6 @@
     - バルカン発射時など
   - 麻痺状態
 - 未実装チップ
-  - IDBambooLance
   - IDAttack10
   - IDThunderBall
   - IDCountBomb
