@@ -19,6 +19,7 @@ func (p *BambooLance) Process() (bool, error) {
 
 	if p.count == 5 {
 		dm := damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Pos:           point.Point{X: battlecommon.FieldNum.X - 1},
 			Power:         int(p.Arg.Power),

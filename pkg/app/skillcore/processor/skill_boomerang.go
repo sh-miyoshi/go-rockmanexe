@@ -65,6 +65,7 @@ func (p *Boomerang) Process() (bool, error) {
 		p.pos = p.next
 
 		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),

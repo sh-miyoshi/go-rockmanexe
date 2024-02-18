@@ -36,6 +36,7 @@ func (p *Tornado) Process() (bool, error) {
 	if p.count%tornadoAtkInterval == 0 {
 		lastAtk := p.atkCount == tornadoHitNum-1
 		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
