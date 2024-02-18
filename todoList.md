@@ -23,7 +23,6 @@
     - バルカン発射時など
   - 麻痺状態
 - 未実装チップ
-  - IDTornado
   - IDBoomerang1  
   - IDBambooLance
   - IDAttack10
@@ -36,7 +35,7 @@
   - IDAreaSteal
   - IDQuickGauge  
   - IDInvisible
-  - IDAquaman  
+  - IDAquaman
 
 ## スキルリファクタリング
 
