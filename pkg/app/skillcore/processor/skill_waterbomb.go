@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	waterBombEndCount = 60
+	waterBombLandCount = 60
 )
 
 type WaterBomb struct {
@@ -43,7 +43,7 @@ func (p *WaterBomb) Process() (bool, error) {
 		p.Arg.SoundOn(resources.SEBombThrow)
 	}
 
-	if p.count == waterBombEndCount {
+	if p.count == waterBombLandCount {
 		pn := p.Arg.GetPanelInfo(p.target)
 		if pn.Status == battlecommon.PanelStatusHole {
 			return true, nil
@@ -73,7 +73,11 @@ func (p *WaterBomb) GetCount() int {
 }
 
 func (p *WaterBomb) GetEndCount() int {
-	return waterBombEndCount
+	return 28
+}
+
+func (p *WaterBomb) GetLandCount() int {
+	return waterBombLandCount
 }
 
 func (p *WaterBomb) GetPointParams() (current, target point.Point) {

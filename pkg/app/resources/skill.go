@@ -44,7 +44,6 @@ const (
 )
 
 const (
-	SkillBoomerangNextStepCount   = 6
 	SkillGarooBreathNextStepCount = 10
 	SkillThunderBallNextStepCount = 80
 	SkillCirkillShotNextStepCount = 20

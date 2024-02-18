@@ -7,7 +7,6 @@
 
 ## コールドマンのバグ修正
 
-- ブレスオブジェクトが氷を貫通する
 - 氷破壊モーション
 
 ## ネットワーク対戦のリファクタリング
@@ -24,20 +23,17 @@
     - バルカン発射時など
   - 麻痺状態
 - 未実装チップ
-  - IDTornado
-  - IDBoomerang1  
-  - IDBambooLance
   - IDAttack10
   - IDThunderBall
   - IDCountBomb
   - IDCrackout
   - IDDoubleCrack
   - IDTripleCrack
-  - IDPanelSteal  
+  - IDPanelSteal
   - IDAreaSteal
   - IDQuickGauge  
   - IDInvisible
-  - IDAquaman  
+  - IDAquaman
 
 ## スキルリファクタリング
 
@@ -57,6 +53,8 @@
   - drawerへの移行
   - spreadHitをeffectにする
     - もしかしたらeffectMgrを渡すようにしてもいいかも
+  - GetEndCountの削除
+    - pkg/router/object/object_player.goのendCountの調整
 
 ## 新機能
 

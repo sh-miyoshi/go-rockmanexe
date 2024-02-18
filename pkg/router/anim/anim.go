@@ -23,6 +23,9 @@ const (
 	TypeHeatV
 	TypeHeatSide
 	TypeFlameLine
+	TypeTornado
+	TypeBoomerang
+	TypeBambooLance
 
 	TypeMax
 )

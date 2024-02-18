@@ -56,7 +56,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
 		return newWideShot(objID, arg, core, skillID == resources.SkillPlayerWideShot)
 	case resources.SkillBoomerang:
-		return newBoomerang(objID, arg)
+		return newBoomerang(objID, arg, core)
 	case resources.SkillWaterBomb:
 		return newWaterBomb(objID, arg, core)
 	case resources.SkillAquamanShot:
@@ -70,7 +70,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillTripleCrack:
 		return newCrack(objID, crackType3, arg)
 	case resources.SkillBambooLance:
-		return newBambooLance(objID, arg)
+		return newBambooLance(objID, arg, core)
 	case resources.SkillInvisible:
 		return newInvisible(objID, arg)
 	case resources.SkillGarooBreath:
@@ -86,7 +86,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillCountBomb:
 		return newCountBomb(objID, arg)
 	case resources.SkillTornado:
-		return newTornado(objID, arg)
+		return newTornado(objID, arg, core)
 	case resources.SkillFailed:
 		return newFailed(objID, arg)
 	case resources.SkillQuickGauge:

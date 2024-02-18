@@ -11,71 +11,74 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-type MiniBombDrawParam struct {
-	LandCount int
-	Target    point.Point
+type BoomerangDrawParam struct {
+	PrevPos       point.Point
+	NextPos       point.Point
+	NextStepCount int
 }
 
-type miniBomb struct {
+type boomerang struct {
 	ID   string
 	Arg  Argument
-	Core *processor.MiniBomb
+	Core *processor.Boomerang
 }
 
-func newMiniBomb(arg Argument, core skillcore.SkillCore) *miniBomb {
-	return &miniBomb{
+func newBoomerang(arg Argument, core skillcore.SkillCore) *boomerang {
+	return &boomerang{
 		ID:   arg.AnimObjID,
 		Arg:  arg,
-		Core: core.(*processor.MiniBomb),
+		Core: core.(*processor.Boomerang),
 	}
 }
 
-func (p *miniBomb) Draw() {
+func (p *boomerang) Draw() {
 	// nothing to do at router
 }
 
-func (p *miniBomb) Process() (bool, error) {
+func (p *boomerang) Process() (bool, error) {
 	return p.Core.Process()
 }
 
-func (p *miniBomb) GetParam() anim.Param {
+func (p *boomerang) GetParam() anim.Param {
 	info := routeranim.NetInfo{
-		AnimType:      routeranim.TypeMiniBomb,
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
+		AnimType:      routeranim.TypeBoomerang,
 	}
-	current, target := p.Core.GetPointParams()
-	drawPm := MiniBombDrawParam{
-		LandCount: p.Core.GetLandCount(),
-		Target:    target,
+
+	prev, current, next := p.Core.GetPos()
+	nextStepCnt := p.Core.GetNextStepCount()
+
+	drawPm := BoomerangDrawParam{
+		PrevPos:       prev,
+		NextPos:       next,
+		NextStepCount: nextStepCnt,
 	}
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       current,
 		DrawType:  anim.DrawTypeSkill,
+		Pos:       current,
 		ExtraInfo: info.Marshal(),
 	}
 }
 
-func (p *miniBomb) StopByOwner() {
-	if p.Core.GetCount() < 5 {
-		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
-	}
+func (p *boomerang) StopByOwner() {
+	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
 }
 
-func (p *miniBomb) GetEndCount() int {
+func (p *boomerang) GetEndCount() int {
 	return p.Core.GetEndCount()
 }
 
-func (p *MiniBombDrawParam) Marshal() []byte {
+func (p *BoomerangDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)
 	return buf.Bytes()
 }
 
-func (p *MiniBombDrawParam) Unmarshal(data []byte) {
+func (p *BoomerangDrawParam) Unmarshal(data []byte) {
 	buf := bytes.NewBuffer(data)
 	_ = gob.NewDecoder(buf).Decode(p)
 }

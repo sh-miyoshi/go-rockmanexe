@@ -26,7 +26,7 @@ func newMiniBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore)
 
 func (p *miniBomb) Draw() {
 	current, target := p.Core.GetPointParams()
-	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetEndCount())
+	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetLandCount())
 }
 
 func (p *miniBomb) Process() (bool, error) {

@@ -144,12 +144,14 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	}
 
 	for i := 0; i < dm.PushLeft; i++ {
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		// 敵側から見ると方向は逆になる
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 			break
 		}
 	}
 	for i := 0; i < dm.PushRight; i++ {
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		// 敵側から見ると方向は逆になる
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
 			break
 		}
 	}
