@@ -46,7 +46,6 @@ func (p *boomerang) GetParam() anim.Param {
 		AnimType:      routeranim.TypeBoomerang,
 	}
 
-	// TODO
 	prev, current, next := p.Core.GetPos()
 	nextStepCnt := p.Core.GetNextStepCount()
 
