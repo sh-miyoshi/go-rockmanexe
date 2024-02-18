@@ -63,6 +63,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newShockWave(arg, core)
 	case resources.SkillTornado:
 		return newTornado(arg, core)
+	case resources.SkillBoomerang:
+		return newBoomerang(arg, core)
 	default:
 		panic(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

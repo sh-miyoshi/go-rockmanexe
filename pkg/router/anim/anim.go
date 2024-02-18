@@ -24,6 +24,7 @@ const (
 	TypeHeatSide
 	TypeFlameLine
 	TypeTornado
+	TypeBoomerang
 
 	TypeMax
 )

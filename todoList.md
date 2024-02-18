@@ -23,7 +23,6 @@
     - バルカン発射時など
   - 麻痺状態
 - 未実装チップ
-  - IDBoomerang1  
   - IDBambooLance
   - IDAttack10
   - IDThunderBall
@@ -31,7 +30,7 @@
   - IDCrackout
   - IDDoubleCrack
   - IDTripleCrack
-  - IDPanelSteal  
+  - IDPanelSteal
   - IDAreaSteal
   - IDQuickGauge  
   - IDInvisible

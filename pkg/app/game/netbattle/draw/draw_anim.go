@@ -25,6 +25,7 @@ type animDraw struct {
 	drawHeatShot     skilldraw.DrawHeatShot
 	drawFlameLine    skilldraw.DrawFlamePillerManager
 	drawTornado      skilldraw.DrawTornado
+	drawBoomerang    skilldraw.DrawBoomerang
 }
 
 func (d *animDraw) Init() error {
@@ -88,6 +89,10 @@ func (d *animDraw) Draw() {
 			targetPos := point.Point{X: a.Pos.X + 2, Y: a.Pos.Y}
 			target := battlecommon.ViewPos(targetPos)
 			d.drawTornado.Draw(pos, target, a.ActCount)
+		case anim.TypeBoomerang:
+			var drawPm skill.BoomerangDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return
