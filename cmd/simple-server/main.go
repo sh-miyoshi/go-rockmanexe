@@ -19,7 +19,8 @@ type Config struct {
 	Log     struct {
 		FileName string `yaml:"file"`
 	} `yaml:"log"`
-	ClientData []struct {
+	EnableDebugAPI bool `yaml:"enable_debug_api"`
+	ClientData     []struct {
 		ClientID  string `yaml:"client_id"`
 		ClientKey string `yaml:"client_key"`
 		SessionID string `yaml:"session_id"`
@@ -124,18 +125,19 @@ func setAPI(r *mux.Router) {
 		http.Error(w, "No such session", http.StatusNotFound)
 	}).Methods("GET")
 
-	r.HandleFunc("/chat/completions", func(w http.ResponseWriter, r *http.Request) {
-		reqBuf := new(bytes.Buffer)
-		reqBuf.ReadFrom(r.Body)
-		logger.Info("Request data: %+v", reqBuf.String())
+	if cfg.EnableDebugAPI {
+		r.HandleFunc("/chat/completions", func(w http.ResponseWriter, r *http.Request) {
+			reqBuf := new(bytes.Buffer)
+			reqBuf.ReadFrom(r.Body)
+			logger.Info("Request data: %+v", reqBuf.String())
 
-		sec := 5 * time.Second
-		logger.Info("Waiting %d[sec] ...", sec)
-		time.Sleep(sec)
+			sec := 5 * time.Second
+			logger.Info("Waiting %d[sec] ...", sec)
+			time.Sleep(sec)
 
-		w.Header().Add("Content-Type", "application/json")
+			w.Header().Add("Content-Type", "application/json")
 
-		res := `{
+			res := `{
 	"id": "chatcmpl-123",
   "object": "chat.completion",
   "created": 1677652288,
@@ -156,8 +158,9 @@ func setAPI(r *mux.Router) {
   }
 }`
 
-		w.Write([]byte(res))
-	}).Methods("POST")
+			w.Write([]byte(res))
+		}).Methods("POST")
+	}
 }
 
 func main() {
