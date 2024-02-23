@@ -32,22 +32,22 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(4)
 	go build(&wg, ".")
-	go build(&wg, "cmd/fakeserver")
+	go build(&wg, "cmd/simple-server")
 	go build(&wg, "cmd/router")
 	go build(&wg, "cmd/botclient")
 	wg.Wait()
 	fmt.Println("done")
 
-	fmt.Println("Run fakeserver")
-	var fakeserverStderr bytes.Buffer
-	fakeserverCmd := exec.Command("./fakeserver.exe", "--config", "config.yaml")
-	fakeserverCmd.Dir = "cmd/fakeserver"
-	fakeserverCmd.Stderr = &fakeserverStderr
-	if err := fakeserverCmd.Start(); err != nil {
-		fmt.Printf("Failed to run fakeserver: %v\n", err)
+	fmt.Println("Run simple-server")
+	var serverStderr bytes.Buffer
+	serverCmd := exec.Command("./simple-server.exe", "--config", "config.yaml")
+	serverCmd.Dir = "cmd/simple-server"
+	serverCmd.Stderr = &serverStderr
+	if err := serverCmd.Start(); err != nil {
+		fmt.Printf("Failed to run simple-server: %v\n", err)
 		return
 	}
-	defer fakeserverCmd.Process.Kill()
+	defer serverCmd.Process.Kill()
 
 	fmt.Println("Run router")
 	var routerStderr bytes.Buffer
