@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
       session =
         Session.new(
           session_id: SecureRandom.uuid,
-          router_addr: "localhost:16283",
+          router_addr: Settings.router.data_addr,
           owner_id: @current_user.user_id,
           guest_id: guest.user_id,
           name: create_params[:name],
