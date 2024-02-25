@@ -1,0 +1,25 @@
+<div class="c-body">
+  <main class="c-main">
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="card col-md-5 py-5">
+          <div class="card-body text-center">
+            <div>
+              <h2>Fan of Rockman EXE</h2>
+              <p>
+                時代を超えてネットで対戦しよう<br />
+                ロックマンエグゼのネット対戦をインターネットの力を借りて再現してみました
+              </p>
+              <div>
+                <%= button_to "ログイン", '/auth/auth0', {method: :post, class: "btn btn-outline-primary", data: { turbo: false }} %>
+              </div>
+              <div>
+                <%= button_to "アカウントの新規作成", '/auth/auth0', {method: :post, class: "btn btn-link", params: {screen_hint: "signup"}, data: { turbo: false }} %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
