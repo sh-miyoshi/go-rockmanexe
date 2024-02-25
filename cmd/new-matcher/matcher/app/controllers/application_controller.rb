@@ -3,8 +3,6 @@ class ApplicationController < ActionController::Base
 
   before_action :set_login_user
 
-  attr_reader :current_user
-
   private
 
   def set_login_user
