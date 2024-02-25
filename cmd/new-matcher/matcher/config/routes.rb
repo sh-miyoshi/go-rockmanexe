@@ -8,5 +8,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "users#index"
 
+  get "auth/callback"
+  get "auth/failure"
+  get "auth/logout"
+
   resources :users
 end

@@ -11,10 +11,10 @@
                 ロックマンエグゼのネット対戦をインターネットの力を借りて再現してみました
               </p>
               <div>
-                <%= button_to "ログイン", '/auth/auth0', {method: :post, class: "btn btn-outline-primary"} %>
+                <%= button_to "ログイン", '/auth/auth0', {method: :post, class: "btn btn-outline-primary", data: { turbo: false }} %>
               </div>
               <div>
-                <%= button_to "アカウントの新規作成", '/auth/auth0', {method: :post, class: "btn btn-link", params: {screen_hint: "signup"}} %>
+                <%= button_to "アカウントの新規作成", '/auth/auth0', {method: :post, class: "btn btn-link", params: {screen_hint: "signup"}, data: { turbo: false }} %>
               </div>
             </div>
           </div>
