@@ -13,4 +13,6 @@ Rails.application.routes.draw do
   get "auth/logout"
 
   resources :users
+
+  resources :sessions, only: %i[new create destroy]
 end
