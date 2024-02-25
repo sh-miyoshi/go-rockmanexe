@@ -1,4 +1,6 @@
 class AuthController < ApplicationController
+  skip_before_action :set_login_user
+
   def callback
     auth_info = request.env["omniauth.auth"]
     Rails.logger.debug("login info: #{auth_info}")
