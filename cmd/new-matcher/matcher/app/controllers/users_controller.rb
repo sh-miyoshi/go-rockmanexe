@@ -6,6 +6,8 @@ class UsersController < ApplicationController
   end
 
   def show
+    @own_session = Session.find_by(owner_id: @current_user.user_id)
+    @guest_sessions = Session.where(guest_id: @current_user.user_id)
   end
 
   def new

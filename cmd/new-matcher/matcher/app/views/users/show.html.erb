@@ -124,7 +124,7 @@
                     Client Key
                   </label>
                   <div class="col-md-5">
-                    <%= text_field_tag 'client_key', 'TODO', class: 'form-control read-text-dark', readonly: true %>
+                    <%= text_field_tag 'client_key', s.guest_client_key, class: 'form-control read-text-dark', readonly: true %>
                   </div>
                 </div>
                 <div class="row mb-2">
@@ -164,7 +164,7 @@
                     Client Key
                   </label>
                   <div class="col-md-5">
-                    <%= text_field_tag 'client_key', "TODO", class: 'form-control read-text-dark', readonly: true %>
+                    <%= text_field_tag 'client_key', @own_session.owner_client_key, class: 'form-control read-text-dark', readonly: true %>
                   </div>
                 </div>
                 <div class="row mb-2">
