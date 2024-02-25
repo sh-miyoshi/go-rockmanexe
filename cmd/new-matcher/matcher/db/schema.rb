@@ -11,13 +11,37 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_02_24_055906) do
-# Could not dump table "clients" because of following StandardError
-#   Unknown type 'uuid' for column 'id'
+  create_table "clients", force: :cascade do |t|
+    t.string "client_id"
+    t.string "session_id"
+    t.string "client_key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_clients_on_client_id", unique: true
+  end
 
-# Could not dump table "sessions" because of following StandardError
-#   Unknown type 'uuid' for column 'id'
+  create_table "sessions", force: :cascade do |t|
+    t.string "session_id"
+    t.string "router_addr"
+    t.string "owner_id"
+    t.string "guest_id"
+    t.string "owner_client_id"
+    t.string "guest_client_id"
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id", "guest_id"], name: "index_sessions_on_owner_id_and_guest_id"
+    t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
+  end
 
-# Could not dump table "users" because of following StandardError
-#   Unknown type 'uuid' for column 'id'
+  create_table "users", force: :cascade do |t|
+    t.string "user_id"
+    t.string "name"
+    t.string "login_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["login_id"], name: "index_users_on_login_id", unique: true
+    t.index ["user_id"], name: "index_users_on_user_id", unique: true
+  end
 
 end

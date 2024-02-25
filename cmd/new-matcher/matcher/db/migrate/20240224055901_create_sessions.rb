@@ -1,6 +1,7 @@
 class CreateSessions < ActiveRecord::Migration[7.1]
   def change
-    create_table :sessions, id: :uuid do |t|
+    create_table :sessions do |t|
+      t.string :session_id
       t.string :router_addr
       t.string :owner_id
       t.string :guest_id
@@ -11,6 +12,7 @@ class CreateSessions < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    add_index :sessions, :session_id, unique: true
     add_index :sessions, %i[owner_id guest_id]
   end
 end
