@@ -47,6 +47,14 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    s = Session.find_by(session_id: params[:session_id])
+    begin
+      s.destroy_with_clients!
+    rescue StandardError => e
+      Rails.logger.info("Failed to create session: #{e}")
+      flash[:danger] = "セッションの削除に失敗しました。<br/>#{e}"
+    end
+    redirect_to user_path(@current_user.user_id)
   end
 
   private
