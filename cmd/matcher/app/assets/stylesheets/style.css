@@ -15,3 +15,7 @@
 .read-text-dark {
   background-color: #fafafa !important;
 }
+
+.text-left {
+  text-align: left
+}
