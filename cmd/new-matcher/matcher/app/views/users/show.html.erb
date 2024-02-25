@@ -82,7 +82,7 @@
                   role="button">最新版のアプリを入手</a>
               </div>
               <div class="mb-2 text-left">
-                <%= button_to "ログアウト", auth_logout_path, {method: :get, class: "btn btn-outline-danger"} %>
+                <%= button_to "ログアウト", auth_logout_path, {method: :get, class: "btn btn-outline-danger", data: { turbo: false }} %>
               </div>
             </div>
           </div>
