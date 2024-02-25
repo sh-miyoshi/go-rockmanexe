@@ -6,7 +6,10 @@ class AuthController < ApplicationController
     Rails.logger.debug("login info: #{auth_info}")
     session[:user_id] = auth_info[:uid]
 
-    redirect_to "/users/show"
+    user = User.find_by(login_id: session[:user_id])
+    return redirect_to new_user_path if user.nil?
+
+    redirect_to user_path(user.user_id)
   end
 
   def failure
