@@ -1,0 +1,17 @@
+.header {
+  background-color: #6495ed;
+}
+
+.char-icon {
+  border-radius: 25px;
+  background: #666666;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  color: #fff;
+  font-size: 50px;
+}
+
+.read-text-dark {
+  background-color: #fafafa !important;
+}
