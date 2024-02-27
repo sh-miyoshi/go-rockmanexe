@@ -35,8 +35,7 @@ func VersionCheck(version string) error {
 }
 
 func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
-	c := config.Get()
-	url := fmt.Sprintf("%s/api/v1/client/auth", c.APIAddr)
+	url := fmt.Sprintf("%s/api/v1/client/auth", config.APIAddr())
 
 	req := map[string]interface{}{
 		"client_id":  clientID,
@@ -46,7 +45,7 @@ func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(c.APIAddr, "", true, 30)
+	handler := NewHandler(config.APIAddr(), "", true, 30)
 	httpRes, err := handler.request("POST", url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -66,10 +65,9 @@ func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
 }
 
 func GetSessionInfo(sessionID string) (*SessionInfo, error) {
-	c := config.Get()
-	url := fmt.Sprintf("%s/api/v1/session/%s", c.APIAddr, sessionID)
+	url := fmt.Sprintf("%s/api/v1/session/%s", config.APIAddr(), sessionID)
 
-	handler := NewHandler(c.APIAddr, "", true, 30)
+	handler := NewHandler(config.APIAddr(), "", true, 30)
 	httpRes, err := handler.request("GET", url, nil)
 	if err != nil {
 		return nil, err
