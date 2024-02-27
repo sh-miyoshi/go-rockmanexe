@@ -1,28 +1,27 @@
-api_addr: '0.0.0.0:3000'
+api_addr: "0.0.0.0:3000"
 log:
-  file: 'server.log'
-enable_debug_api: true
+  file: "server.log"
 client_data:
-  - client_id: 'tester1'
-    client_key: 'testtest'
-    session_id: 'session1'
-  - client_id: 'tester2'
-    client_key: 'testtest'
-    session_id: 'session1'
-  - client_id: 'tester3'
-    client_key: 'testtest'
-    session_id: 'session2'
-  - client_id: 'tester4'
-    client_key: 'testtest'
-    session_id: 'session2'
+  - client_id: "tester1"
+    client_key: "testtest"
+    session_id: "session1"
+  - client_id: "tester2"
+    client_key: "testtest"
+    session_id: "session1"
+  - client_id: "tester3"
+    client_key: "testtest"
+    session_id: "session2"
+  - client_id: "tester4"
+    client_key: "testtest"
+    session_id: "session2"
 session_data:
-  - id: 'session1'
-    owner_client_id: 'tester1'
-    owner_user_id: '804f3fc5-328f-49c6-969d-ac559d95108a'
-    guest_client_id: 'tester2'
-    guest_user_id: '473e4e85-1f34-4cd3-a8b1-5b34c863c276'
-  - id: 'session2'
-    owner_client_id: 'tester3'
-    owner_user_id: 'user3'
-    guest_client_id: 'tester4'
-    guest_user_id: 'user4'
+  - id: "session1"
+    owner_client_id: "tester1"
+    owner_user_id: "804f3fc5-328f-49c6-969d-ac559d95108a"
+    guest_client_id: "tester2"
+    guest_user_id: "473e4e85-1f34-4cd3-a8b1-5b34c863c276"
+  - id: "session2"
+    owner_client_id: "tester3"
+    owner_user_id: "user3"
+    guest_client_id: "tester4"
+    guest_user_id: "user4"
