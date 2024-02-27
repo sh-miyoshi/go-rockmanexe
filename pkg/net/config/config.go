@@ -14,6 +14,7 @@ type Config struct {
 		Host    string `yaml:"host"`
 		Port    int    `yaml:"port"`
 		Session struct {
+			ID         string `yaml:"id"`
 			ClientID1  string `yaml:"client_1_id"`
 			ClientKey1 string `yaml:"client_1_key"`
 			ClientID2  string `yaml:"client_2_id"`

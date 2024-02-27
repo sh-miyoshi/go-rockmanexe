@@ -3,6 +3,7 @@ server:
   host: 'http://localhost'
   port: 3000
   session:
+    id: 'session1'
     client_1_id: 'tester1'
     client_1_key: 'testtest'
     client_2_id: 'tester2'

@@ -6,20 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/api"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
-
-type AuthResponse struct {
-	SessionID string `json:"session_id"`
-}
-
-type SessionInfo struct {
-	ID            string `json:"id"`
-	OwnerUserID   string `json:"owner_user_id"`
-	OwnerClientID string `json:"owner_client_id"`
-	GuestUserID   string `json:"guest_user_id"`
-	GuestClientID string `json:"guest_client_id"`
-}
 
 func VersionCheck(version string) error {
 	c := config.Get()
@@ -34,7 +23,7 @@ func VersionCheck(version string) error {
 	return nil
 }
 
-func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
+func ClientAuth(clientID string, clientKey string) (*api.AuthResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/client/auth", config.APIAddr())
 
 	req := map[string]interface{}{
@@ -53,7 +42,7 @@ func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
 	defer httpRes.Body.Close()
 
 	if httpRes.StatusCode == http.StatusOK {
-		var res AuthResponse
+		var res api.AuthResponse
 		if err := json.NewDecoder(httpRes.Body).Decode(&res); err != nil {
 			return nil, err
 		}
@@ -64,7 +53,7 @@ func ClientAuth(clientID string, clientKey string) (*AuthResponse, error) {
 	return nil, fmt.Errorf("request failed")
 }
 
-func GetSessionInfo(sessionID string) (*SessionInfo, error) {
+func GetSessionInfo(sessionID string) (*api.SessionInfo, error) {
 	url := fmt.Sprintf("%s/api/v1/session/%s", config.APIAddr(), sessionID)
 
 	handler := NewHandler(config.APIAddr(), "", true, 30)
@@ -75,7 +64,7 @@ func GetSessionInfo(sessionID string) (*SessionInfo, error) {
 	defer httpRes.Body.Close()
 
 	if httpRes.StatusCode == http.StatusOK {
-		var res SessionInfo
+		var res api.SessionInfo
 		if err := json.NewDecoder(httpRes.Body).Decode(&res); err != nil {
 			return nil, err
 		}
