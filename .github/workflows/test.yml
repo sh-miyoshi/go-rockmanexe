@@ -28,9 +28,9 @@ jobs:
           go-version: 1.21
       - name: Run server
         run: |
-          cd cmd/simple-server
+          cd cmd/fakeserver
           go build
-          ./simple-server &
+          ./fakeserver &
           cd ../../cmd/router
           go build
           ./router --config ../../test/router/router_config.yaml &
