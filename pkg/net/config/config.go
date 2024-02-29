@@ -10,9 +10,7 @@ import (
 
 type Config struct {
 	Server struct {
-		Enabled bool   `yaml:"enabled"`
-		Host    string `yaml:"host"`
-		Port    int    `yaml:"port"`
+		Enabled bool `yaml:"enabled"`
 		Session struct {
 			ID         string `yaml:"id"`
 			ClientID1  string `yaml:"client_1_id"`
@@ -62,7 +60,7 @@ func Get() *Config {
 
 func APIAddr() string {
 	if inst.Server.Enabled {
-		return fmt.Sprintf("%s:%d", inst.Server.Host, inst.Server.Port)
+		return "http://localhost:3000"
 	}
 	return inst.APIAddr
 }

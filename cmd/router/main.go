@@ -43,14 +43,17 @@ func main() {
 
 	// Start API Server
 	if c.Server.Enabled {
-		logger.Info("start api server with %s", config.APIAddr())
+		const addr = "0.0.0.0:3000"
+		logger.Info("start api server with %s", addr)
 		r := mux.NewRouter()
 		setAPI(r)
 
-		if err := http.ListenAndServe(config.APIAddr(), r); err != nil {
-			logger.Error("Failed to run API server: %v", err)
-			return
-		}
+		go func() {
+			if err := http.ListenAndServe(addr, r); err != nil {
+				logger.Error("Failed to run API server: %v", err)
+				os.Exit(1)
+			}
+		}()
 	}
 
 	// Listen data connection

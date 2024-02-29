@@ -1,7 +1,5 @@
 server:
   enabled: true
-  host: 'http://localhost'
-  port: 3000
   session:
     id: 'session1'
     client_1_id: 'tester1'
@@ -11,8 +9,6 @@ server:
 data_stream_addr: '0.0.0.0:16283'
 log:
   debug_log: true
-  file: 'router.log'
+  file: ''
 acceptable_version: ''
 chip_file_path: '../../data/chipList.yaml'
-# debug:
-#   invincible_count: 120
