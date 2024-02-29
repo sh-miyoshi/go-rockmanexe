@@ -1,4 +1,4 @@
-FROM golang:1.16 as builder
+FROM golang:1.21 as builder
 
 WORKDIR /app
 COPY go.mod .
@@ -7,11 +7,9 @@ COPY cmd/router cmd/router
 COPY pkg pkg
 RUN go build ./cmd/router
 
-FROM ubuntu:20.04
-
-EXPOSE 16283
+FROM ubuntu:22.04
 
 WORKDIR /app
 COPY --from=builder /app/router router
-COPY cmd/router/config_prod.yaml config.yaml
+COPY cmd/router/config_with_server.yaml config.yaml
 CMD ./router --config=config.yaml
