@@ -34,28 +34,16 @@ func main() {
 
 	fmt.Println("building binaries ...")
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(3)
 	go build(&wg, ".", "rockman.exe")
-	go build(&wg, "cmd/fakeserver", "fakeserver.out")
 	go build(&wg, "cmd/router", "router.out")
 	go build(&wg, "cmd/botclient", "botclient.exe")
 	wg.Wait()
 	fmt.Println("done")
 
-	fmt.Println("Run fakeserver")
-	var fakeserverStderr bytes.Buffer
-	fakeserverCmd := exec.Command("./fakeserver.out", "--config", "config.yaml")
-	fakeserverCmd.Dir = "cmd/fakeserver"
-	fakeserverCmd.Stderr = &fakeserverStderr
-	if err := fakeserverCmd.Start(); err != nil {
-		fmt.Printf("Failed to run fakeserver: %v\n", err)
-		return
-	}
-	defer fakeserverCmd.Process.Kill()
-
 	fmt.Println("Run router")
 	var routerStderr bytes.Buffer
-	routerCmd := exec.Command("./router.out", "--config", "config.yaml")
+	routerCmd := exec.Command("./router.out", "--config", "config_with_server.yaml")
 	routerCmd.Dir = "cmd/router"
 	routerCmd.Stderr = &routerStderr
 	if err := routerCmd.Start(); err != nil {
