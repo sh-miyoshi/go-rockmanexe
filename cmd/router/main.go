@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -38,6 +40,21 @@ func main() {
 	}
 
 	fps.FPS = 60
+
+	// Start API Server
+	if c.Server.Enabled {
+		const addr = "0.0.0.0:3000"
+		logger.Info("start api server with %s", addr)
+		r := mux.NewRouter()
+		setAPI(r)
+
+		go func() {
+			if err := http.ListenAndServe(addr, r); err != nil {
+				logger.Error("Failed to run API server: %v", err)
+				os.Exit(1)
+			}
+		}()
+	}
 
 	// Listen data connection
 	logger.Info("start data stream with %s", c.DataStreamAddr)

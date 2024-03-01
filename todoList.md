@@ -11,6 +11,7 @@
 
 ## ネットワーク対戦のリファクタリング
 
+- ネット対戦時のUser IDの扱い
 - ShowHitAreaを表示
 - 後回し
   - gameInfoPublishをclientからデータ受信時に行う

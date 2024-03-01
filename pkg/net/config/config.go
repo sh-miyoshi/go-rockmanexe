@@ -9,6 +9,16 @@ import (
 )
 
 type Config struct {
+	Server struct {
+		Enabled bool `yaml:"enabled"`
+		Session struct {
+			ID         string `yaml:"id"`
+			ClientID1  string `yaml:"client_1_id"`
+			ClientKey1 string `yaml:"client_1_key"`
+			ClientID2  string `yaml:"client_2_id"`
+			ClientKey2 string `yaml:"client_2_key"`
+		} `yaml:"session"`
+	} `yaml:"server"`
 	APIAddr        string `yaml:"api_addr"`
 	DataStreamAddr string `yaml:"data_stream_addr"`
 	Log            struct {
@@ -46,4 +56,11 @@ func Init(fname string) error {
 
 func Get() *Config {
 	return &inst
+}
+
+func APIAddr() string {
+	if inst.Server.Enabled {
+		return "http://localhost:3000"
+	}
+	return inst.APIAddr
 }

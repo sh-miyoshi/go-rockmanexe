@@ -1,0 +1,14 @@
+server:
+  enabled: true
+  session:
+    id: 'session1'
+    client_1_id: 'tester1'
+    client_1_key: 'testtest'
+    client_2_id: 'tester2'
+    client_2_key: 'testtest'
+data_stream_addr: '0.0.0.0:16283'
+log:
+  debug_log: true
+  file: ''
+acceptable_version: ''
+chip_file_path: '../../data/chipList.yaml'
