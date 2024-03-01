@@ -11,5 +11,5 @@ FROM ubuntu:22.04
 
 WORKDIR /app
 COPY --from=builder /app/router router
-COPY cmd/router/config_with_server.yaml config.yaml
+COPY build/config_server.yaml config.yaml
 CMD ./router --config=config.yaml

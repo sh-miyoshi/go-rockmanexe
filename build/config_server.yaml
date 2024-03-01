@@ -1,0 +1,14 @@
+server:
+  enabled: true
+  session:
+    id: '11fc329c-5ab9-44eb-9dd7-eb92ed041330'
+    client_1_id: 'test_user_1'
+    client_1_key: 'dabe71f3-7c34-47a8-8cff-35861b0a43d7'
+    client_2_id: 'test_user_2'
+    client_2_key: 'e09f1da6-7236-403d-b205-4021df69a20b'
+data_stream_addr: '0.0.0.0:16283'
+log:
+  debug_log: true
+  file: ''
+acceptable_version: 'v0.11'
+chip_file_path: 'data/chipList.yaml'
