@@ -138,7 +138,7 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 
 	// Show HP
 	dxlib.DrawGraph(x, y, p.imgHPFrame, true)
-	obj := p.getObject()
+	obj := p.GetObject()
 	draw.Number(x+2, y+2, obj.HP, draw.NumberOption{RightAligned: true, Length: 4})
 
 	// Show Mind Status
@@ -183,7 +183,7 @@ func (p *BattlePlayer) LocalDraw() {
 
 		const px = 3
 		max := n * px
-		obj := p.getObject()
+		obj := p.GetObject()
 		for i := 0; i < n; i++ {
 			x := battlecommon.PanelSize.X*obj.Pos.X + battlecommon.PanelSize.X/2 - 2 + (i * px) - max
 			y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Pos.Y - 10 - 81 + (i * px) - max
@@ -319,7 +319,7 @@ func (p *BattlePlayer) UpdatePA() {
 }
 
 func (p *BattlePlayer) IsDead() bool {
-	obj := p.getObject()
+	obj := p.GetObject()
 	return obj.HP <= 0
 }
 
@@ -327,7 +327,7 @@ func (p *BattlePlayer) GetObjectID() string {
 	return p.objectID
 }
 
-func (p *BattlePlayer) getObject() gameinfo.Object {
+func (p *BattlePlayer) GetObject() gameinfo.Object {
 	objs := net.GetInst().GetGameInfo().Objects
 	for _, o := range objs {
 		if o.ID == p.objectID {

@@ -52,7 +52,6 @@ type NetBattle struct {
 	fieldInst   *field.Field
 	b4mainInst  *b4main.BeforeMain
 	resultInst  *titlemsg.TitleMsg
-	initHP      int
 }
 
 var (
@@ -91,7 +90,6 @@ func Init(plyr *player.Player) error {
 		gameCount:  0,
 		state:      stateWaiting,
 		stateCount: 0,
-		initHP:     int(plyr.HP),
 	}
 	var err error
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
@@ -143,9 +141,10 @@ func Process() error {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()
 		if status == pb.Response_CHIPSELECTWAIT {
+			rawObj := inst.playerInst.GetObject()
 			obj := netobj.InitParam{
 				ID: inst.playerInst.GetObjectID(),
-				HP: inst.initHP,
+				HP: rawObj.HP,
 				X:  1,
 				Y:  1,
 			}
