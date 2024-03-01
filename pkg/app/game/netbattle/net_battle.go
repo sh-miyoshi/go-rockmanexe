@@ -52,6 +52,7 @@ type NetBattle struct {
 	fieldInst   *field.Field
 	b4mainInst  *b4main.BeforeMain
 	resultInst  *titlemsg.TitleMsg
+	initHP      int
 }
 
 var (
@@ -90,6 +91,7 @@ func Init(plyr *player.Player) error {
 		gameCount:  0,
 		state:      stateWaiting,
 		stateCount: 0,
+		initHP:     int(plyr.HP),
 	}
 	var err error
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
@@ -115,15 +117,6 @@ func Init(plyr *player.Player) error {
 		return fmt.Errorf("effect init failed: %w", err)
 	}
 
-	obj := netobj.InitParam{
-		ID: inst.playerInst.GetObjectID(),
-		HP: int(plyr.HP),
-		X:  1,
-		Y:  1,
-	}
-	if err := inst.conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
-		return fmt.Errorf("failed to send initial player param: %w", err)
-	}
 	sound.BGMStop()
 	return nil
 }
@@ -150,6 +143,16 @@ func Process() error {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()
 		if status == pb.Response_CHIPSELECTWAIT {
+			obj := netobj.InitParam{
+				ID: inst.playerInst.GetObjectID(),
+				HP: inst.initHP,
+				X:  1,
+				Y:  1,
+			}
+			if err := inst.conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
+				return fmt.Errorf("failed to send initial player param: %w", err)
+			}
+
 			if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
 				return fmt.Errorf("failed to play bgm: %v", err)
 			}
