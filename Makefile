@@ -23,7 +23,7 @@ protoc-linux:
 	cp github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb/* ./pkg/net/netconnpb/ && \
 	rm -rf github.com
 docker:
-	docker build -t docker.io/rockmanexe/server -f build/Dockerfile.server .
+	docker build -t docker.io/smiyoshi/rockmanexe-router -f build/Dockerfile.server .
 localnet:
 	cd tools/localnet-boot && \
 	go build -o localnet-boot.exe && \
