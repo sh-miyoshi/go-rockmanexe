@@ -6,9 +6,11 @@ import (
 )
 
 const (
-	GaugeMaxCount           = 1200
-	ChargeViewDelay         = 20
-	DefaultCustomGaugeSpeed = 4
+	GaugeMaxCount            = 1200
+	ChargeViewDelay          = 20
+	DefaultCustomGaugeSpeed  = 4
+	DefaultPanelHoleEndCount = 480
+	PanelReturnAnimCount     = 60
 )
 
 var (

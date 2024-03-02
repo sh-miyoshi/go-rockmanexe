@@ -26,6 +26,7 @@ const (
 	TypeTornado
 	TypeBoomerang
 	TypeBambooLance
+	TypeCrack
 
 	TypeMax
 )

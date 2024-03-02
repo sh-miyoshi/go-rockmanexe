@@ -28,6 +28,7 @@ type Argument struct {
 	GetObjectPos func(objID string) point.Point
 	SoundOn      func(typ resources.SEType)
 	GetObjects   func(filter objanim.Filter) []objanim.Param
+	PanelBreak   func(pos point.Point)
 }
 
 type SkillCore interface {

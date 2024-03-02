@@ -43,15 +43,16 @@ const (
 )
 
 type NetBattle struct {
-	conn        *netconn.NetConn
-	gameCount   int
-	state       int
-	stateCount  int
-	openingInst opening.Opening
-	playerInst  *battleplayer.BattlePlayer
-	fieldInst   *field.Field
-	b4mainInst  *b4main.BeforeMain
-	resultInst  *titlemsg.TitleMsg
+	conn         *netconn.NetConn
+	gameCount    int
+	state        int
+	stateCount   int
+	openingInst  opening.Opening
+	playerInst   *battleplayer.BattlePlayer
+	fieldInst    *field.Field
+	b4mainInst   *b4main.BeforeMain
+	resultInst   *titlemsg.TitleMsg
+	playerInitHP int
 }
 
 var (
@@ -78,6 +79,9 @@ var (
 		chip.IDTornado,
 		chip.IDBoomerang1,
 		chip.IDBambooLance,
+		chip.IDCrackout,
+		chip.IDDoubleCrack,
+		chip.IDTripleCrack,
 	}
 
 	inst NetBattle
@@ -86,10 +90,11 @@ var (
 func Init(plyr *player.Player) error {
 	logger.Info("Init net battle data ...")
 	inst = NetBattle{
-		conn:       net.GetInst(),
-		gameCount:  0,
-		state:      stateWaiting,
-		stateCount: 0,
+		conn:         net.GetInst(),
+		gameCount:    0,
+		state:        stateWaiting,
+		stateCount:   0,
+		playerInitHP: int(plyr.HP),
 	}
 	var err error
 	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
@@ -141,10 +146,9 @@ func Process() error {
 	case stateWaiting:
 		status := inst.conn.GetGameStatus()
 		if status == pb.Response_CHIPSELECTWAIT {
-			rawObj := inst.playerInst.GetObject()
 			obj := netobj.InitParam{
 				ID: inst.playerInst.GetObjectID(),
-				HP: rawObj.HP,
+				HP: inst.playerInitHP,
 				X:  1,
 				Y:  1,
 			}

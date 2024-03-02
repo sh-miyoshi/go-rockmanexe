@@ -307,6 +307,7 @@ func (a *playerAct) Process() bool {
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow:
 		// No special action
 		if a.count >= a.endCount {
+			logger.Info("finished player act %d", a.actType)
 			a.actType = -1
 			a.count = 0
 			a.endCount = 0
@@ -343,6 +344,8 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
 		a.pObject.Type = TypePlayerPick
 	case battlecommon.PlayerActBomb:
 		a.pObject.Type = TypePlayerBomb
+	case battlecommon.PlayerActThrow:
+		a.pObject.Type = TypePlayerThrow
 	default:
 		logger.Error("Invalid player act type %d was specified", actType)
 	}

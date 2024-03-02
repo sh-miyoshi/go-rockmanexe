@@ -144,6 +144,33 @@ func (g *GameHandler) updatePanelObject() {
 		}
 		for _, obj := range g.info[i].Objects {
 			g.info[i].Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
+			if g.info[i].Panels[obj.Pos.X][obj.Pos.Y].Status == battlecommon.PanelStatusCrack {
+				g.info[i].Panels[obj.Pos.X][obj.Pos.Y].ObjExists = true
+			}
+		}
+
+		// Panel status update
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			for x := 0; x < battlecommon.FieldNum.X; x++ {
+				if g.info[i].Panels[x][y].HoleCount > 0 {
+					g.info[i].Panels[x][y].HoleCount--
+				}
+
+				switch g.info[i].Panels[x][y].Status {
+				case battlecommon.PanelStatusHole:
+					if g.info[i].Panels[x][y].HoleCount <= battlecommon.PanelReturnAnimCount {
+						g.info[i].Panels[x][y].Status = battlecommon.PanelStatusNormal
+					}
+				case battlecommon.PanelStatusCrack:
+					// Objectが乗って離れたらHole状態へ
+					if g.info[i].Panels[x][y].ObjExists && g.info[i].Panels[x][y].ObjectID == "" {
+						// sound.On(resources.SEPanelBreak) // TODO
+						g.info[i].Panels[x][y].ObjExists = false
+						g.info[i].Panels[x][y].Status = battlecommon.PanelStatusHole
+						g.info[i].Panels[x][y].HoleCount = battlecommon.DefaultPanelHoleEndCount
+					}
+				}
+			}
 		}
 	}
 }
