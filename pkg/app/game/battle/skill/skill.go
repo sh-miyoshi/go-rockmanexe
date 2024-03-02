@@ -34,6 +34,7 @@ func End() {
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
+	arg.PanelBreak = field.PanelBreak
 	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
@@ -63,12 +64,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newAquamanShot(objID, arg)
 	case resources.SkillAquaman:
 		return newAquaman(objID, arg)
-	case resources.SkillCrackout:
-		return newCrack(objID, crackType1, arg)
-	case resources.SkillDoubleCrack:
-		return newCrack(objID, crackType2, arg)
-	case resources.SkillTripleCrack:
-		return newCrack(objID, crackType3, arg)
+	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
+		return newCrack(objID, arg, core)
 	case resources.SkillBambooLance:
 		return newBambooLance(objID, arg, core)
 	case resources.SkillInvisible:

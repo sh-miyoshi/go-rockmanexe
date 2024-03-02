@@ -3,66 +3,28 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
-)
-
-const (
-	crackType1 int = iota
-	crackType2
-	crackType3
 )
 
 type crack struct {
-	ID  string
-	Arg skillcore.Argument
-
-	count     int
-	attackPos []point.Point
+	ID   string
+	Arg  skillcore.Argument
+	Core skillcore.SkillCore
 }
 
-func newCrack(objID string, crackType int, arg skillcore.Argument) *crack {
-	res := crack{
-		ID:  objID,
-		Arg: arg,
+func newCrack(objID string, arg skillcore.Argument, core skillcore.SkillCore) *crack {
+	return &crack{
+		ID:   objID,
+		Arg:  arg,
+		Core: core,
 	}
-
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
-
-	switch crackType {
-	case crackType1:
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
-	case crackType2:
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 2, Y: pos.Y})
-	case crackType3:
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y - 1})
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y})
-		res.attackPos = append(res.attackPos, point.Point{X: pos.X + 1, Y: pos.Y + 1})
-	}
-
-	return &res
 }
 
 func (p *crack) Draw() {
 }
 
 func (p *crack) Process() (bool, error) {
-	p.count++
-
-	if p.count > 5 {
-		sound.On(resources.SEPanelBreak)
-		for _, pos := range p.attackPos {
-			field.PanelBreak(pos)
-		}
-
-		return true, nil
-	}
-
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *crack) GetParam() anim.Param {

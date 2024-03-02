@@ -78,6 +78,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillBambooLance:
 		return &processor.BambooLance{Arg: arg}
+	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
+		res := &processor.Crack{Arg: arg}
+		res.Init(id)
+		return res
 	}
 
 	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
