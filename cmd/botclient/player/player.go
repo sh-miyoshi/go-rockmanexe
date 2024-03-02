@@ -27,7 +27,7 @@ type Player struct {
 func New(clientID string, conn *netconn.NetConn) *Player {
 	res := &Player{
 		ID:                 uuid.New().String(),
-		HP:                 100,
+		HP:                 300,
 		Pos:                point.Point{X: 1, Y: 1},
 		currentActNo:       0,
 		currentActInterval: 0,
