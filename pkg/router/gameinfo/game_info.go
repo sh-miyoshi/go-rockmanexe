@@ -12,12 +12,18 @@ import (
 )
 
 const (
-	QueueTypeAction int = iota
-	QueueTypeEffect
+	QueueTypeEffect int = iota
 	QueueTypeSound
 
 	QueueTypeMax
 )
+
+// FieldFuncs はGameInfoごとに定義されるfieldに関する関数群です
+// 主にobjectやskillで使用されます
+type FieldFuncs struct {
+	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
+	PanelBreak   func(pos point.Point)
+}
 
 type PanelInfo struct {
 	OwnerClientID string

@@ -52,13 +52,13 @@ func (p *flameLine) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }
 
 func (p *flameLine) StopByOwner() {
-	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+	p.Arg.Manager.AnimDelete(p.ID)
 }
 
 func (p *flameLine) GetEndCount() int {

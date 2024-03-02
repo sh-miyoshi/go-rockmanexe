@@ -10,7 +10,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type VulcanDrawParam struct {
@@ -41,9 +40,9 @@ func (p *vulcan) Process() (bool, error) {
 		return false, err
 	}
 	for _, eff := range p.Core.PopEffects() {
-		queue.Push(p.Arg.QueueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
+		p.Arg.Manager.QueuePush(gameinfo.QueueTypeEffect, &gameinfo.Effect{
 			ID:            uuid.New().String(),
-			OwnerClientID: p.Arg.GameInfo.ClientID,
+			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           eff.Pos,
 			Type:          eff.Type,
 			RandRange:     eff.RandRange,
@@ -65,13 +64,13 @@ func (p *vulcan) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}
 }
 
 func (p *vulcan) StopByOwner() {
-	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+	p.Arg.Manager.AnimDelete(p.ID)
 }
 
 func (p *vulcan) GetEndCount() int {

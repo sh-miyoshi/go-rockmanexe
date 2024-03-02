@@ -37,7 +37,7 @@ func (p *recover) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}

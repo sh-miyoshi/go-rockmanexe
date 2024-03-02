@@ -10,6 +10,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
@@ -35,6 +36,10 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
 	arg.PanelBreak = field.PanelBreak
+	arg.DamageMgr = localanim.DamageManager()
+	arg.GetObjectPos = localanim.ObjAnimGetObjPos
+	arg.GetObjects = localanim.ObjAnimGetObjs
+	arg.SoundOn = sound.On
 	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {

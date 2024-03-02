@@ -3,7 +3,6 @@ package gamehandler
 import (
 	"fmt"
 
-	"github.com/google/uuid"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -12,77 +11,66 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 	gameobj "github.com/sh-miyoshi/go-rockmanexe/pkg/router/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
+)
+
+const (
+	clientNum = 2
 )
 
 type gameObject struct {
-	animObject        objanim.Anim
-	queueIDs          [gameinfo.QueueTypeMax]string
-	currentObjectType *int
+	info         gameinfo.GameInfo
+	playerObject *gameobj.Player
 }
 
 type GameHandler struct {
-	info      [2]gameinfo.GameInfo
-	objects   map[string]*gameObject // Key: clientID, Value: object情報
+	manager   *manager.Manager
+	objects   [clientNum]*gameObject // Key: clientID, Value: object情報
 	gameCount int
-	animMgrID string
 }
 
 func NewHandler() session.GameLogic {
 	return &GameHandler{
-		objects:   make(map[string]*gameObject),
 		gameCount: 0,
 	}
 }
 
-func (g *GameHandler) Init(clientIDs [2]string) error {
-	g.info[0].Init(clientIDs[0], clientIDs[1])
-	g.info[1].Init(clientIDs[1], clientIDs[0])
-	g.animMgrID = routeranim.NewManager(clientIDs)
+func (g *GameHandler) Init(clientIDs [clientNum]string) error {
+	g.objects[0] = newGameObject(clientIDs[0], clientIDs[1])
+	g.objects[1] = newGameObject(clientIDs[1], clientIDs[0])
+	g.manager = manager.New()
 
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil
 }
 
 func (g *GameHandler) Cleanup() {
-	for _, obj := range g.objects {
-		for i := 0; i < len(obj.queueIDs); i++ {
-			queue.Delete(obj.queueIDs[i])
-		}
+	if g.manager != nil {
+		g.manager.Cleanup()
 	}
-	routeranim.Cleanup(g.animMgrID)
 }
 
 func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) error {
-	var ginfo *gameinfo.GameInfo
-	for i := 0; i < len(g.info); i++ {
-		if g.info[i].ClientID == clientID {
-			ginfo = &g.info[i]
-		}
-	}
-	if ginfo == nil {
-		logger.Error("cannot find game info for client %s", clientID)
-		return fmt.Errorf("failed to find game info, it maybe called this point before Init())")
+	index := g.indexForClient(clientID)
+	if index == -1 {
+		logger.Error("cannot find game object for client %s", clientID)
+		return fmt.Errorf("failed to find game object, it maybe called this point before Init())")
 	}
 
-	// Player Objectを作成
-	g.objects[clientID] = &gameObject{}
-	for i := 0; i < gameinfo.QueueTypeMax; i++ {
-		g.objects[clientID].queueIDs[i] = uuid.NewString()
-	}
-	plyr := gameobj.NewPlayer(gameinfo.Object{
+	g.objects[index].playerObject = gameobj.NewPlayer(gameinfo.Object{
 		ID:            param.ID,
 		Type:          gameobj.TypePlayerStand,
 		OwnerClientID: clientID,
 		HP:            param.HP,
 		Pos:           point.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
-	}, ginfo, g.objects[clientID].queueIDs)
-	g.objects[clientID].animObject = plyr
-	routeranim.ObjAnimNew(clientID, g.objects[clientID].animObject)
-	g.objects[clientID].currentObjectType = plyr.GetCurrentObjectTypePointer()
+	}, g.manager, gameinfo.FieldFuncs{
+		GetPanelInfo: g.objects[index].info.GetPanelInfo,
+		PanelBreak:   g.panelBreak,
+	})
+	g.manager.ObjAnimNew(g.objects[index].playerObject)
 
 	g.updateGameInfo()
 	logger.Info("Successfully add client %s with %+v", clientID, param)
@@ -90,22 +78,19 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 }
 
 func (g *GameHandler) HandleAction(clientID string, act *pb.Request_Action) error {
+	index := g.indexForClient(clientID)
 	logger.Info("Got action %d from %s", act.GetType(), clientID)
-	queue.Push(g.objects[clientID].queueIDs[gameinfo.QueueTypeAction], act)
+	g.objects[index].playerObject.HandleAction(act)
 	return nil
 }
 
 func (g *GameHandler) GetInfo(clientID string) []byte {
-	for i := 0; i < len(g.info); i++ {
-		if g.info[i].ClientID == clientID {
-			return g.info[i].Marshal()
-		}
-	}
-	return nil
+	index := g.indexForClient(clientID)
+	return g.objects[index].info.Marshal()
 }
 
 func (g *GameHandler) UpdateGameStatus() {
-	if err := routeranim.MgrProcess(g.animMgrID); err != nil {
+	if err := g.manager.Update(); err != nil {
 		logger.Error("Failed to manage animation: %+v", err)
 		// TODO: 処理を終了する
 	}
@@ -116,7 +101,7 @@ func (g *GameHandler) UpdateGameStatus() {
 func (g *GameHandler) IsGameEnd() bool {
 	for _, obj := range g.objects {
 		// Note: 1対1以外の場合は追加の考慮が必要
-		if obj.animObject.GetParam().HP <= 0 {
+		if obj.playerObject.GetParam().HP <= 0 {
 			return true
 		}
 	}
@@ -125,17 +110,17 @@ func (g *GameHandler) IsGameEnd() bool {
 }
 
 func (g *GameHandler) updateGameInfo() {
-	objects := [len(g.info)][]gameinfo.Object{}
-	for _, obj := range routeranim.ObjAnimGetObjs(g.info[0].ClientID, objanim.FilterAll) {
-		for i := 0; i < len(g.info); i++ {
-			var info gameobj.NetInfo
-			info.Unmarshal(obj.ExtraInfo)
+	objects := [clientNum][]gameinfo.Object{}
+	for _, obj := range g.manager.ObjAnimGetObjs(objanim.FilterAll) {
+		var info gameobj.NetInfo
+		info.Unmarshal(obj.ExtraInfo)
 
-			if info.OwnerClientID == g.info[i].ClientID {
+		for i := 0; i < clientNum; i++ {
+			if info.OwnerClientID == g.objects[i].info.ClientID {
 				// 自分のObject
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          *g.objects[info.OwnerClientID].currentObjectType,
+					Type:          g.objects[i].playerObject.GetObjectType(),
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           obj.Pos,
@@ -143,11 +128,11 @@ func (g *GameHandler) updateGameInfo() {
 					IsReverse:     false,
 					IsInvincible:  info.IsInvincible,
 				})
-			} else if _, ok := g.objects[info.OwnerClientID]; ok {
+			} else if index := g.indexForClient(info.OwnerClientID); index >= 0 {
 				// 相手のObjectなのでReverseする
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          *g.objects[info.OwnerClientID].currentObjectType,
+					Type:          g.objects[i].playerObject.GetObjectType(),
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           point.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
@@ -159,14 +144,14 @@ func (g *GameHandler) updateGameInfo() {
 		}
 	}
 
-	anims := [len(g.info)][]gameinfo.Anim{}
-	for _, a := range routeranim.AnimGetAll(g.animMgrID) {
-		for i := 0; i < len(g.info); i++ {
+	anims := [clientNum][]gameinfo.Anim{}
+	for _, a := range g.manager.AnimGetAll() {
+		for i := 0; i < clientNum; i++ {
 			var info routeranim.NetInfo
 			info.Unmarshal(a.ExtraInfo)
 
 			pos := a.Pos
-			if info.OwnerClientID != g.info[i].ClientID {
+			if info.OwnerClientID != g.objects[i].info.ClientID {
 				pos.X = battlecommon.FieldNum.X - a.Pos.X - 1
 			}
 
@@ -182,22 +167,38 @@ func (g *GameHandler) updateGameInfo() {
 	}
 
 	effects := []gameinfo.Effect{}
-	for _, o := range g.objects {
-		for _, e := range queue.PopAll(o.queueIDs[gameinfo.QueueTypeEffect]) {
-			effects = append(effects, *e.(*gameinfo.Effect))
-		}
+	for _, e := range g.manager.QueuePopAll(gameinfo.QueueTypeEffect) {
+		effects = append(effects, *e.(*gameinfo.Effect))
 	}
 
 	sounds := []gameinfo.Sound{}
-	for _, o := range g.objects {
-		for _, s := range queue.PopAll(o.queueIDs[gameinfo.QueueTypeSound]) {
-			sounds = append(sounds, *s.(*gameinfo.Sound))
-		}
+	for _, s := range g.manager.QueuePopAll(gameinfo.QueueTypeSound) {
+		sounds = append(sounds, *s.(*gameinfo.Sound))
 	}
 
 	// TODO: lock
-	for i := 0; i < len(g.info); i++ {
-		g.info[i].Update(objects[i], anims[i], effects, sounds)
+	for i := 0; i < clientNum; i++ {
+		g.objects[i].info.Update(objects[i], anims[i], effects, sounds)
 	}
 	g.gameCount++
+}
+
+func (g *GameHandler) indexForClient(clientID string) int {
+	for i := 0; i < clientNum; i++ {
+		if g.objects[i].info.ClientID == clientID {
+			return i
+		}
+	}
+	return -1
+}
+
+func (g *GameHandler) panelBreak(pos point.Point) {
+	// TODO
+	g.objects[0].info.PanelBreak(pos)
+}
+
+func newGameObject(myClientID string, opponentClientID string) *gameObject {
+	res := &gameObject{}
+	res.info.Init(myClientID, opponentClientID)
+	return res
 }

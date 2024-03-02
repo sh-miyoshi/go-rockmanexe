@@ -47,7 +47,7 @@ func (p *tornado) GetParam() anim.Param {
 }
 
 func (p *tornado) StopByOwner() {
-	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+	p.Arg.Manager.AnimDelete(p.ID)
 }
 
 func (p *tornado) GetEndCount() int {

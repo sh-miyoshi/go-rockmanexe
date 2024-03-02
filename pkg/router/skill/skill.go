@@ -6,8 +6,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 )
 
 type Argument struct {
@@ -16,9 +16,8 @@ type Argument struct {
 	OwnerClientID string
 	Power         uint
 	TargetType    int
-
-	GameInfo *gameinfo.GameInfo
-	QueueIDs []string
+	Manager       *manager.Manager
+	FieldFuncs    gameinfo.FieldFuncs
 }
 
 type SkillAnim interface {
@@ -34,10 +33,15 @@ func Get(id int, arg Argument) SkillAnim {
 		OwnerClientID: arg.OwnerClientID,
 		Power:         arg.Power,
 		TargetType:    arg.TargetType,
-		GetPanelInfo:  arg.GameInfo.GetPanelInfo,
-		PanelBreak:    arg.GameInfo.PanelBreak,
+
+		DamageMgr:    arg.Manager.DamageMgr(),
+		GetObjectPos: arg.Manager.ObjAnimGetObjPos,
+		SoundOn:      arg.Manager.SoundOn,
+		GetObjects:   arg.Manager.ObjAnimGetObjs,
+		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
+		PanelBreak:   arg.FieldFuncs.PanelBreak,
 	}
-	core := routeranim.SkillManager(arg.OwnerClientID).Get(id, coreArg)
+	core := arg.Manager.SkillGet(id, coreArg)
 
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:

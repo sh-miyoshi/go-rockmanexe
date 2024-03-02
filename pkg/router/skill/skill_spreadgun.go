@@ -38,7 +38,7 @@ func (p *spreadGun) Process() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopSpreadHits() {
-		routeranim.AnimNew(p.Arg.OwnerClientID, &spreadHit{
+		p.Arg.Manager.AnimNew(&spreadHit{
 			ID:   uuid.New().String(),
 			Arg:  p.Arg,
 			Core: hit,
@@ -57,7 +57,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		Pos:       routeranim.ObjAnimGetObjPos(p.Arg.OwnerClientID, p.Arg.OwnerObjectID),
+		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}
@@ -65,7 +65,7 @@ func (p *spreadGun) GetParam() anim.Param {
 
 func (p *spreadGun) StopByOwner() {
 	if p.Core.GetCount() < 5 {
-		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+		p.Arg.Manager.AnimDelete(p.ID)
 	}
 }
 
