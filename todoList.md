@@ -18,7 +18,6 @@
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
   - router game handlerの予期せぬエラーのハンドリング
-  - Panel Statusを反映
   - Field情報をServerから取得する
   - skill使用時のsound
     - バルカン発射時など
