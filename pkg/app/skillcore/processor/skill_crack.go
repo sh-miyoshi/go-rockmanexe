@@ -49,5 +49,6 @@ func (p *Crack) GetCount() int {
 }
 
 func (p *Crack) GetEndCount() int {
-	return 1 // TODO
+	// EndCount = delay * (len(img) + keepCount)
+	return 3 * 4
 }
