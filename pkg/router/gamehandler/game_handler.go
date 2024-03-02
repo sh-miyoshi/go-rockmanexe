@@ -124,47 +124,6 @@ func (g *GameHandler) IsGameEnd() bool {
 	return false
 }
 
-func (g *GameHandler) updatePanelObject() {
-	for i := 0; i < len(g.info); i++ {
-		// Cleanup at first
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			for x := 0; x < battlecommon.FieldNum.X; x++ {
-				g.info[i].Panels[x][y].ObjectID = ""
-			}
-		}
-		for _, obj := range g.info[i].Objects {
-			g.info[i].Panels[obj.Pos.X][obj.Pos.Y].ObjectID = obj.ID
-			if g.info[i].Panels[obj.Pos.X][obj.Pos.Y].Status == battlecommon.PanelStatusCrack {
-				g.info[i].Panels[obj.Pos.X][obj.Pos.Y].ObjExists = true
-			}
-		}
-
-		// Panel status update
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			for x := 0; x < battlecommon.FieldNum.X; x++ {
-				if g.info[i].Panels[x][y].HoleCount > 0 {
-					g.info[i].Panels[x][y].HoleCount--
-				}
-
-				switch g.info[i].Panels[x][y].Status {
-				case battlecommon.PanelStatusHole:
-					if g.info[i].Panels[x][y].HoleCount <= battlecommon.PanelReturnAnimCount {
-						g.info[i].Panels[x][y].Status = battlecommon.PanelStatusNormal
-					}
-				case battlecommon.PanelStatusCrack:
-					// Objectが乗って離れたらHole状態へ
-					if g.info[i].Panels[x][y].ObjExists && g.info[i].Panels[x][y].ObjectID == "" {
-						// sound.On(resources.SEPanelBreak) // TODO
-						g.info[i].Panels[x][y].ObjExists = false
-						g.info[i].Panels[x][y].Status = battlecommon.PanelStatusHole
-						g.info[i].Panels[x][y].HoleCount = battlecommon.DefaultPanelHoleEndCount
-					}
-				}
-			}
-		}
-	}
-}
-
 func (g *GameHandler) updateGameInfo() {
 	objects := [len(g.info)][]gameinfo.Object{}
 	for _, obj := range routeranim.ObjAnimGetObjs(g.info[0].ClientID, objanim.FilterAll) {
@@ -238,19 +197,7 @@ func (g *GameHandler) updateGameInfo() {
 
 	// TODO: lock
 	for i := 0; i < len(g.info); i++ {
-		g.info[i].Objects = objects[i]
-		g.info[i].Anims = anims[i]
-
-		g.info[i].Effects = []gameinfo.Effect{}
-		for _, e := range effects {
-			if g.info[i].ClientID != e.OwnerClientID {
-				e.Pos.X = battlecommon.FieldNum.X - e.Pos.X - 1
-			}
-			g.info[i].Effects = append(g.info[i].Effects, e)
-		}
-
-		g.info[i].Sounds = append([]gameinfo.Sound{}, sounds...)
+		g.info[i].Update(objects[i], anims[i], effects, sounds)
 	}
-	g.updatePanelObject()
 	g.gameCount++
 }
