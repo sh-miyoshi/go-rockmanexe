@@ -19,34 +19,30 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
 type playerAct struct {
-	actType int
-	count   int
-	pObject *gameinfo.Object
-	info    []byte
-	// getPanelInfo  func(pos point.Point) battlecommon.PanelInfo
+	actType       int
+	count         int
+	pObject       *gameinfo.Object
+	info          []byte
 	ownerClientID string
 	endCount      int
 	mgr           *manager.Manager
 	fieldFuncs    gameinfo.FieldFuncs
 }
 
-// client(field)_funcs
-
 type Player struct {
 	objectInfo      gameinfo.Object
 	hpMax           int
 	act             playerAct
 	invincibleCount int
-	actInput        *pb.Request_Action
 	mgr             *manager.Manager
 	fieldFuncs      gameinfo.FieldFuncs
-
-	// gameInfo        *gameinfo.GameInfo
-	skillID   string
-	skillInst skill.SkillAnim
+	skillID         string
+	skillInst       skill.SkillAnim
+	actQueueID      string
 }
 
 func NewPlayer(info gameinfo.Object, mgr *manager.Manager, funcs gameinfo.FieldFuncs) *Player {
@@ -62,15 +58,10 @@ func NewPlayer(info gameinfo.Object, mgr *manager.Manager, funcs gameinfo.FieldF
 		invincibleCount: 0,
 		mgr:             mgr,
 		fieldFuncs:      funcs,
+		actQueueID:      uuid.NewString(),
 	}
 	res.act.pObject = &res.objectInfo
-	// res.act.getPanelInfo = res.gameInfo.GetPanelInfo
-
 	return res
-}
-
-func (p *Player) GetCurrentObjectTypePointer() *int {
-	return &p.objectInfo.Type
 }
 
 func (p *Player) Process() (bool, error) {
@@ -86,18 +77,20 @@ func (p *Player) Process() (bool, error) {
 	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
-	if p.actInput != nil {
-		switch p.actInput.GetType() {
+	tact := queue.Pop(p.actQueueID)
+	if tact != nil {
+		act := tact.(*pb.Request_Action)
+		switch act.GetType() {
 		case pb.Request_MOVE:
-			p.act.SetAnim(battlecommon.PlayerActMove, p.actInput.GetRawData(), 0)
+			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData(), 0)
 		case pb.Request_BUSTER:
-			p.act.SetAnim(battlecommon.PlayerActBuster, p.actInput.GetRawData(), 0)
+			p.act.SetAnim(battlecommon.PlayerActBuster, act.GetRawData(), 0)
 		case pb.Request_CHIPUSE:
 			var chipInfo action.UseChip
-			chipInfo.Unmarshal(p.actInput.GetRawData())
+			chipInfo.Unmarshal(act.GetRawData())
 			p.useChip(chipInfo)
 		default:
-			return false, fmt.Errorf("invalid action type %d is specified", p.actInput.GetType())
+			return false, fmt.Errorf("invalid action type %d is specified", act.GetType())
 		}
 	}
 
@@ -219,7 +212,7 @@ func (p *Player) MakeInvisible(count int) {
 }
 
 func (p *Player) HandleAction(act *pb.Request_Action) {
-	p.actInput = act
+	queue.Push(p.actQueueID, act)
 }
 
 func (p *Player) useChip(chipInfo action.UseChip) {
