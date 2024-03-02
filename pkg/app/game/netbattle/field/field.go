@@ -67,10 +67,19 @@ func (f *Field) Draw() {
 			if panels[x][y].OwnerClientID != clientID {
 				typ = battlecommon.PanelTypeEnemy
 			}
-			// TODO: statusを反映させる
-			img := f.imgPanel[battlecommon.PanelStatusNormal][typ]
+
+			img := f.imgPanel[panels[x][y].Status][typ]
 			vx := battlecommon.PanelSize.X * x
 			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
+
+			// Note:
+			//   panelReturnAnimCount以下の場合StatusはNormalになる
+			//   HoleとNormalを点滅させるためCountによってイメージを変える
+			if panels[x][y].HoleCount > 0 {
+				if panels[x][y].HoleCount < battlecommon.PanelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
+					img = f.imgPanel[battlecommon.PanelStatusHole][typ]
+				}
+			}
 
 			dxlib.DrawGraph(vx, vy, img, true)
 		}
