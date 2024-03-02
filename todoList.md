@@ -22,6 +22,8 @@
   - skill使用時のsound
     - バルカン発射時など
   - 麻痺状態
+  - refactoring field
+    - ObjExistsを送信しない
 - 未実装チップ
   - IDAttack10
   - IDThunderBall
