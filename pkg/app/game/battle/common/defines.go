@@ -10,6 +10,7 @@ const (
 	ChargeViewDelay          = 20
 	DefaultCustomGaugeSpeed  = 4
 	DefaultPanelHoleEndCount = 480
+	PanelReturnAnimCount     = 60
 )
 
 var (

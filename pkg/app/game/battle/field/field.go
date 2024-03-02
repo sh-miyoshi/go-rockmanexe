@@ -21,10 +21,6 @@ type extendPanelInfo struct {
 	objExists bool
 }
 
-const (
-	panelReturnAnimCount = 60
-)
-
 var (
 	imgPanel      [battlecommon.PanelStatusMax][battlecommon.PanelTypeMax]int
 	blackoutCount = 0
@@ -114,7 +110,7 @@ func Draw() {
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
 			if panels[x][y].info.HoleCount > 0 {
-				if panels[x][y].info.HoleCount < panelReturnAnimCount && (panels[x][y].info.HoleCount/2)%2 == 0 {
+				if panels[x][y].info.HoleCount < battlecommon.PanelReturnAnimCount && (panels[x][y].info.HoleCount/2)%2 == 0 {
 					img = imgPanel[battlecommon.PanelStatusHole][panels[x][y].info.Type]
 				}
 			}
@@ -173,7 +169,7 @@ func Update() {
 
 			switch panels[x][y].info.Status {
 			case battlecommon.PanelStatusHole:
-				if panels[x][y].info.HoleCount <= panelReturnAnimCount {
+				if panels[x][y].info.HoleCount <= battlecommon.PanelReturnAnimCount {
 					panels[x][y].info.Status = battlecommon.PanelStatusNormal
 				}
 			case battlecommon.PanelStatusCrack:

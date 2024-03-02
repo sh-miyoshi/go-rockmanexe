@@ -20,6 +20,9 @@ const (
 type PanelInfo struct {
 	OwnerClientID string
 	ObjectID      string
+	Status        int
+	HoleCount     int
+	ObjExists     bool
 }
 
 type Object struct {
@@ -92,12 +95,27 @@ func (p *GameInfo) GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 
 	pn := p.Panels[pos.X][pos.Y]
 	return battlecommon.PanelInfo{
-		Type:     p.getPanelType(pn.OwnerClientID),
-		ObjectID: pn.ObjectID,
+		Type:      p.getPanelType(pn.OwnerClientID),
+		ObjectID:  pn.ObjectID,
+		Status:    pn.Status,
+		HoleCount: pn.HoleCount,
+	}
+}
 
-		// TODO_Next: 適切な値を入れる
-		Status:    battlecommon.PanelStatusNormal,
-		HoleCount: 0,
+func (p *GameInfo) PanelBreak(pos point.Point) {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
+		return
+	}
+
+	if p.Panels[pos.X][pos.Y].Status == battlecommon.PanelStatusHole {
+		return
+	}
+
+	if p.Panels[pos.X][pos.Y].ObjectID != "" {
+		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusCrack
+	} else {
+		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
+		p.Panels[pos.X][pos.Y].HoleCount = battlecommon.DefaultPanelHoleEndCount
 	}
 }
 

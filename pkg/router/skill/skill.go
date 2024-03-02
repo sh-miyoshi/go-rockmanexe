@@ -35,6 +35,7 @@ func Get(id int, arg Argument) SkillAnim {
 		Power:         arg.Power,
 		TargetType:    arg.TargetType,
 		GetPanelInfo:  arg.GameInfo.GetPanelInfo,
+		PanelBreak:    arg.GameInfo.PanelBreak,
 	}
 	core := routeranim.SkillManager(arg.OwnerClientID).Get(id, coreArg)
 
@@ -67,6 +68,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newBoomerang(arg, core)
 	case resources.SkillBambooLance:
 		return newBambooLance(arg, core)
+	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
+		return newCrack(arg, core)
 	default:
 		panic(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

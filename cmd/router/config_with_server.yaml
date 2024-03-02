@@ -9,6 +9,6 @@ server:
 data_stream_addr: '0.0.0.0:16283'
 log:
   debug_log: true
-  file: ''
+  file: 'router.log'
 acceptable_version: ''
 chip_file_path: '../../data/chipList.yaml'
