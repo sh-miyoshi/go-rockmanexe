@@ -215,6 +215,10 @@ func (p *Player) HandleAction(act *pb.Request_Action) {
 	queue.Push(p.actQueueID, act)
 }
 
+func (p *Player) GetAnimObjectType() int {
+	return p.objectInfo.Type
+}
+
 func (p *Player) useChip(chipInfo action.UseChip) {
 	c := chip.Get(chipInfo.ChipID)
 	logger.Debug("Use chip: %+v", c)

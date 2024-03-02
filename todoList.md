@@ -1,5 +1,8 @@
 # TODO List
 
+- PanelBreakの処理
+- end時にobject_playerのqueueを削除
+
 ## v0.12でやりたいこと
 
 - ネットバトルで使えるチップを増やす

@@ -112,15 +112,15 @@ func (g *GameHandler) IsGameEnd() bool {
 func (g *GameHandler) updateGameInfo() {
 	objects := [clientNum][]gameinfo.Object{}
 	for _, obj := range g.manager.ObjAnimGetObjs(objanim.FilterAll) {
-		var info gameobj.NetInfo
-		info.Unmarshal(obj.ExtraInfo)
-
 		for i := 0; i < clientNum; i++ {
+			var info gameobj.NetInfo
+			info.Unmarshal(obj.ExtraInfo)
+
 			if info.OwnerClientID == g.objects[i].info.ClientID {
 				// 自分のObject
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          g.objects[i].playerObject.GetObjectType(),
+					Type:          g.objects[i].playerObject.GetAnimObjectType(),
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           obj.Pos,
@@ -128,11 +128,11 @@ func (g *GameHandler) updateGameInfo() {
 					IsReverse:     false,
 					IsInvincible:  info.IsInvincible,
 				})
-			} else if index := g.indexForClient(info.OwnerClientID); index >= 0 {
+			} else if index := g.indexForClient(info.OwnerClientID); index >= 0 && g.objects[index].playerObject != nil {
 				// 相手のObjectなのでReverseする
 				objects[i] = append(objects[i], gameinfo.Object{
 					ID:            obj.ObjID,
-					Type:          g.objects[i].playerObject.GetObjectType(),
+					Type:          g.objects[index].playerObject.GetAnimObjectType(),
 					OwnerClientID: info.OwnerClientID,
 					HP:            obj.HP,
 					Pos:           point.Point{X: battlecommon.FieldNum.X - obj.Pos.X - 1, Y: obj.Pos.Y},
@@ -184,6 +184,11 @@ func (g *GameHandler) updateGameInfo() {
 }
 
 func (g *GameHandler) indexForClient(clientID string) int {
+	if clientID == "" {
+		logger.Debug("index target clientID is nil")
+		return -1
+	}
+
 	for i := 0; i < clientNum; i++ {
 		if g.objects[i].info.ClientID == clientID {
 			return i
