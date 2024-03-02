@@ -7,7 +7,6 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
@@ -39,17 +38,8 @@ func NewHandler() session.GameLogic {
 }
 
 func (g *GameHandler) Init(clientIDs [2]string) error {
-	for y := 0; y < config.FieldNumY; y++ {
-		hx := config.FieldNumX / 2
-		for x := 0; x < hx; x++ {
-			g.info[0].ClientID = clientIDs[0]
-			g.info[0].Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
-			g.info[0].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
-			g.info[1].ClientID = clientIDs[1]
-			g.info[1].Panels[x][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[1]}
-			g.info[1].Panels[x+hx][y] = gameinfo.PanelInfo{OwnerClientID: clientIDs[0]}
-		}
-	}
+	g.info[0].Init(clientIDs[0], clientIDs[1])
+	g.info[1].Init(clientIDs[1], clientIDs[0])
 	g.animMgrID = routeranim.NewManager(clientIDs)
 
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)

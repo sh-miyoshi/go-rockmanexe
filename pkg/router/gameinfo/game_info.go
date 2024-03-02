@@ -79,6 +79,31 @@ func (p *GameInfo) Unmarshal(data []byte) {
 	_ = gob.NewDecoder(buf).Decode(p)
 }
 
+func (p *GameInfo) Init(myClientID, opponentClientID string) {
+	p.ClientID = myClientID
+	for y := 0; y < config.FieldNumY; y++ {
+		hx := config.FieldNumX / 2
+		for x := 0; x < hx; x++ {
+			p.Panels[x][y] = PanelInfo{
+				OwnerClientID: myClientID,
+				Status:        battlecommon.PanelStatusNormal,
+				HoleCount:     0,
+				ObjExists:     false,
+			}
+			p.Panels[x+hx][y] = PanelInfo{
+				OwnerClientID: opponentClientID,
+				Status:        battlecommon.PanelStatusNormal,
+				HoleCount:     0,
+				ObjExists:     false,
+			}
+		}
+	}
+	p.Objects = []Object{}
+	p.Anims = []Anim{}
+	p.Effects = []Effect{}
+	p.Sounds = []Sound{}
+}
+
 func (p *GameInfo) GetObject(id string) *Object {
 	for i, obj := range p.Objects {
 		if obj.ID == id {
