@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -179,7 +180,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 	if dm.IsParalyzed {
 		// 麻痺状態(p.act.SetAnim(battlecommon.PlayerActParalyzed, 120))
-		panic("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	} else {
 		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
 		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
@@ -323,7 +324,7 @@ func (a *playerAct) Process() bool {
 		}
 		return true
 	default:
-		panic(fmt.Sprintf("Invalid player anim type %d was specified.", a.actType))
+		system.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.actType))
 	}
 
 	return true // processing now

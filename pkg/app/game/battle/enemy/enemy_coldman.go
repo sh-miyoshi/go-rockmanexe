@@ -17,6 +17,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -249,7 +250,7 @@ func (e *enemyColdman) Process() (bool, error) {
 			return e.stateChange(coldmanActTypeStand)
 		}
 	case coldmanActTypeBodyBlow:
-		panic("TODO: not implemented yet")
+		system.SetError("TODO: not implemented yet")
 	case coldmanActTypeBless:
 		if e.count == 0 {
 			targetPos := point.Point{X: 5, Y: 1}
