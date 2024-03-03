@@ -17,7 +17,6 @@
   - gameInfoPublishをclientからデータ受信時に行う
   - ChipSelectシグナル送信時に選択したチップ一覧も送信する
   - GameInfoをapp配下において共通化する
-  - router game handlerの予期せぬエラーのハンドリング
   - Field情報をServerから取得する
   - skill使用時のsound
     - バルカン発射時など
@@ -28,9 +27,6 @@
   - IDAttack10
   - IDThunderBall
   - IDCountBomb
-  - IDCrackout
-  - IDDoubleCrack
-  - IDTripleCrack
   - IDPanelSteal
   - IDAreaSteal
   - IDQuickGauge  
