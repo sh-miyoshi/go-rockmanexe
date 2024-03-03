@@ -264,10 +264,10 @@ func Process() error {
 
 func Draw() {
 	inst.fieldInst.Draw()
-	inst.playerInst.LocalDraw()
 	draw.Draw()
 
 	localanim.AnimMgrDraw()
+	inst.playerInst.LocalDraw()
 
 	switch inst.state {
 	case stateWaiting:

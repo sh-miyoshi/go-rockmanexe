@@ -167,6 +167,21 @@ func (p *BattlePlayer) DrawFrame(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) LocalDraw() {
+	obj := p.getObject()
+	view := battlecommon.ViewPos(obj.Pos)
+
+	// Show charge image
+	if p.chargeCount > battlecommon.ChargeViewDelay {
+		n := 0
+		if p.chargeCount > p.chargeTime {
+			n = 1
+		}
+		imgNo := int(p.chargeCount/4) % len(p.imgCharge[n])
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, p.imgCharge[n][imgNo], true)
+		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
+
 	// Show selected chip icons
 	n := len(p.selectedChips)
 	if n > 0 {
@@ -183,7 +198,6 @@ func (p *BattlePlayer) LocalDraw() {
 
 		const px = 3
 		max := n * px
-		obj := p.getObject()
 		for i := 0; i < n; i++ {
 			x := battlecommon.PanelSize.X*obj.Pos.X + battlecommon.PanelSize.X/2 - 2 + (i * px) - max
 			y := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*obj.Pos.Y - 10 - 81 + (i * px) - max
