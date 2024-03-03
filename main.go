@@ -40,8 +40,9 @@ func main() {
 	flag.Parse()
 
 	if err := config.Init(confFile); err != nil {
-		msg := fmt.Sprintf("failed to init config: %v", err)
-		panic(msg)
+		// loggerの設定が終わってないので標準出力に出す
+		fmt.Printf("failed to init config: %v\n", err)
+		return
 	}
 
 	rand.Seed(time.Now().Unix())

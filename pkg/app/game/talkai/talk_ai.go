@@ -8,6 +8,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/window"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -137,7 +138,8 @@ func serverSend() {
 	reqJSON, _ := json.Marshal(reqBody)
 	req, err := http.NewRequest("POST", conf.AI.URL, bytes.NewBuffer(reqJSON))
 	if err != nil {
-		panic(err)
+		system.SetError(err.Error())
+		return
 	}
 
 	req.Header.Set("Content-Type", "application/json")

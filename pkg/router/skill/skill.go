@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -80,6 +81,7 @@ func Get(id int, arg Argument) SkillAnim {
 	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
 		return newCrack(arg, core)
 	default:
-		panic(fmt.Sprintf("skill %d is not implemented yet", id))
+		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
+		return nil
 	}
 }
