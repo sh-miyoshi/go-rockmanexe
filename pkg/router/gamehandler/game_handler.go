@@ -197,9 +197,17 @@ func (g *GameHandler) indexForClient(clientID string) int {
 	return -1
 }
 
-func (g *GameHandler) panelBreak(pos point.Point) {
-	// TODO
-	g.objects[0].info.PanelBreak(pos)
+func (g *GameHandler) panelBreak(clientID string, pos point.Point) {
+	index := g.indexForClient(clientID)
+	for i := 0; i < clientNum; i++ {
+		if i == index {
+			g.objects[i].info.PanelBreak(pos)
+		} else {
+			// 敵によるPanelBreakの場合場所を反転させる
+			bpos := point.Point{X: battlecommon.FieldNum.X - pos.X - 1, Y: pos.Y}
+			g.objects[i].info.PanelBreak(bpos)
+		}
+	}
 }
 
 func newGameObject(myClientID string, opponentClientID string) *gameObject {

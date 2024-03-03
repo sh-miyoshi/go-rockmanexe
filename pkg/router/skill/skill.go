@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type Argument struct {
@@ -28,6 +29,10 @@ type SkillAnim interface {
 }
 
 func Get(id int, arg Argument) SkillAnim {
+	panelBreak := func(pos point.Point) {
+		arg.FieldFuncs.PanelBreak(arg.OwnerClientID, pos)
+	}
+
 	coreArg := skillcore.Argument{
 		OwnerID:       arg.OwnerObjectID,
 		OwnerClientID: arg.OwnerClientID,
@@ -39,7 +44,7 @@ func Get(id int, arg Argument) SkillAnim {
 		SoundOn:      arg.Manager.SoundOn,
 		GetObjects:   arg.Manager.ObjAnimGetObjs,
 		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
-		PanelBreak:   arg.FieldFuncs.PanelBreak,
+		PanelBreak:   panelBreak,
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 
