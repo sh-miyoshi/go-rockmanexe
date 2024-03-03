@@ -64,6 +64,10 @@ func NewPlayer(info gameinfo.Object, mgr *manager.Manager, funcs gameinfo.FieldF
 	return res
 }
 
+func (p *Player) End() {
+	queue.Delete(p.actQueueID)
+}
+
 func (p *Player) Process() (bool, error) {
 	if p.invincibleCount > 0 {
 		p.invincibleCount--

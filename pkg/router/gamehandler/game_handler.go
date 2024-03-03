@@ -47,6 +47,12 @@ func (g *GameHandler) Init(clientIDs [clientNum]string) error {
 }
 
 func (g *GameHandler) Cleanup() {
+	for i := 0; i < clientNum; i++ {
+		if g.objects[i].playerObject != nil {
+			g.objects[i].playerObject.End()
+		}
+	}
+
 	if g.manager != nil {
 		g.manager.Cleanup()
 	}
