@@ -65,7 +65,7 @@ func (p *boomerang) GetParam() anim.Param {
 }
 
 func (p *boomerang) StopByOwner() {
-	routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+	p.Arg.Manager.AnimDelete(p.ID)
 }
 
 func (p *boomerang) GetEndCount() int {

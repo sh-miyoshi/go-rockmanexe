@@ -1,40 +1,19 @@
 package skillmanager
 
 import (
-	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
-type Manager struct {
-	damageMgr    skillcore.DamageManager
-	GetObjectPos func(objID string) point.Point
-	GetObjects   func(filter objanim.Filter) []objanim.Param
-	SoundOn      func(typ resources.SEType)
-}
+type Manager struct{}
 
-func NewManager(
-	damageMgr skillcore.DamageManager,
-	GetObjectPos func(objID string) point.Point,
-	GetObjects func(filter objanim.Filter) []objanim.Param,
-	SoundOn func(typ resources.SEType),
-) *Manager {
-	return &Manager{
-		damageMgr:    damageMgr,
-		GetObjectPos: GetObjectPos,
-		GetObjects:   GetObjects,
-		SoundOn:      SoundOn,
-	}
+func NewManager() *Manager {
+	return &Manager{}
 }
 
 func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
-	arg.GetObjectPos = m.GetObjectPos
-	arg.GetObjects = m.GetObjects
-	arg.SoundOn = m.SoundOn
-	arg.DamageMgr = m.damageMgr
-
 	switch id {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
 		return &processor.Cannon{SkillID: id, Arg: arg}
@@ -82,8 +61,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.Crack{Arg: arg}
 		res.Init(id)
 		return res
+	default:
+		// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
+		logger.Error("skill %d is not implemented yet", id)
 	}
 
-	// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
 	return nil
 }

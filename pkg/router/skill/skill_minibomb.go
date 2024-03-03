@@ -61,7 +61,7 @@ func (p *miniBomb) GetParam() anim.Param {
 
 func (p *miniBomb) StopByOwner() {
 	if p.Core.GetCount() < 5 {
-		routeranim.AnimDelete(p.Arg.OwnerClientID, p.ID)
+		p.Arg.Manager.AnimDelete(p.ID)
 	}
 }
 

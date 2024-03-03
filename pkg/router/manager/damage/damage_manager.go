@@ -1,4 +1,4 @@
-package anim
+package damage
 
 import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -6,17 +6,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
-type damageManager struct {
+type Manager struct {
 	dmMgr *damage.DamageManager
 }
 
-func newDamageMgr(dmMgr *damage.DamageManager) *damageManager {
-	return &damageManager{
+func New(dmMgr *damage.DamageManager) *Manager {
+	return &Manager{
 		dmMgr: dmMgr,
 	}
 }
 
-func (m *damageManager) New(dm damage.Damage) string {
+func (m *Manager) New(dm damage.Damage) string {
 	if dm.TargetObjType == damage.TargetEnemy {
 		// ダメージでは反転させる
 		dm.Pos.X = battlecommon.FieldNum.X - dm.Pos.X - 1
@@ -29,6 +29,6 @@ func (m *damageManager) New(dm damage.Damage) string {
 	return m.dmMgr.New(dm)
 }
 
-func (m *damageManager) Exists(id string) bool {
+func (m *Manager) Exists(id string) bool {
 	return m.dmMgr.Exists(id)
 }

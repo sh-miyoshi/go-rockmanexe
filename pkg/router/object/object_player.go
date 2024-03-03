@@ -15,8 +15,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/action"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
-	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
@@ -27,42 +27,45 @@ type playerAct struct {
 	count         int
 	pObject       *gameinfo.Object
 	info          []byte
-	getPanelInfo  func(pos point.Point) battlecommon.PanelInfo
 	ownerClientID string
 	endCount      int
+	mgr           *manager.Manager
+	fieldFuncs    gameinfo.FieldFuncs
 }
 
 type Player struct {
 	objectInfo      gameinfo.Object
-	gameInfo        *gameinfo.GameInfo
-	queueIDs        [gameinfo.QueueTypeMax]string
 	hpMax           int
 	act             playerAct
 	invincibleCount int
+	mgr             *manager.Manager
+	fieldFuncs      gameinfo.FieldFuncs
 	skillID         string
 	skillInst       skill.SkillAnim
+	actQueueID      string
 }
 
-func NewPlayer(info gameinfo.Object, gameInfo *gameinfo.GameInfo, queueIDs [gameinfo.QueueTypeMax]string) *Player {
+func NewPlayer(info gameinfo.Object, mgr *manager.Manager, funcs gameinfo.FieldFuncs) *Player {
 	res := &Player{
 		objectInfo: info,
-		gameInfo:   gameInfo,
-		queueIDs:   queueIDs,
 		hpMax:      info.HP,
 		act: playerAct{
 			actType:       -1,
 			ownerClientID: info.OwnerClientID,
+			mgr:           mgr,
+			fieldFuncs:    funcs,
 		},
 		invincibleCount: 0,
+		mgr:             mgr,
+		fieldFuncs:      funcs,
+		actQueueID:      uuid.NewString(),
 	}
 	res.act.pObject = &res.objectInfo
-	res.act.getPanelInfo = res.gameInfo.GetPanelInfo
-
 	return res
 }
 
-func (p *Player) GetCurrentObjectTypePointer() *int {
-	return &p.objectInfo.Type
+func (p *Player) End() {
+	queue.Delete(p.actQueueID)
 }
 
 func (p *Player) Process() (bool, error) {
@@ -78,10 +81,9 @@ func (p *Player) Process() (bool, error) {
 	// Actionしてないときは標準ポーズにする
 	p.objectInfo.Type = TypePlayerStand
 
-	tact := queue.Pop(p.queueIDs[gameinfo.QueueTypeAction])
+	tact := queue.Pop(p.actQueueID)
 	if tact != nil {
 		act := tact.(*pb.Request_Action)
-
 		switch act.GetType() {
 		case pb.Request_MOVE:
 			p.act.SetAnim(battlecommon.PlayerActMove, act.GetRawData(), 0)
@@ -133,10 +135,9 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 	}
 	if dm.HitEffectType != resources.EffectTypeNone {
 		logger.Debug("Add effect %v", dm.HitEffectType)
-
-		queue.Push(p.queueIDs[gameinfo.QueueTypeEffect], &gameinfo.Effect{
+		p.mgr.QueuePush(gameinfo.QueueTypeEffect, &gameinfo.Effect{
 			ID:            uuid.New().String(),
-			OwnerClientID: p.gameInfo.ClientID,
+			OwnerClientID: p.act.ownerClientID,
 			Pos:           p.objectInfo.Pos,
 			Type:          dm.HitEffectType,
 			RandRange:     5,
@@ -145,13 +146,13 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 
 	for i := 0; i < dm.PushLeft; i++ {
 		// 敵側から見ると方向は逆になる
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectRight, battlecommon.PanelTypePlayer, true, p.fieldFuncs.GetPanelInfo) {
 			break
 		}
 	}
 	for i := 0; i < dm.PushRight; i++ {
 		// 敵側から見ると方向は逆になる
-		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, p.gameInfo.GetPanelInfo) {
+		if !battlecommon.MoveObject(&p.objectInfo.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, p.fieldFuncs.GetPanelInfo) {
 			break
 		}
 	}
@@ -165,13 +166,13 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return true
 	}
 
-	queue.Push(p.queueIDs[gameinfo.QueueTypeSound], &gameinfo.Sound{
+	p.mgr.QueuePush(gameinfo.QueueTypeSound, &gameinfo.Sound{
 		ID:   uuid.New().String(),
 		Type: int(resources.SEDamaged),
 	})
 
 	// Stop current animation
-	if routeranim.AnimIsProcessing(p.gameInfo.ClientID, p.skillID) {
+	if p.mgr.AnimIsProcessing(p.skillID) {
 		p.skillInst.StopByOwner()
 	}
 	p.skillID = ""
@@ -191,7 +192,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 func (p *Player) GetParam() objanim.Param {
 	info := NetInfo{
 		ActCount:      p.act.count,
-		OwnerClientID: p.gameInfo.ClientID,
+		OwnerClientID: p.act.ownerClientID,
 		IsInvincible:  p.invincibleCount > 0,
 	}
 
@@ -214,6 +215,14 @@ func (p *Player) MakeInvisible(count int) {
 	p.invincibleCount = count
 }
 
+func (p *Player) HandleAction(act *pb.Request_Action) {
+	queue.Push(p.actQueueID, act)
+}
+
+func (p *Player) GetAnimObjectType() int {
+	return p.objectInfo.Type
+}
+
 func (p *Player) useChip(chipInfo action.UseChip) {
 	c := chip.Get(chipInfo.ChipID)
 	logger.Debug("Use chip: %+v", c)
@@ -229,11 +238,10 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		OwnerClientID: chipInfo.ChipUserClientID,
 		Power:         c.Power,
 		TargetType:    target,
-
-		GameInfo: p.gameInfo,
-		QueueIDs: p.queueIDs[:],
+		Manager:       p.mgr,
+		FieldFuncs:    p.fieldFuncs,
 	})
-	p.skillID = routeranim.AnimNew(chipInfo.ChipUserClientID, s)
+	p.skillID = p.mgr.AnimNew(s)
 	p.skillInst = s
 
 	if c.PlayerAct != -1 {
@@ -255,10 +263,10 @@ func (a *playerAct) Process() bool {
 
 			switch move.Type {
 			case action.MoveTypeDirect:
-				battlecommon.MoveObject(&a.pObject.Pos, move.Direct, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+				battlecommon.MoveObject(&a.pObject.Pos, move.Direct, battlecommon.PanelTypePlayer, true, a.fieldFuncs.GetPanelInfo)
 			case action.MoveTypeAbs:
 				target := point.Point{X: move.AbsPosX, Y: move.AbsPosY}
-				battlecommon.MoveObjectDirect(&a.pObject.Pos, target, battlecommon.PanelTypePlayer, true, a.getPanelInfo)
+				battlecommon.MoveObjectDirect(&a.pObject.Pos, target, battlecommon.PanelTypePlayer, true, a.fieldFuncs.GetPanelInfo)
 			}
 
 			a.actType = -1
@@ -271,14 +279,14 @@ func (a *playerAct) Process() bool {
 			buster.Unmarshal(a.info)
 
 			damageAdd := func(pos point.Point, power int) bool {
-				if objID := a.getPanelInfo(pos).ObjectID; objID != "" {
+				if objID := a.fieldFuncs.GetPanelInfo(pos).ObjectID; objID != "" {
 					logger.Debug("Rock buster damage set %d to (%d, %d)", buster.Power, pos.X, pos.Y)
 					eff := resources.EffectTypeHitSmall
 					if buster.IsCharged {
 						eff = resources.EffectTypeHitBig
 					}
 
-					routeranim.DamageNew(a.ownerClientID, damage.Damage{
+					a.mgr.DamageMgr().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						OwnerClientID: a.ownerClientID,
 						Power:         power,
