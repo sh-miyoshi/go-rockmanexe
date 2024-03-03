@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 )
@@ -61,7 +62,7 @@ func GetSession(sessionID string) *Session {
 	return s
 }
 
-func ManagerExec() {
+func ManagerExec() error {
 	for {
 		before := time.Now().UnixNano() / (1000 * 1000)
 
@@ -69,6 +70,13 @@ func ManagerExec() {
 			if s.IsEnd() {
 				s.End()
 				delete(inst.sessions, key)
+			}
+		}
+
+		// できる限りsessionを終了させてからrouterは死ぬ
+		if len(inst.sessions) == 0 {
+			if err := system.Error(); err != nil {
+				return fmt.Errorf("failed to exec system: %+w", err)
 			}
 		}
 

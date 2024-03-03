@@ -41,6 +41,8 @@ func main() {
 
 	fps.FPS = 60
 
+	errCh := make(chan error)
+
 	// Start API Server
 	if c.Server.Enabled {
 		const addr = "0.0.0.0:3000"
@@ -51,7 +53,7 @@ func main() {
 		go func() {
 			if err := http.ListenAndServe(addr, r); err != nil {
 				logger.Error("Failed to run API server: %v", err)
-				os.Exit(1)
+				errCh <- err
 			}
 		}()
 	}
@@ -65,13 +67,24 @@ func main() {
 	}
 	session.SetLogicGenerator(gamehandler.NewHandler)
 
-	go session.ManagerExec()
+	// Session Handler Exec
+	go func() {
+		if err := session.ManagerExec(); err != nil {
+			logger.Error("Failed to exec system: %v", err)
+			errCh <- err
+		}
+	}()
 
 	s := grpc.NewServer()
 	pb.RegisterNetConnServer(s, netconn.New())
 
-	if err = s.Serve(listen); err != nil {
-		logger.Error("Failed to start data stream: %v", err)
-		return
-	}
+	go func() {
+		if err = s.Serve(listen); err != nil {
+			logger.Error("Failed to start data stream: %v", err)
+			errCh <- err
+		}
+	}()
+
+	exitErr := <-errCh
+	logger.Error("system shutdown by %v", exitErr)
 }

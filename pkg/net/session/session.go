@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -90,6 +91,14 @@ MAIN_LOOP:
 			return
 		}
 
+		// System error check
+		if err := system.Error(); err != nil {
+			s.exitErr = &sessionError{
+				reason: err,
+			}
+			return
+		}
+
 		switch s.state {
 		case stateConnectWait:
 			for _, c := range s.clients {
@@ -145,20 +154,19 @@ func (s *Session) IsEnd() bool {
 
 func (s *Session) End() {
 	if s.exitErr.reason != nil {
-		if s.exitErr.reason == errSendFailed {
-			for _, c := range s.clients {
-				if c.dataStream == nil || c.clientID == s.exitErr.generatorClientID {
-					continue
-				}
-
-				// publish to alive clients
-				c.dataStream.Send(&pb.Response{
-					Type: pb.Response_UPDATESTATUS,
-					Data: &pb.Response_Status_{
-						Status: pb.Response_GAMEEND,
-					},
-				})
+		for _, c := range s.clients {
+			if c.dataStream == nil || c.clientID == s.exitErr.generatorClientID {
+				continue
 			}
+
+			// publish to alive clients
+			logger.Debug("send error %v to client %s", s.exitErr.reason, c.clientID)
+			c.dataStream.Send(&pb.Response{
+				Type: pb.Response_UPDATESTATUS,
+				Data: &pb.Response_Status_{
+					Status: pb.Response_GAMEEND,
+				},
+			})
 		}
 		logger.Error("Got error in session %s: %+v", s.id, s.exitErr.reason)
 	}
