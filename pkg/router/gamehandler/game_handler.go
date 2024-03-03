@@ -5,6 +5,7 @@ import (
 
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
@@ -97,8 +98,8 @@ func (g *GameHandler) GetInfo(clientID string) []byte {
 
 func (g *GameHandler) UpdateGameStatus() {
 	if err := g.manager.Update(); err != nil {
-		logger.Error("Failed to manage animation: %+v", err)
-		// TODO: 処理を終了する
+		system.SetError(fmt.Sprintf("Failed to manage animation: %+v", err))
+		return
 	}
 
 	g.updateGameInfo()
