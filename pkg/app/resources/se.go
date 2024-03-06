@@ -48,6 +48,7 @@ const (
 	SEAreaSteal
 	SEAreaStealHit
 	SERunOK
+	SERunFailed
 	SECountBombCountdown
 	SECountBombEnd
 	SETornado
