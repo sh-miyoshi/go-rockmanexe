@@ -22,7 +22,7 @@ import (
 
 const (
 	maxListNum = 3
-	boardSize  = 5
+	boardSize  = 4
 	runName    = "RUN"
 	lineY      = 3 - 1
 )
@@ -81,7 +81,7 @@ func Init(plyr *player.Player) error {
 	if imgBack == -1 {
 		return fmt.Errorf("failed to load back image")
 	}
-	fname = config.ImagePath + "naviCustom/board.png"
+	fname = config.ImagePath + "naviCustom/board-small.png"
 	imgBoard = dxlib.LoadGraph(fname)
 	if imgBoard == -1 {
 		return fmt.Errorf("failed to load board image")
@@ -218,8 +218,8 @@ func Draw() {
 	}
 
 	// コマンドライン
-	dxlib.DrawBox(32, 158, 240, 161, 0x282828, true)
-	dxlib.DrawBox(32, 174, 240, 177, 0x282828, true)
+	dxlib.DrawBox(32, 158, 206, 161, 0x282828, true)
+	dxlib.DrawBox(32, 174, 206, 177, 0x282828, true)
 
 	// TODO: RUNNING Line
 }
@@ -355,7 +355,11 @@ func Process() bool {
 		}
 	case stateRunEnd:
 		if count == 0 {
-			sound.On(resources.SERunOK)
+			if checkBugs() {
+				sound.On(resources.SERunOK)
+			} else {
+				sound.On(resources.SERunFailed)
+			}
 			parts := []player.NaviCustomParts{}
 			for _, p := range allParts {
 				parts = append(parts, p.rawData)
