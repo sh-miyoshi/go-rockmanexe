@@ -10,6 +10,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -105,6 +106,16 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 38, 38, images[resources.EffectTypeFailed]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
+	images[resources.EffectTypeIceBreak] = make([]int, 2)
+	fname = config.ImagePath + "battle/effect/ice_break.png"
+	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 70, 78, images[resources.EffectTypeIceBreak]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
+	images[resources.EffectTypeExplodeSmall] = make([]int, 8)
+	fname = config.ImagePath + "battle/effect/explode_small.png"
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 80, images[resources.EffectTypeExplodeSmall]); res == -1 {
+		return fmt.Errorf("failed to load image %s", fname)
+	}
 
 	for i := 0; i < resources.EffectTypeMax; i++ {
 		sounds[i] = -1
@@ -159,6 +170,14 @@ func Get(typ int, pos point.Point, randRange int) anim.Anim {
 		res.ofs.Y -= 40
 	case resources.EffectTypeFailed:
 		res.ofs.Y -= 60
+	case resources.EffectTypeIceBreak:
+		return &iceBreakEffect{
+			ID:  uuid.New().String(),
+			Pos: pos,
+			Ofs: ofs,
+		}
+	case resources.EffectTypeExplodeSmall:
+		system.SetError("explode small effect is not implemented yet")
 	}
 
 	return res

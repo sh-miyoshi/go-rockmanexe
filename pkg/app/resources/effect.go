@@ -15,6 +15,8 @@ const (
 	EffectTypeHeatHit
 	EffectTypeExclamation
 	EffectTypeFailed
+	EffectTypeIceBreak
+	EffectTypeExplodeSmall
 
 	EffectTypeMax
 )
