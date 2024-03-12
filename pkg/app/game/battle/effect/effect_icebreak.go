@@ -1,6 +1,7 @@
 package effect
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -18,12 +19,7 @@ type iceBreakEffect struct {
 
 func (e *iceBreakEffect) Process() (bool, error) {
 	e.count++
-	/*
-			その場: failed or 小爆発
-		  右上: offY -30, ice_break[0]
-		  右下: ice_break[1]
-	*/
-	return false, nil
+	return e.count >= len(images[resources.EffectTypeExplodeSmall]), nil
 }
 
 func (e *iceBreakEffect) Draw() {
@@ -40,6 +36,26 @@ func (e *iceBreakEffect) Draw() {
 
 	if imgNo >= 0 {
 		dxlib.DrawRotaGraph(view.X+ofs.X, view.Y+ofs.Y+15, 1, 0, imgs[imgNo], true)
+	}
+
+	// 右上へ流れていく破片
+	delay = 40
+	ofs = point.Point{X: e.count * delay, Y: -e.count*delay*2 - 20}
+	x := view.X + ofs.X
+	y := view.Y + ofs.Y
+	const imgSizeX = 50
+	const imgSizeY = 56
+	if x < config.MaxScreenSize.X+imgSizeX/2 && y >= -imgSizeY/2 {
+		dxlib.DrawRotaGraph(x, y, 1, 0, images[resources.EffectTypeIceBreak][0], true)
+	}
+
+	// 左下へ流れていく破片
+	delay = 20
+	ofs = point.Point{X: e.count * delay, Y: e.count*delay + 10}
+	x = view.X + ofs.X
+	y = view.Y + ofs.Y
+	if x < config.MaxScreenSize.X+imgSizeX/2 && y < config.MaxScreenSize.Y+imgSizeY/2 {
+		dxlib.DrawRotaGraph(x, y, 1, 0, images[resources.EffectTypeIceBreak][1], true)
 	}
 }
 

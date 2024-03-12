@@ -108,7 +108,7 @@ func Init() error {
 	}
 	images[resources.EffectTypeIceBreak] = make([]int, 2)
 	fname = config.ImagePath + "battle/effect/ice_break.png"
-	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 70, 78, images[resources.EffectTypeIceBreak]); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 50, 56, images[resources.EffectTypeIceBreak]); res == -1 {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 	images[resources.EffectTypeExplodeSmall] = make([]int, 8)
