@@ -421,7 +421,7 @@ func (e *enemyColdman) createCube() error {
 	for _, pos := range ptn {
 		pm := object.ObjectParam{
 			Pos:           pos,
-			HP:            200,
+			HP:            60,
 			OnwerCharType: objanim.ObjTypeEnemy,
 		}
 		obj := &object.IceCube{}
