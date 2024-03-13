@@ -9,7 +9,7 @@ require (
 	github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b
 	golang.org/x/text v0.14.0
 	google.golang.org/grpc v1.59.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
