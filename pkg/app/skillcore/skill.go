@@ -53,9 +53,7 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillLongSword
 	case chip.IDMiniBomb:
 		return resources.SkillMiniBomb
-	case chip.IDRecover10:
-		return resources.SkillRecover
-	case chip.IDRecover30:
+	case chip.IDRecover10, chip.IDRecover30, chip.IDRecover50, chip.IDRecover80, chip.IDRecover120, chip.IDRecover150, chip.IDRecover200, chip.IDRecover300:
 		return resources.SkillRecover
 	case chip.IDSpreadGun:
 		return resources.SkillSpreadGun
