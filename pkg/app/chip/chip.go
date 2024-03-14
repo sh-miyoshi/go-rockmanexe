@@ -57,6 +57,12 @@ const (
 	IDTripleCrack = 108
 	IDRecover10   = 109
 	IDRecover30   = 110
+	IDRecover50   = 111
+	IDRecover80   = 112
+	IDRecover120  = 113
+	IDRecover150  = 114
+	IDRecover200  = 115
+	IDRecover300  = 116
 	IDPanelSteal  = 118
 	IDAreaSteal   = 119
 	IDQuickGauge  = 128
