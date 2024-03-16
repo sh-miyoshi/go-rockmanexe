@@ -40,6 +40,10 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
 	arg.SoundOn = sound.On
+	arg.Cutin = func(skillName string) {
+		field.SetBlackoutCount(90)
+		SetChipNameDraw(skillName, true)
+	}
 	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
@@ -86,7 +90,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillPanelSteal:
 		return newPanelSteal(objID, arg)
 	case resources.SkillCountBomb:
-		return newCountBomb(objID, arg)
+		return newCountBomb(objID, arg, core)
 	case resources.SkillTornado:
 		return newTornado(objID, arg, core)
 	case resources.SkillFailed:

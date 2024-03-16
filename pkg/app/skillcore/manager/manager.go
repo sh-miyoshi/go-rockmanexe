@@ -61,6 +61,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.Crack{Arg: arg}
 		res.Init(id)
 		return res
+	case resources.SkillCountBomb:
+		return &processor.CountBomb{Arg: arg}
 	default:
 		// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
 		logger.Error("skill %d is not implemented yet", id)

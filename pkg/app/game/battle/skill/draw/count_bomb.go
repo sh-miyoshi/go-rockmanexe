@@ -14,5 +14,6 @@ func (p *DrawCountBomb) Draw(viewPos point.Point, count int) {
 	}
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, pm)
 	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+16, 1, 0, imgCountBomb[0], true)
+	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+20, 1, 0, imgCountBombNumber[3], true)
 	dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 255)
 }

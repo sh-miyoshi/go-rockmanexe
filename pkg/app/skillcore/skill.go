@@ -29,6 +29,7 @@ type Argument struct {
 	SoundOn      func(typ resources.SEType)
 	GetObjects   func(filter objanim.Filter) []objanim.Param
 	PanelBreak   func(pos point.Point)
+	Cutin        func(skillName string)
 }
 
 type SkillCore interface {

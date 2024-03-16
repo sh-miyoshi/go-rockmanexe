@@ -46,6 +46,9 @@ func Get(id int, arg Argument) SkillAnim {
 		GetObjects:   arg.Manager.ObjAnimGetObjs,
 		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
 		PanelBreak:   panelBreak,
+		Cutin: func(skillName string) {
+			// TODO
+		},
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 
