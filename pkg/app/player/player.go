@@ -14,11 +14,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/stretchr/stew/slice"
 )
 
 const (
-	defaultHP         uint = 200
+	defaultHP         uint = 300
 	defaultShotPower  uint = 1
 	defaultChargeTime uint = 180
 
@@ -73,6 +72,7 @@ func New() *Player {
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
+			// TODO: 要調整
 			{ID: ncparts.IDAttack1, IsSet: false},
 			{ID: ncparts.IDCharge1, IsSet: false},
 			{ID: ncparts.IDHP50, IsSet: false},
@@ -80,7 +80,7 @@ func New() *Player {
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
-	res.setChipFolder()
+	res.initChipData()
 	res.addPresentChips()
 	return res
 }
@@ -130,9 +130,10 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	switch rawData.ProgramVersion {
 	case "development":
 		logger.Info("Save data is development data")
-	case "v0.3", "v0.4", "v0.5", "v0.6", "v0.7", "v0.8", "v0.9", "v0.10":
-		logger.Info("Save data version is %s, but it is compatible with the current version.", rawData.ProgramVersion)
-	case "v0.11":
+	case "v0.3", "v0.4", "v0.5", "v0.6", "v0.7", "v0.8", "v0.9", "v0.10", "v0.11":
+		logger.Error("Save data version is %s, this is not compatible version.", rawData.ProgramVersion)
+		return nil, fmt.Errorf("save data is not compatible")
+	case "v0.12":
 	default:
 		logger.Error("Unexpected version %s is in save data", rawData.ProgramVersion)
 		return nil, fmt.Errorf("invalid save data version")
@@ -227,7 +228,7 @@ func (p *Player) IsUnderShirt() bool {
 	return false
 }
 
-func (p *Player) setChipFolder() {
+func (p *Player) initChipData() {
 	if config.Get().Debug.UseDebugFolder {
 		// For debug
 		p.ChipFolder = [FolderSize]ChipInfo{
@@ -269,58 +270,58 @@ func (p *Player) setChipFolder() {
 			{ID: chip.IDCannon, Code: "b"},
 			{ID: chip.IDCannon, Code: "c"},
 			{ID: chip.IDCannon, Code: "c"},
-			{ID: chip.IDHighCannon, Code: "d"},
-			{ID: chip.IDHighCannon, Code: "d"},
-			{ID: chip.IDMiniBomb, Code: "l"},
-			{ID: chip.IDMiniBomb, Code: "l"},
-			{ID: chip.IDMiniBomb, Code: "*"},
-			{ID: chip.IDMiniBomb, Code: "*"},
-			{ID: chip.IDSword, Code: "s"},
-			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDRecover50, Code: "*"},
+			{ID: chip.IDRecover50, Code: "*"},
+			{ID: chip.IDRecover50, Code: "*"},
+			{ID: chip.IDRecover50, Code: "*"},
+			{ID: chip.IDShockWave, Code: "s"},
+			{ID: chip.IDShockWave, Code: "s"},
+			{ID: chip.IDShockWave, Code: "b"},
+			{ID: chip.IDShockWave, Code: "b"},
+			{ID: chip.IDSpreadGun, Code: "n"},
+			{ID: chip.IDSpreadGun, Code: "n"},
 			{ID: chip.IDSword, Code: "s"},
 			{ID: chip.IDSword, Code: "s"},
 			{ID: chip.IDWideSword, Code: "s"},
 			{ID: chip.IDWideSword, Code: "s"},
-			{ID: chip.IDRecover10, Code: "l"},
-			{ID: chip.IDRecover10, Code: "l"},
-			{ID: chip.IDRecover10, Code: "*"},
-			{ID: chip.IDRecover10, Code: "*"},
-			{ID: chip.IDRecover30, Code: "l"},
-			{ID: chip.IDRecover30, Code: "l"},
 			{ID: chip.IDVulcan1, Code: "b"},
 			{ID: chip.IDVulcan1, Code: "b"},
-			{ID: chip.IDVulcan1, Code: "d"},
-			{ID: chip.IDVulcan1, Code: "d"},
-			{ID: chip.IDSpreadGun, Code: "n"},
-			{ID: chip.IDSpreadGun, Code: "n"},
-			{ID: chip.IDSpreadGun, Code: "m"},
-			{ID: chip.IDSpreadGun, Code: "m"},
+			{ID: chip.IDWideShot, Code: "m"},
+			{ID: chip.IDHeatShot, Code: "f"},
+			{ID: chip.IDFlameLine1, Code: "f"},
+			{ID: chip.IDFlameLine1, Code: "f"},
+			{ID: chip.IDBoomerang1, Code: "m"},
+			{ID: chip.IDBoomerang1, Code: "m"},
+			{ID: chip.IDBambooLance, Code: "n"},
+			{ID: chip.IDBambooLance, Code: "n"},
+			{ID: chip.IDCrackout, Code: "*"},
+			{ID: chip.IDCrackout, Code: "*"},
 		}
 
+		p.BackPack = []ChipInfo{
+			{ID: chip.IDHighCannon, Code: "d"},
+			{ID: chip.IDHighCannon, Code: "d"},
+			{ID: chip.IDMegaCannon, Code: "g"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDMiniBomb, Code: "*"},
+			{ID: chip.IDRecover80, Code: "g"},
+			{ID: chip.IDRecover150, Code: "h"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDWideSword, Code: "s"},
+			{ID: chip.IDDoubleCrack, Code: "*"},
+			{ID: chip.IDDoubleCrack, Code: "*"},
+			{ID: chip.IDTripleCrack, Code: "*"},
+			{ID: chip.IDTripleCrack, Code: "*"},
+		}
 	}
 }
 
 func (p *Player) addPresentChips() {
-	presentChips := []ChipInfo{
-		{ID: chip.IDCrackout, Code: "*"},
-		{ID: chip.IDDoubleCrack, Code: "*"},
-		{ID: chip.IDTripleCrack, Code: "*"},
-		{ID: chip.IDBambooLance, Code: "g"},
-		{ID: chip.IDCountBomb, Code: "k"},
-		{ID: chip.IDAttack10, Code: "*"},
-		{ID: chip.IDQuickGauge, Code: "q"},
-	}
-
-	for _, c := range presentChips {
-		if slice.Contains(p.ChipFolder, c) {
-			continue
-		}
-		if slice.Contains(p.BackPack, c) {
-			continue
-		}
-
-		p.BackPack = append(p.BackPack, c)
-	}
+	// v0.12時点では何もなし
 }
 
 func (p *Player) updatePlayerStatus() {
