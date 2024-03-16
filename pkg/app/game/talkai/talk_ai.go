@@ -104,7 +104,7 @@ func Process() bool {
 
 func inputString(handle int) string {
 	buf := make([]byte, inputMaxLen)
-	dxlib.GetKeyInputString(buf, inputHandle)
+	dxlib.GetKeyInputString(buf, handle)
 	slicedBuf := []byte{}
 	for i := 0; i < inputMaxLen; i++ {
 		if buf[i] == 0 {
