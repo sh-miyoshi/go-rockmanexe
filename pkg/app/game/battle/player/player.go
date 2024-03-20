@@ -314,36 +314,36 @@ func (p *BattlePlayer) Draw() {
 		}
 	}
 
-	if p.invincibleCount/5%2 != 0 {
-		return
-	}
+	playerVisible := p.invincibleCount/5%2 == 0
 
-	view := battlecommon.ViewPos(p.Pos)
-	img := p.act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-	if p.act.IsParalyzed() {
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-		// 黄色と白を点滅させる
-		pm := 0
-		if p.act.count/10%2 == 0 {
-			pm = 255
-		}
-		dxlib.SetDrawBright(255, 255, pm)
+	if playerVisible {
+		view := battlecommon.ViewPos(p.Pos)
+		img := p.act.GetImage()
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-		dxlib.SetDrawBright(255, 255, 255)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-	}
-
-	// Show charge image
-	if p.ChargeCount > battlecommon.ChargeViewDelay {
-		n := 0
-		if p.ChargeCount > p.ChargeTime {
-			n = 1
+		if p.act.IsParalyzed() {
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+			// 黄色と白を点滅させる
+			pm := 0
+			if p.act.count/10%2 == 0 {
+				pm = 255
+			}
+			dxlib.SetDrawBright(255, 255, pm)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+			dxlib.SetDrawBright(255, 255, 255)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		}
-		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+
+		// Show charge image
+		if p.ChargeCount > battlecommon.ChargeViewDelay {
+			n := 0
+			if p.ChargeCount > p.ChargeTime {
+				n = 1
+			}
+			imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		}
 	}
 
 	// Show HP
