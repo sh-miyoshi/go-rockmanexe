@@ -33,6 +33,7 @@ func (p *CountBomb) GetCount() int {
 
 func (p *CountBomb) GetEndCount() int {
 	// EndCount = delay * (len(img) + keepCount)
+	// TODO
 	return 3 * 4
 }
 

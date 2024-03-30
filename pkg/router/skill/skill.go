@@ -49,6 +49,9 @@ func Get(id int, arg Argument) SkillAnim {
 		Cutin: func(skillName string) {
 			// TODO
 		},
+		ChangePanelType: func(pos point.Point, pnType int) {
+			// TODO
+		},
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 

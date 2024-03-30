@@ -13,6 +13,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+const (
+	panelStealHitEndCount = 12 // TODO: 削除予定
+)
+
 // Note:
 //   基本的にはエリアスチールと同じなので必要に応じて借りてくる
 //   ただ対象位置判定のロジックが微妙に異なるのでわかりやすくするため分けた
@@ -90,7 +94,7 @@ func (p *skillPanelSteal) Process() (bool, error) {
 			p.setState(resources.SkillAreaStealStateHit)
 		}
 	case resources.SkillAreaStealStateHit:
-		if p.count >= areaStealHitEndCount {
+		if p.count >= panelStealHitEndCount {
 			pn := field.GetPanelInfo(p.target)
 			if pn.ObjectID != "" {
 				// ダメージ

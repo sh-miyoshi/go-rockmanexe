@@ -23,13 +23,14 @@ type Argument struct {
 	Power         uint
 	TargetType    int
 
-	DamageMgr    DamageManager
-	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
-	GetObjectPos func(objID string) point.Point
-	SoundOn      func(typ resources.SEType)
-	GetObjects   func(filter objanim.Filter) []objanim.Param
-	PanelBreak   func(pos point.Point)
-	Cutin        func(skillName string)
+	DamageMgr       DamageManager
+	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
+	GetObjectPos    func(objID string) point.Point
+	SoundOn         func(typ resources.SEType)
+	GetObjects      func(filter objanim.Filter) []objanim.Param
+	PanelBreak      func(pos point.Point)
+	Cutin           func(skillName string)
+	ChangePanelType func(pos point.Point, pnType int)
 }
 
 type SkillCore interface {

@@ -44,6 +44,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		field.SetBlackoutCount(90)
 		SetChipNameDraw(skillName, true)
 	}
+	arg.ChangePanelType = field.ChangePanelType
 	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
@@ -86,7 +87,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return newHeatShot(objID, arg, core)
 	case resources.SkillAreaSteal:
-		return newAreaSteal(objID, arg)
+		return newAreaSteal(objID, arg, core)
 	case resources.SkillPanelSteal:
 		return newPanelSteal(objID, arg)
 	case resources.SkillCountBomb:
