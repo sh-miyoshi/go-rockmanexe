@@ -63,7 +63,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillCountBomb:
 		return &processor.CountBomb{Arg: arg}
-	case resources.SkillAreaSteal:
+	case resources.SkillAreaSteal, resources.SkillPanelSteal:
 		res := &processor.AreaSteal{Arg: arg}
 		res.Init(id)
 		return res

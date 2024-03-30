@@ -86,10 +86,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newFlamePillar(objID, arg, core)
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return newHeatShot(objID, arg, core)
-	case resources.SkillAreaSteal:
+	case resources.SkillAreaSteal, resources.SkillPanelSteal:
 		return newAreaSteal(objID, arg, core)
-	case resources.SkillPanelSteal:
-		return newPanelSteal(objID, arg)
 	case resources.SkillCountBomb:
 		return newCountBomb(objID, arg, core)
 	case resources.SkillTornado:

@@ -17,8 +17,9 @@ type AreaSteal struct {
 
 	count       int
 	state       int
-	targetLineX int
+	targets     []point.Point
 	myPanelType int
+	name        string
 }
 
 func (p *AreaSteal) Init(skillID int) {
@@ -31,30 +32,60 @@ func (p *AreaSteal) Init(skillID int) {
 	}
 
 	if skillID == resources.SkillAreaSteal {
+		p.name = "エリアスチール"
+		lineX := -1
 		if p.myPanelType == battlecommon.PanelTypePlayer {
+		FindLoopPlayer:
 			for x := 1; x < battlecommon.FieldNum.X; x++ {
 				for y := 0; y < battlecommon.FieldNum.Y; y++ {
 					pn := p.Arg.GetPanelInfo(point.Point{X: x, Y: y})
 					if pn.Type != battlecommon.PanelTypePlayer {
-						p.targetLineX = x
-						return
+						lineX = x
+						break FindLoopPlayer
 					}
 				}
 			}
 		} else {
+		FindLoopEnemy:
 			for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
 				for y := 0; y < battlecommon.FieldNum.Y; y++ {
 					pn := p.Arg.GetPanelInfo(point.Point{X: x, Y: y})
 					if pn.Type != battlecommon.PanelTypeEnemy {
-						p.targetLineX = x
-						return
+						lineX = x
+						break FindLoopEnemy
 					}
 				}
 			}
 		}
+		if lineX != -1 {
+			p.targets = []point.Point{}
+			for y := 0; y < battlecommon.FieldNum.Y; y++ {
+				p.targets = append(p.targets, point.Point{X: lineX, Y: y})
+			}
+		}
 	} else {
-		// TODO: パネルスチール
-		panic("TODO")
+		p.name = "パネルスチール"
+		if p.myPanelType == battlecommon.PanelTypePlayer {
+			for x := 1; x < battlecommon.FieldNum.X; x++ {
+				pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
+				target := point.Point{X: x, Y: pos.Y}
+				pn := p.Arg.GetPanelInfo(target)
+				if pn.Type != battlecommon.PanelTypePlayer {
+					p.targets = []point.Point{target}
+					return
+				}
+			}
+		} else {
+			for x := battlecommon.FieldNum.X - 2; x >= 0; x-- {
+				pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
+				target := point.Point{X: x, Y: pos.Y}
+				pn := p.Arg.GetPanelInfo(target)
+				if pn.Type != battlecommon.PanelTypeEnemy {
+					p.targets = []point.Point{target}
+					return
+				}
+			}
+		}
 	}
 }
 
@@ -65,7 +96,7 @@ func (p *AreaSteal) Process() (bool, error) {
 	case resources.SkillAreaStealStateBlackout:
 		if p.count == 1 {
 			p.Arg.SoundOn(resources.SEAreaSteal)
-			p.Arg.Cutin("エリアスチール")
+			p.Arg.Cutin(p.name)
 		}
 
 		if p.count == 30 {
@@ -78,8 +109,7 @@ func (p *AreaSteal) Process() (bool, error) {
 		}
 	case resources.SkillAreaStealStateHit:
 		if p.count >= areaStealHitEndCount {
-			for y := 0; y < battlecommon.FieldNum.Y; y++ {
-				pos := point.Point{X: p.targetLineX, Y: y}
+			for _, pos := range p.targets {
 				pn := p.Arg.GetPanelInfo(pos)
 				if pn.ObjectID != "" {
 					// ダメージ
@@ -92,7 +122,7 @@ func (p *AreaSteal) Process() (bool, error) {
 						Element:       damage.ElementNone,
 						TargetObjID:   pn.ObjectID,
 					})
-				} else if p.targetLineX >= 1 && p.targetLineX < battlecommon.FieldNum.X-1 {
+				} else if pos.X >= 1 && pos.X < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え
 					// 最終ラインの場合は塗り替えない
 					p.Arg.ChangePanelType(pos, p.myPanelType)
@@ -120,11 +150,7 @@ func (p *AreaSteal) GetState() int {
 }
 
 func (p *AreaSteal) GetTargets() []point.Point {
-	targets := []point.Point{}
-	for y := 0; y < battlecommon.FieldNum.Y; y++ {
-		targets = append(targets, point.Point{X: p.targetLineX, Y: y})
-	}
-	return targets
+	return p.targets
 }
 
 func (p *AreaSteal) setState(next int) {
