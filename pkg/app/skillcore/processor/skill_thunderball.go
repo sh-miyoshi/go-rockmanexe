@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	thunderBallMaxMoveCount = 6 // debug
+	thunderBallMaxMoveCount  = 6 // debug
+	thunderBallNextStepCount = 80
 )
 
 type ThunderBall struct {
@@ -43,7 +44,7 @@ func (p *ThunderBall) Process() (bool, error) {
 		p.Arg.SoundOn(resources.SEThunderBall)
 	}
 
-	if p.count%resources.SkillThunderBallNextStepCount == 2 {
+	if p.count%thunderBallNextStepCount == 2 {
 		if p.damageID != "" {
 			if !p.Arg.DamageMgr.Exists(p.damageID) {
 				// attack hit to target
@@ -52,7 +53,7 @@ func (p *ThunderBall) Process() (bool, error) {
 		}
 	}
 
-	if p.count%resources.SkillThunderBallNextStepCount == 0 {
+	if p.count%thunderBallNextStepCount == 0 {
 		t := p.pos
 		if p.count != 0 {
 			// Update current pos
@@ -78,7 +79,7 @@ func (p *ThunderBall) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           resources.SkillThunderBallNextStepCount + 1,
+			TTL:           thunderBallNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
@@ -133,4 +134,8 @@ func (p *ThunderBall) GetEndCount() int {
 
 func (p *ThunderBall) GetPos() (prev, current, next point.Point) {
 	return p.prev, p.pos, p.next
+}
+
+func (p *ThunderBall) GetNextStepCount() int {
+	return thunderBallNextStepCount
 }

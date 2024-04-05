@@ -24,7 +24,7 @@ func newThunderBall(objID string, arg skillcore.Argument, core skillcore.SkillCo
 
 func (p *thunderBall) Draw() {
 	prev, current, next := p.Core.GetPos()
-	p.drawer.Draw(prev, current, next, p.Core.GetCount())
+	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
 func (p *thunderBall) Process() (bool, error) {

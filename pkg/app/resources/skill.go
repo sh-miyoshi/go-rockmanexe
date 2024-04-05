@@ -44,10 +44,6 @@ const (
 )
 
 const (
-	SkillThunderBallNextStepCount = 80
-)
-
-const (
 	SkillWideShotStateBegin int = iota
 	SkillWideShotStateMove
 )
