@@ -44,7 +44,6 @@ const (
 )
 
 const (
-	SkillGarooBreathNextStepCount = 10
 	SkillThunderBallNextStepCount = 80
 )
 
