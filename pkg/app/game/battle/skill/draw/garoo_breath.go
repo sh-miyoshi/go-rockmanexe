@@ -25,6 +25,5 @@ func (p *DrawGarooBreath) Draw(prevPos, currentPos, nextPos point.Point, count i
 
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
 	ofsy := -15
-	xflip := int32(dxlib.TRUE)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.OptXReverse(true))
 }

@@ -15,15 +15,7 @@ type DrawShockWave struct {
 
 func (p *DrawShockWave) Draw(viewPos point.Point, count int, speed int, direct int) {
 	n := (count / speed) % len(imgShockWave)
-	if direct == config.DirectLeft {
-		flag := int32(dxlib.TRUE)
-		dxopts := dxlib.DrawRotaGraphOption{
-			ReverseXFlag: &flag,
-		}
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgShockWave[n], true, dxopts)
-	} else if direct == config.DirectRight {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgShockWave[n], true)
-	}
+	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgShockWave[n], true, dxlib.OptXReverse(direct == config.DirectLeft))
 }
 
 type DrawPick struct {

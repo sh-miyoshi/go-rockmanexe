@@ -63,17 +63,11 @@ func (o *IceCube) Process() (bool, error) {
 func (o *IceCube) Draw() {
 	view := battlecommon.ViewPos(o.pm.Pos)
 
-	opt := dxlib.DrawRotaGraphOption{}
-	if o.pm.xFlip {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-	}
-
 	n := o.count / delayIceCubeCreate
 	if n > len(o.images)-1 {
 		n = len(o.images) - 1
 	}
-	dxlib.DrawRotaGraph(view.X, view.Y+16, 1, 0, o.images[n], true, opt)
+	dxlib.DrawRotaGraph(view.X, view.Y+16, 1, 0, o.images[n], true, dxlib.OptXReverse(o.pm.xFlip))
 }
 
 func (o *IceCube) DamageProc(dm *damage.Damage) bool {

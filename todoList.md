@@ -35,7 +35,6 @@
 - ネットワーク上での各処理の実装
   - Cutin
   - ChangePanelType
-  - MakeInvisible
 - エフェクトを統一した形にする
 
 ### ネット越しの暗転チップ
@@ -80,8 +79,6 @@
 
 ## 改善
 
-- dxlib.OptXReverse関数を使う
-- ReverseIf関数を使う
 - ミニボムの着弾時エフェクト
 - Message Windowシステムの作成
 - BulkSendFieldInfoのリファクタリング

@@ -15,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -103,19 +104,11 @@ func (o *WaterPipe) Draw() {
 		return
 	}
 
-	ofsx := -8
-	opt := dxlib.DrawRotaGraphOption{}
-	if o.pm.xFlip {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-		ofsx *= -1
-	}
-
 	n := o.count / delayWaterPipeSet
 	if n > len(o.imgSet)-1 {
 		n = len(o.imgSet) - 1
 	}
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16, 1, 0, o.imgSet[n], true, opt)
+	dxlib.DrawRotaGraph(view.X+math.ReverseIf(-8, o.pm.xFlip), view.Y+16, 1, 0, o.imgSet[n], true, dxlib.OptXReverse(o.pm.xFlip))
 }
 
 func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
@@ -187,15 +180,7 @@ func (a *WaterPipeAtk) Draw(pos point.Point) {
 		n = c - (c/s)*((c-s)*2+1)
 	}
 
-	ofsx := -81
-	opt := dxlib.DrawRotaGraphOption{}
-	if a.pm.xFlip {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-		ofsx *= -1
-	}
-
-	dxlib.DrawRotaGraph(pos.X+ofsx, pos.Y+13, 1, 0, a.images[n], true, opt)
+	dxlib.DrawRotaGraph(pos.X+math.ReverseIf(-81, a.pm.xFlip), pos.Y+13, 1, 0, a.images[n], true, dxlib.OptXReverse(a.pm.xFlip))
 }
 
 func (a *WaterPipeAtk) Process() {

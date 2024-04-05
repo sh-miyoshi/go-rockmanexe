@@ -138,13 +138,12 @@ func (e *enemyCirKill) Draw() {
 	ofsy += 15
 
 	view := battlecommon.ViewPos(e.pm.Pos)
-	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
 
 	if e.atk.attacking {
-		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.OptXReverse(true))
 	} else {
-		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+		dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, *img, true, dxlib.OptXReverse(true))
 		drawParalysis(view.X+ofsx, view.Y+ofsy, *img, e.pm.ParalyzedCount)
 	}
 

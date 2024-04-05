@@ -110,8 +110,7 @@ func (i *info) Draw() {
 	case Typeブラックアース:
 		scroll := (i.Count / 10) % config.ScreenSize.X
 		dxlib.DrawGraph(scroll-config.ScreenSize.X, 0, i.Images[0], false)
-		xflag := int32(dxlib.TRUE)
-		dxlib.DrawRotaGraph(scroll, 0, 1, 0, i.Images[0], false, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflag})
+		dxlib.DrawRotaGraph(scroll, 0, 1, 0, i.Images[0], false, dxlib.OptXReverse(true))
 	}
 }
 
