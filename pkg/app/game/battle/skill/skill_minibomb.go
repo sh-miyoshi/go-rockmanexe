@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -30,7 +31,15 @@ func (p *miniBomb) Draw() {
 }
 
 func (p *miniBomb) Process() (bool, error) {
-	return p.Core.Process()
+	end, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+
+	if eff := p.Core.PopEffect(); eff != nil {
+		localanim.AnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
+	}
+	return end, nil
 }
 
 func (p *miniBomb) GetParam() anim.Param {

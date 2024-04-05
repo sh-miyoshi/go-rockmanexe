@@ -74,7 +74,8 @@ func (p *Aquaman) GetPos() point.Point {
 
 func (p *Aquaman) PopWaterPipe() *AquamanWaterPipe {
 	if p.pipe != nil {
-		res := p.pipe
+		res := &AquamanWaterPipe{}
+		*res = *p.pipe
 		p.pipe = nil
 		return res
 	}

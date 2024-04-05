@@ -35,7 +35,6 @@
 - ネットワーク上での各処理の実装
   - Cutin
   - ChangePanelType
-- エフェクトを統一した形にする
 
 ### ネット越しの暗転チップ
 
@@ -79,7 +78,6 @@
 
 ## 改善
 
-- ミニボムの着弾時エフェクト
 - Message Windowシステムの作成
 - BulkSendFieldInfoのリファクタリング
 - remove hit damage data
