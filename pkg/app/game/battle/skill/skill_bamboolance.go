@@ -26,7 +26,7 @@ func newBambooLance(objID string, arg skillcore.Argument, core skillcore.SkillCo
 }
 
 func (p *bambooLance) Draw() {
-	p.drawer.Draw(p.Core.GetCount())
+	p.drawer.Draw(p.Core.GetCount(), true)
 }
 
 func (p *bambooLance) Process() (bool, error) {

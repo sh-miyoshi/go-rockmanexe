@@ -114,7 +114,7 @@ func (d *animDraw) Draw() {
 			}
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		case anim.TypeBambooLance:
-			d.drawBamboolance.Draw(a.ActCount)
+			d.drawBamboolance.Draw(a.ActCount, isPlayer)
 		case anim.TypeCrack:
 			// no animation
 		default:
