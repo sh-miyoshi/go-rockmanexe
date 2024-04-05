@@ -5,6 +5,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -16,13 +17,7 @@ type DrawWideShot struct {
 }
 
 func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody bool, nextStepCount int, state int) {
-	opt := dxlib.DrawRotaGraphOption{}
-	ofs := 1
-	if direct == config.DirectLeft {
-		xflip := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &xflip
-		ofs = -1
-	}
+	opt := dxlib.OptXReverse(direct == config.DirectLeft)
 	view := battlecommon.ViewPos(pos)
 
 	switch state {
@@ -30,12 +25,12 @@ func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody boo
 		n := (count / delayWideShot)
 
 		if n < len(imgWideShotBody) && showBody {
-			dxlib.DrawRotaGraph(view.X+40, view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
+			dxlib.DrawRotaGraph(view.X+math.ReverseIf(40, direct == config.DirectLeft), view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
 		}
 		if n >= len(imgWideShotBegin) {
 			n = len(imgWideShotBegin) - 1
 		}
-		dxlib.DrawRotaGraph(view.X+62*ofs, view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
+		dxlib.DrawRotaGraph(view.X+math.ReverseIf(62, direct == config.DirectLeft), view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
 	case resources.SkillWideShotStateMove:
 		n := (count / delayWideShot) % len(imgWideShotMove)
 		next := pos.X + 1

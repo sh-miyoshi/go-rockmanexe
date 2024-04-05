@@ -11,6 +11,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+const (
+	cirkillShotNextStepCount = 20
+)
+
 type cirkillShot struct {
 	ID  string
 	Arg skillcore.Argument
@@ -43,18 +47,18 @@ func newCirkillShot(objID string, arg skillcore.Argument) *cirkillShot {
 }
 
 func (p *cirkillShot) Draw() {
-	p.drawer.Draw(p.prev, p.pos, p.next, p.count)
+	p.drawer.Draw(p.prev, p.pos, p.next, p.count, cirkillShotNextStepCount)
 }
 
 func (p *cirkillShot) Process() (bool, error) {
-	if p.count%resources.SkillCirkillShotNextStepCount/2 == 0 {
+	if p.count%cirkillShotNextStepCount/2 == 0 {
 		// Finish if hit
 		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
 
-	if p.count%resources.SkillCirkillShotNextStepCount == 0 {
+	if p.count%cirkillShotNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
@@ -63,7 +67,7 @@ func (p *cirkillShot) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           resources.SkillCirkillShotNextStepCount + 1,
+			TTL:           cirkillShotNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   true,

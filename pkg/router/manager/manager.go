@@ -95,6 +95,10 @@ func (m *Manager) ObjAnimGetObjs(filter objanim.Filter) []objanim.Param {
 	return m.objAnimMgr.GetObjs(filter)
 }
 
+func (m *Manager) ObjAnimMakeInvisible(id string, count int) {
+	m.objAnimMgr.MakeInvisible(id, count)
+}
+
 func (m *Manager) SkillGet(id int, arg skillcore.Argument) skillcore.SkillCore {
 	return m.skillMgr.Get(id, arg)
 }

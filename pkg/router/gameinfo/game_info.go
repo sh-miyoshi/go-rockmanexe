@@ -45,12 +45,13 @@ type Object struct {
 }
 
 type Anim struct {
-	ObjectID  string
-	Pos       point.Point
-	DrawType  int
-	AnimType  int
-	ActCount  int
-	DrawParam []byte
+	ObjectID      string
+	OwnerClientID string
+	Pos           point.Point
+	DrawType      int
+	AnimType      int
+	ActCount      int
+	DrawParam     []byte
 }
 
 type Effect struct {

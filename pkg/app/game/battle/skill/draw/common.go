@@ -45,6 +45,7 @@ var (
 	imgTornadoAtk        []int
 	imgTornadoBody       []int
 	imgCirkillShot       []int
+	imgCountBombNumber   []int
 )
 
 func LoadImages() error {
@@ -268,6 +269,12 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image %s", fname)
 	}
 
+	fname = config.ImagePath + "battle/skill/カウントボム_数字.png"
+	imgCountBombNumber = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, imgCountBombNumber); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -404,4 +411,8 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgCirkillShot[i])
 	}
 	imgCirkillShot = []int{}
+	for i := 0; i < len(imgCountBombNumber); i++ {
+		dxlib.DeleteGraph(imgCountBombNumber[i])
+	}
+	imgCountBombNumber = []int{}
 }

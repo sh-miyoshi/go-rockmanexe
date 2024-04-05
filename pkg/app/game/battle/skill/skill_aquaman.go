@@ -10,77 +10,64 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type aquaman struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.Aquaman
 
-	count  int
-	state  int
-	pos    point.Point
 	atkID  string
 	drawer skilldraw.DrawAquaman
 }
 
-func newAquaman(objID string, arg skillcore.Argument) *aquaman {
+func newAquaman(objID string, arg skillcore.Argument, core skillcore.SkillCore) *aquaman {
 	return &aquaman{
-		ID:    objID,
-		Arg:   arg,
-		state: resources.SkillAquamanStateInit,
-		pos:   localanim.ObjAnimGetObjPos(arg.OwnerID),
+		ID:   objID,
+		Arg:  arg,
+		Core: core.(*processor.Aquaman),
 	}
 }
 
 func (p *aquaman) Draw() {
-	view := battlecommon.ViewPos(p.pos)
-	p.drawer.Draw(view, p.count, p.state)
+	view := battlecommon.ViewPos(p.Core.GetPos())
+	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetState())
 }
 
 func (p *aquaman) Process() (bool, error) {
-	switch p.state {
-	case resources.SkillAquamanStateInit:
-		field.SetBlackoutCount(300)
-		SetChipNameDraw("アクアマン", true)
-		p.setState(resources.SkillAquamanStateAppear)
-		return false, nil
-	case resources.SkillAquamanStateAppear:
-		if p.count == 70 {
-			p.setState(resources.SkillAquamanStateCreatePipe)
-			return false, nil
-		}
-	case resources.SkillAquamanStateCreatePipe:
-		if p.count == 10 {
-			obj := &object.WaterPipe{}
-			pm := object.ObjectParam{
-				Pos:           point.Point{X: p.pos.X + 1, Y: p.pos.Y},
-				HP:            500,
-				OnwerCharType: objanim.ObjTypePlayer,
-				AttackNum:     1,
-				Interval:      50,
-				Power:         int(p.Arg.Power),
-			}
-			if err := obj.Init(p.ID, pm); err != nil {
-				return false, fmt.Errorf("water pipe create failed: %w", err)
-			}
-			p.atkID = localanim.ObjAnimNew(obj)
-			localanim.ObjAnimAddActiveAnim(p.atkID)
+	res, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
 
-			p.setState(resources.SkillAquamanStateAttack)
-			return false, nil
+	pipeObj := p.Core.PopWaterPipe()
+	if pipeObj != nil {
+		obj := &object.WaterPipe{}
+		pm := object.ObjectParam{
+			Pos:           pipeObj.Pos,
+			HP:            500,
+			OnwerCharType: objanim.ObjTypePlayer,
+			AttackNum:     1,
+			Interval:      50,
+			Power:         int(p.Arg.Power),
 		}
-	case resources.SkillAquamanStateAttack:
+		if err := obj.Init(p.ID, pm); err != nil {
+			return false, fmt.Errorf("water pipe create failed: %w", err)
+		}
+		p.atkID = localanim.ObjAnimNew(obj)
+		localanim.ObjAnimAddActiveAnim(p.atkID)
+	}
+
+	if p.atkID != "" {
 		if !localanim.ObjAnimIsProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
 			return true, nil
 		}
 	}
 
-	p.count++
-	return false, nil
+	return res, nil
 }
 
 func (p *aquaman) GetParam() anim.Param {
@@ -92,9 +79,4 @@ func (p *aquaman) GetParam() anim.Param {
 
 func (p *aquaman) StopByOwner() {
 	// Nothing to do after throwing
-}
-
-func (p *aquaman) setState(nextState int) {
-	p.count = 0
-	p.state = nextState
 }

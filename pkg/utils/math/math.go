@@ -14,3 +14,10 @@ func MountainIndex(i, max int) int {
 		return i
 	}
 }
+
+func ReverseIf(val int, isReverse bool) int {
+	if isReverse {
+		return -val
+	}
+	return val
+}

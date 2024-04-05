@@ -19,23 +19,24 @@ func (p *DrawBamboolance) Init() {
 	p.imgSizeX = sx
 }
 
-func (p *DrawBamboolance) Draw(count int) {
+func (p *DrawBamboolance) Draw(count int, isPlayer bool) {
 	// Initを先に呼ばないと動かないようにする
 	if p.imgSizeX <= 0 {
 		system.SetError("実装にバグがあります。DrawBamboolance#Initを先に呼んでください")
 		return
 	}
 
-	xreverse := int32(dxlib.TRUE)
-	opt := dxlib.DrawRotaGraphOption{
-		ReverseXFlag: &xreverse,
-	}
-
+	// デフォルトが反転状態
+	opt := dxlib.OptXReverse(isPlayer)
 	xd := count * 25
 	if xd > battlecommon.PanelSize.X {
 		xd = battlecommon.PanelSize.X
 	}
 	x := config.ScreenSize.X + p.imgSizeX/2 - xd
+	if !isPlayer {
+		x = xd - p.imgSizeX/2
+	}
+
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		v := battlecommon.ViewPos(point.Point{X: 0, Y: y})
 		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)

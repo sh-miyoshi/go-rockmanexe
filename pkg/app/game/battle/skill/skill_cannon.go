@@ -28,7 +28,7 @@ func newCannon(objID string, arg skillcore.Argument, core skillcore.SkillCore) *
 func (p *cannon) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(p.Core.GetCannonType(), view, p.Core.GetCount())
+	p.drawer.Draw(p.Core.GetCannonType(), view, p.Core.GetCount(), true)
 }
 
 func (p *cannon) Process() (bool, error) {
