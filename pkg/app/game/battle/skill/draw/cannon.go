@@ -15,11 +15,7 @@ type DrawCannon struct {
 }
 
 func (p *DrawCannon) Draw(cannonType int, viewPos point.Point, count int, isPlayer bool) {
-	opt := dxlib.DrawRotaGraphOption{}
-	if !isPlayer {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-	}
+	opt := dxlib.OptXReverse(!isPlayer)
 
 	n := count / delayCannonBody
 	if n < len(imgCannonBody[cannonType]) {

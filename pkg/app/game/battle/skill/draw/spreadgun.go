@@ -17,11 +17,7 @@ type DrawSpreadHit struct {
 func (p *DrawSpreadGun) Draw(viewPos point.Point, count int, isPlayer bool) {
 	n := count / delaySpreadGun
 
-	opt := dxlib.DrawRotaGraphOption{}
-	if !isPlayer {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-	}
+	opt := dxlib.OptXReverse(!isPlayer)
 
 	// Show body
 	if n < len(imgSpreadGunBody) {
