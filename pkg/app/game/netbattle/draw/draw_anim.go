@@ -96,7 +96,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeFlameLine:
 			var drawPm skill.FlameLineDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay)
+			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay, isPlayer)
 		case anim.TypeTornado:
 			// Note: DrawParamで渡すようにしてもいいが、targetの決定アルゴリズムが変わることはないのでここに直接書く
 			targetPos := point.Point{X: a.Pos.X + 2, Y: a.Pos.Y}

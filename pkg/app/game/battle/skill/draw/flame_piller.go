@@ -5,13 +5,16 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 type DrawFlamePillerManager struct {
 }
 
-func (p *DrawFlamePillerManager) Draw(viewPos point.Point, count int, showBody bool, pillars []processor.FlamePillerParam, delay int) {
+func (p *DrawFlamePillerManager) Draw(viewPos point.Point, count int, showBody bool, pillars []processor.FlamePillerParam, delay int, isPlayer bool) {
+	opt := dxlib.OptXReverse(!isPlayer)
+
 	if showBody {
 		imageNo := count / 4
 		if imageNo >= len(imgFlameLineBody) {
@@ -19,11 +22,15 @@ func (p *DrawFlamePillerManager) Draw(viewPos point.Point, count int, showBody b
 		}
 
 		// Show body
-		dxlib.DrawRotaGraph(viewPos.X+35, viewPos.Y-15, 1, 0, imgFlameLineBody[imageNo], true)
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(35, !isPlayer), viewPos.Y-15, 1, 0, imgFlameLineBody[imageNo], true, opt)
 	}
 
 	for _, pillar := range pillars {
-		view := battlecommon.ViewPos(pillar.Point)
+		pos := pillar.Point
+		if !isPlayer {
+			pos.X = battlecommon.FieldNum.X - pos.X - 1
+		}
+		view := battlecommon.ViewPos(pos)
 		drawPillar(view, pillar.Count, pillar.State, delay)
 	}
 }

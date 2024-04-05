@@ -28,7 +28,7 @@ func newFlamePillar(objID string, arg skillcore.Argument, core skillcore.SkillCo
 func (p *flamePillarManager) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(view, p.Core.GetCount(), p.Core.IsShowBody(), p.Core.GetPillars(), p.Core.GetDelay())
+	p.drawer.Draw(view, p.Core.GetCount(), p.Core.IsShowBody(), p.Core.GetPillars(), p.Core.GetDelay(), true)
 }
 
 func (p *flamePillarManager) Process() (bool, error) {
