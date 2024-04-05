@@ -92,7 +92,7 @@ func (d *animDraw) Draw() {
 			}
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
-			d.drawHeatShot.Draw(pos, a.ActCount)
+			d.drawHeatShot.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeFlameLine:
 			var drawPm skill.FlameLineDrawParam
 			drawPm.Unmarshal(a.DrawParam)
