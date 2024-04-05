@@ -89,7 +89,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeVulcan:
 			var drawPm skill.VulcanDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
+			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay, isPlayer)
 		case anim.TypeWideShot:
 			var drawPm skill.WideShotDrawParam
 			drawPm.Unmarshal(a.DrawParam)
