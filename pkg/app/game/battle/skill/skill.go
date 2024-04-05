@@ -96,7 +96,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillFailed:
 		return newFailed(objID, arg)
 	case resources.SkillQuickGauge:
-		return newQuickGauge(objID, arg)
+		return newQuickGauge(objID, arg, core)
 	case resources.SkillCirkillShot:
 		return newCirkillShot(objID, arg)
 	}
