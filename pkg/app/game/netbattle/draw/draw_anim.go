@@ -56,6 +56,10 @@ func (d *animDraw) Draw() {
 		case anim.TypeMiniBomb:
 			var drawPm skill.MiniBombDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.Target.X = battlecommon.FieldNum.X - drawPm.Target.X - 1
+			}
+
 			d.drawMiniBombInst.Draw(a.Pos, drawPm.Target, a.ActCount, drawPm.LandCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)

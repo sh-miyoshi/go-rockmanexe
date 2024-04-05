@@ -49,6 +49,7 @@ func (p *MiniBomb) Process() (bool, error) {
 				Element:       damage.ElementNone,
 				TargetObjID:   objID,
 			})
+			// TODO: 着弾時エフェクト
 		}
 		return true, nil
 	}
