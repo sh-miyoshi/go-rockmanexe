@@ -79,3 +79,13 @@ func GetOffset(nextPos, nowPos, beforePos int, cnt, totalCnt int, size int) int 
 
 	return res * size * (totalCnt - 2*cnt) / (totalCnt * 2)
 }
+
+func ReverseDirect(direct int) int {
+	switch direct {
+	case config.DirectLeft:
+		return config.DirectRight
+	case config.DirectRight:
+		return config.DirectLeft
+	}
+	return direct
+}

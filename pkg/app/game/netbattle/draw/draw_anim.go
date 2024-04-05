@@ -3,7 +3,6 @@ package draw
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -69,12 +68,7 @@ func (d *animDraw) Draw() {
 			drawPm.Unmarshal(a.DrawParam)
 			if a.ActCount >= drawPm.InitWait {
 				if !isPlayer {
-					switch drawPm.Direct {
-					case config.DirectLeft:
-						drawPm.Direct = config.DirectRight
-					case config.DirectRight:
-						drawPm.Direct = config.DirectLeft
-					}
+					drawPm.Direct = battlecommon.ReverseDirect(drawPm.Direct)
 				}
 				d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 			}
@@ -93,6 +87,9 @@ func (d *animDraw) Draw() {
 		case anim.TypeWideShot:
 			var drawPm skill.WideShotDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.Direct = battlecommon.ReverseDirect(drawPm.Direct)
+			}
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
 			d.drawHeatShot.Draw(pos, a.ActCount)
