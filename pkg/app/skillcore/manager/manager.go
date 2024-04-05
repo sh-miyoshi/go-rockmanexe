@@ -1,10 +1,12 @@
 package skillmanager
 
 import (
+	"fmt"
+
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
 type Manager struct{}
@@ -75,9 +77,15 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.Invisible{Arg: arg}
 	case resources.SkillQuickGauge:
 		return &processor.QuickGauge{Arg: arg}
+	case resources.SkillAquamanShot, resources.SkillCirkillShot, resources.SkillGarooBreath:
+		// 敵の攻撃の場合、共通化するメリットがないのでcoreは何もしない
+		return nil
+	case resources.SkillThunderBall:
+		res := &processor.ThunderBall{Arg: arg}
+		res.Init()
+		return res
 	default:
-		// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
-		logger.Error("skill %d is not implemented yet", id)
+		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
 
 	return nil

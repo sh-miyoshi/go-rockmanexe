@@ -64,7 +64,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillVulcan1:
 		return newVulcan(objID, arg, core)
 	case resources.SkillThunderBall:
-		return newThunderBall(objID, arg)
+		return newThunderBall(objID, arg, core)
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
 		return newWideShot(objID, arg, core, skillID == resources.SkillPlayerWideShot)
 	case resources.SkillBoomerang:
