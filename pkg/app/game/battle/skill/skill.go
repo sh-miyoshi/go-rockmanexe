@@ -44,6 +44,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		field.SetBlackoutCount(count)
 		SetChipNameDraw(skillName, true)
 	}
+	arg.MakeInvisible = localanim.ObjAnimMakeInvisible
 	arg.ChangePanelType = field.ChangePanelType
 	core := localanim.SkillManager().Get(skillID, arg)
 
@@ -79,7 +80,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillBambooLance:
 		return newBambooLance(objID, arg, core)
 	case resources.SkillInvisible:
-		return newInvisible(objID, arg)
+		return newInvisible(objID, arg, core)
 	case resources.SkillGarooBreath:
 		return newGarooBreath(objID, arg)
 	case resources.SkillFlamePillarTracking, resources.SkillFlamePillarRandom, resources.SkillFlamePillarLine:

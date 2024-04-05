@@ -31,6 +31,7 @@ type Argument struct {
 	PanelBreak      func(pos point.Point)
 	Cutin           func(skillName string, count int)
 	ChangePanelType func(pos point.Point, pnType int)
+	MakeInvisible   func(objID string, count int)
 }
 
 type SkillCore interface {

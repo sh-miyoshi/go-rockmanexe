@@ -71,6 +71,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.Aquaman{Arg: arg}
 		res.Init()
 		return res
+	case resources.SkillInvisible:
+		return &processor.Invisible{Arg: arg}
 	default:
 		// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
 		logger.Error("skill %d is not implemented yet", id)
