@@ -108,6 +108,10 @@ func (d *animDraw) Draw() {
 		case anim.TypeBoomerang:
 			var drawPm skill.BoomerangDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.PrevPos.X = battlecommon.FieldNum.X - drawPm.PrevPos.X - 1
+				drawPm.NextPos.X = battlecommon.FieldNum.X - drawPm.NextPos.X - 1
+			}
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		case anim.TypeBambooLance:
 			d.drawBamboolance.Draw(a.ActCount)
