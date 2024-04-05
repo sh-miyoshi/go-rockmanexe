@@ -67,6 +67,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.AreaSteal{Arg: arg}
 		res.Init(id)
 		return res
+	case resources.SkillAquaman:
+		res := &processor.Aquaman{Arg: arg}
+		res.Init()
+		return res
 	default:
 		// TODO: 不正なIDの場合はエラーをセットしたいが、現状実装途中なので呼び出し元で参照しないようにする
 		logger.Error("skill %d is not implemented yet", id)
