@@ -100,8 +100,11 @@ func (d *animDraw) Draw() {
 		case anim.TypeTornado:
 			// Note: DrawParamで渡すようにしてもいいが、targetの決定アルゴリズムが変わることはないのでここに直接書く
 			targetPos := point.Point{X: a.Pos.X + 2, Y: a.Pos.Y}
+			if !isPlayer {
+				targetPos.X = a.Pos.X - 2
+			}
 			target := battlecommon.ViewPos(targetPos)
-			d.drawTornado.Draw(pos, target, a.ActCount)
+			d.drawTornado.Draw(pos, target, a.ActCount, isPlayer)
 		case anim.TypeBoomerang:
 			var drawPm skill.BoomerangDrawParam
 			drawPm.Unmarshal(a.DrawParam)
