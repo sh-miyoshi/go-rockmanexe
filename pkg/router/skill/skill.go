@@ -52,9 +52,7 @@ func Get(id int, arg Argument) SkillAnim {
 		ChangePanelType: func(pos point.Point, pnType int) {
 			// TODO
 		},
-		MakeInvisible: func(objID string, count int) {
-			// TODO
-		},
+		MakeInvisible: arg.Manager.ObjAnimMakeInvisible,
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 
