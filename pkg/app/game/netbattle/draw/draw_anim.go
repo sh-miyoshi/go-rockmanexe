@@ -79,7 +79,7 @@ func (d *animDraw) Draw() {
 				d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 			}
 		case anim.TypeSpreadGun:
-			d.drawSpreadGun.Draw(pos, a.ActCount)
+			d.drawSpreadGun.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:

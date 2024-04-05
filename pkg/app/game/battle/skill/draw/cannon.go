@@ -2,6 +2,7 @@ package skilldraw
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -26,19 +27,12 @@ func (p *DrawCannon) Draw(cannonType int, viewPos point.Point, count int, isPlay
 		if n >= 3 {
 			ofs -= 15
 		}
-		if !isPlayer {
-			ofs *= -1
-		}
 
-		dxlib.DrawRotaGraph(viewPos.X+ofs, viewPos.Y-12, 1, 0, imgCannonBody[cannonType][n], true, opt)
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(ofs, !isPlayer), viewPos.Y-12, 1, 0, imgCannonBody[cannonType][n], true, opt)
 	}
 
 	n = (count - 15) / delayCannonAtk
 	if n >= 0 && n < len(imgCannonAtk[cannonType]) {
-		ofs := 90
-		if !isPlayer {
-			ofs *= -1
-		}
-		dxlib.DrawRotaGraph(viewPos.X+ofs, viewPos.Y-10, 1, 0, imgCannonAtk[cannonType][n], true, opt)
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(90, !isPlayer), viewPos.Y-10, 1, 0, imgCannonAtk[cannonType][n], true, opt)
 	}
 }
