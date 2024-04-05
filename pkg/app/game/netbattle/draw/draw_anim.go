@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -67,6 +68,14 @@ func (d *animDraw) Draw() {
 			var drawPm skill.ShockWaveDrawParam
 			drawPm.Unmarshal(a.DrawParam)
 			if a.ActCount >= drawPm.InitWait {
+				if !isPlayer {
+					switch drawPm.Direct {
+					case config.DirectLeft:
+						drawPm.Direct = config.DirectRight
+					case config.DirectRight:
+						drawPm.Direct = config.DirectLeft
+					}
+				}
 				d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 			}
 		case anim.TypeSpreadGun:
