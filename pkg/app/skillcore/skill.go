@@ -29,7 +29,7 @@ type Argument struct {
 	SoundOn         func(typ resources.SEType)
 	GetObjects      func(filter objanim.Filter) []objanim.Param
 	PanelBreak      func(pos point.Point)
-	Cutin           func(skillName string)
+	Cutin           func(skillName string, count int)
 	ChangePanelType func(pos point.Point, pnType int)
 }
 

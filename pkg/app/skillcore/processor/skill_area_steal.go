@@ -96,7 +96,7 @@ func (p *AreaSteal) Process() (bool, error) {
 	case resources.SkillAreaStealStateBlackout:
 		if p.count == 1 {
 			p.Arg.SoundOn(resources.SEAreaSteal)
-			p.Arg.Cutin(p.name)
+			p.Arg.Cutin(p.name, 90)
 		}
 
 		if p.count == 30 {

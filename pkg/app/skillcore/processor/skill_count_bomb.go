@@ -20,7 +20,7 @@ func (p *CountBomb) Process() (bool, error) {
 	if p.count == 0 {
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		p.pos = point.Point{X: pos.X + 1, Y: pos.Y}
-		p.Arg.Cutin("カウントボム")
+		p.Arg.Cutin("カウントボム", 90)
 	}
 
 	p.count++

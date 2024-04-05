@@ -40,8 +40,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
 	arg.SoundOn = sound.On
-	arg.Cutin = func(skillName string) {
-		field.SetBlackoutCount(90)
+	arg.Cutin = func(skillName string, count int) {
+		field.SetBlackoutCount(count)
 		SetChipNameDraw(skillName, true)
 	}
 	arg.ChangePanelType = field.ChangePanelType
