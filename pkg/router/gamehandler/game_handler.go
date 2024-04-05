@@ -163,12 +163,13 @@ func (g *GameHandler) updateGameInfo() {
 			}
 
 			anims[i] = append(anims[i], gameinfo.Anim{
-				ObjectID:  a.ObjID,
-				Pos:       pos,
-				DrawType:  a.DrawType,
-				AnimType:  info.AnimType,
-				ActCount:  info.ActCount,
-				DrawParam: info.DrawParam[:],
+				ObjectID:      a.ObjID,
+				OwnerClientID: info.OwnerClientID,
+				Pos:           pos,
+				DrawType:      a.DrawType,
+				AnimType:      info.AnimType,
+				ActCount:      info.ActCount,
+				DrawParam:     info.DrawParam[:],
 			})
 		}
 	}

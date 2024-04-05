@@ -46,12 +46,13 @@ func (d *animDraw) Draw() {
 	ginfo := net.GetInst().GetGameInfo()
 	for _, a := range ginfo.Anims {
 		pos := battlecommon.ViewPos(a.Pos)
+		isPlayer := ginfo.ClientID == a.OwnerClientID
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
 			var drawPm skill.CannonDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
+			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount, isPlayer)
 		case anim.TypeMiniBomb:
 			var drawPm skill.MiniBombDrawParam
 			drawPm.Unmarshal(a.DrawParam)
