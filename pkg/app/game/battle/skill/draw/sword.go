@@ -10,11 +10,7 @@ type DrawSword struct {
 }
 
 func (p *DrawSword) Draw(swordType int, viewPos point.Point, count int, delay int, isPlayer bool) {
-	opt := dxlib.DrawRotaGraphOption{}
-	if !isPlayer {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-	}
+	opt := dxlib.OptXReverse(!isPlayer)
 
 	n := (count - 5) / delay
 	if n >= 0 && n < len(imgSword[swordType]) {
