@@ -9,17 +9,24 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
+type Signal struct {
+	Val   pb.Request_SignalType
+	IsSet bool
+}
+
 type Manager struct {
 	animMgr    *anim.AnimManager
 	objAnimMgr *objanim.AnimManager
 	skillMgr   *skillmanager.Manager
 	queueIDs   [gameinfo.QueueTypeMax]string
+	signal     Signal
 }
 
 func New() *Manager {
@@ -112,4 +119,16 @@ func (m *Manager) SoundOn(typ resources.SEType) {
 		ID:   uuid.New().String(),
 		Type: int(typ),
 	})
+}
+
+func (m *Manager) SetSignal(signal pb.Request_SignalType) {
+	m.signal = Signal{Val: signal, IsSet: true}
+}
+
+func (m *Manager) GetSignal() Signal {
+	return m.signal
+}
+
+func (m *Manager) ResetSignal() {
+	m.signal.IsSet = false
 }

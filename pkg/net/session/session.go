@@ -15,10 +15,11 @@ const (
 	stateConnectWait int = iota
 	stateChipSelectWait
 	stateActing
+	stateCutin
 )
 
 type GameLogic interface {
-	Init(clientIDs [2]string) error
+	Init(clientIDs [2]string, signalReceiver chan pb.Request_SignalType) error
 	AddPlayerObject(clientID string, param object.InitParam) error
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
@@ -39,22 +40,24 @@ type SessionClient struct {
 }
 
 type Session struct {
-	id          string
-	clients     [2]SessionClient
-	expiresAt   time.Time
-	gameHandler GameLogic
-	exitErr     *sessionError
-	fpsMgr      fps.Fps
-	state       int
+	id             string
+	clients        [2]SessionClient
+	expiresAt      time.Time
+	gameHandler    GameLogic
+	exitErr        *sessionError
+	fpsMgr         fps.Fps
+	state          int
+	signalReceiver chan pb.Request_SignalType
 }
 
 func newSession(sessionID string, gameHandler GameLogic) *Session {
 	res := &Session{
-		id:          sessionID,
-		expiresAt:   time.Now().Add(sessionExpireTime),
-		fpsMgr:      fps.Fps{},
-		state:       stateConnectWait,
-		gameHandler: gameHandler,
+		id:             sessionID,
+		expiresAt:      time.Now().Add(sessionExpireTime),
+		fpsMgr:         fps.Fps{},
+		state:          stateConnectWait,
+		gameHandler:    gameHandler,
+		signalReceiver: make(chan pb.Request_SignalType),
 	}
 	return res
 }
@@ -99,6 +102,18 @@ MAIN_LOOP:
 			return
 		}
 
+		go func() {
+			signal := <-s.signalReceiver
+			switch signal {
+			case pb.Request_CUTIN:
+				// カットイン状態にする
+				s.changeState(stateCutin)
+				s.publishStateToClient(pb.Response_CUTIN)
+			default:
+				system.SetError(fmt.Sprintf("Signal %d は現状扱えません", signal))
+			}
+		}()
+
 		switch s.state {
 		case stateConnectWait:
 			for _, c := range s.clients {
@@ -112,7 +127,7 @@ MAIN_LOOP:
 				s.clients[i].chipSent = false
 				clientIDs[i] = s.clients[i].clientID
 			}
-			if err := s.gameHandler.Init(clientIDs); err != nil {
+			if err := s.gameHandler.Init(clientIDs, s.signalReceiver); err != nil {
 				s.exitErr = &sessionError{
 					reason: fmt.Errorf("failed to initialize game handler"),
 				}
@@ -144,6 +159,10 @@ MAIN_LOOP:
 				s.exitErr = &sessionError{}
 				return
 			}
+		case stateCutin:
+			logger.Debug("TODO: cutin now")
+			s.changeState(stateActing)
+			// TODO: 未実装
 		}
 	}
 }

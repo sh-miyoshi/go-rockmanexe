@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
+	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -47,6 +48,7 @@ func Get(id int, arg Argument) SkillAnim {
 		PanelBreak:   panelBreak,
 		Cutin: func(skillName string, count int) {
 			// TODO
+			arg.Manager.SetSignal(pb.Request_CUTIN)
 		},
 		ChangePanelType: func(pos point.Point, pnType int) {
 			// TODO
