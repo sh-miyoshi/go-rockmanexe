@@ -18,6 +18,7 @@ message Request {
         CHIPSELECT = 0;
         GOCHIPSELECT = 1;
         INITPARAMS = 2;
+        CUTIN = 3;
     }
 
     enum ActionType {
@@ -65,6 +66,7 @@ message Response {
         CHIPSELECTWAIT = 1;
         ACTING = 2;
         GAMEEND = 3;
+        CUTIN = 4;
     }
 
     message AuthResponse {
