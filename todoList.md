@@ -30,8 +30,6 @@
 
 ## スキルリファクタリング
 
-- GetEndCountの削除
-  - pkg/router/object/object_player.goのendCountの調整
 - ネットワーク上での各処理の実装
   - Cutin
   - ChangePanelType
