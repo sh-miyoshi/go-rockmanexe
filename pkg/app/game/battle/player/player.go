@@ -50,7 +50,7 @@ type act struct {
 
 	typ       int
 	count     int
-	keepCount int
+	endCount  int
 	pPos      *point.Point
 	skillID   string
 	skillInst skill.SkillAnim
@@ -83,7 +83,6 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers    [battlecommon.PlayerActMax][]int
-	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -677,12 +676,11 @@ func (a *act) Process() bool {
 
 	a.count++
 
-	num := len(imgPlayers[a.typ]) + a.keepCount
-	if a.count > num*imgDelays[a.typ] {
+	if a.count > a.endCount {
 		// Reset params
 		a.typ = -1
 		a.count = 0
-		a.keepCount = 0
+		a.endCount = 0
 		return false // finished
 	}
 	return true // processing now
@@ -691,7 +689,7 @@ func (a *act) Process() bool {
 func (a *act) SetAnim(animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
-	a.keepCount = keepCount
+	a.endCount = battlecommon.GetPlayerActCount(animType, keepCount)
 }
 
 func (a *act) GetImage() int {
@@ -700,9 +698,10 @@ func (a *act) GetImage() int {
 		return imgPlayers[battlecommon.PlayerActMove][0]
 	}
 
-	imgNo := (a.count / imgDelays[a.typ])
-	if imgNo >= len(imgPlayers[a.typ]) {
-		imgNo = len(imgPlayers[a.typ]) - 1
+	num, delay := battlecommon.GetPlayerImageInfo(a.typ)
+	imgNo := (a.count / delay)
+	if imgNo >= num {
+		imgNo = num - 1
 	}
 
 	return imgPlayers[a.typ][imgNo]
