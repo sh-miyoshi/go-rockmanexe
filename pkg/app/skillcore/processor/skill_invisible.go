@@ -25,9 +25,3 @@ func (p *Invisible) Process() (bool, error) {
 func (p *Invisible) GetCount() int {
 	return p.count
 }
-
-func (p *Invisible) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 1
-}

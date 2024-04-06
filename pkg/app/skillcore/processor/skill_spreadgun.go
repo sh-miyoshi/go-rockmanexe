@@ -88,10 +88,6 @@ func (p *SpreadGun) GetCount() int {
 	return p.count
 }
 
-func (p *SpreadGun) GetEndCount() int {
-	return spreadGunEndCount
-}
-
 func (p *SpreadGun) PopSpreadHits() []SpreadHit {
 	if len(p.hits) > 0 {
 		res := append([]SpreadHit{}, p.hits...)

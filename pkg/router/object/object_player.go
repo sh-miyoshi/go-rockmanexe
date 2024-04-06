@@ -182,7 +182,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		// 麻痺状態(p.act.SetAnim(battlecommon.PlayerActParalyzed, 120))
 		system.SetError("TODO: not implemented yet")
 	} else {
-		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 12) // delay(2) * image_num(6)
+		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 0)
 		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 	}
 
@@ -246,7 +246,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 	p.skillInst = s
 
 	if c.PlayerAct != -1 {
-		p.act.SetAnim(c.PlayerAct, nil, s.GetEndCount())
+		p.act.SetAnim(c.PlayerAct, nil, c.KeepCount)
 	}
 }
 
@@ -330,11 +330,11 @@ func (a *playerAct) Process() bool {
 	return true // processing now
 }
 
-func (a *playerAct) SetAnim(actType int, actInfo []byte, endCount int) {
+func (a *playerAct) SetAnim(actType int, actInfo []byte, keepCount int) {
 	a.actType = actType
 	a.info = actInfo
 	a.count = 0
-	a.endCount = endCount
+	a.endCount = battlecommon.GetPlayerActCount(actType, keepCount)
 
 	switch actType {
 	case battlecommon.PlayerActMove:

@@ -24,9 +24,3 @@ func (p *QuickGauge) Process() (bool, error) {
 func (p *QuickGauge) GetCount() int {
 	return p.count
 }
-
-func (p *QuickGauge) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 1
-}

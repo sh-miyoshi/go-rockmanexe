@@ -93,10 +93,6 @@ func (p *Sword) GetCount() int {
 	return p.count
 }
 
-func (p *Sword) GetEndCount() int {
-	return swordEndCount
-}
-
 func (p *Sword) GetSwordType() int {
 	switch p.SkillID {
 	case resources.SkillSword:

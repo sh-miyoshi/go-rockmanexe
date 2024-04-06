@@ -31,12 +31,6 @@ func (p *CountBomb) GetCount() int {
 	return p.count
 }
 
-func (p *CountBomb) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 3 * 4
-}
-
 func (p *CountBomb) GetPos() point.Point {
 	return p.pos
 }

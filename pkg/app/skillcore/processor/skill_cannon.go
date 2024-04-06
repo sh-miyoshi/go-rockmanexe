@@ -64,10 +64,6 @@ func (p *Cannon) GetCount() int {
 	return p.count
 }
 
-func (p *Cannon) GetEndCount() int {
-	return cannonEndCount
-}
-
 func (p *Cannon) GetCannonType() int {
 	switch p.SkillID {
 	case resources.SkillCannon:

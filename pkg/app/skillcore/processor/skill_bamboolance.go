@@ -47,7 +47,3 @@ func (p *BambooLance) Process() (bool, error) {
 func (p *BambooLance) GetCount() int {
 	return p.count
 }
-
-func (p *BambooLance) GetEndCount() int {
-	return 1
-}

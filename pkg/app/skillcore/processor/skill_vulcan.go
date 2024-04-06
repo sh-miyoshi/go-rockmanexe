@@ -91,10 +91,6 @@ func (p *Vulcan) GetCount() int {
 	return p.count
 }
 
-func (p *Vulcan) GetEndCount() int {
-	return vulcanDelay*5*(p.Times-1) + vulcanDelay*1
-}
-
 func (p *Vulcan) PopEffects() []resources.EffectParam {
 	if len(p.effects) > 0 {
 		res := append([]resources.EffectParam{}, p.effects...)

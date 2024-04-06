@@ -68,10 +68,6 @@ func (p *boomerang) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
 
-func (p *boomerang) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *BoomerangDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

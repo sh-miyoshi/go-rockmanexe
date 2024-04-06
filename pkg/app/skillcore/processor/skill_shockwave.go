@@ -88,10 +88,6 @@ func (p *ShockWave) GetCount() int {
 	return p.count
 }
 
-func (p *ShockWave) GetEndCount() int {
-	return 6 * 4
-}
-
 func (p *ShockWave) GetParam() ShockWaveParam {
 	return p.pm
 }

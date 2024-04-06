@@ -37,7 +37,6 @@ type Argument struct {
 type SkillCore interface {
 	Process() (bool, error)
 	GetCount() int
-	GetEndCount() int
 }
 
 func GetIDByChipID(chipID int) int {

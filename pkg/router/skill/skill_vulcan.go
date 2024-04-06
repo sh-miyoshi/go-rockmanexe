@@ -73,10 +73,6 @@ func (p *vulcan) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
 
-func (p *vulcan) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *VulcanDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

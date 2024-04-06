@@ -64,10 +64,6 @@ func (p *wideShot) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
 
-func (p *wideShot) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *WideShotDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

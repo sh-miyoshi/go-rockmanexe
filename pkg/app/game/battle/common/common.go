@@ -5,7 +5,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
-// MoveObject ...
 func MoveObject(pos *point.Point, direct int, objPanelType int, isMove bool, GetPanelInfo func(pos point.Point) PanelInfo) bool {
 	next := *pos
 
@@ -88,4 +87,20 @@ func ReverseDirect(direct int) int {
 		return config.DirectLeft
 	}
 	return direct
+}
+
+var (
+	playerImageNums   = []int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4}
+	playerImageDelays = []int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
+)
+
+func GetPlayerActCount(actType int, keepCount int) int {
+	if actType < 0 || actType >= PlayerActMax {
+		return 1
+	}
+	return playerImageDelays[actType] * (playerImageNums[actType] + keepCount)
+}
+
+func GetPlayerImageInfo(actType int) (num, delay int) {
+	return playerImageNums[actType], playerImageDelays[actType]
 }
