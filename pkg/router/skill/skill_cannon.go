@@ -66,10 +66,6 @@ func (p *cannon) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
 
-func (p *cannon) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *CannonDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

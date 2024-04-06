@@ -76,7 +76,3 @@ func (p *heatShot) StopByOwner() {
 		p.Arg.Manager.AnimDelete(p.ID)
 	}
 }
-
-func (p *heatShot) GetEndCount() int {
-	return p.Core.GetEndCount()
-}

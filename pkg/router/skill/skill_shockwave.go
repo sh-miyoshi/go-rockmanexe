@@ -63,10 +63,6 @@ func (p *shockWave) GetParam() anim.Param {
 func (p *shockWave) StopByOwner() {
 }
 
-func (p *shockWave) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *ShockWaveDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

@@ -26,7 +26,6 @@ type SkillAnim interface {
 	anim.Anim
 
 	StopByOwner()
-	GetEndCount() int
 }
 
 func Get(id int, arg Argument) SkillAnim {

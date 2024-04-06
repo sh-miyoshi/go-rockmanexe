@@ -103,10 +103,6 @@ func (p *WideShot) GetCount() int {
 	return p.count
 }
 
-func (p *WideShot) GetEndCount() int {
-	return wideShotEndCount
-}
-
 func (p *WideShot) GetParam() WideShotParam {
 	return p.pm
 }

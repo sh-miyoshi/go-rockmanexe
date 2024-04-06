@@ -58,12 +58,6 @@ func (p *Aquaman) GetCount() int {
 	return p.count
 }
 
-func (p *Aquaman) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 1
-}
-
 func (p *Aquaman) GetState() int {
 	return p.state
 }

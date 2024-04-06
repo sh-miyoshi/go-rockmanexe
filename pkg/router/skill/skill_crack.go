@@ -46,7 +46,3 @@ func (p *crack) GetParam() anim.Param {
 func (p *crack) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
-
-func (p *crack) GetEndCount() int {
-	return p.Core.GetEndCount()
-}

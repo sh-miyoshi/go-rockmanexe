@@ -81,10 +81,6 @@ func (p *miniBomb) StopByOwner() {
 	}
 }
 
-func (p *miniBomb) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *MiniBombDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

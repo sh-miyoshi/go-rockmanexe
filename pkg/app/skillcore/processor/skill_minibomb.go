@@ -65,10 +65,6 @@ func (p *MiniBomb) GetCount() int {
 	return p.count
 }
 
-func (p *MiniBomb) GetEndCount() int {
-	return 28
-}
-
 func (p *MiniBomb) GetLandCount() int {
 	return miniBombLandCount
 }

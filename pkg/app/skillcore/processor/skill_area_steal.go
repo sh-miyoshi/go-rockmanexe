@@ -139,12 +139,6 @@ func (p *AreaSteal) GetCount() int {
 	return p.count
 }
 
-func (p *AreaSteal) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 1
-}
-
 func (p *AreaSteal) GetState() int {
 	return p.state
 }

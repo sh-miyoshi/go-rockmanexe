@@ -71,10 +71,6 @@ func (p *sword) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
 
-func (p *sword) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *SwordDrawParam) Marshal() []byte {
 	buf := bytes.NewBuffer(nil)
 	gob.NewEncoder(buf).Encode(p)

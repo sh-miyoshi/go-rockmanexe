@@ -126,12 +126,6 @@ func (p *ThunderBall) GetCount() int {
 	return p.count
 }
 
-func (p *ThunderBall) GetEndCount() int {
-	// EndCount = delay * (len(img) + keepCount)
-	// TODO
-	return 1
-}
-
 func (p *ThunderBall) GetPos() (prev, current, next point.Point) {
 	return p.prev, p.pos, p.next
 }

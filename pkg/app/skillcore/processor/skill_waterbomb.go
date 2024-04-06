@@ -72,10 +72,6 @@ func (p *WaterBomb) GetCount() int {
 	return p.count
 }
 
-func (p *WaterBomb) GetEndCount() int {
-	return 28
-}
-
 func (p *WaterBomb) GetLandCount() int {
 	return waterBombLandCount
 }
