@@ -50,12 +50,13 @@ func (p *MiniBomb) Process() (bool, error) {
 				Element:       damage.ElementNone,
 				TargetObjID:   objID,
 			})
-			p.effect = &resources.EffectParam{
-				Type:      resources.EffectTypeExplode,
-				Pos:       p.target,
-				RandRange: 0,
-			}
 		}
+		p.effect = &resources.EffectParam{
+			Type:      resources.EffectTypeExplode,
+			Pos:       p.target,
+			RandRange: 0,
+		}
+
 		return true, nil
 	}
 	return false, nil
