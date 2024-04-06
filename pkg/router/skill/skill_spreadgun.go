@@ -69,10 +69,6 @@ func (p *spreadGun) StopByOwner() {
 	}
 }
 
-func (p *spreadGun) GetEndCount() int {
-	return p.Core.GetEndCount()
-}
-
 func (p *spreadHit) Draw() {
 	// nothing to do at router
 }

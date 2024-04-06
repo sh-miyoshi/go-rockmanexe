@@ -12,12 +12,6 @@ const (
 	vulcanDelay = 2
 )
 
-type VulcanEffect struct {
-	Type      int
-	Pos       point.Point
-	RandRange int
-}
-
 type Vulcan struct {
 	Arg   skillcore.Argument
 	Times int
@@ -25,7 +19,7 @@ type Vulcan struct {
 	count    int
 	isHit    bool
 	atkCount int
-	effects  []VulcanEffect
+	effects  []resources.EffectParam
 }
 
 func (p *Vulcan) Process() (bool, error) {
@@ -52,14 +46,14 @@ func (p *Vulcan) Process() (bool, error) {
 						Element:       damage.ElementNone,
 						TargetObjID:   objID,
 					})
-					p.effects = append(p.effects, VulcanEffect{
+					p.effects = append(p.effects, resources.EffectParam{
 						Type:      resources.EffectTypeVulcanHit1,
 						Pos:       target,
 						RandRange: 20,
 					})
 					if p.isHit && x < battlecommon.FieldNum.X-1 {
 						target = point.Point{X: x + 1, Y: pos.Y}
-						p.effects = append(p.effects, VulcanEffect{
+						p.effects = append(p.effects, resources.EffectParam{
 							Type:      resources.EffectTypeVulcanHit2,
 							Pos:       target,
 							RandRange: 20,
@@ -97,17 +91,13 @@ func (p *Vulcan) GetCount() int {
 	return p.count
 }
 
-func (p *Vulcan) GetEndCount() int {
-	return vulcanDelay*5*(p.Times-1) + vulcanDelay*1
-}
-
-func (p *Vulcan) PopEffects() []VulcanEffect {
+func (p *Vulcan) PopEffects() []resources.EffectParam {
 	if len(p.effects) > 0 {
-		res := append([]VulcanEffect{}, p.effects...)
-		p.effects = []VulcanEffect{}
+		res := append([]resources.EffectParam{}, p.effects...)
+		p.effects = []resources.EffectParam{}
 		return res
 	}
-	return []VulcanEffect{}
+	return []resources.EffectParam{}
 }
 
 func (p *Vulcan) GetDelay() int {

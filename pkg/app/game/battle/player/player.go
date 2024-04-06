@@ -50,7 +50,7 @@ type act struct {
 
 	typ       int
 	count     int
-	keepCount int
+	endCount  int
 	pPos      *point.Point
 	skillID   string
 	skillInst skill.SkillAnim
@@ -83,7 +83,6 @@ type BattlePlayer struct {
 
 var (
 	imgPlayers    [battlecommon.PlayerActMax][]int
-	imgDelays     = [battlecommon.PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -314,36 +313,36 @@ func (p *BattlePlayer) Draw() {
 		}
 	}
 
-	if p.invincibleCount/5%2 != 0 {
-		return
-	}
+	playerVisible := p.invincibleCount/5%2 == 0
 
-	view := battlecommon.ViewPos(p.Pos)
-	img := p.act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-	if p.act.IsParalyzed() {
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-		// 黄色と白を点滅させる
-		pm := 0
-		if p.act.count/10%2 == 0 {
-			pm = 255
-		}
-		dxlib.SetDrawBright(255, 255, pm)
+	if playerVisible {
+		view := battlecommon.ViewPos(p.Pos)
+		img := p.act.GetImage()
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-		dxlib.SetDrawBright(255, 255, 255)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-	}
-
-	// Show charge image
-	if p.ChargeCount > battlecommon.ChargeViewDelay {
-		n := 0
-		if p.ChargeCount > p.ChargeTime {
-			n = 1
+		if p.act.IsParalyzed() {
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
+			// 黄色と白を点滅させる
+			pm := 0
+			if p.act.count/10%2 == 0 {
+				pm = 255
+			}
+			dxlib.SetDrawBright(255, 255, pm)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+			dxlib.SetDrawBright(255, 255, 255)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		}
-		imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+
+		// Show charge image
+		if p.ChargeCount > battlecommon.ChargeViewDelay {
+			n := 0
+			if p.ChargeCount > p.ChargeTime {
+				n = 1
+			}
+			imgNo := int(p.ChargeCount/4) % len(imgCharge[n])
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 224)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgCharge[n][imgNo], true)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		}
 	}
 
 	// Show HP
@@ -677,12 +676,11 @@ func (a *act) Process() bool {
 
 	a.count++
 
-	num := len(imgPlayers[a.typ]) + a.keepCount
-	if a.count > num*imgDelays[a.typ] {
+	if a.count > a.endCount {
 		// Reset params
 		a.typ = -1
 		a.count = 0
-		a.keepCount = 0
+		a.endCount = 0
 		return false // finished
 	}
 	return true // processing now
@@ -691,7 +689,7 @@ func (a *act) Process() bool {
 func (a *act) SetAnim(animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
-	a.keepCount = keepCount
+	a.endCount = battlecommon.GetPlayerActCount(animType, keepCount)
 }
 
 func (a *act) GetImage() int {
@@ -700,9 +698,10 @@ func (a *act) GetImage() int {
 		return imgPlayers[battlecommon.PlayerActMove][0]
 	}
 
-	imgNo := (a.count / imgDelays[a.typ])
-	if imgNo >= len(imgPlayers[a.typ]) {
-		imgNo = len(imgPlayers[a.typ]) - 1
+	num, delay := battlecommon.GetPlayerImageInfo(a.typ)
+	imgNo := (a.count / delay)
+	if imgNo >= num {
+		imgNo = num - 1
 	}
 
 	return imgPlayers[a.typ][imgNo]

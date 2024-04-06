@@ -127,17 +127,11 @@ func (o *ColdBress) Draw() {
 
 	view := battlecommon.ViewPos(o.pm.Pos)
 
-	opt := dxlib.DrawRotaGraphOption{}
-	if o.pm.xFlip {
-		f := int32(dxlib.TRUE)
-		opt.ReverseXFlag = &f
-	}
-
 	n := (o.count / delayColdBress) % len(o.images)
 	ofsx := battlecommon.GetOffset(o.next.X, o.pm.Pos.X, o.prev.X, cnt, coldBressNextStepCount, battlecommon.PanelSize.X)
 	ofsy := battlecommon.GetOffset(o.next.Y, o.pm.Pos.Y, o.prev.Y, cnt, coldBressNextStepCount, battlecommon.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16+ofsy, 1, 0, o.images[n], true, opt)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+16+ofsy, 1, 0, o.images[n], true, dxlib.OptXReverse(o.pm.xFlip))
 }
 
 func (o *ColdBress) DamageProc(dm *damage.Damage) bool {

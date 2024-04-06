@@ -1,5 +1,7 @@
 package resources
 
+import "github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+
 const (
 	EffectTypeNone int = iota
 	EffectTypeHitSmall
@@ -20,3 +22,9 @@ const (
 
 	EffectTypeMax
 )
+
+type EffectParam struct {
+	Type      int
+	Pos       point.Point
+	RandRange int
+}

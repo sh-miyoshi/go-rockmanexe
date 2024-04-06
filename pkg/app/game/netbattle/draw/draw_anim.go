@@ -46,15 +46,20 @@ func (d *animDraw) Draw() {
 	ginfo := net.GetInst().GetGameInfo()
 	for _, a := range ginfo.Anims {
 		pos := battlecommon.ViewPos(a.Pos)
+		isPlayer := ginfo.ClientID == a.OwnerClientID
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
 			var drawPm skill.CannonDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount)
+			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount, isPlayer)
 		case anim.TypeMiniBomb:
 			var drawPm skill.MiniBombDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.Target.X = battlecommon.FieldNum.X - drawPm.Target.X - 1
+			}
+
 			d.drawMiniBombInst.Draw(a.Pos, drawPm.Target, a.ActCount, drawPm.LandCount)
 		case anim.TypeRecover:
 			d.drawRecover.Draw(pos, a.ActCount)
@@ -62,41 +67,54 @@ func (d *animDraw) Draw() {
 			var drawPm skill.ShockWaveDrawParam
 			drawPm.Unmarshal(a.DrawParam)
 			if a.ActCount >= drawPm.InitWait {
+				if !isPlayer {
+					drawPm.Direct = battlecommon.ReverseDirect(drawPm.Direct)
+				}
 				d.drawShockWave.Draw(pos, a.ActCount, drawPm.Speed, drawPm.Direct)
 			}
 		case anim.TypeSpreadGun:
-			d.drawSpreadGun.Draw(pos, a.ActCount)
+			d.drawSpreadGun.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeSpreadHit:
 			d.drawSpreadHit.Draw(pos, a.ActCount)
 		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:
 			var drawPm skill.SwordDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay)
+			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay, isPlayer)
 		case anim.TypeVulcan:
 			var drawPm skill.VulcanDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay)
+			d.drawVulcan.Draw(pos, a.ActCount, drawPm.Delay, isPlayer)
 		case anim.TypeWideShot:
 			var drawPm skill.WideShotDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.Direct = battlecommon.ReverseDirect(drawPm.Direct)
+			}
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
 		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
-			d.drawHeatShot.Draw(pos, a.ActCount)
+			d.drawHeatShot.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeFlameLine:
 			var drawPm skill.FlameLineDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay)
+			d.drawFlameLine.Draw(pos, a.ActCount, true, drawPm.Pillars, drawPm.Delay, isPlayer)
 		case anim.TypeTornado:
 			// Note: DrawParamで渡すようにしてもいいが、targetの決定アルゴリズムが変わることはないのでここに直接書く
 			targetPos := point.Point{X: a.Pos.X + 2, Y: a.Pos.Y}
+			if !isPlayer {
+				targetPos.X = a.Pos.X - 2
+			}
 			target := battlecommon.ViewPos(targetPos)
-			d.drawTornado.Draw(pos, target, a.ActCount)
+			d.drawTornado.Draw(pos, target, a.ActCount, isPlayer)
 		case anim.TypeBoomerang:
 			var drawPm skill.BoomerangDrawParam
 			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.PrevPos.X = battlecommon.FieldNum.X - drawPm.PrevPos.X - 1
+				drawPm.NextPos.X = battlecommon.FieldNum.X - drawPm.NextPos.X - 1
+			}
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		case anim.TypeBambooLance:
-			d.drawBamboolance.Draw(a.ActCount)
+			d.drawBamboolance.Draw(a.ActCount, isPlayer)
 		case anim.TypeCrack:
 			// no animation
 		default:

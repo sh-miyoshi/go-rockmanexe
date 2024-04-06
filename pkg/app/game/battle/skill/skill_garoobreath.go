@@ -11,6 +11,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+const (
+	garooBreathNextStepCount = 10
+)
+
 type garooBreath struct {
 	ID  string
 	Arg skillcore.Argument
@@ -43,18 +47,18 @@ func newGarooBreath(objID string, arg skillcore.Argument) *garooBreath {
 }
 
 func (p *garooBreath) Draw() {
-	p.drawer.Draw(p.prev, p.pos, p.next, p.count)
+	p.drawer.Draw(p.prev, p.pos, p.next, p.count, garooBreathNextStepCount)
 }
 
 func (p *garooBreath) Process() (bool, error) {
-	if p.count%resources.SkillGarooBreathNextStepCount/2 == 0 {
+	if p.count%garooBreathNextStepCount/2 == 0 {
 		// Finish if hit
 		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
 
-	if p.count%resources.SkillGarooBreathNextStepCount == 0 {
+	if p.count%garooBreathNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
@@ -63,7 +67,7 @@ func (p *garooBreath) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           resources.SkillGarooBreathNextStepCount + 1,
+			TTL:           garooBreathNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,

@@ -49,7 +49,3 @@ func (p *tornado) GetParam() anim.Param {
 func (p *tornado) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
-
-func (p *tornado) GetEndCount() int {
-	return p.Core.GetEndCount()
-}

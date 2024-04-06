@@ -40,6 +40,12 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
 	arg.SoundOn = sound.On
+	arg.Cutin = func(skillName string, count int) {
+		field.SetBlackoutCount(count)
+		SetChipNameDraw(skillName, true)
+	}
+	arg.MakeInvisible = localanim.ObjAnimMakeInvisible
+	arg.ChangePanelType = field.ChangePanelType
 	core := localanim.SkillManager().Get(skillID, arg)
 
 	switch skillID {
@@ -58,7 +64,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillVulcan1:
 		return newVulcan(objID, arg, core)
 	case resources.SkillThunderBall:
-		return newThunderBall(objID, arg)
+		return newThunderBall(objID, arg, core)
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
 		return newWideShot(objID, arg, core, skillID == resources.SkillPlayerWideShot)
 	case resources.SkillBoomerang:
@@ -68,31 +74,29 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillAquamanShot:
 		return newAquamanShot(objID, arg)
 	case resources.SkillAquaman:
-		return newAquaman(objID, arg)
+		return newAquaman(objID, arg, core)
 	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
 		return newCrack(objID, arg, core)
 	case resources.SkillBambooLance:
 		return newBambooLance(objID, arg, core)
 	case resources.SkillInvisible:
-		return newInvisible(objID, arg)
+		return newInvisible(objID, arg, core)
 	case resources.SkillGarooBreath:
 		return newGarooBreath(objID, arg)
 	case resources.SkillFlamePillarTracking, resources.SkillFlamePillarRandom, resources.SkillFlamePillarLine:
 		return newFlamePillar(objID, arg, core)
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
 		return newHeatShot(objID, arg, core)
-	case resources.SkillAreaSteal:
-		return newAreaSteal(objID, arg)
-	case resources.SkillPanelSteal:
-		return newPanelSteal(objID, arg)
+	case resources.SkillAreaSteal, resources.SkillPanelSteal:
+		return newAreaSteal(objID, arg, core)
 	case resources.SkillCountBomb:
-		return newCountBomb(objID, arg)
+		return newCountBomb(objID, arg, core)
 	case resources.SkillTornado:
 		return newTornado(objID, arg, core)
 	case resources.SkillFailed:
 		return newFailed(objID, arg)
 	case resources.SkillQuickGauge:
-		return newQuickGauge(objID, arg)
+		return newQuickGauge(objID, arg, core)
 	case resources.SkillCirkillShot:
 		return newCirkillShot(objID, arg)
 	}

@@ -30,24 +30,18 @@
 
 ## スキルリファクタリング
 
-- 全体構成
-  - app/skill
-    - processer
-      - local
-      - net
-    - drawer
-- Phase3
-  - 変数、定義の整理
-    - 消したい
-      - resources.EndCount
-      - resources.NextStepCount, Delay
-      - resources.SkillState
-  - skillcoreの実装
-  - drawerへの移行
-  - spreadHitをeffectにする
-    - もしかしたらeffectMgrを渡すようにしてもいいかも
-  - GetEndCountの削除
-    - pkg/router/object/object_player.goのendCountの調整
+- ネットワーク上での各処理の実装
+  - Cutin
+  - ChangePanelType
+
+### ネット越しの暗転チップ
+
+#### 全体像
+
+1. チップを使うと暗転フラグを送信
+2. サーバがフラグを受け取ると即モードを移行、クライアントに通知
+3. クライアントは暗転中何もできない
+4. 暗転終了を通知
 
 ## 新機能
 

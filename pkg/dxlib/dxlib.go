@@ -392,3 +392,11 @@ func DeleteKeyInput(inputHandle int) {
 func SetKeyInputStringColor(nmlStr uint, nmlCur uint, imeStrBack uint, imeCur uint, imeLine uint, imeSelectStr uint, imeModeStr uint, nmlStrE uint, imeSelectStrE uint, imeModeStrE uint, imeSelectWinE uint, imeSelectWinF uint, selectStrBackColor uint, selectStrColor uint, selectStrEdgeColor uint, imeStr uint, imeStrE uint) {
 	dxlib.SetKeyInputStringColor(uint32(nmlStr), uint32(nmlCur), uint32(imeStrBack), uint32(imeCur), uint32(imeLine), uint32(imeSelectStr), uint32(imeModeStr), uint32(nmlStrE), uint32(imeSelectStrE), uint32(imeModeStrE), uint32(imeSelectWinE), uint32(imeSelectWinF), uint32(selectStrBackColor), uint32(selectStrColor), uint32(selectStrEdgeColor), uint32(imeStr), uint32(imeStrE))
 }
+
+func OptXReverse(isReverse bool) DrawRotaGraphOption {
+	if isReverse {
+		f := int32(TRUE)
+		return DrawRotaGraphOption{ReverseXFlag: &f}
+	}
+	return DrawRotaGraphOption{}
+}

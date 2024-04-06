@@ -183,9 +183,8 @@ func (e *enemyGaroo) Draw() {
 	}
 
 	view := battlecommon.ViewPos(e.pm.Pos)
-	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, *img, true, dxlib.OptXReverse(true))
 
 	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
 

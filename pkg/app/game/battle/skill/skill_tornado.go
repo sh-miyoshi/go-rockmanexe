@@ -29,7 +29,7 @@ func (p *tornado) Draw() {
 	objPos, targetPos := p.Core.GetPos()
 	view := battlecommon.ViewPos(objPos)
 	target := battlecommon.ViewPos(targetPos)
-	p.drawer.Draw(view, target, p.Core.GetCount())
+	p.drawer.Draw(view, target, p.Core.GetCount(), true)
 }
 
 func (p *tornado) Process() (bool, error) {

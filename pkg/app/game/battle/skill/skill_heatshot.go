@@ -30,7 +30,7 @@ func newHeatShot(objID string, arg skillcore.Argument, core skillcore.SkillCore)
 func (p *heatShot) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(view, p.Core.GetCount())
+	p.drawer.Draw(view, p.Core.GetCount(), true)
 }
 
 func (p *heatShot) Process() (bool, error) {

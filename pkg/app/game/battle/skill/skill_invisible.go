@@ -3,21 +3,20 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
 type invisible struct {
-	ID  string
-	Arg skillcore.Argument
-
-	count int
+	ID   string
+	Arg  skillcore.Argument
+	Core skillcore.SkillCore
 }
 
-func newInvisible(objID string, arg skillcore.Argument) *invisible {
+func newInvisible(objID string, arg skillcore.Argument, core skillcore.SkillCore) *invisible {
 	return &invisible{
-		ID:  objID,
-		Arg: arg,
+		ID:   objID,
+		Arg:  arg,
+		Core: core,
 	}
 }
 
@@ -25,16 +24,7 @@ func (p *invisible) Draw() {
 }
 
 func (p *invisible) Process() (bool, error) {
-	p.count++
-
-	showTm := 60
-	if p.count == 1 {
-		field.SetBlackoutCount(showTm)
-		localanim.ObjAnimMakeInvisible(p.Arg.OwnerID, 6*60)
-		SetChipNameDraw("インビジブル", true)
-	}
-
-	return p.count > showTm, nil
+	return p.Core.Process()
 }
 
 func (p *invisible) GetParam() anim.Param {

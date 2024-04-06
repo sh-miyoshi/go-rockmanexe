@@ -30,7 +30,7 @@ func (p *vulcan) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetDelay())
+	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetDelay(), true)
 }
 
 func (p *vulcan) Process() (bool, error) {

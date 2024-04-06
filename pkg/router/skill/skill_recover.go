@@ -45,7 +45,3 @@ func (p *recover) GetParam() anim.Param {
 
 func (p *recover) StopByOwner() {
 }
-
-func (p *recover) GetEndCount() int {
-	return p.Core.GetEndCount()
-}

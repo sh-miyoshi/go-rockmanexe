@@ -155,10 +155,9 @@ func (e *enemyVolgear) Draw() {
 	}
 
 	view := battlecommon.ViewPos(e.pm.Pos)
-	xflip := int32(dxlib.TRUE)
 	img := e.getCurrentImagePointer()
-	dxlib.DrawRotaGraph(view.X, view.Y+10, 1, 0, *img, true, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
-	drawParalysis(view.X, view.Y+10, *img, e.pm.ParalyzedCount, dxlib.DrawRotaGraphOption{ReverseXFlag: &xflip})
+	dxlib.DrawRotaGraph(view.X, view.Y+10, 1, 0, *img, true, dxlib.OptXReverse(true))
+	drawParalysis(view.X, view.Y+10, *img, e.pm.ParalyzedCount, dxlib.OptXReverse(true))
 
 	// Show HP
 	if e.pm.HP > 0 {

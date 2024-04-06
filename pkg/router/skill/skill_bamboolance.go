@@ -46,7 +46,3 @@ func (p *bambooLance) GetParam() anim.Param {
 func (p *bambooLance) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
 }
-
-func (p *bambooLance) GetEndCount() int {
-	return p.Core.GetEndCount()
-}

@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/gob"
 
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -35,7 +37,21 @@ func (p *miniBomb) Draw() {
 }
 
 func (p *miniBomb) Process() (bool, error) {
-	return p.Core.Process()
+	end, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+
+	if eff := p.Core.PopEffect(); eff != nil {
+		p.Arg.Manager.QueuePush(gameinfo.QueueTypeEffect, &gameinfo.Effect{
+			ID:            uuid.New().String(),
+			OwnerClientID: p.Arg.OwnerClientID,
+			Pos:           eff.Pos,
+			Type:          eff.Type,
+			RandRange:     eff.RandRange,
+		})
+	}
+	return end, nil
 }
 
 func (p *miniBomb) GetParam() anim.Param {
@@ -63,10 +79,6 @@ func (p *miniBomb) StopByOwner() {
 	if p.Core.GetCount() < 5 {
 		p.Arg.Manager.AnimDelete(p.ID)
 	}
-}
-
-func (p *miniBomb) GetEndCount() int {
-	return p.Core.GetEndCount()
 }
 
 func (p *MiniBombDrawParam) Marshal() []byte {

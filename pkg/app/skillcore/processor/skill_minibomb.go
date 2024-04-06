@@ -18,6 +18,7 @@ type MiniBomb struct {
 	count  int
 	pos    point.Point
 	target point.Point
+	effect *resources.EffectParam
 }
 
 func (p *MiniBomb) Init() {
@@ -50,6 +51,12 @@ func (p *MiniBomb) Process() (bool, error) {
 				TargetObjID:   objID,
 			})
 		}
+		p.effect = &resources.EffectParam{
+			Type:      resources.EffectTypeExplode,
+			Pos:       p.target,
+			RandRange: 0,
+		}
+
 		return true, nil
 	}
 	return false, nil
@@ -59,14 +66,20 @@ func (p *MiniBomb) GetCount() int {
 	return p.count
 }
 
-func (p *MiniBomb) GetEndCount() int {
-	return 28
-}
-
 func (p *MiniBomb) GetLandCount() int {
 	return miniBombLandCount
 }
 
 func (p *MiniBomb) GetPointParams() (current, target point.Point) {
 	return p.pos, p.target
+}
+
+func (p *MiniBomb) PopEffect() *resources.EffectParam {
+	if p.effect != nil {
+		res := &resources.EffectParam{}
+		*res = *p.effect
+		p.effect = nil
+		return res
+	}
+	return nil
 }

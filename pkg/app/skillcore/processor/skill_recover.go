@@ -41,7 +41,3 @@ func (p *Recover) Process() (bool, error) {
 func (p *Recover) GetCount() int {
 	return p.count
 }
-
-func (p *Recover) GetEndCount() int {
-	return recoverEndCount
-}

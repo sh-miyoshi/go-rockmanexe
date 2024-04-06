@@ -86,10 +86,6 @@ func (p *HeatShot) GetCount() int {
 	return p.count
 }
 
-func (p *HeatShot) GetEndCount() int {
-	return heatShotEndCount
-}
-
 func (p *HeatShot) GetDelay() int {
 	return heatShotAtkDelay
 }

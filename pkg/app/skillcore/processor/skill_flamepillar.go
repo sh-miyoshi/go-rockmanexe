@@ -172,10 +172,6 @@ func (p *FlamePillarManager) GetCount() int {
 	return p.count
 }
 
-func (p *FlamePillarManager) GetEndCount() int {
-	return flamePillarEndCount
-}
-
 func (p *FlamePillarManager) GetPillars() []FlamePillerParam {
 	res := []FlamePillerParam{}
 	for _, pillar := range p.pillars {

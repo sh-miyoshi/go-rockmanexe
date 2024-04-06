@@ -126,13 +126,7 @@ func (d *objectDraw) Draw() {
 			ino = len(d.images[obj.Type]) - 1
 		}
 
-		opts := dxlib.DrawRotaGraphOption{}
-		if obj.IsReverse {
-			rev := int32(dxlib.TRUE)
-			opts.ReverseXFlag = &rev
-		}
-
-		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, d.images[obj.Type][ino], true, opts)
+		dxlib.DrawRotaGraph(pos.X, pos.Y, 1, 0, d.images[obj.Type][ino], true, dxlib.OptXReverse(obj.IsReverse))
 
 		// draw hp
 		if obj.ID != d.playerObjectID {

@@ -7,52 +7,48 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
-)
-
-const (
-	endCount = 30
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type countBomb struct {
-	ID  string
-	Arg skillcore.Argument
+	ID   string
+	Arg  skillcore.Argument
+	Core *processor.CountBomb
 
-	count  int
-	pos    point.Point
-	drawer skilldraw.DrawCountBomb
+	drawer     skilldraw.DrawCountBomb
+	objCreated bool
 }
 
-func newCountBomb(objID string, arg skillcore.Argument) *countBomb {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
+func newCountBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *countBomb {
 	return &countBomb{
-		ID:  objID,
-		Arg: arg,
-		pos: point.Point{X: pos.X + 1, Y: pos.Y},
+		ID:         objID,
+		Arg:        arg,
+		Core:       core.(*processor.CountBomb),
+		objCreated: false,
 	}
 }
 
 func (p *countBomb) Draw() {
-	if p.count < endCount {
-		view := battlecommon.ViewPos(p.pos)
-		p.drawer.Draw(view, p.count)
+	if !p.objCreated {
+		pos := p.Core.GetPos()
+		view := battlecommon.ViewPos(pos)
+		p.drawer.Draw(view, p.Core.GetCount())
 	}
 }
 
 func (p *countBomb) Process() (bool, error) {
-	if p.count == 0 {
-		field.SetBlackoutCount(endCount)
-		SetChipNameDraw("カウントボム", true)
+	end, err := p.Core.Process()
+	if err != nil {
+		return false, fmt.Errorf("failed to process count bomb: %w", err)
 	}
 
-	if p.count == endCount {
+	if end {
 		obj := &object.CountBomb{}
 		pm := object.ObjectParam{
-			Pos:           p.pos,
+			Pos:           p.Core.GetPos(),
 			HP:            50,
 			OnwerCharType: objanim.ObjTypePlayer,
 			Power:         int(p.Arg.Power),
@@ -64,7 +60,6 @@ func (p *countBomb) Process() (bool, error) {
 		return true, nil
 	}
 
-	p.count++
 	return false, nil
 }
 

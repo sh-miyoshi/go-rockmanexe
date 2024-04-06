@@ -58,10 +58,6 @@ func (p *Tornado) GetCount() int {
 	return p.count
 }
 
-func (p *Tornado) GetEndCount() int {
-	return 32
-}
-
 func (p *Tornado) GetPos() (obj, target point.Point) {
 	return p.objPos, p.targetPos
 }
