@@ -115,7 +115,7 @@ func (d *animDraw) Draw() {
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		case anim.TypeBambooLance:
 			d.drawBamboolance.Draw(a.ActCount, isPlayer)
-		case anim.TypeCrack:
+		case anim.TypeCrack, anim.TypeAreaSteal:
 			// no animation
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))

@@ -88,6 +88,7 @@ var (
 		chip.IDCrackout,
 		chip.IDDoubleCrack,
 		chip.IDTripleCrack,
+		chip.IDAreaSteal,
 	}
 
 	inst NetBattle
