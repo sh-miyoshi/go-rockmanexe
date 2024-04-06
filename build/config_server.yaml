@@ -10,5 +10,5 @@ data_stream_addr: '0.0.0.0:16283'
 log:
   debug_log: true
   file: ''
-acceptable_version: 'v0.11'
+acceptable_version: 'v0.12'
 chip_file_path: 'data/chipList.yaml'
