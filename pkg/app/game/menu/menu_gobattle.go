@@ -333,9 +333,9 @@ func battleEnemies() []enemy.EnemyParam {
 		// return debug data
 		return []enemy.EnemyParam{
 			{
-				CharID: enemy.IDTarget,
+				CharID: enemy.IDShrimpy,
 				Pos:    point.Point{X: 4, Y: 1},
-				HP:     1000,
+				HP:     60,
 			},
 		}
 	}
