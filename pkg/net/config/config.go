@@ -47,6 +47,8 @@ func Init(fname string) error {
 		return fmt.Errorf("failed to decode yaml: %v", err)
 	}
 
+	setByEnv()
+
 	if inst.Debug.InvincibleCount != nil {
 		battlecommon.PlayerDefaultInvincibleTime = *inst.Debug.InvincibleCount
 	}
@@ -63,4 +65,22 @@ func APIAddr() string {
 		return "http://localhost:3000"
 	}
 	return inst.APIAddr
+}
+
+func setByEnv() {
+	if id := os.Getenv("CLIENT_1_ID"); id != "" {
+		inst.Server.Session.ClientID1 = id
+	}
+	if key := os.Getenv("CLIENT_1_KEY"); key != "" {
+		inst.Server.Session.ClientKey1 = key
+	}
+	if id := os.Getenv("CLIENT_2_ID"); id != "" {
+		inst.Server.Session.ClientID2 = id
+	}
+	if key := os.Getenv("CLIENT_2_KEY"); key != "" {
+		inst.Server.Session.ClientKey2 = key
+	}
+	if addr := os.Getenv("DATA_ADDR"); addr != "" {
+		inst.DataStreamAddr = addr
+	}
 }
