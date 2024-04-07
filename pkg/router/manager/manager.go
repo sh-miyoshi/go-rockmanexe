@@ -9,30 +9,28 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
-	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/queue"
 )
 
-type Signal struct {
-	Val   pb.Request_SignalType
-	IsSet bool
-}
-
 type Manager struct {
-	animMgr    *anim.AnimManager
-	objAnimMgr *objanim.AnimManager
-	skillMgr   *skillmanager.Manager
-	queueIDs   [gameinfo.QueueTypeMax]string
-	signal     Signal
+	animMgr        *anim.AnimManager
+	objAnimMgr     *objanim.AnimManager
+	skillMgr       *skillmanager.Manager
+	queueIDs       [gameinfo.QueueTypeMax]string
+	signalReceiver chan int
+	cutinCount     int
 }
 
-func New() *Manager {
+func New(signalReceiver chan int) *Manager {
 	res := &Manager{
-		animMgr:    anim.NewManager(),
-		objAnimMgr: objanim.NewManager(),
+		animMgr:        anim.NewManager(),
+		objAnimMgr:     objanim.NewManager(),
+		signalReceiver: signalReceiver,
 	}
 	res.skillMgr = skillmanager.NewManager()
 	for i := 0; i < gameinfo.QueueTypeMax; i++ {
@@ -61,6 +59,14 @@ func (m *Manager) Update() error {
 
 	if err := m.objAnimMgr.Process(true, false); err != nil {
 		return fmt.Errorf("objanim manage process failed: %w", err)
+	}
+
+	if m.cutinCount > 0 {
+		m.cutinCount--
+		if m.cutinCount == 0 {
+			logger.Info("cutin time end")
+			m.signalReceiver <- config.SignalActing
+		}
 	}
 
 	return nil
@@ -121,14 +127,8 @@ func (m *Manager) SoundOn(typ resources.SEType) {
 	})
 }
 
-func (m *Manager) SetSignal(signal pb.Request_SignalType) {
-	m.signal = Signal{Val: signal, IsSet: true}
-}
-
-func (m *Manager) GetSignal() Signal {
-	return m.signal
-}
-
-func (m *Manager) ResetSignal() {
-	m.signal.IsSet = false
+func (m *Manager) Cutin(count int) {
+	logger.Info("cutin with %d count", count)
+	m.signalReceiver <- config.SignalCutin
+	m.cutinCount = count
 }

@@ -27,10 +27,9 @@ type gameObject struct {
 }
 
 type GameHandler struct {
-	manager        *manager.Manager
-	objects        [clientNum]*gameObject // Key: clientID, Value: object情報
-	gameCount      int
-	signalReceiver chan pb.Request_SignalType
+	manager   *manager.Manager
+	objects   [clientNum]*gameObject // Key: clientID, Value: object情報
+	gameCount int
 }
 
 func NewHandler() session.GameLogic {
@@ -39,11 +38,10 @@ func NewHandler() session.GameLogic {
 	}
 }
 
-func (g *GameHandler) Init(clientIDs [clientNum]string, signalReceiver chan pb.Request_SignalType) error {
+func (g *GameHandler) Init(clientIDs [clientNum]string, signalReceiver chan int) error {
 	g.objects[0] = newGameObject(clientIDs[0], clientIDs[1])
 	g.objects[1] = newGameObject(clientIDs[1], clientIDs[0])
-	g.signalReceiver = signalReceiver
-	g.manager = manager.New()
+	g.manager = manager.New(signalReceiver)
 
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil
@@ -105,12 +103,6 @@ func (g *GameHandler) UpdateGameStatus() {
 	}
 
 	g.updateGameInfo()
-
-	if sig := g.manager.GetSignal(); sig.IsSet {
-		logger.Info("Got signal: %d", sig.Val)
-		g.signalReceiver <- sig.Val
-		g.manager.ResetSignal()
-	}
 }
 
 func (g *GameHandler) IsGameEnd() bool {

@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
+	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -38,6 +39,7 @@ const (
 	stateBeforeMain
 	stateMain
 	stateResult
+	stateCutin
 
 	stateMax
 )
@@ -231,6 +233,9 @@ func Process() error {
 		case pb.Response_GAMEEND:
 			stateChange(stateResult)
 			return nil
+		case pb.Response_CUTIN:
+			stateChange(stateCutin)
+			return nil
 		}
 	case stateResult:
 		isRunAnim = true
@@ -256,6 +261,21 @@ func Process() error {
 			}
 			return battle.ErrWin
 		}
+	case stateCutin:
+		isRunAnim = false
+		// 待っている状態
+		if inst.stateCount == 0 {
+			battlefield.SetBlackoutCount(9999) // 正確なデータが得られるまで一旦セットしておく
+		}
+
+		// TODO: 暗転チップの情報を処理
+
+		status := inst.conn.GetGameStatus()
+		if status == pb.Response_ACTING {
+			battlefield.SetBlackoutCount(0)
+			stateChange(stateMain)
+			return nil
+		}
 	}
 
 	if isRunAnim {
@@ -275,6 +295,8 @@ func Draw() {
 
 	localanim.AnimMgrDraw()
 	inst.playerInst.LocalDraw()
+
+	battlefield.DrawBlackout()
 
 	switch inst.state {
 	case stateWaiting:

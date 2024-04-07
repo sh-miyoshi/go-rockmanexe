@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 )
@@ -15,11 +16,10 @@ const (
 	stateConnectWait int = iota
 	stateChipSelectWait
 	stateActing
-	stateCutin
 )
 
 type GameLogic interface {
-	Init(clientIDs [2]string, signalReceiver chan pb.Request_SignalType) error
+	Init(clientIDs [2]string, signalReceiver chan int) error
 	AddPlayerObject(clientID string, param object.InitParam) error
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
@@ -47,7 +47,7 @@ type Session struct {
 	exitErr        *sessionError
 	fpsMgr         fps.Fps
 	state          int
-	signalReceiver chan pb.Request_SignalType
+	signalReceiver chan int
 }
 
 func newSession(sessionID string, gameHandler GameLogic) *Session {
@@ -57,7 +57,7 @@ func newSession(sessionID string, gameHandler GameLogic) *Session {
 		fpsMgr:         fps.Fps{},
 		state:          stateConnectWait,
 		gameHandler:    gameHandler,
-		signalReceiver: make(chan pb.Request_SignalType),
+		signalReceiver: make(chan int),
 	}
 	return res
 }
@@ -104,11 +104,14 @@ MAIN_LOOP:
 
 		go func() {
 			signal := <-s.signalReceiver
+			logger.Info("got signal %d", signal)
 			switch signal {
-			case pb.Request_CUTIN:
+			case config.SignalCutin:
 				// カットイン状態にする
-				s.changeState(stateCutin)
 				s.publishStateToClient(pb.Response_CUTIN)
+			case config.SignalActing:
+				// カットイン状態から戻す
+				s.publishStateToClient(pb.Response_ACTING)
 			default:
 				system.SetError(fmt.Sprintf("Signal %d は現状扱えません", signal))
 			}
@@ -159,10 +162,6 @@ MAIN_LOOP:
 				s.exitErr = &sessionError{}
 				return
 			}
-		case stateCutin:
-			logger.Debug("TODO: cutin now")
-			s.changeState(stateActing)
-			// TODO: 未実装
 		}
 	}
 }
