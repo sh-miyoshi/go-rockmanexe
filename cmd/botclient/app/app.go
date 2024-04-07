@@ -20,6 +20,7 @@ const (
 	stateBeforeMain
 	stateMain
 	stateResult
+	stateCutin
 )
 
 var (
@@ -88,6 +89,9 @@ MAIN_LOOP:
 			case pb.Response_GAMEEND:
 				statusChange(stateResult)
 				continue MAIN_LOOP
+			case pb.Response_CUTIN:
+				statusChange(stateCutin)
+				continue MAIN_LOOP
 			}
 		case stateResult:
 			logger.Info("Reached to state result")
@@ -97,6 +101,11 @@ MAIN_LOOP:
 				logger.Info("bot client win")
 			}
 			return nil
+		case stateCutin:
+			status := connInst.GetGameStatus()
+			if status == pb.Response_ACTING {
+				statusChange(stateMain)
+			}
 		}
 
 		fpsMgr.Wait()
