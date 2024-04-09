@@ -262,7 +262,7 @@ func Process() error {
 			return battle.ErrWin
 		}
 	case stateCutin:
-		isRunAnim = false
+		isRunAnim = true
 		// 待っている状態
 		if inst.stateCount == 0 {
 			battlefield.SetBlackoutCount(9999) // 正確なデータが得られるまで一旦セットしておく

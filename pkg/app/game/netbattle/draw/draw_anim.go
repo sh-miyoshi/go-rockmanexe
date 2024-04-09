@@ -27,6 +27,7 @@ type animDraw struct {
 	drawTornado      skilldraw.DrawTornado
 	drawBoomerang    skilldraw.DrawBoomerang
 	drawBamboolance  skilldraw.DrawBamboolance
+	drawAreaSteal    skilldraw.DrawAreaSteal
 }
 
 func (d *animDraw) Init() error {
@@ -115,7 +116,17 @@ func (d *animDraw) Draw() {
 			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		case anim.TypeBambooLance:
 			d.drawBamboolance.Draw(a.ActCount, isPlayer)
-		case anim.TypeCrack, anim.TypeAreaSteal:
+		case anim.TypeAreaSteal:
+			var drawPm skill.AreaStealDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				for i := 0; i < len(drawPm.Targets); i++ {
+					drawPm.Targets[i].X = battlecommon.FieldNum.X - drawPm.Targets[i].X - 1
+				}
+			}
+
+			d.drawAreaSteal.Draw(a.ActCount, drawPm.State, drawPm.Targets)
+		case anim.TypeCrack:
 			// no animation
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
