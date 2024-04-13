@@ -230,26 +230,12 @@ func (s *Session) changeState(next int) {
 }
 
 func (s *Session) publishStateToClient(st pb.Response_Status) {
-	for _, c := range s.clients {
-		if c.dataStream == nil {
-			continue
-		}
-
-		err := c.dataStream.Send(&pb.Response{
-			Type: pb.Response_UPDATESTATUS,
-			Data: &pb.Response_Status_{
-				Status: st,
-			},
-		})
-		if err != nil {
-			logger.Error("failed to send status to client %s: %v", c.clientID, err)
-			s.exitErr = &sessionError{
-				generatorClientID: c.clientID,
-				reason:            errSendFailed,
-			}
-			return
-		}
-	}
+	s.publishAllClients(&pb.Response{
+		Type: pb.Response_UPDATESTATUS,
+		Data: &pb.Response_Status_{
+			Status: st,
+		},
+	})
 }
 
 func (s *Session) publishGameInfo() {
@@ -285,20 +271,24 @@ func (s *Session) publishSystemInfo(sysInfo sysinfo.SysInfo) {
 		return
 	}
 
+	s.publishAllClients(&pb.Response{
+		Type: pb.Response_SYSTEM,
+		Data: &pb.Response_System_{
+			System: &pb.Response_System{
+				Type:    pbType,
+				RawData: sysInfo.Data,
+			},
+		},
+	})
+}
+
+func (s *Session) publishAllClients(data *pb.Response) {
 	for _, c := range s.clients {
 		if c.dataStream == nil {
 			continue
 		}
 
-		err := c.dataStream.Send(&pb.Response{
-			Type: pb.Response_SYSTEM,
-			Data: &pb.Response_System_{
-				System: &pb.Response_System{
-					Type:    pbType,
-					RawData: sysInfo.Data,
-				},
-			},
-		})
+		err := c.dataStream.Send(data)
 		if err != nil {
 			logger.Error("failed to send game info to client %s: %v", c.clientID, err)
 			s.exitErr = &sessionError{
