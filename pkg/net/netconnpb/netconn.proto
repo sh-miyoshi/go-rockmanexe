@@ -59,6 +59,7 @@ message Response {
         AUTHRESPONSE = 0;
         UPDATESTATUS = 1;
         DATA = 2;
+        SYSTEM = 3;
     }
 
     enum Status {
@@ -76,10 +77,20 @@ message Response {
         repeated string allUserIDs = 4;
     }
 
+    message System {
+        enum SystemType {
+            CUTIN = 0;
+        }
+
+        SystemType type = 1;
+        bytes rawData = 2;
+    }
+
     MsgType type = 1;
     oneof data {
         AuthResponse authRes = 2;
         Status status = 3;
         bytes rawData = 4;
+        System system = 5;
     }
 }

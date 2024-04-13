@@ -7,9 +7,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 )
 
 type GameLogic interface {
-	Init(clientIDs [2]string, signalReceiver chan int) error
+	Init(clientIDs [2]string, sysReceiver chan sysinfo.SysInfo) error
 	AddPlayerObject(clientID string, param object.InitParam) error
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
@@ -40,24 +40,24 @@ type SessionClient struct {
 }
 
 type Session struct {
-	id             string
-	clients        [2]SessionClient
-	expiresAt      time.Time
-	gameHandler    GameLogic
-	exitErr        *sessionError
-	fpsMgr         fps.Fps
-	state          int
-	signalReceiver chan int
+	id          string
+	clients     [2]SessionClient
+	expiresAt   time.Time
+	gameHandler GameLogic
+	exitErr     *sessionError
+	fpsMgr      fps.Fps
+	state       int
+	sysReceiver chan sysinfo.SysInfo
 }
 
 func newSession(sessionID string, gameHandler GameLogic) *Session {
 	res := &Session{
-		id:             sessionID,
-		expiresAt:      time.Now().Add(sessionExpireTime),
-		fpsMgr:         fps.Fps{},
-		state:          stateConnectWait,
-		gameHandler:    gameHandler,
-		signalReceiver: make(chan int),
+		id:          sessionID,
+		expiresAt:   time.Now().Add(sessionExpireTime),
+		fpsMgr:      fps.Fps{},
+		state:       stateConnectWait,
+		gameHandler: gameHandler,
+		sysReceiver: make(chan sysinfo.SysInfo),
 	}
 	return res
 }
@@ -103,17 +103,18 @@ MAIN_LOOP:
 		}
 
 		go func() {
-			signal := <-s.signalReceiver
-			logger.Info("got signal %d", signal)
-			switch signal {
-			case config.SignalCutin:
+			sysInfo := <-s.sysReceiver
+			logger.Info("got system info %+v", sysInfo)
+			switch sysInfo.Type {
+			case sysinfo.TypeCutin:
 				// カットイン状態にする
 				s.publishStateToClient(pb.Response_CUTIN)
-			case config.SignalActing:
+				// TODO: 情報を送る
+			case sysinfo.TypeActing:
 				// カットイン状態から戻す
 				s.publishStateToClient(pb.Response_ACTING)
 			default:
-				system.SetError(fmt.Sprintf("Signal %d は現状扱えません", signal))
+				system.SetError(fmt.Sprintf("System Info Type %d は現状扱えません", sysInfo.Type))
 			}
 		}()
 
@@ -130,7 +131,7 @@ MAIN_LOOP:
 				s.clients[i].chipSent = false
 				clientIDs[i] = s.clients[i].clientID
 			}
-			if err := s.gameHandler.Init(clientIDs, s.signalReceiver); err != nil {
+			if err := s.gameHandler.Init(clientIDs, s.sysReceiver); err != nil {
 				s.exitErr = &sessionError{
 					reason: fmt.Errorf("failed to initialize game handler"),
 				}

@@ -10,6 +10,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
@@ -38,10 +39,10 @@ func NewHandler() session.GameLogic {
 	}
 }
 
-func (g *GameHandler) Init(clientIDs [clientNum]string, signalReceiver chan int) error {
+func (g *GameHandler) Init(clientIDs [clientNum]string, sysReceiver chan sysinfo.SysInfo) error {
 	g.objects[0] = newGameObject(clientIDs[0], clientIDs[1])
 	g.objects[1] = newGameObject(clientIDs[1], clientIDs[0])
-	g.manager = manager.New(signalReceiver)
+	g.manager = manager.New(sysReceiver)
 
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil

@@ -10,7 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -18,19 +18,19 @@ import (
 )
 
 type Manager struct {
-	animMgr        *anim.AnimManager
-	objAnimMgr     *objanim.AnimManager
-	skillMgr       *skillmanager.Manager
-	queueIDs       [gameinfo.QueueTypeMax]string
-	signalReceiver chan int
-	cutinCount     int
+	animMgr     *anim.AnimManager
+	objAnimMgr  *objanim.AnimManager
+	skillMgr    *skillmanager.Manager
+	queueIDs    [gameinfo.QueueTypeMax]string
+	sysReceiver chan sysinfo.SysInfo
+	cutinCount  int
 }
 
-func New(signalReceiver chan int) *Manager {
+func New(sysReceiver chan sysinfo.SysInfo) *Manager {
 	res := &Manager{
-		animMgr:        anim.NewManager(),
-		objAnimMgr:     objanim.NewManager(),
-		signalReceiver: signalReceiver,
+		animMgr:     anim.NewManager(),
+		objAnimMgr:  objanim.NewManager(),
+		sysReceiver: sysReceiver,
 	}
 	res.skillMgr = skillmanager.NewManager()
 	for i := 0; i < gameinfo.QueueTypeMax; i++ {
@@ -65,7 +65,7 @@ func (m *Manager) Update() error {
 		m.cutinCount--
 		if m.cutinCount == 0 {
 			logger.Info("cutin time end")
-			m.signalReceiver <- config.SignalActing
+			m.sysReceiver <- sysinfo.SysInfo{Type: sysinfo.TypeActing}
 		}
 	}
 
@@ -127,8 +127,15 @@ func (m *Manager) SoundOn(typ resources.SEType) {
 	})
 }
 
-func (m *Manager) Cutin(count int) {
+func (m *Manager) Cutin(skillName string, count int) {
 	logger.Info("cutin with %d count", count)
-	m.signalReceiver <- config.SignalCutin
+	cutin := sysinfo.Cutin{
+		SkillName: skillName,
+		Count:     count,
+	}
+	m.sysReceiver <- sysinfo.SysInfo{
+		Type: sysinfo.TypeCutin,
+		Data: cutin.Marshal(),
+	}
 	m.cutinCount = count
 }
