@@ -10,6 +10,7 @@ import (
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/session"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/manager"
@@ -38,10 +39,10 @@ func NewHandler() session.GameLogic {
 	}
 }
 
-func (g *GameHandler) Init(clientIDs [clientNum]string) error {
+func (g *GameHandler) Init(clientIDs [clientNum]string, sysReceiver chan sysinfo.SysInfo) error {
 	g.objects[0] = newGameObject(clientIDs[0], clientIDs[1])
 	g.objects[1] = newGameObject(clientIDs[1], clientIDs[0])
-	g.manager = manager.New()
+	g.manager = manager.New(sysReceiver)
 
 	logger.Info("Successfully initalized game handler by clients %+v", clientIDs)
 	return nil
@@ -74,8 +75,9 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 		Pos:           point.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
 	}, g.manager, gameinfo.FieldFuncs{
-		GetPanelInfo: g.objects[index].info.GetPanelInfo,
-		PanelBreak:   g.panelBreak,
+		GetPanelInfo:    g.objects[index].info.GetPanelInfo,
+		PanelBreak:      g.panelBreak,
+		ChangePanelType: g.changePanelType,
 	})
 	g.manager.ObjAnimNew(g.objects[index].playerObject)
 
@@ -214,6 +216,19 @@ func (g *GameHandler) panelBreak(clientID string, pos point.Point) {
 			// 敵によるPanelBreakの場合場所を反転させる
 			bpos := point.Point{X: battlecommon.FieldNum.X - pos.X - 1, Y: pos.Y}
 			g.objects[i].info.PanelBreak(bpos)
+		}
+	}
+}
+
+func (g *GameHandler) changePanelType(clientID string, pos point.Point, pnType int) {
+	index := g.indexForClient(clientID)
+	for i := 0; i < clientNum; i++ {
+		if i == index {
+			g.objects[i].info.ChangePanelType(pos, clientID)
+		} else {
+			// 敵によるPanelBreakの場合場所を反転させる
+			bpos := point.Point{X: battlecommon.FieldNum.X - pos.X - 1, Y: pos.Y}
+			g.objects[i].info.ChangePanelType(bpos, clientID)
 		}
 	}
 }
