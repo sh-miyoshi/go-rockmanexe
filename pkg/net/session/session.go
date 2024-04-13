@@ -109,7 +109,7 @@ MAIN_LOOP:
 			case sysinfo.TypeCutin:
 				// カットイン状態にする
 				s.publishStateToClient(pb.Response_CUTIN)
-				// TODO: 情報を送る
+				s.publishSystemInfo(sysInfo)
 			case sysinfo.TypeActing:
 				// カットイン状態から戻す
 				s.publishStateToClient(pb.Response_ACTING)
@@ -262,6 +262,41 @@ func (s *Session) publishGameInfo() {
 			Type: pb.Response_DATA,
 			Data: &pb.Response_RawData{
 				RawData: s.gameHandler.GetInfo(c.clientID),
+			},
+		})
+		if err != nil {
+			logger.Error("failed to send game info to client %s: %v", c.clientID, err)
+			s.exitErr = &sessionError{
+				generatorClientID: c.clientID,
+				reason:            errSendFailed,
+			}
+			return
+		}
+	}
+}
+
+func (s *Session) publishSystemInfo(sysInfo sysinfo.SysInfo) {
+	var pbType pb.Response_System_SystemType
+	switch sysInfo.Type {
+	case sysinfo.TypeCutin:
+		pbType = pb.Response_System_CUTIN
+	default:
+		system.SetError(fmt.Sprintf("system type %d do not have data", sysInfo.Type))
+		return
+	}
+
+	for _, c := range s.clients {
+		if c.dataStream == nil {
+			continue
+		}
+
+		err := c.dataStream.Send(&pb.Response{
+			Type: pb.Response_SYSTEM,
+			Data: &pb.Response_System_{
+				System: &pb.Response_System{
+					Type:    pbType,
+					RawData: sysInfo.Data,
+				},
 			},
 		})
 		if err != nil {

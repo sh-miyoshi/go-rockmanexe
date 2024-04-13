@@ -10,10 +10,12 @@ import (
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	battlefield "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle/draw"
@@ -146,6 +148,7 @@ func End() {
 }
 
 func Process() error {
+	battlecommon.SystemProcess()
 	inst.gameCount++
 	isRunAnim := false
 
@@ -268,7 +271,12 @@ func Process() error {
 			battlefield.SetBlackoutCount(9999) // 正確なデータが得られるまで一旦セットしておく
 		}
 
-		// TODO: 暗転チップの情報を処理
+		// 暗転チップの情報を処理
+		cutin, isSet := inst.conn.PopCutinInfo()
+		if isSet {
+			// TODO: 敵のスキル
+			skill.SetChipNameDraw(cutin.SkillName, true)
+		}
 
 		status := inst.conn.GetGameStatus()
 		if status == pb.Response_ACTING {
@@ -327,6 +335,8 @@ func Draw() {
 			inst.resultInst.Draw()
 		}
 	}
+
+	battlecommon.SystemDraw()
 }
 
 func stateChange(nextState int) {

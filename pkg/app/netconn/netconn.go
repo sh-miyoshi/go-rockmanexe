@@ -9,6 +9,7 @@ import (
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -34,6 +35,11 @@ type ConnectStatus struct {
 	Error  error
 }
 
+type cutinInfo struct {
+	IsSet bool
+	Info  sysinfo.Cutin
+}
+
 type NetConn struct {
 	config        Config
 	conn          *grpc.ClientConn
@@ -42,9 +48,10 @@ type NetConn struct {
 	sessionID     string
 	allUserIDs    []string
 
-	gameStatus pb.Response_Status
-	gameInfo   gameinfo.GameInfo
-	gameInfoMu sync.Mutex
+	gameStatus    pb.Response_Status
+	gameInfo      gameinfo.GameInfo
+	gameInfoMu    sync.Mutex
+	gameCutinInfo cutinInfo
 }
 
 func New(conf Config) *NetConn {
@@ -95,6 +102,17 @@ func (n *NetConn) GetGameStatus() pb.Response_Status {
 
 func (n *NetConn) GetGameInfo() gameinfo.GameInfo {
 	return n.gameInfo
+}
+
+func (n *NetConn) PopCutinInfo() (sysinfo.Cutin, bool) {
+	if n.gameCutinInfo.IsSet {
+		res := n.gameCutinInfo.Info
+		n.gameCutinInfo = cutinInfo{
+			IsSet: false,
+		}
+		return res, true
+	}
+	return sysinfo.Cutin{}, false
 }
 
 func (n *NetConn) CleanupSounds() {
@@ -197,6 +215,20 @@ func (n *NetConn) dataRecv() {
 			n.gameInfoMu.Lock()
 			n.gameInfo = info
 			n.gameInfoMu.Unlock()
+		case pb.Response_SYSTEM:
+			logger.Debug("got system info: %+v", data)
+			sys := data.GetSystem()
+			switch sys.GetType() {
+			case pb.Response_System_CUTIN:
+				var cutin sysinfo.Cutin
+				cutin.Unmarshal(sys.GetRawData())
+				n.gameCutinInfo = cutinInfo{
+					IsSet: true,
+					Info:  cutin,
+				}
+			default:
+				logger.Info("invalid data was received, ignore this")
+			}
 		default:
 			n.connectStatus = ConnectStatus{
 				Status: ConnStateError,
