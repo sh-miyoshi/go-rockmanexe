@@ -274,8 +274,8 @@ func Process() error {
 		// 暗転チップの情報を処理
 		cutin, isSet := inst.conn.PopCutinInfo()
 		if isSet {
-			// TODO: 敵のスキル
-			skill.SetChipNameDraw(cutin.SkillName, true)
+			clientID := config.Get().Net.ClientID
+			skill.SetChipNameDraw(cutin.SkillName, clientID == cutin.OwnerClientID)
 		}
 
 		status := inst.conn.GetGameStatus()

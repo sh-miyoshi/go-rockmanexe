@@ -127,11 +127,11 @@ func (m *Manager) SoundOn(typ resources.SEType) {
 	})
 }
 
-func (m *Manager) Cutin(skillName string, count int) {
+func (m *Manager) Cutin(skillName string, count int, clientID string) {
 	logger.Info("cutin with %d count", count)
 	cutin := sysinfo.Cutin{
-		SkillName: skillName,
-		Count:     count,
+		SkillName:     skillName,
+		OwnerClientID: clientID,
 	}
 	m.sysReceiver <- sysinfo.SysInfo{
 		Type: sysinfo.TypeCutin,

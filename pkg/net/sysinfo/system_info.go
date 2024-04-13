@@ -18,8 +18,8 @@ type SysInfo struct {
 }
 
 type Cutin struct {
-	Count     int
-	SkillName string
+	SkillName     string
+	OwnerClientID string
 }
 
 func (p *Cutin) Marshal() []byte {

@@ -45,7 +45,9 @@ func Get(id int, arg Argument) SkillAnim {
 		GetObjects:   arg.Manager.ObjAnimGetObjs,
 		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
 		PanelBreak:   panelBreak,
-		Cutin:        arg.Manager.Cutin,
+		Cutin: func(skillName string, count int) {
+			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
+		},
 		ChangePanelType: func(pos point.Point, pnType int) {
 			// TODO
 		},
