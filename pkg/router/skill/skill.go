@@ -32,6 +32,9 @@ func Get(id int, arg Argument) SkillAnim {
 	panelBreak := func(pos point.Point) {
 		arg.FieldFuncs.PanelBreak(arg.OwnerClientID, pos)
 	}
+	changePanelType := func(pos point.Point, pnType int) {
+		arg.FieldFuncs.ChangePanelType(arg.OwnerClientID, pos, pnType)
+	}
 
 	coreArg := skillcore.Argument{
 		OwnerID:       arg.OwnerObjectID,
@@ -48,10 +51,8 @@ func Get(id int, arg Argument) SkillAnim {
 		Cutin: func(skillName string, count int) {
 			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
 		},
-		ChangePanelType: func(pos point.Point, pnType int) {
-			// TODO
-		},
-		MakeInvisible: arg.Manager.ObjAnimMakeInvisible,
+		ChangePanelType: changePanelType,
+		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 

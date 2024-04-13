@@ -106,6 +106,7 @@ func (p *Player) initActTable() {
 		// NewActSkill(chip.IDCrackout, p.clientID, p.conn),
 		// NewActSkill(chip.IDDoubleCrack, p.clientID, p.conn),
 		// NewActSkill(chip.IDTripleCrack, p.clientID, p.conn),
+		// NewActSkill(chip.IDAreaSteal, p.clientID, p.conn),
 	}
 	p.currentActNo = 0
 	p.currentActInterval = p.actTable[0].Interval()

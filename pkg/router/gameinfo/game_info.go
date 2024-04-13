@@ -21,8 +21,9 @@ const (
 // FieldFuncs はGameInfoごとに定義されるfieldに関する関数群です
 // 主にobjectやskillで使用されます
 type FieldFuncs struct {
-	GetPanelInfo func(pos point.Point) battlecommon.PanelInfo
-	PanelBreak   func(clientID string, pos point.Point)
+	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
+	PanelBreak      func(clientID string, pos point.Point)
+	ChangePanelType func(clientID string, pos point.Point, pnType int)
 }
 
 type PanelInfo struct {
@@ -203,6 +204,14 @@ func (p *GameInfo) PanelBreak(pos point.Point) {
 		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
 		p.Panels[pos.X][pos.Y].HoleCount = battlecommon.DefaultPanelHoleEndCount
 	}
+}
+
+func (p *GameInfo) ChangePanelType(pos point.Point, ownerClientID string) {
+	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
+		return
+	}
+
+	p.Panels[pos.X][pos.Y].OwnerClientID = ownerClientID
 }
 
 func (p *GameInfo) getPanelType(clientID string) int {
