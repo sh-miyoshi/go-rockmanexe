@@ -72,7 +72,6 @@ func New() *Player {
 		BackPack:        []ChipInfo{},
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
-			// TODO: 要調整
 			{ID: ncparts.IDAttack1_Pink, IsSet: false},
 			{ID: ncparts.IDAttack1_White, IsSet: false},
 			{ID: ncparts.IDAttack1_White, IsSet: false},
