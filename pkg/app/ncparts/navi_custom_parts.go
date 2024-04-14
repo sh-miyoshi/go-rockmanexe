@@ -17,10 +17,12 @@ const (
 )
 
 const (
-	IDAttack1 int = iota
-	IDCharge1
-	IDHP50
-	IDHP100
+	IDAttack1_Pink int = iota
+	IDAttack1_White
+	IDCharge1_Yellow
+	IDCharge1_White
+	IDHP50_White
+	IDHP100_Yellow
 	IDCustom1
 	IDUnderShirt
 )
@@ -37,7 +39,7 @@ type NaviCustomParts struct {
 var (
 	allParts = []NaviCustomParts{
 		{
-			ID:   IDAttack1,
+			ID:   IDAttack1_Pink,
 			Name: "アタック+1",
 			Blocks: []point.Point{
 				{X: 0, Y: 0},
@@ -48,7 +50,18 @@ var (
 			Description: "ロックバスターの威力を上げる",
 		},
 		{
-			ID:   IDCharge1,
+			ID:   IDAttack1_White,
+			Name: "アタック+1",
+			Blocks: []point.Point{
+				{X: 0, Y: 0},
+				{X: 0, Y: 1},
+			},
+			IsPlusParts: true,
+			Color:       ColorWhite,
+			Description: "ロックバスターの威力を上げる",
+		},
+		{
+			ID:   IDCharge1_Yellow,
 			Name: "チャージ+1",
 			Blocks: []point.Point{
 				{X: 0, Y: 0},
@@ -58,7 +71,17 @@ var (
 			Description: "ロックバスターのチャージ速度を上げる",
 		},
 		{
-			ID:   IDHP50,
+			ID:   IDCharge1_White,
+			Name: "チャージ+1",
+			Blocks: []point.Point{
+				{X: 0, Y: 0},
+			},
+			IsPlusParts: true,
+			Color:       ColorWhite,
+			Description: "ロックバスターのチャージ速度を上げる",
+		},
+		{
+			ID:   IDHP50_White,
 			Name: "ＨＰ+50",
 			Blocks: []point.Point{
 				{X: 0, Y: 0},
@@ -69,7 +92,7 @@ var (
 			Description: "最大ＨＰを＋５０する",
 		},
 		{
-			ID:   IDHP100,
+			ID:   IDHP100_Yellow,
 			Name: "ＨＰ+100",
 			Blocks: []point.Point{
 				{X: 0, Y: 0},

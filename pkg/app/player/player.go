@@ -73,10 +73,17 @@ func New() *Player {
 		BattleHistories: []History{},
 		AllNaviCustomParts: []NaviCustomParts{
 			// TODO: 要調整
-			{ID: ncparts.IDAttack1, IsSet: false},
-			{ID: ncparts.IDCharge1, IsSet: false},
-			{ID: ncparts.IDHP50, IsSet: false},
-			{ID: ncparts.IDHP100, IsSet: false},
+			{ID: ncparts.IDAttack1_Pink, IsSet: false},
+			{ID: ncparts.IDAttack1_White, IsSet: false},
+			{ID: ncparts.IDAttack1_White, IsSet: false},
+			{ID: ncparts.IDCharge1_Yellow, IsSet: false},
+			{ID: ncparts.IDCharge1_Yellow, IsSet: false},
+			{ID: ncparts.IDCharge1_White, IsSet: false},
+			{ID: ncparts.IDHP50_White, IsSet: false},
+			{ID: ncparts.IDHP50_White, IsSet: false},
+			{ID: ncparts.IDHP50_White, IsSet: false},
+			{ID: ncparts.IDHP100_Yellow, IsSet: false},
+			{ID: ncparts.IDHP100_Yellow, IsSet: false},
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
@@ -334,13 +341,13 @@ func (p *Player) updatePlayerStatus() {
 		if parts.IsSet {
 			info := ncparts.Get(parts.ID)
 			switch info.ID {
-			case ncparts.IDAttack1:
+			case ncparts.IDAttack1_Pink:
 				p.ShotPower++
-			case ncparts.IDCharge1:
+			case ncparts.IDCharge1_Yellow:
 				p.ChargeTime -= 20
-			case ncparts.IDHP50:
+			case ncparts.IDHP50_White:
 				p.HP += 50
-			case ncparts.IDHP100:
+			case ncparts.IDHP100_Yellow:
 				p.HP += 100
 			}
 		}
