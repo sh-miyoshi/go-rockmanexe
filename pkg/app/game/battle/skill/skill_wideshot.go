@@ -18,7 +18,7 @@ type wideShot struct {
 	drawer skilldraw.DrawWideShot
 }
 
-func newWideShot(objID string, arg skillcore.Argument, core skillcore.SkillCore, isPlayer bool) *wideShot {
+func newWideShot(objID string, arg skillcore.Argument, core skillcore.SkillCore) *wideShot {
 	return &wideShot{
 		ID:   objID,
 		Arg:  arg,

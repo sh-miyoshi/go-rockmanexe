@@ -19,7 +19,7 @@ type shockWave struct {
 	pickDrawer skilldraw.DrawPick
 }
 
-func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore, isPlayer bool) *shockWave {
+func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore) *shockWave {
 	res := &shockWave{
 		ID:   objID,
 		Arg:  arg,
