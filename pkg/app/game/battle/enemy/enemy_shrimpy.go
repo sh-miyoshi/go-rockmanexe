@@ -27,6 +27,12 @@ const (
 	shrimpyStateAtk
 )
 
+type shrimpyAttack struct {
+	count  int
+	images []int
+	atkID  string
+}
+
 type enemyShrimpy struct {
 	pm        EnemyParam
 	imgMove   []int
@@ -38,6 +44,7 @@ type enemyShrimpy struct {
 	prevY     int
 	direct    int
 	prevOfsY  int
+	atk       shrimpyAttack
 }
 
 func (e *enemyShrimpy) Init(objID string) error {
@@ -56,12 +63,20 @@ func (e *enemyShrimpy) Init(objID string) error {
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 110, 112, e.imgMove); res == -1 {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
+	fname = name + "_atk" + ext
+	e.atk.images = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 110, 128, e.atk.images); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
 	return nil
 }
 
 func (e *enemyShrimpy) End() {
 	// Delete Images
 	for _, img := range e.imgMove {
+		dxlib.DeleteGraph(img)
+	}
+	for _, img := range e.atk.images {
 		dxlib.DeleteGraph(img)
 	}
 }
@@ -192,4 +207,19 @@ func (e *enemyShrimpy) getCurrentImagePointer() *int {
 func (e *enemyShrimpy) setState(next int) {
 	e.state = next
 	e.count = 0
+}
+
+func (a *shrimpyAttack) Init() {
+	a.atkID = ""
+	a.count = 0
+}
+
+func (a *shrimpyAttack) Process() bool {
+	if a.count == 0 {
+		// TODO: wip
+	}
+
+	a.count++
+
+	return !localanim.AnimIsProcessing(a.atkID)
 }

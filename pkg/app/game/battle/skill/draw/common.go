@@ -46,6 +46,8 @@ var (
 	imgTornadoBody       []int
 	imgCirkillShot       []int
 	imgCountBombNumber   []int
+	imgShrimpyAtkBegin   []int
+	imgShrimpyAtkMove    []int
 )
 
 func LoadImages() error {
@@ -275,6 +277,18 @@ func LoadImages() error {
 		return fmt.Errorf("failed to load image: %s", fname)
 	}
 
+	fname = config.ImagePath + "battle/skill/エビロン_atk_begin.png"
+	imgShrimpyAtkBegin = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 46, 44, imgShrimpyAtkBegin); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
+	fname = config.ImagePath + "battle/skill/エビロン_atk_move.png"
+	imgShrimpyAtkMove = make([]int, 8)
+	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 74, 60, imgShrimpyAtkMove); res == -1 {
+		return fmt.Errorf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -415,4 +429,12 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgCountBombNumber[i])
 	}
 	imgCountBombNumber = []int{}
+	for i := 0; i < len(imgShrimpyAtkBegin); i++ {
+		dxlib.DeleteGraph(imgShrimpyAtkBegin[i])
+	}
+	imgShrimpyAtkBegin = []int{}
+	for i := 0; i < len(imgShrimpyAtkMove); i++ {
+		dxlib.DeleteGraph(imgShrimpyAtkMove[i])
+	}
+	imgShrimpyAtkMove = []int{}
 }

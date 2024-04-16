@@ -39,6 +39,7 @@ const (
 	SkillQuickGauge
 	SkillCirkillShot
 	SkillEnemyWideShot
+	SkillShrimpyAttack
 
 	SkillFailed
 )
