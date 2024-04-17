@@ -80,7 +80,7 @@ func (d *animDraw) Draw() {
 		case anim.TypeSword, anim.TypeWideSword, anim.TypeLongSword:
 			var drawPm skill.SwordDrawParam
 			drawPm.Unmarshal(a.DrawParam)
-			d.drawSword.Draw(drawPm.Type, pos, a.ActCount, drawPm.Delay, isPlayer)
+			d.drawSword.Draw(drawPm.SkillID, pos, a.ActCount, drawPm.Delay, isPlayer)
 		case anim.TypeVulcan:
 			var drawPm skill.VulcanDrawParam
 			drawPm.Unmarshal(a.DrawParam)

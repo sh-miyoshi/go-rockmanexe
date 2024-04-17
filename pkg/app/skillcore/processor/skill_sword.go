@@ -93,18 +93,8 @@ func (p *Sword) GetCount() int {
 	return p.count
 }
 
-func (p *Sword) GetSwordType() int {
-	switch p.SkillID {
-	case resources.SkillSword:
-		return 0
-	case resources.SkillWideSword:
-		return 1
-	case resources.SkillLongSword:
-		return 2
-	case resources.SkillDreamSword:
-		return 0
-	}
-	return 0
+func (p *Sword) GetID() int {
+	return p.SkillID
 }
 
 func (p *Sword) GetDelay() int {

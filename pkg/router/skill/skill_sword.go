@@ -12,8 +12,8 @@ import (
 )
 
 type SwordDrawParam struct {
-	Type  int
-	Delay int
+	SkillID int
+	Delay   int
 }
 
 type sword struct {
@@ -54,8 +54,8 @@ func (p *sword) GetParam() anim.Param {
 		info.AnimType = routeranim.TypeLongSword
 	}
 	drawPm := SwordDrawParam{
-		Type:  p.Core.GetSwordType(),
-		Delay: p.Core.GetDelay(),
+		SkillID: p.Core.GetID(),
+		Delay:   p.Core.GetDelay(),
 	}
 	info.DrawParam = drawPm.Marshal()
 
