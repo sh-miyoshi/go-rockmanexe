@@ -32,6 +32,9 @@ func Get(id int, arg Argument) SkillAnim {
 	panelBreak := func(pos point.Point) {
 		arg.FieldFuncs.PanelBreak(arg.OwnerClientID, pos)
 	}
+	changePanelType := func(pos point.Point, pnType int) {
+		arg.FieldFuncs.ChangePanelType(arg.OwnerClientID, pos, pnType)
+	}
 
 	coreArg := skillcore.Argument{
 		OwnerID:       arg.OwnerObjectID,
@@ -46,12 +49,10 @@ func Get(id int, arg Argument) SkillAnim {
 		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
 		PanelBreak:   panelBreak,
 		Cutin: func(skillName string, count int) {
-			// TODO
+			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
 		},
-		ChangePanelType: func(pos point.Point, pnType int) {
-			// TODO
-		},
-		MakeInvisible: arg.Manager.ObjAnimMakeInvisible,
+		ChangePanelType: changePanelType,
+		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 
@@ -86,6 +87,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newBambooLance(arg, core)
 	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
 		return newCrack(arg, core)
+	case resources.SkillAreaSteal:
+		return newAreaSteal(arg, core)
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 		return nil

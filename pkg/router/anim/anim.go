@@ -27,6 +27,7 @@ const (
 	TypeBoomerang
 	TypeBambooLance
 	TypeCrack
+	TypeAreaSteal
 
 	TypeMax
 )

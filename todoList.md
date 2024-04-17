@@ -35,16 +35,9 @@
   - IDThunderBall
   - IDCountBomb
   - IDPanelSteal
-  - IDAreaSteal
   - IDQuickGauge  
   - IDInvisible
   - IDAquaman
-
-## スキルリファクタリング
-
-- ネットワーク上での各処理の実装
-  - Cutin
-  - ChangePanelType
 
 ### ネット越しの暗転チップ
 
@@ -119,6 +112,7 @@
   - ボード上のパーツ選択時に動かせるようにする
 - イベント処理
   - メッセージに適切なface typeを設定できるようにする
+- 暗転処理中のダメージ処理が止まってくれない
 
 ## チップ
 

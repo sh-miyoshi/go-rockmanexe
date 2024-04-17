@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/object"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 )
 
 type GameLogic interface {
-	Init(clientIDs [2]string) error
+	Init(clientIDs [2]string, sysReceiver chan sysinfo.SysInfo) error
 	AddPlayerObject(clientID string, param object.InitParam) error
 	HandleAction(clientID string, act *pb.Request_Action) error
 	GetInfo(clientID string) []byte
@@ -46,6 +47,7 @@ type Session struct {
 	exitErr     *sessionError
 	fpsMgr      fps.Fps
 	state       int
+	sysReceiver chan sysinfo.SysInfo
 }
 
 func newSession(sessionID string, gameHandler GameLogic) *Session {
@@ -55,6 +57,7 @@ func newSession(sessionID string, gameHandler GameLogic) *Session {
 		fpsMgr:      fps.Fps{},
 		state:       stateConnectWait,
 		gameHandler: gameHandler,
+		sysReceiver: make(chan sysinfo.SysInfo),
 	}
 	return res
 }
@@ -99,6 +102,22 @@ MAIN_LOOP:
 			return
 		}
 
+		go func() {
+			sysInfo := <-s.sysReceiver
+			logger.Info("got system info %+v", sysInfo)
+			switch sysInfo.Type {
+			case sysinfo.TypeCutin:
+				// カットイン状態にする
+				s.publishStateToClient(pb.Response_CUTIN)
+				s.publishSystemInfo(sysInfo)
+			case sysinfo.TypeActing:
+				// カットイン状態から戻す
+				s.publishStateToClient(pb.Response_ACTING)
+			default:
+				system.SetError(fmt.Sprintf("System Info Type %d は現状扱えません", sysInfo.Type))
+			}
+		}()
+
 		switch s.state {
 		case stateConnectWait:
 			for _, c := range s.clients {
@@ -112,7 +131,7 @@ MAIN_LOOP:
 				s.clients[i].chipSent = false
 				clientIDs[i] = s.clients[i].clientID
 			}
-			if err := s.gameHandler.Init(clientIDs); err != nil {
+			if err := s.gameHandler.Init(clientIDs, s.sysReceiver); err != nil {
 				s.exitErr = &sessionError{
 					reason: fmt.Errorf("failed to initialize game handler"),
 				}
@@ -211,26 +230,12 @@ func (s *Session) changeState(next int) {
 }
 
 func (s *Session) publishStateToClient(st pb.Response_Status) {
-	for _, c := range s.clients {
-		if c.dataStream == nil {
-			continue
-		}
-
-		err := c.dataStream.Send(&pb.Response{
-			Type: pb.Response_UPDATESTATUS,
-			Data: &pb.Response_Status_{
-				Status: st,
-			},
-		})
-		if err != nil {
-			logger.Error("failed to send status to client %s: %v", c.clientID, err)
-			s.exitErr = &sessionError{
-				generatorClientID: c.clientID,
-				reason:            errSendFailed,
-			}
-			return
-		}
-	}
+	s.publishAllClients(&pb.Response{
+		Type: pb.Response_UPDATESTATUS,
+		Data: &pb.Response_Status_{
+			Status: st,
+		},
+	})
 }
 
 func (s *Session) publishGameInfo() {
@@ -245,6 +250,45 @@ func (s *Session) publishGameInfo() {
 				RawData: s.gameHandler.GetInfo(c.clientID),
 			},
 		})
+		if err != nil {
+			logger.Error("failed to send game info to client %s: %v", c.clientID, err)
+			s.exitErr = &sessionError{
+				generatorClientID: c.clientID,
+				reason:            errSendFailed,
+			}
+			return
+		}
+	}
+}
+
+func (s *Session) publishSystemInfo(sysInfo sysinfo.SysInfo) {
+	var pbType pb.Response_System_SystemType
+	switch sysInfo.Type {
+	case sysinfo.TypeCutin:
+		pbType = pb.Response_System_CUTIN
+	default:
+		system.SetError(fmt.Sprintf("system type %d do not have data", sysInfo.Type))
+		return
+	}
+
+	s.publishAllClients(&pb.Response{
+		Type: pb.Response_SYSTEM,
+		Data: &pb.Response_System_{
+			System: &pb.Response_System{
+				Type:    pbType,
+				RawData: sysInfo.Data,
+			},
+		},
+	})
+}
+
+func (s *Session) publishAllClients(data *pb.Response) {
+	for _, c := range s.clients {
+		if c.dataStream == nil {
+			continue
+		}
+
+		err := c.dataStream.Send(data)
 		if err != nil {
 			logger.Error("failed to send game info to client %s: %v", c.clientID, err)
 			s.exitErr = &sessionError{
