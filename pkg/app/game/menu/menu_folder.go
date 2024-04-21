@@ -237,24 +237,24 @@ func (f *menuFolder) Draw() {
 		}
 
 		dxlib.DrawGraph(tx, 78+f.pointer[f.currentWindow]*30, f.imgPointer, true)
-	}
 
-	// Show scrol bar
-	var length, start int
-	switch f.currentWindow {
-	case folderWindowTypeFolder:
-		start = 80
-		length = 205
-	case folderWindowTypeBackPack:
-		start = 60
-		length = 225
-	}
-	dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), true)
-	n := f.scroll[f.currentWindow] + f.pointer[f.currentWindow]
-	dxlib.DrawGraph(442, start+(length-23)*n/f.listNum[f.currentWindow]-1, f.imgScrollPointer, true)
+		// Show scrol bar
+		var length, start int
+		switch f.currentWindow {
+		case folderWindowTypeFolder:
+			start = 80
+			length = 205
+		case folderWindowTypeBackPack:
+			start = 60
+			length = 225
+		}
+		dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), true)
+		n := f.scroll[f.currentWindow] + f.pointer[f.currentWindow]
+		dxlib.DrawGraph(442, start+(length-23)*n/f.listNum[f.currentWindow]-1, f.imgScrollPointer, true)
 
-	// Show pointered chip detail
-	f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
+		// Show pointered chip detail
+		f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
+	}
 
 	// Show message
 	if f.msg != "" {
