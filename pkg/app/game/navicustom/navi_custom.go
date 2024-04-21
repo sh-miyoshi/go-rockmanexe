@@ -178,7 +178,7 @@ func Draw() {
 			parts := ncparts.Get(unsetParts[c].rawData.ID)
 			for _, b := range parts.Blocks {
 				cx := centerX + b.X*6
-				cy := centerY + b.Y*6
+				cy := centerY + b.Y*6 - 3
 				dxlib.DrawBox(cx-3, cy-3, cx+3, cy+3, ncparts.GetColorCode(parts.Color), true)
 			}
 		}
