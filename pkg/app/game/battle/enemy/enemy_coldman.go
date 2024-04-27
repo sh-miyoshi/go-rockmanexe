@@ -226,7 +226,6 @@ func (e *enemyColdman) Process() (bool, error) {
 
 		if e.count == 3*coldmanDelays[coldmanActTypeIceShoot] {
 			e.targetCubeID = ""
-			// TODO: target type objectで書く
 			// PUSH
 			dm := damage.Damage{
 				ID:            uuid.New().String(),

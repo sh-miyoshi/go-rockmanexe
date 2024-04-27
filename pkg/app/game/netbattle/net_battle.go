@@ -287,7 +287,6 @@ func Process() error {
 	}
 
 	if isRunAnim {
-		// TODO(blackout中はエフェクトもとめておく？)
 		if err := localanim.AnimMgrProcess(); err != nil {
 			return fmt.Errorf("failed to handle animation: %w", err)
 		}
