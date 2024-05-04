@@ -13,15 +13,17 @@ import (
 )
 
 type menuNetBattle struct {
-	imgMsgFrame int
-	messages    []string
-	isConnect   bool
+	imgMsgFrame  int
+	messages     []string
+	isConnect    bool
+	isErrorLoged bool
 }
 
 func netBattleNew() (*menuNetBattle, error) {
 	res := &menuNetBattle{
-		messages:  []string{"通信待機中です・・・"},
-		isConnect: false,
+		messages:     []string{"通信待機中です・・・"},
+		isConnect:    false,
+		isErrorLoged: false,
 	}
 
 	fname := config.ImagePath + "msg_frame.png"
@@ -50,6 +52,7 @@ func (m *menuNetBattle) Process() bool {
 		net.GetInst().Disconnect()
 		m.isConnect = false
 		m.messages = []string{"通信待機中です・・・"}
+		m.isErrorLoged = false
 
 		stateChange(stateTop)
 	}
@@ -59,7 +62,10 @@ func (m *menuNetBattle) Process() bool {
 		return true
 	}
 	if status.Status == netconn.ConnStateError {
-		logger.Error("Failed to connect server: %v", status.Error)
+		if !m.isErrorLoged {
+			logger.Error("Failed to connect server: %v", status.Error)
+			m.isErrorLoged = true
+		}
 		m.messages = []string{
 			"サーバーへの接続に失敗しました。",
 			"設定を見直してください。",
