@@ -21,10 +21,13 @@ const (
 
 type menuDevFeature struct {
 	itemList list.ItemList
+	result   Result
 }
 
 func devFeatureNew() (*menuDevFeature, error) {
-	res := &menuDevFeature{}
+	res := &menuDevFeature{
+		result: ResultContinue,
+	}
 	res.itemList.SetList([]string{
 		"マップ移動",
 		"4x4 対戦",
@@ -51,10 +54,11 @@ func (t *menuDevFeature) Draw() {
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 }
 
-func (t *menuDevFeature) Process() (Result, error) {
+func (t *menuDevFeature) Process() bool {
 	// 隠しコマンド
 	if inputs.CheckKey(inputs.KeyDebug) == 1 {
-		return ResultGoScratch, nil
+		t.result = ResultGoScratch
+		return true
 	}
 
 	sel := t.itemList.Process()
@@ -62,12 +66,13 @@ func (t *menuDevFeature) Process() (Result, error) {
 		sound.On(resources.SEMenuEnter)
 		switch t.itemList.GetPointer() {
 		case devFeatureSelectMapMove:
-			return ResultGoMap, nil
+			t.result = ResultGoMap
+			return true
 		case devFeatureSelectWideArea:
 			field.Set4x4Area()
 
 			// Set enemy info
-			specificEnemy = []enemy.EnemyParam{
+			battleEnemies = []enemy.EnemyParam{
 				{
 					CharID: enemy.IDAquaman,
 					Pos:    point.Point{X: 6, Y: 2},
@@ -75,12 +80,13 @@ func (t *menuDevFeature) Process() (Result, error) {
 				},
 			}
 
-			return ResultGoBattle, nil
+			t.result = ResultGoBattle
+			return true
 		case devFeatureSelectSupportNPC:
 			field.Set4x4Area()
 
 			// Set enemy info
-			specificEnemy = []enemy.EnemyParam{
+			battleEnemies = []enemy.EnemyParam{
 				{
 					CharID: enemy.IDAquaman,
 					Pos:    point.Point{X: 6, Y: 2},
@@ -93,11 +99,16 @@ func (t *menuDevFeature) Process() (Result, error) {
 				},
 			}
 
-			return ResultGoBattle, nil
+			t.result = ResultGoBattle
+			return true
 		case devFeatureSelectTalkAI:
-			return ResultGoTalkAI, nil
+			t.result = ResultGoTalkAI
+			return true
 		}
-		return ResultContinue, nil
 	}
-	return ResultContinue, nil
+	return false
+}
+
+func (t *menuDevFeature) GetResult() Result {
+	return t.result
 }

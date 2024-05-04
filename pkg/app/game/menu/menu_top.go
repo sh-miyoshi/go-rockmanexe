@@ -22,13 +22,17 @@ const (
 )
 
 type menuTop struct {
+	result     Result
 	playerInfo *player.Player
 	itemList   list.ItemList
+	nextState  int
 }
 
 func topNew(plyr *player.Player) (*menuTop, error) {
 	res := &menuTop{
 		playerInfo: plyr,
+		result:     ResultContinue,
+		nextState:  stateTop,
 	}
 	res.itemList.SetList([]string{
 		"チップフォルダ",
@@ -44,36 +48,39 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 func (t *menuTop) End() {
 }
 
-func (t *menuTop) Process() Result {
+func (t *menuTop) Process() bool {
 	if config.Get().Debug.EnableDevFeature {
 		if inputs.CheckKey(inputs.KeyLButton) == 1 {
 			sound.On(resources.SEMenuEnter)
-			stateChange(stateDevFeature)
-			return ResultContinue
+			t.nextState = stateDevFeature
+			t.result = ResultContinue
+			return true
 		}
 	}
 
 	sel := t.itemList.Process()
 	if sel != -1 {
 		sound.On(resources.SEMenuEnter)
+		t.result = ResultContinue
 		switch sel {
 		case topSelectChipFolder:
-			stateChange(stateChipFolder)
+			t.nextState = stateChipFolder
 		case topSelectGoBattle:
-			stateChange(stateGoBattle)
+			t.nextState = stateGoBattle
 		case topSelectPlayerStatus:
-			stateChange(statePlayerStatus)
+			t.nextState = statePlayerStatus
 		case topSelectNetBattle:
 			if t.haveInvalidChip() {
-				stateChange(stateInvalidChip)
+				t.nextState = stateInvalidChip
 			} else {
-				stateChange(stateNetBattle)
+				t.nextState = stateNetBattle
 			}
 		case topSelectNaviCustom:
-			return ResultGoNaviCustom
+			t.result = ResultGoNaviCustom
 		}
+		return true
 	}
-	return ResultContinue
+	return false
 }
 
 func (t *menuTop) Draw() {
@@ -114,6 +121,14 @@ func (t *menuTop) Draw() {
 	if config.Get().Debug.EnableDevFeature {
 		draw.String(50, 250, 0x000000, "L-btn: Debug機能")
 	}
+}
+
+func (t *menuTop) GetResult() Result {
+	return t.result
+}
+
+func (t *menuTop) GetNextState() int {
+	return t.nextState
 }
 
 func (t *menuTop) haveInvalidChip() bool {
