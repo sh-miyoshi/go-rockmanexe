@@ -41,7 +41,7 @@ type menuStateInstance interface {
 	End()
 	Process() bool
 	Draw()
-	GetResult() Result // TODO: WIP
+	GetResult() Result
 }
 
 var (
@@ -86,7 +86,6 @@ func End() {
 		currentInst.End()
 		currentInst = nil
 	}
-	// TODO goBattleEnd()
 }
 
 func Process() (Result, error) {
