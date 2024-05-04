@@ -68,6 +68,9 @@ func APIAddr() string {
 }
 
 func setByEnv() {
+	if id := os.Getenv("SESSION_ID"); id != "" {
+		inst.Server.Session.ID = id
+	}
 	if id := os.Getenv("CLIENT_1_ID"); id != "" {
 		inst.Server.Session.ClientID1 = id
 	}
