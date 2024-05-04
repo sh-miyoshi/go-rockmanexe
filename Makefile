@@ -24,6 +24,7 @@ protoc-linux:
 	rm -rf github.com
 docker:
 	docker build -t docker.io/smiyoshi/rockmanexe-router -f build/Dockerfile.server .
+	docker tag docker.io/smiyoshi/rockmanexe-router docker.io/smiyoshi/rockmanexe-router:v0.12
 localnet:
 	cd tools/localnet-boot && \
 	go build -o localnet-boot.exe && \
