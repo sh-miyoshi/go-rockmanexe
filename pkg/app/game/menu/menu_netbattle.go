@@ -17,6 +17,7 @@ type menuNetBattle struct {
 	messages     []string
 	isConnect    bool
 	isErrorLoged bool
+	result       Result
 }
 
 func netBattleNew() (*menuNetBattle, error) {
@@ -24,6 +25,7 @@ func netBattleNew() (*menuNetBattle, error) {
 		messages:     []string{"通信待機中です・・・"},
 		isConnect:    false,
 		isErrorLoged: false,
+		result:       ResultContinue,
 	}
 
 	fname := config.ImagePath + "msg_frame.png"
@@ -48,17 +50,13 @@ func (m *menuNetBattle) Process() bool {
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
-		// Data init for next access
 		net.GetInst().Disconnect()
-		m.isConnect = false
-		m.messages = []string{"通信待機中です・・・"}
-		m.isErrorLoged = false
-
-		stateChange(stateTop)
+		return true
 	}
 
 	status := net.GetInst().GetConnStatus()
 	if status.Status == netconn.ConnStateOK {
+		m.result = ResultGoNetBattle
 		return true
 	}
 	if status.Status == netconn.ConnStateError {
@@ -80,4 +78,8 @@ func (m *menuNetBattle) Draw() {
 	for i, msg := range m.messages {
 		draw.MessageText(120, 220+i*30, 0x000000, msg)
 	}
+}
+
+func (m *menuNetBattle) GetResult() Result {
+	return m.result
 }

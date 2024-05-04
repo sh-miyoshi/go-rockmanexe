@@ -26,11 +26,12 @@ func playerStatusNew(plyr *player.Player) (*menuPlayerStatus, error) {
 func (r *menuPlayerStatus) End() {
 }
 
-func (r *menuPlayerStatus) Process() {
+func (r *menuPlayerStatus) Process() bool {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(resources.SECancel)
-		stateChange(stateTop)
+		return true
 	}
+	return false
 }
 
 func (r *menuPlayerStatus) Draw() {
@@ -84,4 +85,8 @@ func (r *menuPlayerStatus) Draw() {
 		draw.String(80, 50+i*30, 0, row.key)
 		draw.String(280, 50+i*30, 0, row.value)
 	}
+}
+
+func (r *menuPlayerStatus) GetResult() Result {
+	return ResultContinue
 }

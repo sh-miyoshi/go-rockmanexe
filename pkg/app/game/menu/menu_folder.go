@@ -97,13 +97,13 @@ func (f *menuFolder) End() {
 	dxlib.DeleteGraph(f.imgScrollPointer)
 }
 
-func (f *menuFolder) Process() {
+func (f *menuFolder) Process() bool {
 	if f.msg != "" {
 		if f.win.Process() {
 			sound.On(resources.SECancel)
 			f.msg = ""
 		}
-		return
+		return false
 	}
 
 	f.count++
@@ -114,7 +114,7 @@ func (f *menuFolder) Process() {
 
 		if f.currentWindow == folderWindowTypeBackPack && f.listNum[f.currentWindow] == 0 {
 			sound.On(resources.SEDenied)
-			return
+			return false
 		}
 
 		if f.selected == -1 {
@@ -127,7 +127,7 @@ func (f *menuFolder) Process() {
 				logger.Info("Failed to exchange chip: %v", err)
 				f.msg = err.Error()
 				f.win.SetMessage(f.msg, window.FaceTypeNone)
-				return
+				return false
 			}
 
 			sound.On(resources.SESelect)
@@ -135,7 +135,7 @@ func (f *menuFolder) Process() {
 		}
 	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		if f.selected == -1 {
-			stateChange(stateTop)
+			return true
 		} else {
 			f.selected = -1
 		}
@@ -174,6 +174,8 @@ func (f *menuFolder) Process() {
 			}
 		}
 	}
+
+	return false
 }
 
 func (f *menuFolder) Draw() {
@@ -260,6 +262,10 @@ func (f *menuFolder) Draw() {
 	if f.msg != "" {
 		f.win.Draw()
 	}
+}
+
+func (f *menuFolder) GetResult() Result {
+	return ResultContinue
 }
 
 func (f *menuFolder) drawBackGround() {
