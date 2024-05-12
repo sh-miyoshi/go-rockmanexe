@@ -23,7 +23,7 @@ const (
 	IDCharge1_White
 	IDHP50_White
 	IDHP100_Yellow
-	IDCustom1
+	IDCustom1_Blue
 	IDUnderShirt
 )
 
@@ -115,7 +115,7 @@ var (
 			Description: "HPが0になる前に1で耐える",
 		},
 		{
-			ID:   IDCustom1,
+			ID:   IDCustom1_Blue,
 			Name: "カスタム１",
 			Blocks: []point.Point{
 				{X: 0, Y: 0},

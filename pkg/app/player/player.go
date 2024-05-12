@@ -86,6 +86,7 @@ func New() *Player {
 			{ID: ncparts.IDHP50_White, IsSet: false},
 			{ID: ncparts.IDHP100_Yellow, IsSet: false},
 			{ID: ncparts.IDHP100_Yellow, IsSet: false},
+			{ID: ncparts.IDCustom1_Blue, IsSet: false},
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
@@ -355,7 +356,7 @@ func (p *Player) updatePlayerStatus() {
 				p.HP += 50
 			case ncparts.IDHP100_Yellow:
 				p.HP += 100
-			case ncparts.IDCustom1:
+			case ncparts.IDCustom1_Blue:
 				p.ChipSelectMax++
 			}
 		}
