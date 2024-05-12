@@ -17,7 +17,6 @@ import (
 )
 
 const (
-	selectMax = 5 // TODO should variable length
 	sendBtnNo = -1
 )
 
@@ -32,8 +31,7 @@ var (
 	pointer        = sendBtnNo
 )
 
-// Init ...
-func Init(folder []player.ChipInfo) error {
+func Init(folder []player.ChipInfo, chipSelectMax int) error {
 	if imgFrame == -1 {
 		fname := config.ImagePath + "battle/chip_select_frame.png"
 		imgFrame = dxlib.LoadGraph(fname)
@@ -53,8 +51,8 @@ func Init(folder []player.ChipInfo) error {
 	selected = []int{}
 
 	num := len(folder)
-	if num > selectMax {
-		num = selectMax
+	if num > chipSelectMax {
+		num = chipSelectMax
 	}
 	for i := 0; i < num; i++ {
 		selectList = append(selectList, folder[i])
@@ -70,7 +68,6 @@ func Init(folder []player.ChipInfo) error {
 	return nil
 }
 
-// Draw ...
 func Draw() {
 	if imgFrame == -1 {
 		// Waiting initialize
