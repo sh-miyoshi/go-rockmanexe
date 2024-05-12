@@ -1,10 +1,11 @@
 package session
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"

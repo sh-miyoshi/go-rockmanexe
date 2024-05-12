@@ -1,9 +1,10 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 	"time"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"

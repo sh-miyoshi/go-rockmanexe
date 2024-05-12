@@ -1,11 +1,12 @@
 package main
 
 import (
-	"errors"
 	"math/rand"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/google/uuid"
 	netconn "github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"

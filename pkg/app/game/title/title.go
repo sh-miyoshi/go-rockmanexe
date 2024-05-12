@@ -1,9 +1,10 @@
 package title
 
 import (
-	"errors"
 	"fmt"
 	"os"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
