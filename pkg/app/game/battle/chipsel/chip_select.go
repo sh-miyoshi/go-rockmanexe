@@ -174,7 +174,7 @@ func Process() bool {
 		} else if inputs.CheckKey(inputs.KeyUp) == 1 && pointer >= rowMax {
 			sound.On(resources.SECursorMove)
 			pointer -= rowMax
-		} else if inputs.CheckKey(inputs.KeyDown) == 1 && pointer >= 0 && pointer < rowMax {
+		} else if max > rowMax && inputs.CheckKey(inputs.KeyDown) == 1 && pointer >= 0 && pointer < rowMax {
 			sound.On(resources.SECursorMove)
 			pointer += rowMax
 			if pointer >= max {
