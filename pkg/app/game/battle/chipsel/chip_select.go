@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	selectMax = 5 // TODO should variable length
 	sendBtnNo = -1
+	rowMax    = 5
 )
 
 var (
@@ -32,8 +32,7 @@ var (
 	pointer        = sendBtnNo
 )
 
-// Init ...
-func Init(folder []player.ChipInfo) error {
+func Init(folder []player.ChipInfo, chipSelectMax int) error {
 	if imgFrame == -1 {
 		fname := config.ImagePath + "battle/chip_select_frame.png"
 		imgFrame = dxlib.LoadGraph(fname)
@@ -53,8 +52,8 @@ func Init(folder []player.ChipInfo) error {
 	selected = []int{}
 
 	num := len(folder)
-	if num > selectMax {
-		num = selectMax
+	if num > chipSelectMax {
+		num = chipSelectMax
 	}
 	for i := 0; i < num; i++ {
 		selectList = append(selectList, folder[i])
@@ -70,7 +69,6 @@ func Init(folder []player.ChipInfo) error {
 	return nil
 }
 
-// Draw ...
 func Draw() {
 	if imgFrame == -1 {
 		// Waiting initialize
@@ -86,11 +84,12 @@ func Draw() {
 
 	// Show chip data
 	for i, s := range selectList {
-		x := i*32 + 17
-		draw.ChipCode(x+10, 240+baseY, s.Code, 50)
+		x := (i%rowMax)*32 + 17
+		y := (i / rowMax) * 48
+		draw.ChipCode(x+10, y+240+baseY, s.Code, 50)
 		if !slice.Contains(selected, i) {
 			// Show Icon
-			dxlib.DrawGraph(x, 210+baseY, chipimage.GetIcon(s.ID, selectable(i)), true)
+			dxlib.DrawGraph(x, y+210+baseY, chipimage.GetIcon(s.ID, selectable(i)), true)
 		}
 
 		// Show Detail Data
@@ -116,8 +115,8 @@ func Draw() {
 		if pointer == sendBtnNo {
 			dxlib.DrawGraph(180, 225+baseY, imgPointer[1], true)
 		} else {
-			x := (pointer%5)*32 + 8
-			y := (pointer/5)*20 + 202 + baseY
+			x := (pointer%rowMax)*32 + 8
+			y := (pointer/rowMax)*48 + 202 + baseY
 			dxlib.DrawGraph(x, y, imgPointer[0], true)
 		}
 	}
@@ -129,7 +128,6 @@ func Draw() {
 	}
 }
 
-// Process ...
 func Process() bool {
 	count++
 	max := len(selectList)
@@ -157,7 +155,7 @@ func Process() bool {
 			}
 		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 			sound.On(resources.SECursorMove)
-			if pointer == max-1 {
+			if pointer == rowMax-1 || pointer == max-1 {
 				pointer = sendBtnNo
 			} else if pointer == sendBtnNo {
 				pointer = 0
@@ -172,6 +170,15 @@ func Process() bool {
 				pointer = sendBtnNo
 			} else {
 				pointer--
+			}
+		} else if inputs.CheckKey(inputs.KeyUp) == 1 && pointer >= rowMax {
+			sound.On(resources.SECursorMove)
+			pointer -= rowMax
+		} else if max > rowMax && inputs.CheckKey(inputs.KeyDown) == 1 && pointer >= 0 && pointer < rowMax {
+			sound.On(resources.SECursorMove)
+			pointer += rowMax
+			if pointer >= max {
+				pointer = max - 1
 			}
 		}
 	}

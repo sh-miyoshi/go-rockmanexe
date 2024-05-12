@@ -40,15 +40,17 @@ type BattlePlayer struct {
 	shotPower     int
 	chargeTime    int
 	gaugeCount    int
+	chipSelectMax int
 }
 
 func New(plyr *player.Player) (*BattlePlayer, error) {
 	res := &BattlePlayer{
-		objectID:    uuid.New().String(),
-		chargeCount: 0,
-		shotPower:   int(plyr.ShotPower),
-		chargeTime:  int(plyr.ChargeTime),
-		gaugeCount:  0,
+		objectID:      uuid.New().String(),
+		chargeCount:   0,
+		shotPower:     int(plyr.ShotPower),
+		chargeTime:    int(plyr.ChargeTime),
+		gaugeCount:    0,
+		chipSelectMax: plyr.ChipSelectMax,
 	}
 	for _, c := range plyr.ChipFolder {
 		res.chipFolder = append(res.chipFolder, c)
@@ -339,6 +341,10 @@ func (p *BattlePlayer) IsDead() bool {
 
 func (p *BattlePlayer) GetObjectID() string {
 	return p.objectID
+}
+
+func (p *BattlePlayer) GetChipSelectMax() int {
+	return p.chipSelectMax
 }
 
 func (p *BattlePlayer) getObject() gameinfo.Object {

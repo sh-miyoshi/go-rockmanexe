@@ -182,7 +182,7 @@ func Process() error {
 		}
 	case stateChipSelect:
 		if inst.stateCount == 0 {
-			if err := chipsel.Init(inst.playerInst.GetChipFolder()); err != nil {
+			if err := chipsel.Init(inst.playerInst.GetChipFolder(), inst.playerInst.GetChipSelectMax()); err != nil {
 				return fmt.Errorf("failed to initialize chip select: %w", err)
 			}
 		}

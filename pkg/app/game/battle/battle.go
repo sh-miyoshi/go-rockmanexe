@@ -159,7 +159,7 @@ func Process() error {
 		}
 	case stateChipSelect:
 		if battleCount == 0 {
-			if err := chipsel.Init(playerInst.ChipFolder); err != nil {
+			if err := chipsel.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
 				return fmt.Errorf("failed to initialize chip select: %w", err)
 			}
 			playerInst.SetFrameInfo(true, false)

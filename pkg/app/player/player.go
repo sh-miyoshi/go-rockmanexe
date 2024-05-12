@@ -17,9 +17,10 @@ import (
 )
 
 const (
-	defaultHP         uint = 300
-	defaultShotPower  uint = 1
-	defaultChargeTime uint = 180
+	defaultHP            uint = 300
+	defaultShotPower     uint = 1
+	defaultChargeTime    uint = 180
+	defaultChipSelectMax      = 5
 
 	FolderSize          = 30
 	SameChipNumInFolder = 4
@@ -54,6 +55,7 @@ type Player struct {
 	BackPack           []ChipInfo           `json:"back_pack"`
 	BattleHistories    []History            `json:"battle_histories"`
 	AllNaviCustomParts []NaviCustomParts    `json:"navi_custom_parts"`
+	ChipSelectMax      int                  `json:"chip_select_max"`
 }
 
 type SaveData struct {
@@ -67,6 +69,7 @@ func New() *Player {
 		HP:              defaultHP,
 		ShotPower:       defaultShotPower,
 		ChargeTime:      defaultChargeTime,
+		ChipSelectMax:   defaultChipSelectMax,
 		Zenny:           0,
 		WinNum:          0,
 		BackPack:        []ChipInfo{},
@@ -83,6 +86,7 @@ func New() *Player {
 			{ID: ncparts.IDHP50_White, IsSet: false},
 			{ID: ncparts.IDHP100_Yellow, IsSet: false},
 			{ID: ncparts.IDHP100_Yellow, IsSet: false},
+			{ID: ncparts.IDCustom1_Blue, IsSet: false},
 			{ID: ncparts.IDUnderShirt, IsSet: false},
 		},
 	}
@@ -131,6 +135,9 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	// 互換性維持
 	if rawData.Player.ChargeTime == 0 {
 		rawData.Player.ChargeTime = defaultChargeTime
+	}
+	if rawData.Player.ChipSelectMax == 0 {
+		rawData.Player.ChipSelectMax = defaultChipSelectMax
 	}
 
 	switch rawData.ProgramVersion {
@@ -334,6 +341,7 @@ func (p *Player) updatePlayerStatus() {
 	p.HP = defaultHP
 	p.ShotPower = defaultShotPower
 	p.ChargeTime = defaultChargeTime
+	p.ChipSelectMax = defaultChipSelectMax
 
 	// ナビカスによるステータス上昇
 	for _, parts := range p.AllNaviCustomParts {
@@ -348,6 +356,8 @@ func (p *Player) updatePlayerStatus() {
 				p.HP += 50
 			case ncparts.IDHP100_Yellow:
 				p.HP += 100
+			case ncparts.IDCustom1_Blue:
+				p.ChipSelectMax++
 			}
 		}
 	}

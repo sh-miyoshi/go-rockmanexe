@@ -73,6 +73,7 @@ type BattlePlayer struct {
 	DamageNum     int
 	MindStatus    int
 	IsUnderShirt  bool
+	ChipSelectMax int
 
 	act             act
 	invincibleCount int
@@ -95,16 +96,17 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:           uuid.New().String(),
-		HP:           plyr.HP,
-		HPMax:        plyr.HP, // TODO HPは引き継がない
-		Pos:          point.Point{X: 1, Y: 1},
-		ShotPower:    plyr.ShotPower,
-		ChargeTime:   plyr.ChargeTime,
-		EnableAct:    true,
-		MindStatus:   battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
-		visible:      true,
-		IsUnderShirt: plyr.IsUnderShirt(),
+		ID:            uuid.New().String(),
+		HP:            plyr.HP,
+		HPMax:         plyr.HP, // TODO HPは引き継がない
+		Pos:           point.Point{X: 1, Y: 1},
+		ShotPower:     plyr.ShotPower,
+		ChargeTime:    plyr.ChargeTime,
+		EnableAct:     true,
+		MindStatus:    battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
+		visible:       true,
+		IsUnderShirt:  plyr.IsUnderShirt(),
+		ChipSelectMax: plyr.ChipSelectMax,
 	}
 	res.act.typ = -1
 	res.act.pPos = &res.Pos
