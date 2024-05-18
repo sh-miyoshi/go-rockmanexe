@@ -1,10 +1,10 @@
 package window
 
 import (
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -41,13 +41,13 @@ func (w *MessageWindow) Init() error {
 	fname := config.ImagePath + "msg_frame.png"
 	w.imgFrame = dxlib.LoadGraph(fname)
 	if w.imgFrame == -1 {
-		return fmt.Errorf("failed to load message frame image %s", fname)
+		return errors.Newf("failed to load message frame image %s", fname)
 	}
 
 	fname = config.ImagePath + "face/ロックマン.png"
 	w.imgFaces[FaceTypeRockman] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 72, w.imgFaces[FaceTypeRockman]); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	w.faceType = FaceTypeNone

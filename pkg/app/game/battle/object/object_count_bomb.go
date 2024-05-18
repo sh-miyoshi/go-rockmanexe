@@ -1,8 +1,7 @@
 package object
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -36,13 +35,13 @@ func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
 	fname := config.ImagePath + "battle/skill/カウントボム.png"
 	o.imgBody = dxlib.LoadGraph(fname)
 	if o.imgBody == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	o.imgNumber = make([]int, 4)
 	fname = config.ImagePath + "battle/skill/カウントボム_数字.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, o.imgNumber); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil

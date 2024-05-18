@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -68,21 +69,21 @@ func Init(fname string) error {
 
 func Load(id int) (MapInfo, error) {
 	if id < 0 || id >= idMax {
-		return MapInfo{}, fmt.Errorf("no such as map %d", id)
+		return MapInfo{}, errors.Newf("no such as map %d", id)
 	}
 
 	if mapInfo[id].Image == -1 {
 		fname := fmt.Sprintf("%smap/field/%d_%s.png", config.ImagePath, id, mapInfo[id].Name)
 		mapInfo[id].Image = dxlib.LoadGraph(fname)
 		if mapInfo[id].Image == -1 {
-			return MapInfo{}, fmt.Errorf("failed to load image: %s", fname)
+			return MapInfo{}, errors.Newf("failed to load image: %s", fname)
 		}
 		dxlib.GetGraphSize(mapInfo[id].Image, &mapInfo[id].Size.X, &mapInfo[id].Size.Y)
 	}
 
 	// TODO: 適切な背景をセットする
 	if err := background.Set(background.Type秋原町); err != nil {
-		return MapInfo{}, fmt.Errorf("failed to load background: %w", err)
+		return MapInfo{}, errors.Wrap(err, "failed to load background")
 	}
 
 	return mapInfo[id], nil

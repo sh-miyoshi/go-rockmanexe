@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -59,11 +60,11 @@ func Init(plyr *player.Player) error {
 
 	fname := config.ImagePath + "menu/back.png"
 	if imgBack = dxlib.LoadGraph(fname); imgBack == -1 {
-		return fmt.Errorf("failed to load menu back image %s", fname)
+		return errors.Newf("failed to load menu back image %s", fname)
 	}
 
 	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
+		return errors.Wrap(err, "failed to play bgm")
 	}
 
 	if config.Get().Debug.SkipMenu {

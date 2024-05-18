@@ -1,8 +1,7 @@
 package enemy
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -53,12 +52,12 @@ func (e *enemyMetall) Init(objID string) error {
 	fname := name + "_move" + ext
 	e.imgMove[0] = dxlib.LoadGraph(fname)
 	if e.imgMove[0] == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 	e.atk.images = make([]int, 15)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 15, 15, 1, 100, 140, e.atk.images); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	metallActQueue = append(metallActQueue, objID)

@@ -1,7 +1,6 @@
 package title
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/cockroachdb/errors"
@@ -47,16 +46,16 @@ func Init() error {
 	fname := config.ImagePath + "title/logo.png"
 	imgLogo = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = config.ImagePath + "title/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	if err := sound.BGMPlay(sound.BGMTitle); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
+		return errors.Wrap(err, "failed to play bgm")
 	}
 
 	return nil
@@ -114,7 +113,7 @@ func Process() error {
 				case 1:
 					return ErrStartContinue
 				default:
-					return fmt.Errorf("unrecognized cursor %d was specified", cursor)
+					return errors.Newf("unrecognized cursor %d was specified", cursor)
 				}
 			}
 			return nil

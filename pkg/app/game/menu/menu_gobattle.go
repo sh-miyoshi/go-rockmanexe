@@ -1,8 +1,7 @@
 package menu
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -276,7 +275,7 @@ func goBattleNew() (*menuGoBattle, error) {
 
 	for id, img := range res.images {
 		if img == -1 {
-			return nil, fmt.Errorf("failed to load enemy %d image", id)
+			return nil, errors.Newf("failed to load enemy %d image", id)
 		}
 	}
 

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -62,25 +63,25 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 	fname := config.ImagePath + "menu/chip_frame.png"
 	res.imgChipFrame = dxlib.LoadGraph(fname)
 	if res.imgChipFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu chip frame image %s", fname)
+		return nil, errors.Newf("failed to load menu chip frame image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/pointer.png"
 	res.imgPointer = dxlib.LoadGraph(fname)
 	if res.imgPointer == -1 {
-		return nil, fmt.Errorf("failed to load menu pointer image %s", fname)
+		return nil, errors.Newf("failed to load menu pointer image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/arrow.png"
 	res.imgArrow = dxlib.LoadGraph(fname)
 	if res.imgArrow == -1 {
-		return nil, fmt.Errorf("failed to load menu arrow image %s", fname)
+		return nil, errors.Newf("failed to load menu arrow image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/scroll_point.png"
 	res.imgScrollPointer = dxlib.LoadGraph(fname)
 	if res.imgScrollPointer == -1 {
-		return nil, fmt.Errorf("failed to load menu scroll point image %s", fname)
+		return nil, errors.Newf("failed to load menu scroll point image %s", fname)
 	}
 
 	if err := res.win.Init(); err != nil {
@@ -122,10 +123,10 @@ func (f *menuFolder) Process() bool {
 			f.selected = sel
 			sound.On(resources.SESelect)
 		} else {
-			if err := f.exchange(f.selected, sel); err != nil {
+			if ok, msg := f.exchange(f.selected, sel); !ok {
 				sound.On(resources.SEDenied)
-				logger.Info("Failed to exchange chip: %v", err)
-				f.msg = err.Error()
+				logger.Info("Failed to exchange chip: %s", msg)
+				f.msg = msg
 				f.win.SetMessage(f.msg, window.FaceTypeNone)
 				return false
 			}
@@ -323,7 +324,7 @@ func (f *menuFolder) drawChipDetail(index int) {
 	f.drawDescription(info.Description)
 }
 
-func (f *menuFolder) exchange(sel1, sel2 int) error {
+func (f *menuFolder) exchange(sel1, sel2 int) (ok bool, message string) {
 	var target1, target2 *player.ChipInfo
 	t := 1
 	folderSel := 0
@@ -363,12 +364,12 @@ func (f *menuFolder) exchange(sel1, sel2 int) error {
 		}
 
 		if n >= player.SameChipNumInFolder {
-			return fmt.Errorf("同名チップは%d枚までしか入れられません", player.SameChipNumInFolder)
+			return false, fmt.Sprintf("同名チップは%d枚までしか入れられません", player.SameChipNumInFolder)
 		}
 	}
 
 	*target1, *target2 = *target2, *target1
-	return nil
+	return true, ""
 }
 
 func (f *menuFolder) drawDescription(desc string) {

@@ -3,10 +3,10 @@ package netconn
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"strings"
 	"sync"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/sysinfo"
@@ -164,28 +164,28 @@ func (n *NetConn) connect() error {
 	var err error
 	n.conn, err = newConn(n.config)
 	if err != nil {
-		return fmt.Errorf("failed to dial router: %w", err)
+		return errors.Wrap(err, "failed to dial router")
 	}
 
 	client := pb.NewNetConnClient(n.conn)
 	n.dataStream, err = client.TransData(context.Background())
 	if err != nil {
-		return fmt.Errorf("failed to create data stream: %w", err)
+		return errors.Wrap(err, "failed to create data stream")
 	}
 
 	// Authenticate client
 	req := makeAuthReq(n.config.ClientID, n.config.ClientKey, n.config.ProgramVersion)
 	if err := n.dataStream.Send(req); err != nil {
-		return fmt.Errorf("failed to send authn request: %w", err)
+		return errors.Wrap(err, "failed to send authn request")
 	}
 
 	res, err := n.dataStream.Recv()
 	if err != nil {
-		return fmt.Errorf("failed to recv authn response: %w", err)
+		return errors.Wrap(err, "failed to recv authn response")
 	}
 	authRes := res.GetAuthRes()
 	if !authRes.Success {
-		return fmt.Errorf("failed to authenticate client: %s", authRes.ErrMsg)
+		return errors.Newf("failed to authenticate client: %s", authRes.ErrMsg)
 	}
 	n.sessionID = authRes.SessionID
 	n.allUserIDs = append([]string{}, authRes.AllUserIDs...)
@@ -200,7 +200,7 @@ func (n *NetConn) dataRecv() {
 		if err != nil {
 			n.connectStatus = ConnectStatus{
 				Status: ConnStateError,
-				Error:  fmt.Errorf("failed to recv data: %w", err),
+				Error:  errors.Wrap(err, "failed to recv data"),
 			}
 			return
 		}
@@ -232,7 +232,7 @@ func (n *NetConn) dataRecv() {
 		default:
 			n.connectStatus = ConnectStatus{
 				Status: ConnStateError,
-				Error:  fmt.Errorf("invalid data type was received: %d", data.Type),
+				Error:  errors.Newf("invalid data type was received: %d", data.Type),
 			}
 			return
 		}

@@ -1,9 +1,9 @@
 package enemy
 
 import (
-	"fmt"
 	"math/rand"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -71,7 +71,7 @@ func (e *enemyColdman) Init(objID string) error {
 	fname := name + "_all" + ext
 	tmp := make([]int, 24)
 	if res := dxlib.LoadDivGraph(fname, 24, 6, 4, 136, 115, tmp); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 	cleanup := []int{}
 	e.images[coldmanActTypeStand] = make([]int, 1)
@@ -425,7 +425,7 @@ func (e *enemyColdman) createCube() error {
 		}
 		obj := &object.IceCube{}
 		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
-			return fmt.Errorf("failed to init ice cube: %w", err)
+			return errors.Wrap(err, "failed to init ice cube")
 		}
 		id := localanim.ObjAnimNew(obj)
 		localanim.ObjAnimAddActiveAnim(id)
@@ -459,7 +459,7 @@ func (e *enemyColdman) createBress() error {
 
 		obj := &object.ColdBress{}
 		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
-			return fmt.Errorf("failed to init cold bress: %w", err)
+			return errors.Wrap(err, "failed to init cold bress")
 		}
 		id := localanim.ObjAnimNew(obj)
 		e.bressIDs = append(e.bressIDs, id)

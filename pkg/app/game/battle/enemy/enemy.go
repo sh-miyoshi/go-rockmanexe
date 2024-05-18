@@ -88,7 +88,7 @@ func Init(playerID string, enemyList []EnemyParam) error {
 	// Init enemy data
 	for id, e := range enemies {
 		if err := e.Init(id); err != nil {
-			return err
+			return errors.Wrapf(err, "enemy %s init failed", id)
 		}
 	}
 	return nil

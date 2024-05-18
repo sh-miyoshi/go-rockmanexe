@@ -1,7 +1,6 @@
 package session
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -41,7 +40,7 @@ func Add(sessionID, clientID string, stream pb.NetConn_TransDataServer) error {
 	s, ok := inst.sessions[sessionID]
 	if ok {
 		if err := s.SetClient(clientID, stream); err != nil {
-			return fmt.Errorf("failed to set client: %w", err)
+			return errors.Wrap(err, "failed to set client")
 		}
 		logger.Info("set new client %s to session %s", clientID, sessionID)
 	} else {
@@ -77,7 +76,7 @@ func ManagerExec() error {
 		// できる限りsessionを終了させてからrouterは死ぬ
 		if len(inst.sessions) == 0 {
 			if err := system.Error(); err != nil {
-				return fmt.Errorf("failed to exec system: %+w", err)
+				return errors.Wrap(err, "failed to exec system")
 			}
 		}
 

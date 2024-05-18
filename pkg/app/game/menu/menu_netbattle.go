@@ -1,8 +1,7 @@
 package menu
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -31,7 +30,7 @@ func netBattleNew() (*menuNetBattle, error) {
 	fname := config.ImagePath + "msg_frame.png"
 	res.imgMsgFrame = dxlib.LoadGraph(fname)
 	if res.imgMsgFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
+		return nil, errors.Newf("failed to load menu message frame image %s", fname)
 	}
 
 	net.Init()

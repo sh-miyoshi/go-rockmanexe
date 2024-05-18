@@ -1,8 +1,7 @@
 package object
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -42,7 +41,7 @@ func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
 	o.images = make([]int, 7)
 	fname := config.ImagePath + "battle/skill/コールドマン_ブレス.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 76, 78, o.images); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil

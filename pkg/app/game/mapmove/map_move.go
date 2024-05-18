@@ -49,7 +49,7 @@ func Init() error {
 	tmp := make([]int, 40)
 	fname := config.ImagePath + "map/rockman_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 6, 5, 64, 64, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 6; j++ {
@@ -59,13 +59,13 @@ func Init() error {
 	rockmanMoveStandImages = make([]int, 5)
 	fname = config.ImagePath + "map/rockman_overworld_stand.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, rockmanMoveStandImages); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	// Load net image
 	fname = config.ImagePath + "map/net_overworld_move.png"
 	if res := dxlib.LoadDivGraph(fname, 40, 8, 5, 64, 64, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 8; j++ {
@@ -75,7 +75,7 @@ func Init() error {
 	netMoveStandImages = make([]int, 5)
 	fname = config.ImagePath + "map/net_overworld_stand.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 64, netMoveStandImages); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	playerMoveDirect = config.DirectDown
@@ -111,7 +111,7 @@ func MapChange(mapID int, pos point.Point) error {
 	var err error
 	mapInfo, err = mapinfo.Load(mapID)
 	if err != nil {
-		return fmt.Errorf("failed to load map info: %w", err)
+		return errors.Wrap(err, "failed to load map info")
 	}
 	absPlayerPosX = float64(pos.X)
 	absPlayerPosY = float64(pos.Y)

@@ -1,9 +1,9 @@
 package objanim
 
 import (
-	"fmt"
 	"sort"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -69,7 +69,7 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 
 		end, err := anim.Process()
 		if err != nil {
-			return fmt.Errorf("Anim process failed: %w", err)
+			return errors.Wrap(err, "Anim process failed")
 		}
 
 		if end {

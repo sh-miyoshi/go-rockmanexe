@@ -65,7 +65,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	var err error
 	playerInst, err = battleplayer.New(plyr)
 	if err != nil {
-		return fmt.Errorf("battle player init failed: %w", err)
+		return errors.Wrap(err, "battle player init failed")
 	}
 	localanim.ObjAnimNew(playerInst)
 
@@ -78,7 +78,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 				InitPos: e.Pos,
 			})
 			if err != nil {
-				return fmt.Errorf("battle supporter init failed: %w", err)
+				return errors.Wrap(err, "battle supporter init failed")
 			}
 			localanim.ObjAnimNew(supporter)
 			logger.Info("add supporter %+v", supporter)
@@ -89,15 +89,15 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("enemy list: %+v", enemyList)
 
 	if err := field.Init(); err != nil {
-		return fmt.Errorf("battle field init failed: %w", err)
+		return errors.Wrap(err, "battle field init failed")
 	}
 
 	if err := skill.Init(); err != nil {
-		return fmt.Errorf("skill init failed: %w", err)
+		return errors.Wrap(err, "skill init failed")
 	}
 
 	if err := effect.Init(); err != nil {
-		return fmt.Errorf("effect init failed: %w", err)
+		return errors.Wrap(err, "effect init failed")
 	}
 
 	bgm := sound.BGMBattle
@@ -109,7 +109,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	}
 
 	if err := sound.BGMPlay(bgm); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
+		return errors.Wrap(err, "failed to play bgm")
 	}
 
 	// カスタムゲージのスピードをデフォルトにしておく
@@ -146,14 +146,14 @@ func Process() error {
 				openingInst, err = opening.NewWithNormal(enemyList)
 			}
 			if err != nil {
-				return fmt.Errorf("opening init failed: %w", err)
+				return errors.Wrap(err, "opening init failed")
 			}
 		}
 
 		if openingInst.Process() {
 			openingInst.End()
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
-				return fmt.Errorf("enemy init failed: %w", err)
+				return errors.Wrap(err, "enemy init failed")
 			}
 			stateChange(stateChipSelect)
 			return nil
@@ -161,7 +161,7 @@ func Process() error {
 	case stateChipSelect:
 		if battleCount == 0 {
 			if err := chipsel.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
-				return fmt.Errorf("failed to initialize chip select: %w", err)
+				return errors.Wrap(err, "failed to initialize chip select")
 			}
 			playerInst.SetFrameInfo(true, false)
 		}
@@ -176,7 +176,7 @@ func Process() error {
 			var err error
 			b4mainInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
-				return fmt.Errorf("failed to initialize before main: %w", err)
+				return errors.Wrap(err, "failed to initialize before main")
 			}
 			playerInst.UpdateChipInfo()
 			playerInst.SetFrameInfo(false, true)
@@ -192,7 +192,7 @@ func Process() error {
 		gameCount++
 
 		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
-			return fmt.Errorf("failed to handle object animation: %w", err)
+			return errors.Wrap(err, "failed to handle object animation")
 		}
 
 		if !field.IsBlackout() {
@@ -211,7 +211,7 @@ func Process() error {
 					stateChange(stateResultWin)
 					return nil
 				}
-				return fmt.Errorf("failed to process enemy: %w", err)
+				return errors.Wrap(err, "failed to process enemy")
 			}
 		}
 
@@ -225,12 +225,12 @@ func Process() error {
 				PlayerMoveNum:   playerInst.MoveNum,
 				PlayerDamageNum: playerInst.DamageNum,
 			}, basePlayerInst); err != nil {
-				return fmt.Errorf("failed to initialize result win: %w", err)
+				return errors.Wrap(err, "failed to initialize result win")
 			}
 		}
 
 		if err := localanim.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
-			return fmt.Errorf("failed to handle object animation: %w", err)
+			return errors.Wrap(err, "failed to handle object animation")
 		}
 
 		if win.Process() {
@@ -243,7 +243,7 @@ func Process() error {
 			var err error
 			loseInst, err = titlemsg.New(fname, 0)
 			if err != nil {
-				return fmt.Errorf("failed to initialize lose: %w", err)
+				return errors.Wrap(err, "failed to initialize lose")
 			}
 			playerInst.SetFrameInfo(false, false)
 		}
@@ -256,7 +256,7 @@ func Process() error {
 
 	if isRunAnim {
 		if err := localanim.AnimMgrProcess(); err != nil {
-			return fmt.Errorf("failed to handle animation: %w", err)
+			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
 

@@ -3,6 +3,7 @@ package navicustom
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -79,22 +80,22 @@ func Init(plyr *player.Player) error {
 	fname := config.ImagePath + "naviCustom/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("failed to load back image")
+		return errors.New("failed to load back image")
 	}
 	fname = config.ImagePath + "naviCustom/board-small.png"
 	imgBoard = dxlib.LoadGraph(fname)
 	if imgBoard == -1 {
-		return fmt.Errorf("failed to load board image")
+		return errors.New("failed to load board image")
 	}
 	fname = config.ImagePath + "naviCustom/pointer.png"
 	imgListPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
-		return fmt.Errorf("failed to load list pointer image")
+		return errors.New("failed to load list pointer image")
 	}
 	fname = config.ImagePath + "naviCustom/pointer2.png"
 	imgSetPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
-		return fmt.Errorf("failed to load set pointer image")
+		return errors.New("failed to load set pointer image")
 	}
 	fname = config.ImagePath + "naviCustom/block_white.png"
 	imgBlocks[colorBlock(ncparts.ColorWhite)] = dxlib.LoadGraph(fname)
@@ -104,7 +105,7 @@ func Init(plyr *player.Player) error {
 	imgBlocks[colorBlock(ncparts.ColorPink)] = dxlib.LoadGraph(fname)
 	for i, b := range imgBlocks {
 		if b == -1 {
-			return fmt.Errorf("failed to load block %d image", i)
+			return errors.Newf("failed to load block %d image", i)
 		}
 	}
 

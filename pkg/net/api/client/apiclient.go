@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/api"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/net/config"
 )
@@ -17,7 +18,7 @@ func VersionCheck(version string) error {
 	}
 
 	if c.AcceptableVersion != version {
-		return fmt.Errorf("router acceptable version is %s, but got %s", c.AcceptableVersion, version)
+		return errors.Newf("router acceptable version is %s, but got %s", c.AcceptableVersion, version)
 	}
 
 	return nil
@@ -50,7 +51,7 @@ func ClientAuth(clientID string, clientKey string) (*api.AuthResponse, error) {
 		return &res, nil
 	}
 
-	return nil, fmt.Errorf("request failed")
+	return nil, errors.New("request failed")
 }
 
 func GetSessionInfo(sessionID string) (*api.SessionInfo, error) {
@@ -72,5 +73,5 @@ func GetSessionInfo(sessionID string) (*api.SessionInfo, error) {
 		return &res, nil
 	}
 
-	return nil, fmt.Errorf("request failed")
+	return nil, errors.New("request failed")
 }

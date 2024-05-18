@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -32,7 +33,7 @@ type animDraw struct {
 
 func (d *animDraw) Init() error {
 	if err := skilldraw.LoadImages(); err != nil {
-		return fmt.Errorf("failed to load skill image: %w", err)
+		return errors.Wrap(err, "failed to load skill image")
 	}
 	d.drawBamboolance.Init()
 
