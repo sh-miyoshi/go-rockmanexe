@@ -1,8 +1,7 @@
 package enemy
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -57,13 +56,13 @@ func (e *enemyCirKill) Init(objID string) error {
 	e.imgMove = make([]int, 4)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 96, e.imgMove); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	e.atk.images = make([]int, 2)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 140, 104, e.atk.images); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil

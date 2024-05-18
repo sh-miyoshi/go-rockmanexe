@@ -1,8 +1,7 @@
 package object
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -36,7 +35,7 @@ func (o *IceCube) Init(ownerID string, initParam ObjectParam) error {
 	o.images = make([]int, 6)
 	fname := config.ImagePath + "battle/character/アイスキューブ.png"
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 76, 90, o.images); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil

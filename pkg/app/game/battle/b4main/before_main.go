@@ -1,8 +1,7 @@
 package b4main
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -33,7 +32,7 @@ func New(selectChips []battleplayer.SelectChip) (*BeforeMain, error) {
 	fname := config.ImagePath + "battle/msg_start.png"
 	inst, err := titlemsg.New(fname, 0)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize title message instance: %w", err)
+		return nil, errors.Wrap(err, "failed to initialize title message instance")
 	}
 
 	list := []chip.SelectParam{}

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
@@ -69,34 +70,34 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname := config.ImagePath + "battle/hp_frame.png"
 	res.imgHPFrame = dxlib.LoadGraph(fname)
 	if res.imgHPFrame < 0 {
-		return nil, fmt.Errorf("failed to read hp frame image %s", fname)
+		return nil, errors.Newf("failed to read hp frame image %s", fname)
 	}
 	fname = config.ImagePath + "battle/gauge.png"
 	res.imgGaugeFrame = dxlib.LoadGraph(fname)
 	if res.imgGaugeFrame < 0 {
-		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
+		return nil, errors.Newf("failed to read gauge frame image %s", fname)
 	}
 	fname = config.ImagePath + "battle/gauge_max.png"
 	res.imgGaugeMax = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, res.imgGaugeMax); res == -1 {
-		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
+		return nil, errors.Newf("failed to read gauge max image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/mind_window_frame.png"
 	if res.imgMindFrame = dxlib.LoadGraph(fname); res.imgMindFrame == -1 {
-		return nil, fmt.Errorf("failed to read mind frame image %s", fname)
+		return nil, errors.Newf("failed to read mind frame image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/mind_status.png"
 	res.imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
 	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, res.imgMinds); res == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/skill/charge.png"
 	tmp := make([]int, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		res.imgCharge[0] = append(res.imgCharge[0], tmp[i])

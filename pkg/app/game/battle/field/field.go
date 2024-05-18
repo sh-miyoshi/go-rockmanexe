@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -41,14 +42,14 @@ func Init() error {
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
-			return fmt.Errorf("failed to read player panel image %s", fname)
+			return errors.Newf("failed to read player panel image %s", fname)
 		}
 	}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
-			return fmt.Errorf("failed to read enemy panel image %s", fname)
+			return errors.Newf("failed to read enemy panel image %s", fname)
 		}
 	}
 
@@ -77,7 +78,7 @@ func Init() error {
 		background.Typeブラックアース,
 	}
 	if err := background.Set(mapTypes[rand.Intn(len(mapTypes))]); err != nil {
-		return fmt.Errorf("failed to load background: %w", err)
+		return errors.Wrap(err, "failed to load background")
 	}
 
 	logger.Info("Successfully initialized battle field data")

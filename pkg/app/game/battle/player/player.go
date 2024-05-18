@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
@@ -134,13 +135,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname := config.ImagePath + "battle/character/player_move.png"
 	imgPlayers[battlecommon.PlayerActMove] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[battlecommon.PlayerActMove]); res == -1 {
-		return nil, fmt.Errorf("failed to load player move image: %s", fname)
+		return nil, errors.Newf("failed to load player move image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/player_damaged.png"
 	imgPlayers[battlecommon.PlayerActDamage] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActDamage]); res == -1 {
-		return nil, fmt.Errorf("failed to load player damage image: %s", fname)
+		return nil, errors.Newf("failed to load player damage image: %s", fname)
 	}
 	// 1 -> 2,3  2-4 3-5
 	imgPlayers[battlecommon.PlayerActDamage][4] = imgPlayers[battlecommon.PlayerActDamage][2]
@@ -151,25 +152,25 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname = config.ImagePath + "battle/character/player_shot.png"
 	imgPlayers[battlecommon.PlayerActShot] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActShot]); res == -1 {
-		return nil, fmt.Errorf("failed to load player shot image: %s", fname)
+		return nil, errors.Newf("failed to load player shot image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/player_cannon.png"
 	imgPlayers[battlecommon.PlayerActCannon] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActCannon]); res == -1 {
-		return nil, fmt.Errorf("failed to load player cannon image: %s", fname)
+		return nil, errors.Newf("failed to load player cannon image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/player_sword.png"
 	imgPlayers[battlecommon.PlayerActSword] = make([]int, 7)
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[battlecommon.PlayerActSword]); res == -1 {
-		return nil, fmt.Errorf("failed to load player sword image: %s", fname)
+		return nil, errors.Newf("failed to load player sword image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/player_bomb.png"
 	imgPlayers[battlecommon.PlayerActBomb] = make([]int, 7)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[battlecommon.PlayerActBomb]); res == -1 {
-		return nil, fmt.Errorf("failed to load player bomb image: %s", fname)
+		return nil, errors.Newf("failed to load player bomb image: %s", fname)
 	}
 	imgPlayers[battlecommon.PlayerActBomb][5] = imgPlayers[battlecommon.PlayerActBomb][4]
 	imgPlayers[battlecommon.PlayerActBomb][6] = imgPlayers[battlecommon.PlayerActBomb][4]
@@ -177,13 +178,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname = config.ImagePath + "battle/character/player_buster.png"
 	imgPlayers[battlecommon.PlayerActBuster] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActBuster]); res == -1 {
-		return nil, fmt.Errorf("failed to load player buster image: %s", fname)
+		return nil, errors.Newf("failed to load player buster image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/player_pick.png"
 	imgPlayers[battlecommon.PlayerActPick] = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgPlayers[battlecommon.PlayerActPick]); res == -1 {
-		return nil, fmt.Errorf("failed to load player pick image: %s", fname)
+		return nil, errors.Newf("failed to load player pick image: %s", fname)
 	}
 	imgPlayers[battlecommon.PlayerActPick][4] = imgPlayers[battlecommon.PlayerActPick][3]
 	imgPlayers[battlecommon.PlayerActPick][5] = imgPlayers[battlecommon.PlayerActPick][3]
@@ -191,7 +192,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname = config.ImagePath + "battle/character/player_throw.png"
 	imgPlayers[battlecommon.PlayerActThrow] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, imgPlayers[battlecommon.PlayerActThrow]); res == -1 {
-		return nil, fmt.Errorf("failed to load player throw image: %s", fname)
+		return nil, errors.Newf("failed to load player throw image: %s", fname)
 	}
 
 	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 4)
@@ -202,23 +203,23 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 	fname = config.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
 	if imgHPFrame < 0 {
-		return nil, fmt.Errorf("failed to read hp frame image %s", fname)
+		return nil, errors.Newf("failed to read hp frame image %s", fname)
 	}
 	fname = config.ImagePath + "battle/gauge.png"
 	imgGaugeFrame = dxlib.LoadGraph(fname)
 	if imgGaugeFrame < 0 {
-		return nil, fmt.Errorf("failed to read gauge frame image %s", fname)
+		return nil, errors.Newf("failed to read gauge frame image %s", fname)
 	}
 	fname = config.ImagePath + "battle/gauge_max.png"
 	imgGaugeMax = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 1, 4, 288, 30, imgGaugeMax); res == -1 {
-		return nil, fmt.Errorf("failed to read gauge max image %s", fname)
+		return nil, errors.Newf("failed to read gauge max image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/skill/charge.png"
 	tmp := make([]int, 16)
 	if res := dxlib.LoadDivGraph(fname, 16, 8, 2, 158, 150, tmp); res == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgCharge[0] = append(imgCharge[0], tmp[i])
@@ -227,13 +228,13 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 
 	fname = config.ImagePath + "battle/mind_window_frame.png"
 	if imgMindFrame = dxlib.LoadGraph(fname); imgMindFrame == -1 {
-		return nil, fmt.Errorf("failed to read mind frame image %s", fname)
+		return nil, errors.Newf("failed to read mind frame image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/mind_status.png"
 	imgMinds = make([]int, battlecommon.PlayerMindStatusMax)
 	if res := dxlib.LoadDivGraph(fname, battlecommon.PlayerMindStatusMax, 6, 3, 88, 32, imgMinds); res == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
 	logger.Info("Successfully initialized battle player data")

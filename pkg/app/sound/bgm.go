@@ -1,8 +1,7 @@
 package sound
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -41,7 +40,7 @@ func BGMPlay(typ int) error {
 
 	fname := config.SoundPath + "bgm/" + bgmFiles[typ]
 	if bgmHandle = dxlib.LoadSoundMem(fname); bgmHandle == -1 {
-		return fmt.Errorf("failed to load BGM: %s", fname)
+		return errors.Newf("failed to load BGM: %s", fname)
 	}
 
 	dxlib.PlaySoundMem(bgmHandle, dxlib.DX_PLAYTYPE_LOOP, true)

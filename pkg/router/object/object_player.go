@@ -3,6 +3,7 @@ package object
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -95,7 +96,7 @@ func (p *Player) Process() (bool, error) {
 			chipInfo.Unmarshal(act.GetRawData())
 			p.useChip(chipInfo)
 		default:
-			return false, fmt.Errorf("invalid action type %d is specified", act.GetType())
+			return false, errors.Newf("invalid action type %d is specified", act.GetType())
 		}
 	}
 

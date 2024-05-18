@@ -3,6 +3,7 @@ package gamehandler
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
@@ -64,7 +65,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 	index := g.indexForClient(clientID)
 	if index == -1 {
 		logger.Error("cannot find game object for client %s", clientID)
-		return fmt.Errorf("failed to find game object, it maybe called this point before Init())")
+		return errors.New("failed to find game object, it maybe called this point before Init())")
 	}
 
 	g.objects[index].playerObject = gameobj.NewPlayer(gameinfo.Object{

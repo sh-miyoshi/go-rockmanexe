@@ -1,8 +1,7 @@
 package background
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -54,7 +53,7 @@ func (i *info) Init(typ int) error {
 		i.Images = make([]int, 8)
 		fname := basePath + "back_image_秋原町.png"
 		if res := dxlib.LoadDivGraph(fname, 8, 2, 4, 64, 64, i.Images); res == -1 {
-			return fmt.Errorf("failed to load image %s", fname)
+			return errors.Newf("failed to load image %s", fname)
 		}
 		return nil
 	case Typeアッフリク:
@@ -62,7 +61,7 @@ func (i *info) Init(typ int) error {
 		i.Images = make([]int, 8)
 		fname := basePath + "back_image_アッフリク.png"
 		if res := dxlib.LoadDivGraph(fname, 8, 2, 4, 64, 64, i.Images); res == -1 {
-			return fmt.Errorf("failed to load image %s", fname)
+			return errors.Newf("failed to load image %s", fname)
 		}
 		return nil
 	case Typeブラックアース:
@@ -71,12 +70,12 @@ func (i *info) Init(typ int) error {
 		fname := basePath + "back_image_ブラックアース.png"
 		i.Images[0] = dxlib.LoadGraph(fname)
 		if i.Images[0] == -1 {
-			return fmt.Errorf("failed to load image %s", fname)
+			return errors.Newf("failed to load image %s", fname)
 		}
 		return nil
 	}
 
-	return fmt.Errorf("invalid background type %d was specified", typ)
+	return errors.Newf("invalid background type %d was specified", typ)
 }
 
 func (i *info) End() {

@@ -1,8 +1,7 @@
 package chipsel
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -37,13 +36,13 @@ func Init(folder []player.ChipInfo, chipSelectMax int) error {
 		fname := config.ImagePath + "battle/chip_select_frame.png"
 		imgFrame = dxlib.LoadGraph(fname)
 		if imgFrame == -1 {
-			return fmt.Errorf("failed to read frame image: %s", fname)
+			return errors.Newf("failed to read frame image: %s", fname)
 		}
 
 		fname = config.ImagePath + "battle/pointer.png"
 		res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, imgPointer)
 		if res == -1 {
-			return fmt.Errorf("failed to read pointer image: %s", fname)
+			return errors.Newf("failed to read pointer image: %s", fname)
 		}
 	}
 

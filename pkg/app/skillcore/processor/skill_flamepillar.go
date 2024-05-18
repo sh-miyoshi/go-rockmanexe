@@ -1,9 +1,9 @@
 package processor
 
 import (
-	"fmt"
 	"sort"
 
+	"github.com/cockroachdb/errors"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -95,7 +95,7 @@ func (p *FlamePillarManager) Process() (bool, error) {
 	case flamePillarTypeTracking:
 		end, err := p.pillars[0].Process()
 		if err != nil {
-			return false, fmt.Errorf("flame pillar process failed: %w", err)
+			return false, errors.Wrap(err, "flame pillar process failed")
 		}
 		if end {
 			// 穴パネルなどで進めなかったら終わり
@@ -147,7 +147,7 @@ func (p *FlamePillarManager) Process() (bool, error) {
 		for i, pillar := range p.pillars {
 			end, err := pillar.Process()
 			if err != nil {
-				return false, fmt.Errorf("flame pillar process failed: %w", err)
+				return false, errors.Wrap(err, "flame pillar process failed")
 			}
 			if end {
 				remove = append(remove, i)

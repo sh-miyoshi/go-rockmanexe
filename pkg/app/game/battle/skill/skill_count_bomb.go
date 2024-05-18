@@ -1,8 +1,7 @@
 package skill
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -42,7 +41,7 @@ func (p *countBomb) Draw() {
 func (p *countBomb) Process() (bool, error) {
 	end, err := p.Core.Process()
 	if err != nil {
-		return false, fmt.Errorf("failed to process count bomb: %w", err)
+		return false, errors.Wrap(err, "failed to process count bomb")
 	}
 
 	if end {
@@ -54,7 +53,7 @@ func (p *countBomb) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 		}
 		if err := obj.Init(p.ID, pm); err != nil {
-			return false, fmt.Errorf("count bomb create failed: %w", err)
+			return false, errors.Wrap(err, "count bomb create failed")
 		}
 		localanim.ObjAnimNew(obj)
 		return true, nil

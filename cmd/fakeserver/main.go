@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gorilla/mux"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"gopkg.in/yaml.v2"
@@ -57,11 +58,11 @@ var (
 func loadConfig(fname string) error {
 	fp, err := os.Open(fname)
 	if err != nil {
-		return fmt.Errorf("failed to open config file: %v", err)
+		return errors.Wrap(err, "failed to open config file")
 	}
 	defer fp.Close()
 	if err := yaml.NewDecoder(fp).Decode(&cfg); err != nil {
-		return fmt.Errorf("failed to decode yaml: %v", err)
+		return errors.Wrap(err, "failed to decode yaml")
 	}
 
 	return nil

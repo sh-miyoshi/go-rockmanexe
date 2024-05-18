@@ -5,11 +5,11 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/ncparts"
@@ -102,22 +102,22 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		var err error
 		bin, err = ioutil.ReadFile(fname)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read save data: %w", err)
+			return nil, errors.Wrap(err, "failed to read save data")
 		}
 	} else {
 		src, err := ioutil.ReadFile(fname)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read save data: %w", err)
+			return nil, errors.Wrap(err, "failed to read save data")
 		}
 		block, err := aes.NewCipher(key)
 		if err != nil {
-			return nil, fmt.Errorf("failed to init AES: %w", err)
+			return nil, errors.Wrap(err, "failed to init AES")
 		}
 
 		iv := src[:aes.BlockSize]
 		src = src[aes.BlockSize:]
 		if len(bin)%aes.BlockSize != 0 {
-			return nil, fmt.Errorf("save data is not a multiple of the block size")
+			return nil, errors.New("save data is not a multiple of the block size")
 		}
 
 		// Decrypt data with AES-CTR mode
@@ -129,7 +129,7 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 	var rawData SaveData
 	if err := json.Unmarshal(bin, &rawData); err != nil {
 		logger.Error("Failed to unmarshal save data: %v", err)
-		return nil, fmt.Errorf("save data maybe broken or invalid version")
+		return nil, errors.New("save data maybe broken or invalid version")
 	}
 
 	// 互換性維持
@@ -145,11 +145,11 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 		logger.Info("Save data is development data")
 	case "v0.3", "v0.4", "v0.5", "v0.6", "v0.7", "v0.8", "v0.9", "v0.10", "v0.11", "v0.12":
 		logger.Error("Save data version is %s, this is not compatible version.", rawData.ProgramVersion)
-		return nil, fmt.Errorf("save data is not compatible")
+		return nil, errors.New("save data is not compatible")
 	case "v0.13":
 	default:
 		logger.Error("Unexpected version %s is in save data", rawData.ProgramVersion)
-		return nil, fmt.Errorf("invalid save data version")
+		return nil, errors.New("invalid save data version")
 	}
 
 	rawData.Player.addPresentChips()
@@ -162,7 +162,7 @@ func (p *Player) Save(fname string, key []byte) error {
 		ProgramVersion: config.ProgramVersion,
 	})
 	if err != nil {
-		return fmt.Errorf("save data marshal failed: %w", err)
+		return errors.Wrap(err, "save data marshal failed")
 	}
 
 	if len(key) == 0 {
@@ -172,7 +172,7 @@ func (p *Player) Save(fname string, key []byte) error {
 		src := append([]byte{}, dst...)
 		block, err := aes.NewCipher(key)
 		if err != nil {
-			return fmt.Errorf("failed to init AES: %w", err)
+			return errors.Wrap(err, "failed to init AES")
 		}
 
 		// The IV needs to be unique, but not secure. Therefore it's common to
@@ -180,7 +180,7 @@ func (p *Player) Save(fname string, key []byte) error {
 		dst = make([]byte, aes.BlockSize+len(src))
 		iv := dst[:aes.BlockSize]
 		if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-			return fmt.Errorf("failed to read IV: %w", err)
+			return errors.Wrap(err, "failed to read IV")
 		}
 
 		// Encrypt data with AES-CTR mode
@@ -216,7 +216,7 @@ func (p *Player) AddChip(id int, code string) error {
 	}
 
 	if n >= config.MaxChipNum {
-		return fmt.Errorf("reached to max chip num")
+		return errors.New("reached to max chip num")
 	}
 
 	p.BackPack = append(p.BackPack, ChipInfo{

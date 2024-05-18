@@ -1,10 +1,10 @@
 package player
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -45,7 +45,7 @@ func (p *Player) ChipSelect() error {
 	// TODO: 選択したチップを送る
 
 	if err := p.conn.SendSignal(pb.Request_CHIPSELECT, nil); err != nil {
-		return fmt.Errorf("failed to get data stream: %w", err)
+		return errors.Wrap(err, "failed to get data stream")
 	}
 
 	return nil

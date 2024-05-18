@@ -1,8 +1,6 @@
 package draw
 
-import (
-	"fmt"
-)
+import "github.com/cockroachdb/errors"
 
 var (
 	objDrawInst  objectDraw
@@ -11,11 +9,11 @@ var (
 
 func Init(playerObjectID string) error {
 	if err := objDrawInst.Init(playerObjectID); err != nil {
-		return fmt.Errorf("object draw init failed: %w", err)
+		return errors.Wrap(err, "object draw init failed")
 	}
 
 	if err := animDrawInst.Init(); err != nil {
-		return fmt.Errorf("anim draw init failed: %w", err)
+		return errors.Wrap(err, "anim draw init failed")
 	}
 
 	return nil

@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -141,22 +142,22 @@ MAIN:
 
 func appInit() error {
 	if err := inputs.Init(config.Get().Input.Type); err != nil {
-		return fmt.Errorf("inputs init failed: %w", err)
+		return errors.Wrap(err, "inputs init failed")
 	}
 	if err := chip.Init(config.ChipFilePath); err != nil {
-		return fmt.Errorf("chip init failed: %w", err)
+		return errors.Wrap(err, "chip init failed")
 	}
 	if err := chipimage.Init(); err != nil {
-		return fmt.Errorf("chip image init failed: %w", err)
+		return errors.Wrap(err, "chip image init failed")
 	}
 	if err := draw.Init(); err != nil {
-		return fmt.Errorf("drawing data init failed: %w", err)
+		return errors.Wrap(err, "drawing data init failed")
 	}
 	if err := sound.Init(); err != nil {
-		return fmt.Errorf("sound init failed: %w", err)
+		return errors.Wrap(err, "sound init failed")
 	}
 	if err := mapinfo.Init(config.MapInfoFilePath); err != nil {
-		return fmt.Errorf("map info init failed: %w", err)
+		return errors.Wrap(err, "map info init failed")
 	}
 
 	return nil

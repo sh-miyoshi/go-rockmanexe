@@ -3,6 +3,7 @@ package skill
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -22,7 +23,7 @@ type SkillAnim interface {
 
 func Init() error {
 	if err := skilldraw.LoadImages(); err != nil {
-		return fmt.Errorf("failed to load skill image: %w", err)
+		return errors.Wrap(err, "failed to load skill image")
 	}
 
 	return nil

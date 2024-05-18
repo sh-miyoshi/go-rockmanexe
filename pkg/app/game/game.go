@@ -1,9 +1,10 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 	"time"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/fade"
@@ -62,7 +63,7 @@ func Process() error {
 	case stateTitle:
 		if count == 0 {
 			if err := title.Init(); err != nil {
-				return fmt.Errorf("game process in state title failed: %w", err)
+				return errors.Wrap(err, "game process in state title failed")
 			}
 		}
 		if err := title.Process(); err != nil {
@@ -79,10 +80,10 @@ func Process() error {
 				var err error
 				playerInfo, err = player.NewWithSaveData(config.SaveFilePath, key)
 				if err != nil {
-					return fmt.Errorf("failed to continue: %w", err)
+					return errors.Wrap(err, "failed to continue")
 				}
 			} else {
-				return fmt.Errorf("failed to process title: %w", err)
+				return errors.Wrap(err, "failed to process title")
 			}
 			title.End()
 			stateChange(stateMenu)
@@ -91,13 +92,13 @@ func Process() error {
 	case stateMenu:
 		if count == 0 {
 			if err := menu.Init(playerInfo); err != nil {
-				return fmt.Errorf("game process in state menu init failed: %w", err)
+				return errors.Wrap(err, "game process in state menu init failed")
 			}
 		}
 		result, err := menu.Process()
 		if err != nil {
 			menu.End()
-			return fmt.Errorf("game process in state menu failed: %w", err)
+			return errors.Wrap(err, "game process in state menu failed")
 		}
 		if result != menu.ResultContinue {
 			menu.End()
@@ -105,7 +106,7 @@ func Process() error {
 		switch result {
 		case menu.ResultGoBattle:
 			if err := battle.Init(playerInfo, menu.GetBattleEnemies()); err != nil {
-				return fmt.Errorf("battle init failed at menu: %w", err)
+				return errors.Wrap(err, "battle init failed at menu")
 			}
 			stateChange(stateBattle)
 			return nil
@@ -137,7 +138,7 @@ func Process() error {
 				playerInfo.WinNum++
 				key := []byte(config.EncryptKey)
 				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
-					return fmt.Errorf("save failed: %w", err)
+					return errors.Wrap(err, "save failed")
 				}
 				stateChange(stateMenu)
 				return nil
@@ -146,12 +147,12 @@ func Process() error {
 				return nil
 			}
 
-			return fmt.Errorf("battle process failed: % w", err)
+			return errors.Wrap(err, "battle process failed")
 		}
 	case stateNetBattle:
 		if count == 0 {
 			if err := netbattle.Init(playerInfo); err != nil {
-				return fmt.Errorf("game process in state net battle failed: %w", err)
+				return errors.Wrap(err, "game process in state net battle failed")
 			}
 		}
 
@@ -168,7 +169,7 @@ func Process() error {
 				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
 				key := []byte(config.EncryptKey)
 				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
-					return fmt.Errorf("save failed: %w", err)
+					return errors.Wrap(err, "save failed")
 				}
 				stateChange(stateMenu)
 				return nil
@@ -177,18 +178,18 @@ func Process() error {
 				playerInfo.BattleHistories = append(playerInfo.BattleHistories, history)
 				key := []byte(config.EncryptKey)
 				if err := playerInfo.Save(config.SaveFilePath, key); err != nil {
-					return fmt.Errorf("save failed: %w", err)
+					return errors.Wrap(err, "save failed")
 				}
 				stateChange(stateMenu)
 				return nil
 			}
 
-			return fmt.Errorf("battle process failed: %w", err)
+			return errors.Wrap(err, "battle process failed")
 		}
 	case stateMap:
 		if count == 0 {
 			if err := mapmove.Init(); err != nil {
-				return fmt.Errorf("game process in state map move failed: %w", err)
+				return errors.Wrap(err, "game process in state map move failed")
 			}
 		}
 		if err := mapmove.Process(); err != nil {
@@ -204,7 +205,7 @@ func Process() error {
 				stateChange(stateEvent)
 				return nil
 			}
-			return fmt.Errorf("map move process failed: %w", err)
+			return errors.Wrap(err, "map move process failed")
 		}
 	case stateMapChange:
 		var args event.MapChangeArgs
@@ -220,7 +221,7 @@ func Process() error {
 	case stateEvent:
 		res, err := event.Process()
 		if err != nil {
-			return fmt.Errorf("event process failed: %w", err)
+			return errors.Wrap(err, "event process failed")
 		}
 		switch res {
 		case event.ResultMapChange:
