@@ -1,8 +1,7 @@
 package menu
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -30,17 +29,22 @@ const (
 
 var (
 	viewCenter = point.Point{X: 350, Y: 150}
-
-	goBattleSelectData []selectValue
-	goBattleWaitCount  int
-	images             = make(map[int]int)
-	goBattleItemList   list.ItemList
 )
 
-func goBattleInit() error {
-	goBattleWaitCount = 0
+type menuGoBattle struct {
+	result     Result
+	selectData []selectValue
+	waitCount  int
+	images     map[int]int
+	itemList   list.ItemList
+}
 
-	goBattleSelectData = []selectValue{
+func goBattleNew() (*menuGoBattle, error) {
+	res := &menuGoBattle{
+		images: make(map[int]int),
+		result: ResultContinue,
+	}
+	res.selectData = []selectValue{
 		{
 			Name: "千里の道も一歩から",
 			Enemies: []selectEnemyData{
@@ -259,92 +263,81 @@ func goBattleInit() error {
 	}
 
 	names := []string{}
-	for _, s := range goBattleSelectData {
+	for _, s := range res.selectData {
 		for _, e := range s.Enemies {
 			name, ext := enemy.GetStandImageFile(e.BattleParam.CharID)
 			fname := name + ext
-			images[e.BattleParam.CharID] = dxlib.LoadGraph(fname)
+			res.images[e.BattleParam.CharID] = dxlib.LoadGraph(fname)
 		}
 		names = append(names, s.Name)
 	}
-	goBattleItemList.SetList(names, goBattleListShowMax)
+	res.itemList.SetList(names, goBattleListShowMax)
 
-	for id, img := range images {
+	for id, img := range res.images {
 		if img == -1 {
-			return fmt.Errorf("failed to load enemy %d image", id)
+			return nil, errors.Newf("failed to load enemy %d image", id)
 		}
 	}
 
-	return nil
+	return res, nil
 }
 
-func goBattleEnd() {
-	for _, img := range images {
+func (p *menuGoBattle) End() {
+	for _, img := range p.images {
 		dxlib.DeleteGraph(img)
 	}
-	images = make(map[int]int)
 }
 
-func goBattleProcess() bool {
-	if goBattleWaitCount > 0 {
-		goBattleWaitCount++
-		return goBattleWaitCount > 30
+func (p *menuGoBattle) Process() bool {
+	if p.waitCount > 0 {
+		// 敵を決定後少し待ってからstateを変更する
+		p.waitCount++
+		return p.waitCount > 30
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(resources.SECancel)
-		stateChange(stateTop)
-		return false
+		return true
 	}
-	if goBattleItemList.Process() != -1 {
+	if p.itemList.Process() != -1 {
 		sound.On(resources.SEGoBattle)
-		goBattleWaitCount++
+		p.waitCount++
+		p.result = ResultGoBattle
+		// グローバルデータを編集する
+		battleEnemies = []enemy.EnemyParam{}
+		c := p.itemList.GetPointer() + p.itemList.GetScroll()
+		for _, e := range p.selectData[c].Enemies {
+			battleEnemies = append(battleEnemies, e.BattleParam)
+		}
+
 		return false
 	}
 
 	return false
 }
 
-func goBattleDraw() {
+func (p *menuGoBattle) Draw() {
 	dxlib.DrawBox(20, 30, config.ScreenSize.X-20, 300, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(30, 40, 210, goBattleListShowMax*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i := 0; i < goBattleListShowMax; i++ {
-		c := i + goBattleItemList.GetScroll()
-		draw.String(65, 50+i*35, 0xffffff, goBattleSelectData[c].Name)
+		c := i + p.itemList.GetScroll()
+		draw.String(65, 50+i*35, 0xffffff, p.selectData[c].Name)
 	}
 
 	const s = 2
-	y := 50 + goBattleItemList.GetPointer()*35
+	y := 50 + p.itemList.GetPointer()*35
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 
 	// Show images
-	c := goBattleItemList.GetPointer() + goBattleItemList.GetScroll()
+	c := p.itemList.GetPointer() + p.itemList.GetScroll()
 	const size = 150
 	dxlib.DrawBox(viewCenter.X-size/2, viewCenter.Y-size/2, viewCenter.X+size/2, viewCenter.Y+size/2, 0, true)
-	for _, e := range goBattleSelectData[c].Enemies {
-		dxlib.DrawRotaGraph(e.View.X, e.View.Y, 1, 0, images[e.BattleParam.CharID], true)
+	for _, e := range p.selectData[c].Enemies {
+		dxlib.DrawRotaGraph(e.View.X, e.View.Y, 1, 0, p.images[e.BattleParam.CharID], true)
 	}
 }
 
-func battleEnemies() []enemy.EnemyParam {
-	if config.Get().Debug.SkipMenu {
-		// Start from battle mode for debug
-		// return debug data
-		return []enemy.EnemyParam{
-			{
-				CharID: enemy.IDShrimpy,
-				Pos:    point.Point{X: 4, Y: 1},
-				HP:     60,
-			},
-		}
-	}
-
-	res := []enemy.EnemyParam{}
-	c := goBattleItemList.GetPointer() + goBattleItemList.GetScroll()
-	for _, e := range goBattleSelectData[c].Enemies {
-		res = append(res, e.BattleParam)
-	}
-
-	return res
+func (p *menuGoBattle) GetResult() Result {
+	return p.result
 }

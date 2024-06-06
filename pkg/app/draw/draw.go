@@ -3,6 +3,7 @@ package draw
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -47,7 +48,7 @@ func Init() error {
 		Thick:    dxlib.Int32Ptr(7),
 	})
 	if defaultFont == -1 {
-		return fmt.Errorf("failed to create default font")
+		return errors.New("failed to create default font")
 	}
 
 	msgFont = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
@@ -56,7 +57,7 @@ func Init() error {
 		Thick:    dxlib.Int32Ptr(4),
 	})
 	if msgFont == -1 {
-		return fmt.Errorf("failed to create message font")
+		return errors.New("failed to create message font")
 	}
 
 	paTitleFont = dxlib.CreateFontToHandle(dxlib.CreateFontToHandleOption{
@@ -68,21 +69,21 @@ func Init() error {
 		FontType: dxlib.Int32Ptr(dxlib.DX_FONTTYPE_EDGE),
 	})
 	if paTitleFont == -1 {
-		return fmt.Errorf("failed to create program advance title font")
+		return errors.New("failed to create program advance title font")
 	}
 
 	// Load chip code
 	imgCode = make([]int, 27)
 	fname := config.ImagePath + "chipInfo/chip_code.png"
 	if res := dxlib.LoadDivGraph(fname, 27, 9, 3, 20, 26, imgCode); res == -1 {
-		return fmt.Errorf("failed to load chip code image %s", fname)
+		return errors.Newf("failed to load chip code image %s", fname)
 	}
 
 	// Load number data
 	tmp := make([]int, 3*10)
 	fname = config.ImagePath + "number.png"
 	if res := dxlib.LoadDivGraph(fname, 30, 10, 3, numberSizeX, 26, tmp); res == -1 {
-		return fmt.Errorf("failed to load number image %s", fname)
+		return errors.Newf("failed to load number image %s", fname)
 	}
 	// Sort and set to start from 0
 	for i := 0; i < 3; i++ {
@@ -94,7 +95,7 @@ func Init() error {
 	}
 	fname = config.ImagePath + "number_small.png"
 	if res := dxlib.LoadDivGraph(fname, 10, 10, 1, numberSizeX, 20, tmp); res == -1 {
-		return fmt.Errorf("failed to load small number image %s", fname)
+		return errors.Newf("failed to load small number image %s", fname)
 	}
 	// Sort and set to start from 0
 	imgNumber[NumberColorWhiteSmall] = make([]int, 10)

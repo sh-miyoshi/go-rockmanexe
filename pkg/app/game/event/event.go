@@ -3,6 +3,7 @@ package event
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 )
 
@@ -97,7 +98,7 @@ func setHandler(s Scenario) error {
 	case TypeMessage:
 		handler = &MessageHandler{}
 	default:
-		return fmt.Errorf("scenario type %d is not implemented", s.Type)
+		return errors.Newf("scenario type %d is not implemented", s.Type)
 	}
 	return handler.Init(s.Values)
 }

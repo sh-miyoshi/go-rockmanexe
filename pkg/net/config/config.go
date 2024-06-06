@@ -1,9 +1,9 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/cockroachdb/errors"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -39,12 +39,12 @@ var (
 func Init(fname string) error {
 	fp, err := os.Open(fname)
 	if err != nil {
-		return fmt.Errorf("failed to open config file: %v", err)
+		return errors.Wrap(err, "failed to open config file")
 	}
 	defer fp.Close()
 
 	if err := yaml.NewDecoder(fp).Decode(&inst); err != nil {
-		return fmt.Errorf("failed to decode yaml: %v", err)
+		return errors.Wrap(err, "failed to decode yaml")
 	}
 
 	setByEnv()
@@ -68,6 +68,9 @@ func APIAddr() string {
 }
 
 func setByEnv() {
+	if id := os.Getenv("SESSION_ID"); id != "" {
+		inst.Server.Session.ID = id
+	}
 	if id := os.Getenv("CLIENT_1_ID"); id != "" {
 		inst.Server.Session.ClientID1 = id
 	}

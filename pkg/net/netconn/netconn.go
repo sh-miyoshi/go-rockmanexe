@@ -3,6 +3,7 @@ package netconn
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	api "github.com/sh-miyoshi/go-rockmanexe/pkg/net/api/client"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -37,22 +38,22 @@ func (n *NetConn) TransData(stream pb.NetConn_TransDataServer) error {
 		s := session.GetSession(msg.GetSessionID())
 		if s == nil {
 			logger.Info("No such session: %s", msg.GetSessionID())
-			return fmt.Errorf("failed to get session info for %s", msg.GetSessionID())
+			return errors.Newf("failed to get session info for %s", msg.GetSessionID())
 		}
 
 		switch msg.GetType() {
 		case pb.Request_SENDSIGNAL:
 			if err := s.HandleSignal(msg.GetClientID(), msg.GetSignal()); err != nil {
 				logger.Error("Failed to send signal %v: %+v", msg.GetSignal(), err)
-				return fmt.Errorf("failed to send signal: %w", err)
+				return errors.Wrap(err, "failed to send signal")
 			}
 		case pb.Request_ACTION:
 			if err := s.HandleAction(msg.GetClientID(), msg.GetAct()); err != nil {
 				logger.Error("Failed to handle action %v: %+v", msg.GetAct(), err)
-				return fmt.Errorf("failed to handle action: %w", err)
+				return errors.Wrap(err, "failed to handle action")
 			}
 		default:
-			return fmt.Errorf("invalid message type: %v", msg.GetType())
+			return errors.Newf("invalid message type: %v", msg.GetType())
 		}
 
 		// TODO_Next return current status

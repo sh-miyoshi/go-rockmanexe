@@ -1,8 +1,7 @@
 package object
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -48,11 +47,11 @@ func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
 	o.imgSet = make([]int, 4)
 	fname := config.ImagePath + "battle/character/水道管_set.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 72, 88, o.imgSet); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	if err := o.atk.Init(o.pm); err != nil {
-		return fmt.Errorf("failed to init water pipe attack %w", err)
+		return errors.Wrap(err, "failed to init water pipe attack")
 	}
 
 	return nil
@@ -153,7 +152,7 @@ func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.images = make([]int, 9)
 	fname := config.ImagePath + "battle/character/水道管_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 234, 110, a.images); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 	return nil
 }

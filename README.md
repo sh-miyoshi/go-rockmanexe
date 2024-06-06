@@ -15,7 +15,7 @@
 
 ## 開発機能をONにする方法
 
-1. `data/config.yaml`を編集
+- 1. `data/config.yaml`を編集
 
   ```config.yaml
   # ↓を追加する
@@ -23,32 +23,31 @@
     enable_dev_feature: true
   ```
 
-2. メニュー画面でLボタン(Aキー)を押す
+- 2. メニュー画面でLボタン(Aキー)を押す
 
-## (工事中)ネット対戦のしかた
+## ネット対戦のしかた
 
-- 現在工事中のためアクセスできません
-- [https://rockmanexe.herokuapp.com](https://rockmanexe.herokuapp.com)にアクセス
-- ログイン
-  - 初回は新規登録をお願いします
-- ログイン後の画面の内容に沿って設定すると、対戦できます
-  - 以下にも参考として載せておきます
+\[Note\]現在共有サーバはありません。ご自身でサーバーを立ち上げていただいて友人と対戦してください
 
-    ```text
-    1. まず対戦相手を決めます
-      - 対戦相手はTwitterなどのSNSで見つけましょう
-      - ネット上のトラブルには充分気をつけてください
-    2. オーナー役(セッションを作成する人)とゲスト役(作成されたセッションに参加する人)に分かれます
-    3. オーナー役の人のやること
-      1. ゲスト役の人のユーザーIDを聞きます
-      2. 「自分でセッションを作成する」ボタンを押下し、セッションを作成します
-      3. セッション名にわかりやすい名前を入れ、対戦するユーザーのIDにゲスト役の人のIDを入力します
-      4. 5. の処理を実行してください
-    4. ゲスト役の人のやること
-      1. オーナー役がセッションを作成するのを待ちます
-      2. 5. の処理を実行してください
-    5. アプリにネット対戦情報の設定、対戦
-      1. 対象のセッションからRouter Addr, Client ID, Client Keyを確認します
-      2. アプリのdata/config.yamlファイルに設定します
-      3. アプリを起動し、「ネット対戦」を選択します
-    ```
+### GCPを使ってサーバーを起動する方法
+
+- 1. Cloud Runを作成します
+  - Container image URL: `docker.io/smiyoshi/rockmanexe-router`
+  - Container Port: 16283
+  - Environment variables
+    - `SESSION_ID`, `CLIENT_1_ID`, `CLIENT_1_KEY`, `CLIENT_2_ID`, `CLIENT_2_KEY`を指定してください
+    - 任意の値で大丈夫ですが、そのまま認証情報となるためUUIDのような推測困難な値を推奨します
+  - NETWORKINGSのタブから`Use HTTP/2 end-to-end`を有効にする
+- 2. 起動ファイルの設定情報を修正します
+  - ファイル: `data/config.yaml`
+  - 以下のように設定してください
+
+  ```yaml
+  net:
+    client_id: "" # 環境変数で指定したCLIENT_1_ID(もしくはCLIENT_2_ID)の値
+    client_key: "" # 環境変数で指定したCLIENT_1_KEY(もしくはCLIENT_2_KEY)の値
+    addr: "rockmanexe-test.a.run.app:443" # Clound RunのURLから「https://」を除いて「:443」を付与したアドレス
+  ```
+
+- 3. アプリを起動
+  - exeファイルを起動し、「ネット対戦」を選択してください

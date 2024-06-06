@@ -3,6 +3,7 @@ package navicustom
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -79,22 +80,22 @@ func Init(plyr *player.Player) error {
 	fname := config.ImagePath + "naviCustom/back.png"
 	imgBack = dxlib.LoadGraph(fname)
 	if imgBack == -1 {
-		return fmt.Errorf("failed to load back image")
+		return errors.New("failed to load back image")
 	}
 	fname = config.ImagePath + "naviCustom/board-small.png"
 	imgBoard = dxlib.LoadGraph(fname)
 	if imgBoard == -1 {
-		return fmt.Errorf("failed to load board image")
+		return errors.New("failed to load board image")
 	}
 	fname = config.ImagePath + "naviCustom/pointer.png"
 	imgListPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
-		return fmt.Errorf("failed to load list pointer image")
+		return errors.New("failed to load list pointer image")
 	}
 	fname = config.ImagePath + "naviCustom/pointer2.png"
 	imgSetPointer = dxlib.LoadGraph(fname)
 	if imgListPointer == -1 {
-		return fmt.Errorf("failed to load set pointer image")
+		return errors.New("failed to load set pointer image")
 	}
 	fname = config.ImagePath + "naviCustom/block_white.png"
 	imgBlocks[colorBlock(ncparts.ColorWhite)] = dxlib.LoadGraph(fname)
@@ -104,7 +105,7 @@ func Init(plyr *player.Player) error {
 	imgBlocks[colorBlock(ncparts.ColorPink)] = dxlib.LoadGraph(fname)
 	for i, b := range imgBlocks {
 		if b == -1 {
-			return fmt.Errorf("failed to load block %d image", i)
+			return errors.Newf("failed to load block %d image", i)
 		}
 	}
 
@@ -131,6 +132,7 @@ func Draw() {
 	dxlib.DrawGraph(10, 30, imgBoard, true)
 
 	// パーツリストの描画
+	const baseX = 280
 	for i := 0; i < maxListNum; i++ {
 		c := i + itemList.GetScroll()
 		if c >= len(itemList.GetList()) {
@@ -139,7 +141,7 @@ func Draw() {
 
 		name := itemList.GetList()[c]
 
-		x := 300
+		x := baseX
 		y := i*30 + 45
 		if name == runName {
 			dxlib.DrawBox(x-2, y-1, x+122, y+26, dxlib.GetColor(168, 192, 216), true)
@@ -149,14 +151,14 @@ func Draw() {
 			drawPartsListItem(x, y, name)
 		}
 	}
-	dxlib.DrawGraph(280, itemList.GetPointer()*30+50, imgListPointer, true)
+	dxlib.DrawGraph(baseX-20, itemList.GetPointer()*30+50, imgListPointer, true)
 
 	// 表示されてないパーツがある場合に矢印を表示
 	if itemList.GetScroll() > 0 {
-		dxlib.DrawTriangle(360, 30, 340, 40, 380, 40, 0xF2F2F2, true)
+		dxlib.DrawTriangle(baseX+60, 30, baseX+40, 40, baseX+80, 40, 0xF2F2F2, true)
 	}
 	if len(itemList.GetList()) > (maxListNum + itemList.GetScroll()) {
-		dxlib.DrawTriangle(360, 145, 340, 135, 380, 135, 0xF2F2F2, true)
+		dxlib.DrawTriangle(baseX+60, 145, baseX+40, 135, baseX+80, 135, 0xF2F2F2, true)
 	}
 
 	// セット済みのパーツを描画
@@ -165,7 +167,23 @@ func Draw() {
 		drawBoardParts(point.Point{X: s.rawData.X, Y: s.rawData.Y}, parts)
 	}
 
-	// TODO: ミニウィンドウ
+	// ミニウィンドウ
+	if state == stateUnsetPartsSelect {
+		// パーツの描画
+		c := itemList.GetPointer() + itemList.GetScroll()
+		if c < len(unsetParts) {
+			centerX := 435
+			centerY := itemList.GetPointer()*30 + 60
+			dxlib.DrawBox(centerX-15, centerY-15, centerX+15, centerY+15, 0xffffff, true)
+			dxlib.DrawBox(centerX-14, centerY-14, centerX+14, centerY+14, dxlib.GetColor(16, 80, 104), true)
+			parts := ncparts.Get(unsetParts[c].rawData.ID)
+			for _, b := range parts.Blocks {
+				cx := centerX + b.X*6
+				cy := centerY + b.Y*6 - 3
+				dxlib.DrawBox(cx-3, cy-3, cx+3, cy+3, ncparts.GetColorCode(parts.Color), true)
+			}
+		}
+	}
 
 	// 選択しているパーツの描画
 	if selected >= 0 && selected < len(unsetParts) {
@@ -176,14 +194,14 @@ func Draw() {
 	// 選択カーソルの描画
 	if state == stateBoardPartsSelect || state == stateDeployment {
 		if (count/10)%3 != 0 {
-			baseX := setPointerPos.X*40 + 34
-			baseY := setPointerPos.Y*40 + 65
-			dxlib.DrawGraph(baseX, baseY, imgSetPointer, true)
+			x := setPointerPos.X*40 + 34
+			y := setPointerPos.Y*40 + 65
+			dxlib.DrawGraph(x, y, imgSetPointer, true)
 		}
 	}
 
 	// Information Panel
-	x := 300
+	x := baseX
 	y := 170
 	dxlib.DrawBox(x-2, y-1, x+122, y+106, dxlib.GetColor(168, 192, 216), true)
 	dxlib.DrawBox(x, y, x+120, y+105, dxlib.GetColor(16, 80, 104), true)

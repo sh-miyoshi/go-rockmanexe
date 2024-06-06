@@ -1,6 +1,6 @@
 package inputs
 
-import "fmt"
+import "github.com/cockroachdb/errors"
 
 type KeyType int
 
@@ -40,7 +40,7 @@ func Init(deviceType int) error {
 	case DeviceTypeGamepad:
 		device = &pad{}
 	default:
-		return fmt.Errorf("invalid device type %d specified", deviceType)
+		return errors.Newf("invalid device type %d specified", deviceType)
 	}
 
 	return device.Init()

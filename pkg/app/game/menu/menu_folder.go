@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -62,25 +63,25 @@ func folderNew(plyr *player.Player) (*menuFolder, error) {
 	fname := config.ImagePath + "menu/chip_frame.png"
 	res.imgChipFrame = dxlib.LoadGraph(fname)
 	if res.imgChipFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu chip frame image %s", fname)
+		return nil, errors.Newf("failed to load menu chip frame image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/pointer.png"
 	res.imgPointer = dxlib.LoadGraph(fname)
 	if res.imgPointer == -1 {
-		return nil, fmt.Errorf("failed to load menu pointer image %s", fname)
+		return nil, errors.Newf("failed to load menu pointer image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/arrow.png"
 	res.imgArrow = dxlib.LoadGraph(fname)
 	if res.imgArrow == -1 {
-		return nil, fmt.Errorf("failed to load menu arrow image %s", fname)
+		return nil, errors.Newf("failed to load menu arrow image %s", fname)
 	}
 
 	fname = config.ImagePath + "menu/scroll_point.png"
 	res.imgScrollPointer = dxlib.LoadGraph(fname)
 	if res.imgScrollPointer == -1 {
-		return nil, fmt.Errorf("failed to load menu scroll point image %s", fname)
+		return nil, errors.Newf("failed to load menu scroll point image %s", fname)
 	}
 
 	if err := res.win.Init(); err != nil {
@@ -97,13 +98,13 @@ func (f *menuFolder) End() {
 	dxlib.DeleteGraph(f.imgScrollPointer)
 }
 
-func (f *menuFolder) Process() {
+func (f *menuFolder) Process() bool {
 	if f.msg != "" {
 		if f.win.Process() {
 			sound.On(resources.SECancel)
 			f.msg = ""
 		}
-		return
+		return false
 	}
 
 	f.count++
@@ -114,7 +115,7 @@ func (f *menuFolder) Process() {
 
 		if f.currentWindow == folderWindowTypeBackPack && f.listNum[f.currentWindow] == 0 {
 			sound.On(resources.SEDenied)
-			return
+			return false
 		}
 
 		if f.selected == -1 {
@@ -122,12 +123,12 @@ func (f *menuFolder) Process() {
 			f.selected = sel
 			sound.On(resources.SESelect)
 		} else {
-			if err := f.exchange(f.selected, sel); err != nil {
+			if ok, msg := f.exchange(f.selected, sel); !ok {
 				sound.On(resources.SEDenied)
-				logger.Info("Failed to exchange chip: %v", err)
-				f.msg = err.Error()
+				logger.Info("Failed to exchange chip: %s", msg)
+				f.msg = msg
 				f.win.SetMessage(f.msg, window.FaceTypeNone)
-				return
+				return false
 			}
 
 			sound.On(resources.SESelect)
@@ -135,7 +136,7 @@ func (f *menuFolder) Process() {
 		}
 	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		if f.selected == -1 {
-			stateChange(stateTop)
+			return true
 		} else {
 			f.selected = -1
 		}
@@ -174,6 +175,8 @@ func (f *menuFolder) Process() {
 			}
 		}
 	}
+
+	return false
 }
 
 func (f *menuFolder) Draw() {
@@ -237,29 +240,33 @@ func (f *menuFolder) Draw() {
 		}
 
 		dxlib.DrawGraph(tx, 78+f.pointer[f.currentWindow]*30, f.imgPointer, true)
-	}
 
-	// Show scrol bar
-	var length, start int
-	switch f.currentWindow {
-	case folderWindowTypeFolder:
-		start = 80
-		length = 205
-	case folderWindowTypeBackPack:
-		start = 60
-		length = 225
-	}
-	dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), true)
-	n := f.scroll[f.currentWindow] + f.pointer[f.currentWindow]
-	dxlib.DrawGraph(442, start+(length-23)*n/f.listNum[f.currentWindow]-1, f.imgScrollPointer, true)
+		// Show scrol bar
+		var length, start int
+		switch f.currentWindow {
+		case folderWindowTypeFolder:
+			start = 80
+			length = 205
+		case folderWindowTypeBackPack:
+			start = 60
+			length = 225
+		}
+		dxlib.DrawBox(450, start, 453, start+length, dxlib.GetColor(16, 80, 104), true)
+		n := f.scroll[f.currentWindow] + f.pointer[f.currentWindow]
+		dxlib.DrawGraph(442, start+(length-23)*n/f.listNum[f.currentWindow]-1, f.imgScrollPointer, true)
 
-	// Show pointered chip detail
-	f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
+		// Show pointered chip detail
+		f.drawChipDetail(f.pointer[f.currentWindow] + f.scroll[f.currentWindow])
+	}
 
 	// Show message
 	if f.msg != "" {
 		f.win.Draw()
 	}
+}
+
+func (f *menuFolder) GetResult() Result {
+	return ResultContinue
 }
 
 func (f *menuFolder) drawBackGround() {
@@ -317,7 +324,7 @@ func (f *menuFolder) drawChipDetail(index int) {
 	f.drawDescription(info.Description)
 }
 
-func (f *menuFolder) exchange(sel1, sel2 int) error {
+func (f *menuFolder) exchange(sel1, sel2 int) (ok bool, message string) {
 	var target1, target2 *player.ChipInfo
 	t := 1
 	folderSel := 0
@@ -357,12 +364,12 @@ func (f *menuFolder) exchange(sel1, sel2 int) error {
 		}
 
 		if n >= player.SameChipNumInFolder {
-			return fmt.Errorf("同名チップは%d枚までしか入れられません", player.SameChipNumInFolder)
+			return false, fmt.Sprintf("同名チップは%d枚までしか入れられません", player.SameChipNumInFolder)
 		}
 	}
 
 	*target1, *target2 = *target2, *target1
-	return nil
+	return true, ""
 }
 
 func (f *menuFolder) drawDescription(desc string) {

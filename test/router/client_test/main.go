@@ -1,10 +1,10 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"os"
 	"time"
+
+	"github.com/cockroachdb/errors"
 
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
@@ -128,7 +128,7 @@ MAIN_LOOP:
 				time.Sleep(30 * time.Millisecond)
 			}
 			if !ok {
-				exitByError(fmt.Errorf("failed to move: %+v", info))
+				exitByError(errors.Newf("failed to move: %+v", info))
 			}
 
 			// 2. Buster
@@ -150,7 +150,7 @@ MAIN_LOOP:
 				time.Sleep(30 * time.Millisecond)
 			}
 			if !ok {
-				exitByError(fmt.Errorf("failed to add buster: %+v", info))
+				exitByError(errors.Newf("failed to add buster: %+v", info))
 			}
 
 			// 3. Use Chip
@@ -175,7 +175,7 @@ MAIN_LOOP:
 				time.Sleep(100 * time.Millisecond)
 			}
 			if !ok {
-				exitByError(fmt.Errorf("failed to use chip cannon: %+v", info))
+				exitByError(errors.Newf("failed to use chip cannon: %+v", info))
 			}
 
 			// Win to game
@@ -197,7 +197,7 @@ MAIN_LOOP:
 				time.Sleep(100 * time.Millisecond)
 			}
 			if !ok {
-				exitByError(fmt.Errorf("failed to go to result state: %+v", conn.GetGameStatus()))
+				exitByError(errors.Newf("failed to go to result state: %+v", conn.GetGameStatus()))
 			}
 		case stateResult:
 			logger.Info("Successfully state change to result")

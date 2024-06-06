@@ -1,8 +1,7 @@
 package enemy
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -68,13 +67,13 @@ func (e *enemyBoomer) Init(objID string) error {
 	e.imgMove = make([]int, 4)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 114, 102, e.imgMove); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	tmp := make([]int, 5)
 	fname = name + "_atk" + ext
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 136, 104, tmp); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 	for i := len(tmp) - 1; i >= 0; i-- {
 		e.atk.images = append(e.atk.images, tmp[i])

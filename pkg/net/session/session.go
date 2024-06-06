@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -69,10 +70,10 @@ func (s *Session) SetClient(clientID string, stream pb.NetConn_TransDataServer) 
 			s.clients[i].dataStream = stream
 			return nil
 		} else if s.clients[i].clientID == clientID {
-			return fmt.Errorf("the client already added")
+			return errors.New("the client already added")
 		}
 	}
-	return fmt.Errorf("session is full")
+	return errors.New("session is full")
 }
 
 func (s *Session) Run() {
@@ -89,7 +90,7 @@ MAIN_LOOP:
 		// check session expires
 		if s.expiresAt.Before(now) {
 			s.exitErr = &sessionError{
-				reason: fmt.Errorf("session expired"),
+				reason: errors.New("session expired"),
 			}
 			return
 		}
@@ -133,7 +134,7 @@ MAIN_LOOP:
 			}
 			if err := s.gameHandler.Init(clientIDs, s.sysReceiver); err != nil {
 				s.exitErr = &sessionError{
-					reason: fmt.Errorf("failed to initialize game handler"),
+					reason: errors.New("failed to initialize game handler"),
 				}
 				return
 			}
@@ -201,7 +202,7 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 				return nil
 			}
 		}
-		return fmt.Errorf("no such client %s", clientID)
+		return errors.Newf("no such client %s", clientID)
 	case pb.Request_GOCHIPSELECT:
 		for i := range s.clients {
 			s.clients[i].chipSent = false
@@ -214,7 +215,7 @@ func (s *Session) HandleSignal(clientID string, signal *pb.Request_Signal) error
 		var obj object.InitParam
 		obj.Unmarshal(signal.GetRawData())
 		if err := s.gameHandler.AddPlayerObject(clientID, obj); err != nil {
-			return fmt.Errorf("failed to add player object: %w", err)
+			return errors.Wrap(err, "failed to add player object")
 		}
 	}
 	return nil

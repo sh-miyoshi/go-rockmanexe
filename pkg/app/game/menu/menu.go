@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
@@ -10,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -36,64 +38,44 @@ const (
 	ResultGoTalkAI
 )
 
+type menuStateInstance interface {
+	End()
+	Process() bool
+	Draw()
+	GetResult() Result
+}
+
 var (
-	menuState            int
-	imgBack              int
-	menuTopInst          *menuTop
-	menuFolderInst       *menuFolder
-	menuPlayerStatusInst *menuPlayerStatus
-	menuNetBattleInst    *menuNetBattle
-	menuInvalidChipInst  *menuInvalidChip
-	menuDevFeatureInst   *menuDevFeature
-	specificEnemy        []enemy.EnemyParam
+	menuState     int
+	imgBack       int
+	currentInst   menuStateInstance
+	playerInfo    *player.Player
+	battleEnemies []enemy.EnemyParam
 )
 
 func Init(plyr *player.Player) error {
 	menuState = stateTop
+	playerInfo = plyr
+	currentInst = nil
 
 	fname := config.ImagePath + "menu/back.png"
-	imgBack = dxlib.LoadGraph(fname)
-	if imgBack == -1 {
-		return fmt.Errorf("failed to load menu back image %s", fname)
-	}
-
-	var err error
-	menuTopInst, err = topNew(plyr)
-	if err != nil {
-		return fmt.Errorf("failed to init menu top: %w", err)
-	}
-
-	menuFolderInst, err = folderNew(plyr)
-	if err != nil {
-		return fmt.Errorf("failed to init menu folder: %w", err)
-	}
-
-	if err := goBattleInit(); err != nil {
-		return fmt.Errorf("failed to init menu go battle: %w", err)
-	}
-
-	menuPlayerStatusInst, err = playerStatusNew(plyr)
-	if err != nil {
-		return fmt.Errorf("failed to init menu player status: %w", err)
-	}
-
-	menuNetBattleInst, err = netBattleNew()
-	if err != nil {
-		return fmt.Errorf("failed to init menu net battle: %w", err)
-	}
-
-	menuInvalidChipInst, err = invalidChipNew(plyr)
-	if err != nil {
-		return fmt.Errorf("failed to init menu invalid chip: %w", err)
-	}
-
-	menuDevFeatureInst, err = devFeatureNew()
-	if err != nil {
-		return fmt.Errorf("failed to init menu dev feature: %w", err)
+	if imgBack = dxlib.LoadGraph(fname); imgBack == -1 {
+		return errors.Newf("failed to load menu back image %s", fname)
 	}
 
 	if err := sound.BGMPlay(sound.BGMMenu); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
+		return errors.Wrap(err, "failed to play bgm")
+	}
+
+	if config.Get().Debug.SkipMenu {
+		// Start from battle mode for debug, so set debug data
+		battleEnemies = []enemy.EnemyParam{
+			{
+				CharID: enemy.IDTarget,
+				Pos:    point.Point{X: 4, Y: 1},
+				HP:     1000,
+			},
+		}
 	}
 
 	return nil
@@ -101,24 +83,9 @@ func Init(plyr *player.Player) error {
 
 func End() {
 	dxlib.DeleteGraph(imgBack)
-	if menuTopInst != nil {
-		menuTopInst.End()
-	}
-	if menuFolderInst != nil {
-		menuFolderInst.End()
-	}
-	goBattleEnd()
-	if menuPlayerStatusInst != nil {
-		menuPlayerStatusInst.End()
-	}
-	if menuNetBattleInst != nil {
-		menuNetBattleInst.End()
-	}
-	if menuInvalidChipInst != nil {
-		menuInvalidChipInst.End()
-	}
-	if menuDevFeatureInst != nil {
-		menuDevFeatureInst.End()
+	if currentInst != nil {
+		currentInst.End()
+		currentInst = nil
 	}
 }
 
@@ -127,28 +94,95 @@ func Process() (Result, error) {
 		return ResultGoBattle, nil
 	}
 
+	var err error
 	switch menuState {
 	case stateTop:
-		res := menuTopInst.Process()
-		if res != ResultContinue {
-			return res, nil
+		if currentInst == nil {
+			currentInst, err = topNew(playerInfo)
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			if res := currentInst.GetResult(); res != ResultContinue {
+				return res, nil
+			}
+			next := currentInst.(*menuTop).GetNextState()
+			stateChange(next)
 		}
 	case stateChipFolder:
-		menuFolderInst.Process()
+		if currentInst == nil {
+			currentInst, err = folderNew(playerInfo)
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			stateChange(stateTop)
+		}
 	case stateGoBattle:
-		if goBattleProcess() {
-			return ResultGoBattle, nil
+		if currentInst == nil {
+			currentInst, err = goBattleNew()
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			if res := currentInst.GetResult(); res != ResultContinue {
+				return res, nil
+			}
+			stateChange(stateTop)
 		}
 	case statePlayerStatus:
-		menuPlayerStatusInst.Process()
+		if currentInst == nil {
+			currentInst, err = playerStatusNew(playerInfo)
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			stateChange(stateTop)
+		}
 	case stateNetBattle:
-		if menuNetBattleInst.Process() {
-			return ResultGoNetBattle, nil
+		if currentInst == nil {
+			currentInst, err = netBattleNew()
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			if res := currentInst.GetResult(); res != ResultContinue {
+				return res, nil
+			}
+			stateChange(stateTop)
 		}
 	case stateInvalidChip:
-		menuInvalidChipInst.Process()
+		if currentInst == nil {
+			currentInst, err = invalidChipNew(playerInfo)
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			stateChange(stateTop)
+		}
 	case stateDevFeature:
-		return menuDevFeatureInst.Process()
+		if currentInst == nil {
+			currentInst, err = devFeatureNew()
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Process() {
+			return currentInst.GetResult(), nil
+		}
 	}
 
 	return ResultContinue, nil
@@ -156,30 +190,13 @@ func Process() (Result, error) {
 
 func Draw() {
 	dxlib.DrawGraph(0, 0, imgBack, true)
-
-	switch menuState {
-	case stateTop:
-		menuTopInst.Draw()
-	case stateChipFolder:
-		menuFolderInst.Draw()
-	case stateGoBattle:
-		goBattleDraw()
-	case statePlayerStatus:
-		menuPlayerStatusInst.Draw()
-	case stateNetBattle:
-		menuNetBattleInst.Draw()
-	case stateInvalidChip:
-		menuInvalidChipInst.Draw()
-	case stateDevFeature:
-		menuDevFeatureInst.Draw()
+	if currentInst != nil {
+		currentInst.Draw()
 	}
 }
 
 func GetBattleEnemies() []enemy.EnemyParam {
-	if len(specificEnemy) > 0 {
-		return specificEnemy
-	}
-	return battleEnemies()
+	return battleEnemies
 }
 
 func stateChange(nextState int) {
@@ -188,4 +205,8 @@ func stateChange(nextState int) {
 		system.SetError(fmt.Sprintf("Invalid next battle state: %d", nextState))
 	}
 	menuState = nextState
+	if currentInst != nil {
+		currentInst.End()
+		currentInst = nil
+	}
 }

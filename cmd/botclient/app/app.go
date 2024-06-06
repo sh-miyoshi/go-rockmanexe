@@ -1,8 +1,7 @@
 package app
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/cmd/botclient/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -53,7 +52,7 @@ MAIN_LOOP:
 					Y:  playerInst.Pos.Y,
 				}
 				if err := connInst.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
-					return fmt.Errorf("failed to send init object param: %w", err)
+					return errors.Wrap(err, "failed to send init object param")
 				}
 
 				statusChange(stateOpening)

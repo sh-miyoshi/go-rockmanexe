@@ -1,8 +1,7 @@
 package manager
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -54,11 +53,11 @@ func (m *Manager) Cleanup() {
 
 func (m *Manager) Update() error {
 	if err := m.animMgr.Process(); err != nil {
-		return fmt.Errorf("anim manage process failed: %w", err)
+		return errors.Wrap(err, "anim manage process failed")
 	}
 
 	if err := m.objAnimMgr.Process(true, false); err != nil {
-		return fmt.Errorf("objanim manage process failed: %w", err)
+		return errors.Wrap(err, "objanim manage process failed")
 	}
 
 	if m.cutinCount > 0 {

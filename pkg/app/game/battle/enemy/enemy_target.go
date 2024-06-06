@@ -1,8 +1,7 @@
 package enemy
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -27,7 +26,7 @@ func (e *enemyTarget) Init(objID string) error {
 	fname := name + ext
 	e.image = dxlib.LoadGraph(fname)
 	if e.image == -1 {
-		return fmt.Errorf("failed to load enemy image %s", fname)
+		return errors.Newf("failed to load enemy image %s", fname)
 	}
 
 	return nil

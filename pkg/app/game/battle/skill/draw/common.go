@@ -1,8 +1,7 @@
 package skilldraw
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -56,7 +55,7 @@ func LoadImages() error {
 	tmp := make([]int, 24)
 	fname := path + "キャノン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 24, 8, 3, 120, 140, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgCannonAtk[0] = append(imgCannonAtk[0], tmp[i])
@@ -65,7 +64,7 @@ func LoadImages() error {
 	}
 	fname = path + "キャノン_body.png"
 	if res := dxlib.LoadDivGraph(fname, 15, 5, 3, 46, 40, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		imgCannonBody[0] = append(imgCannonBody[0], tmp[i])
@@ -75,7 +74,7 @@ func LoadImages() error {
 
 	fname = path + "ミニボム.png"
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 40, 30, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 5; i++ {
 		imgBombThrow = append(imgBombThrow, tmp[i])
@@ -83,7 +82,7 @@ func LoadImages() error {
 
 	fname = path + "ソード.png"
 	if res := dxlib.LoadDivGraph(fname, 12, 4, 3, 160, 150, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		// Note: In the image, the order of wide sword and long sword is swapped.
@@ -94,7 +93,7 @@ func LoadImages() error {
 
 	fname = path + "ショックウェーブ.png"
 	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 100, 140, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 7; i++ {
 		imgShockWave = append(imgShockWave, tmp[i])
@@ -102,7 +101,7 @@ func LoadImages() error {
 
 	fname = path + "リカバリー.png"
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 144, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 8; i++ {
 		imgRecover = append(imgRecover, tmp[i])
@@ -110,14 +109,14 @@ func LoadImages() error {
 
 	fname = path + "スプレッドガン_atk.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 75, 76, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgSpreadGunAtk = append(imgSpreadGunAtk, tmp[i])
 	}
 	fname = path + "スプレッドガン_body.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 56, 76, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgSpreadGunBody = append(imgSpreadGunBody, tmp[i])
@@ -125,7 +124,7 @@ func LoadImages() error {
 
 	fname = path + "バルカン.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 66, 50, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgVulcan = append(imgVulcan, tmp[i])
@@ -133,7 +132,7 @@ func LoadImages() error {
 
 	fname = path + "ウェーブ_body.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 128, 136, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgPick = append(imgPick, tmp[i])
@@ -143,7 +142,7 @@ func LoadImages() error {
 
 	fname = path + "サンダーボール.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 80, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgThunderBall = append(imgThunderBall, tmp[i])
@@ -151,21 +150,21 @@ func LoadImages() error {
 
 	fname = path + "ワイドショット_body.png"
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 56, 66, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 3; i++ {
 		imgWideShotBody = append(imgWideShotBody, tmp[i])
 	}
 	fname = path + "ワイドショット_begin.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 90, 147, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgWideShotBegin = append(imgWideShotBegin, tmp[i])
 	}
 	fname = path + "ワイドショット_move.png"
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 90, 148, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 3; i++ {
 		imgWideShotMove = append(imgWideShotMove, tmp[i])
@@ -173,7 +172,7 @@ func LoadImages() error {
 
 	fname = path + "ブーメラン.png"
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 80, tmp); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	for i := 0; i < 4; i++ {
 		imgBoomerang = append(imgBoomerang, tmp[i])
@@ -181,100 +180,100 @@ func LoadImages() error {
 	fname = path + "aquaman_shot.png"
 	imgAquamanShot = make([]int, 1)
 	if imgAquamanShot[0] = dxlib.LoadGraph(fname); imgAquamanShot[0] == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "バンブーランス.png"
 	imgBambooLance = make([]int, 1)
 	if imgBambooLance[0] = dxlib.LoadGraph(fname); imgBambooLance[0] == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "ドリームソード.png"
 	imgDreamSword = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 200, 188, imgDreamSword); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "ガルー_atk.png"
 	imgGarooBreath = make([]int, 3)
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 108, 62, imgGarooBreath); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "フレイムライン_火柱.png"
 	imgFlamePillar = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 72, 120, imgFlamePillar); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "フレイムライン_body.png"
 	imgFlameLineBody = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 64, imgFlameLineBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "ヒートショット_body.png"
 	imgHeatShotBody = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 60, 40, imgHeatShotBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "ヒートショット_atk.png"
 	imgHeatShotAtk = make([]int, 3)
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 60, 45, imgHeatShotAtk); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "エリアスチール_main.png"
 	imgAreaStealMain = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 74, 69, imgAreaStealMain); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 	fname = path + "エリアスチール_panel.png"
 	imgAreaStealPanel = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 110, 76, imgAreaStealPanel); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = path + "カウントボム.png"
 	imgCountBomb = make([]int, 1)
 	if imgCountBomb[0] = dxlib.LoadGraph(fname); imgCountBomb[0] == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = path + "トルネード_atk.png"
 	imgTornadoAtk = make([]int, 3)
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 63, 96, imgTornadoAtk); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = path + "トルネード_body.png"
 	imgTornadoBody = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 64, 64, imgTornadoBody); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/アクアマン_stand.png"
 	imgAquamanCharStand = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, imgAquamanCharStand); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/character/アクアマン_create.png"
 	imgAquamanCharCreate = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, imgAquamanCharCreate); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/effect/spread_and_bamboo_hit.png"
 	imgSpreadHit = make([]int, 6)
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 92, 88, imgSpreadHit); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = path + "サーキラー_atk.png"
 	imgCirkillShot = make([]int, 3)
 	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 108, 62, imgCirkillShot); res == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/skill/カウントボム_数字.png"
 	imgCountBombNumber = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, imgCountBombNumber); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/skill/エビロン_atk_begin.png"

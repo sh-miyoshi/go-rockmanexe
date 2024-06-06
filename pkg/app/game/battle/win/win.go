@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	chipimage "github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip/image"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -57,13 +58,13 @@ func Init(args WinArg, plyr *player.Player) error {
 	fname := config.ImagePath + "battle/result_frame.png"
 	imgFrame = dxlib.LoadGraph(fname)
 	if imgFrame == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/zenny.png"
 	imgZenny = dxlib.LoadGraph(fname)
 	if imgZenny == -1 {
-		return fmt.Errorf("failed to load image %s", fname)
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/msg_win.png"
@@ -71,7 +72,7 @@ func Init(args WinArg, plyr *player.Player) error {
 	winMsgInst, err = titlemsg.New(fname, 0)
 
 	if err := sound.BGMPlay(sound.BGMWin); err != nil {
-		return fmt.Errorf("failed to play bgm: %v", err)
+		return errors.Wrap(err, "failed to play bgm")
 	}
 
 	bustingLevel = calcBustingLevel(args)

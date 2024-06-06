@@ -1,9 +1,9 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/cockroachdb/errors"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -55,12 +55,12 @@ var (
 func Init(fname string) error {
 	fp, err := os.Open(fname)
 	if err != nil {
-		return fmt.Errorf("failed to open config file: %v", err)
+		return errors.Wrap(err, "failed to open config file")
 	}
 	defer fp.Close()
 
 	if err := yaml.NewDecoder(fp).Decode(&inst); err != nil {
-		return fmt.Errorf("failed to decode yaml: %v", err)
+		return errors.Wrap(err, "failed to decode yaml")
 	}
 
 	return nil

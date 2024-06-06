@@ -1,8 +1,7 @@
 package opening
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
@@ -37,7 +36,7 @@ func NewWithBoss(enemyList []enemy.EnemyParam) (*Boss, error) {
 
 	res.playerImage = dxlib.LoadGraph(config.ImagePath + "battle/character/ロックマン_player_side.png")
 	if res.playerImage == -1 {
-		return nil, fmt.Errorf("failed to load player image")
+		return nil, errors.New("failed to load player image")
 	}
 
 	return res, nil

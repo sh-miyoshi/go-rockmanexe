@@ -1,8 +1,7 @@
 package menu
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
@@ -13,21 +12,25 @@ import (
 )
 
 type menuNetBattle struct {
-	imgMsgFrame int
-	messages    []string
-	isConnect   bool
+	imgMsgFrame  int
+	messages     []string
+	isConnect    bool
+	isErrorLoged bool
+	result       Result
 }
 
 func netBattleNew() (*menuNetBattle, error) {
 	res := &menuNetBattle{
-		messages:  []string{"通信待機中です・・・"},
-		isConnect: false,
+		messages:     []string{"通信待機中です・・・"},
+		isConnect:    false,
+		isErrorLoged: false,
+		result:       ResultContinue,
 	}
 
 	fname := config.ImagePath + "msg_frame.png"
 	res.imgMsgFrame = dxlib.LoadGraph(fname)
 	if res.imgMsgFrame == -1 {
-		return nil, fmt.Errorf("failed to load menu message frame image %s", fname)
+		return nil, errors.Newf("failed to load menu message frame image %s", fname)
 	}
 
 	net.Init()
@@ -46,20 +49,20 @@ func (m *menuNetBattle) Process() bool {
 	}
 
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
-		// Data init for next access
 		net.GetInst().Disconnect()
-		m.isConnect = false
-		m.messages = []string{"通信待機中です・・・"}
-
-		stateChange(stateTop)
+		return true
 	}
 
 	status := net.GetInst().GetConnStatus()
 	if status.Status == netconn.ConnStateOK {
+		m.result = ResultGoNetBattle
 		return true
 	}
 	if status.Status == netconn.ConnStateError {
-		logger.Error("Failed to connect server: %v", status.Error)
+		if !m.isErrorLoged {
+			logger.Error("Failed to connect server: %v", status.Error)
+			m.isErrorLoged = true
+		}
 		m.messages = []string{
 			"サーバーへの接続に失敗しました。",
 			"設定を見直してください。",
@@ -74,4 +77,8 @@ func (m *menuNetBattle) Draw() {
 	for i, msg := range m.messages {
 		draw.MessageText(120, 220+i*30, 0x000000, msg)
 	}
+}
+
+func (m *menuNetBattle) GetResult() Result {
+	return m.result
 }

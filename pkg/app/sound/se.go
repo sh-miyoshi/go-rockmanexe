@@ -1,8 +1,7 @@
 package sound
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -72,7 +71,7 @@ func Init() error {
 
 	for i, s := range soundEffects {
 		if s == -1 {
-			return fmt.Errorf("failed to load %d sound", i)
+			return errors.Newf("failed to load %d sound", i)
 		}
 	}
 

@@ -3,6 +3,7 @@ package netbattle
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -128,7 +129,7 @@ func Init(plyr *player.Player) error {
 	}
 
 	if err := effect.Init(); err != nil {
-		return fmt.Errorf("effect init failed: %w", err)
+		return errors.Wrap(err, "effect init failed")
 	}
 
 	sound.BGMStop()
@@ -165,11 +166,11 @@ func Process() error {
 				Y:  1,
 			}
 			if err := inst.conn.SendSignal(pb.Request_INITPARAMS, obj.Marshal()); err != nil {
-				return fmt.Errorf("failed to send initial player param: %w", err)
+				return errors.Wrap(err, "failed to send initial player param")
 			}
 
 			if err := sound.BGMPlay(sound.BGMNetBattle); err != nil {
-				return fmt.Errorf("failed to play bgm: %v", err)
+				return errors.Wrap(err, "failed to play bgm")
 			}
 
 			stateChange(stateOpening)
@@ -182,8 +183,8 @@ func Process() error {
 		}
 	case stateChipSelect:
 		if inst.stateCount == 0 {
-			if err := chipsel.Init(inst.playerInst.GetChipFolder()); err != nil {
-				return fmt.Errorf("failed to initialize chip select: %w", err)
+			if err := chipsel.Init(inst.playerInst.GetChipFolder(), inst.playerInst.GetChipSelectMax()); err != nil {
+				return errors.Wrap(err, "failed to initialize chip select")
 			}
 		}
 		if chipsel.Process() {
@@ -205,7 +206,7 @@ func Process() error {
 			var err error
 			inst.b4mainInst, err = b4main.New(inst.playerInst.GetSelectedChips())
 			if err != nil {
-				return fmt.Errorf("failed to initialize before main: %w", err)
+				return errors.Wrap(err, "failed to initialize before main")
 			}
 			inst.playerInst.UpdatePA()
 		}
@@ -219,7 +220,7 @@ func Process() error {
 		isRunAnim = true
 		done, err := inst.playerInst.Process()
 		if err != nil {
-			return fmt.Errorf("player process failed: %w", err)
+			return errors.Wrap(err, "player process failed")
 		}
 		if done {
 			stateChange(stateResult)
@@ -253,7 +254,7 @@ func Process() error {
 			var err error
 			inst.resultInst, err = titlemsg.New(fname, 60)
 			if err != nil {
-				return fmt.Errorf("failed to initialize result: %w", err)
+				return errors.Wrap(err, "failed to initialize result")
 			}
 		}
 
@@ -287,9 +288,8 @@ func Process() error {
 	}
 
 	if isRunAnim {
-		// TODO(blackout中はエフェクトもとめておく？)
 		if err := localanim.AnimMgrProcess(); err != nil {
-			return fmt.Errorf("failed to handle animation: %w", err)
+			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
 

@@ -37,11 +37,12 @@ func (i *menuInvalidChip) End() {
 	i.win.End()
 }
 
-func (i *menuInvalidChip) Process() {
+func (i *menuInvalidChip) Process() bool {
 	if i.win.Process() {
 		sound.On(resources.SECancel)
-		stateChange(stateTop)
+		return true
 	}
+	return false
 }
 
 func (i *menuInvalidChip) Draw() {
@@ -52,6 +53,10 @@ func (i *menuInvalidChip) Draw() {
 	}
 
 	i.win.Draw()
+}
+
+func (i *menuInvalidChip) GetResult() Result {
+	return ResultContinue
 }
 
 func (i *menuInvalidChip) invalidChips() []string {

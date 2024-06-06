@@ -3,6 +3,7 @@ package field
 import (
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -22,7 +23,7 @@ func New() (*Field, error) {
 
 	// TODO: Serverから取得する
 	if err := background.Set(background.Type秋原町); err != nil {
-		return nil, fmt.Errorf("failed to load background: %w", err)
+		return nil, errors.Wrap(err, "failed to load background")
 	}
 
 	// Initialize images
@@ -31,14 +32,14 @@ func New() (*Field, error) {
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
-			return nil, fmt.Errorf("failed to read player panel image %s", fname)
+			return nil, errors.Newf("failed to read player panel image %s", fname)
 		}
 	}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
 		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
-			return nil, fmt.Errorf("failed to read enemy panel image %s", fname)
+			return nil, errors.Newf("failed to read enemy panel image %s", fname)
 		}
 	}
 

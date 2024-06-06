@@ -1,8 +1,7 @@
 package titlemsg
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 )
@@ -25,7 +24,7 @@ func New(fname string, waitCount int) (*TitleMsg, error) {
 	}
 
 	if loadRes := dxlib.LoadDivGraph(fname, 3, 1, 3, 274, 32, res.imgMsg); loadRes == -1 {
-		return nil, fmt.Errorf("failed to load image %s", fname)
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
 	return &res, nil

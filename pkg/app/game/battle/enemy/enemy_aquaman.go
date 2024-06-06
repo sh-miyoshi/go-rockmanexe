@@ -1,9 +1,9 @@
 package enemy
 
 import (
-	"fmt"
 	"math/rand"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
@@ -66,37 +66,37 @@ func (e *enemyAquaman) Init(objID string) error {
 	fname := name + "_stand" + ext
 	e.images[aquamanActTypeStand] = make([]int, 9)
 	if res := dxlib.LoadDivGraph(fname, 9, 9, 1, 62, 112, e.images[aquamanActTypeStand]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_move" + ext
 	e.images[aquamanActTypeMove] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 126, e.images[aquamanActTypeMove]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_shot" + ext
 	e.images[aquamanActTypeShot] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 104, 90, e.images[aquamanActTypeShot]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_damage" + ext
 	e.images[aquamanActTypeDamage] = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 70, 86, e.images[aquamanActTypeDamage]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_bomb" + ext
 	e.images[aquamanActTypeBomb] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 124, e.images[aquamanActTypeBomb]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = name + "_create" + ext
 	e.images[aquamanActTypeCreate] = make([]int, 1)
 	if res := dxlib.LoadDivGraph(fname, 1, 1, 1, 80, 92, e.images[aquamanActTypeCreate]); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil
@@ -282,13 +282,13 @@ func (e *enemyAquaman) Process() (bool, error) {
 			pm.Pos.X = battlecommon.FieldNum.X / 2
 			pm.Pos.Y = 0
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
-				return false, fmt.Errorf("water pipe create failed: %w", err)
+				return false, errors.Wrap(err, "water pipe create failed")
 			}
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 			obj = &object.WaterPipe{}
 			pm.Pos.Y = battlecommon.FieldNum.Y - 1
 			if err := obj.Init(e.pm.ObjectID, pm); err != nil {
-				return false, fmt.Errorf("water pipe create failed: %w", err)
+				return false, errors.Wrap(err, "water pipe create failed")
 			}
 			e.waterPipeObjIDs = append(e.waterPipeObjIDs, localanim.ObjAnimNew(obj))
 		}

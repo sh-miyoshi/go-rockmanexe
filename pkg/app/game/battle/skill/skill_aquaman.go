@@ -1,8 +1,7 @@
 package skill
 
 import (
-	"fmt"
-
+	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -54,7 +53,7 @@ func (p *aquaman) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 		}
 		if err := obj.Init(p.ID, pm); err != nil {
-			return false, fmt.Errorf("water pipe create failed: %w", err)
+			return false, errors.Wrap(err, "water pipe create failed")
 		}
 		p.atkID = localanim.ObjAnimNew(obj)
 		localanim.ObjAnimAddActiveAnim(p.atkID)
