@@ -279,13 +279,13 @@ func LoadImages() error {
 	fname = config.ImagePath + "battle/skill/エビロン_atk_begin.png"
 	imgShrimpyAtkBegin = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 46, 44, imgShrimpyAtkBegin); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/skill/エビロン_atk_move.png"
 	imgShrimpyAtkMove = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 74, 60, imgShrimpyAtkMove); res == -1 {
-		return fmt.Errorf("failed to load image: %s", fname)
+		return errors.Newf("failed to load image: %s", fname)
 	}
 
 	return nil
