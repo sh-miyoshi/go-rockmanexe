@@ -12,8 +12,10 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -21,40 +23,37 @@ const (
 	shrimpyActNextStepCount = 90
 )
 
-const (
-	shrimpyStateWait = iota
-	shrimpyStateMove
-	shrimpyStateAtk
+var (
+	shrimpyAttacker string = ""
 )
 
 type shrimpyAttack struct {
-	count  int
-	images []int
-	atkID  string
+	ownerID   string
+	count     int
+	images    []int
+	attacking bool
 }
 
 type enemyShrimpy struct {
-	pm        EnemyParam
-	imgMove   []int
-	count     int
-	waitCount int
-	state     int
-	nextState int
-	nextY     int
-	prevY     int
-	direct    int
-	prevOfsY  int
-	atk       shrimpyAttack
+	pm              EnemyParam
+	imgMove         []int
+	count           int
+	atk             shrimpyAttack
+	waitCount       int
+	nextY           int
+	prevY           int
+	direct          int
+	prevOfsY        int
+	moveFailedCount int
 }
 
 func (e *enemyShrimpy) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.waitCount = 20
-	e.state = shrimpyStateWait
-	e.nextState = shrimpyStateMove
 	e.nextY = e.pm.Pos.Y
 	e.prevY = e.pm.Pos.Y
 	e.direct = config.DirectUp
+	e.moveFailedCount = 0
 
 	// Load Images
 	name, ext := GetStandImageFile(IDShrimpy)
@@ -97,52 +96,58 @@ func (e *enemyShrimpy) Process() (bool, error) {
 	}
 
 	// Enemy Logic
-	switch e.state {
-	case shrimpyStateWait:
-		e.waitCount--
-		if e.waitCount <= 0 {
-			e.setState(e.nextState)
-			return false, nil
-		}
-	case shrimpyStateMove:
-		if e.count == 0 {
-			e.count = shrimpyActNextStepCount/2 + 1
-		}
-
-		cnt := e.count % shrimpyActNextStepCount
-		if cnt == 0 {
-			// Update current pos
-			e.prevY = e.pm.Pos.Y
-			e.pm.Pos.Y = e.nextY
-		}
-
-		if cnt == shrimpyActNextStepCount/2 {
-			// 次の行動を決定
-			// TODO: attack
-
-			if e.direct == config.DirectUp {
-				if e.nextY > 0 {
-					e.nextY--
-				}
-
-				if e.nextY == 0 {
-					e.direct = config.DirectDown
-				}
-			} else { // Down
-				if e.nextY < battlecommon.FieldNum.Y-1 {
-					e.nextY++
-				}
-
-				if e.nextY == battlecommon.FieldNum.Y-1 {
-					e.direct = config.DirectUp
-				}
-			}
-		}
-	case shrimpyStateAtk:
-		// TODO
-	}
+	const forceAttackCount = 3
 
 	e.count++
+
+	if e.atk.attacking {
+		e.atk.Process()
+		return false, nil
+	}
+
+	if e.waitCount > 0 {
+		e.waitCount--
+		return false, nil
+	}
+
+	// Move
+	cnt := e.count % shrimpyActNextStepCount
+	if cnt == 0 {
+		// Update current pos
+		e.prevY = e.pm.Pos.Y
+		if battlecommon.MoveObjectDirect(&e.pm.Pos, point.Point{X: e.pm.Pos.X, Y: e.nextY}, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+			e.moveFailedCount = 0
+		} else {
+			e.moveFailedCount++
+		}
+	} else if cnt == shrimpyActNextStepCount/2 {
+		// 次の行動を決定
+		// pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+		// if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
+		// 	// TODO: attack
+		// 	e.moveFailedCount = 0
+		// 	return false, nil
+		// }
+
+		if e.direct == config.DirectUp {
+			if e.nextY > 0 {
+				e.nextY--
+			}
+
+			if e.nextY == 0 {
+				e.direct = config.DirectDown
+			}
+		} else { // Down
+			if e.nextY < battlecommon.FieldNum.Y-1 {
+				e.nextY++
+			}
+
+			if e.nextY == battlecommon.FieldNum.Y-1 {
+				e.direct = config.DirectUp
+			}
+		}
+	}
+
 	return false, nil
 }
 
@@ -154,15 +159,9 @@ func (e *enemyShrimpy) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	var ofsy int
-	if e.state == shrimpyStateMove {
-		c := e.count % shrimpyActNextStepCount
-		if c == 0 || c == shrimpyActNextStepCount/2 {
-			ofsy = e.prevOfsY
-		} else {
-			ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
-			e.prevOfsY = ofsy
-		}
-	}
+	c := e.count % shrimpyActNextStepCount
+	ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
+	e.prevOfsY = ofsy
 	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, true)
 
 	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
@@ -204,13 +203,7 @@ func (e *enemyShrimpy) getCurrentImagePointer() *int {
 	return &e.imgMove[n]
 }
 
-func (e *enemyShrimpy) setState(next int) {
-	e.state = next
-	e.count = 0
-}
-
 func (a *shrimpyAttack) Init() {
-	a.atkID = ""
 	a.count = 0
 }
 
@@ -221,5 +214,6 @@ func (a *shrimpyAttack) Process() bool {
 
 	a.count++
 
-	return !localanim.AnimIsProcessing(a.atkID)
+	// return !localanim.AnimIsProcessing(a.atkID)
+	return false
 }
