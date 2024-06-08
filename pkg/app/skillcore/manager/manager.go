@@ -77,7 +77,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.Invisible{Arg: arg}
 	case resources.SkillQuickGauge:
 		return &processor.QuickGauge{Arg: arg}
-	case resources.SkillAquamanShot, resources.SkillCirkillShot, resources.SkillGarooBreath:
+	case resources.SkillAquamanShot, resources.SkillCirkillShot, resources.SkillGarooBreath, resources.SkillShrimpyAttack:
 		// 敵の攻撃の場合、共通化するメリットがないのでcoreは何もしない
 		return nil
 	case resources.SkillThunderBall:
