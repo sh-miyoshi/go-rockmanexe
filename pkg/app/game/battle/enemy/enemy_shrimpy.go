@@ -208,7 +208,7 @@ func (e *enemyShrimpy) getCurrentImagePointer() *int {
 func (a *shrimpyAttack) Set() {
 	a.count = 0
 	a.atkID = localanim.AnimNew(skill.Get(
-		resources.SkillEnemyWideShot, // TODO
+		resources.SkillShrimpyAttack,
 		skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      20,

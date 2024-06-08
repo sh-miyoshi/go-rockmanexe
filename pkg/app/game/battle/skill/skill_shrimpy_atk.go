@@ -26,6 +26,7 @@ func (p *shrimpyAtk) Draw() {
 }
 
 func (p *shrimpyAtk) Process() (bool, error) {
+	// TODO
 	return false, nil
 }
 

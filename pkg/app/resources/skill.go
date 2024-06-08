@@ -68,3 +68,8 @@ const (
 	SkillFlamePillarStateEnd
 	SkillFlamePillarStateDeleted
 )
+
+const (
+	SkillShrimpyAttackStateBegin int = iota
+	SkillShrimpyAttackStateMove
+)
