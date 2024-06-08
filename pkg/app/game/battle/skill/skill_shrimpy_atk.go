@@ -38,8 +38,17 @@ func (p *shrimpyAtk) Draw() {
 }
 
 func (p *shrimpyAtk) Process() (bool, error) {
-	// TODO
 	p.count++
+	switch p.state {
+	case resources.SkillShrimpyAttackStateBegin:
+		if p.drawer.IsDrawEnd(p.count, p.state) {
+			p.state = resources.SkillShrimpyAttackStateMove
+			p.count = 0
+			return false, nil
+		}
+	case resources.SkillShrimpyAttackStateMove:
+		// TODO
+	}
 	return false, nil
 }
 
