@@ -13,7 +13,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -28,10 +30,10 @@ var (
 )
 
 type shrimpyAttack struct {
-	ownerID   string
-	count     int
-	images    []int
-	attacking bool
+	ownerID string
+	count   int
+	images  []int
+	atkID   string
 }
 
 type enemyShrimpy struct {
@@ -43,7 +45,6 @@ type enemyShrimpy struct {
 	nextY           int
 	prevY           int
 	direct          int
-	prevOfsY        int
 	moveFailedCount int
 }
 
@@ -54,6 +55,7 @@ func (e *enemyShrimpy) Init(objID string) error {
 	e.prevY = e.pm.Pos.Y
 	e.direct = config.DirectUp
 	e.moveFailedCount = 0
+	e.atk.ownerID = objID
 
 	// Load Images
 	name, ext := GetStandImageFile(IDShrimpy)
@@ -100,7 +102,7 @@ func (e *enemyShrimpy) Process() (bool, error) {
 
 	e.count++
 
-	if e.atk.attacking {
+	if e.atk.IsAttacking() {
 		e.atk.Process()
 		return false, nil
 	}
@@ -122,12 +124,14 @@ func (e *enemyShrimpy) Process() (bool, error) {
 		}
 	} else if cnt == shrimpyActNextStepCount/2 {
 		// 次の行動を決定
-		// pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
-		// if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
-		// 	// TODO: attack
-		// 	e.moveFailedCount = 0
-		// 	return false, nil
-		// }
+		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount && shrimpyAttacker == "" {
+			shrimpyAttacker = e.pm.ObjectID
+			e.atk.Set()
+			e.moveFailedCount = 0
+			e.waitCount = 60
+			return false, nil
+		}
 
 		if e.direct == config.DirectUp {
 			if e.nextY > 0 {
@@ -158,10 +162,8 @@ func (e *enemyShrimpy) Draw() {
 
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
-	var ofsy int
 	c := e.count % shrimpyActNextStepCount
-	ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
-	e.prevOfsY = ofsy
+	ofsy := battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
 	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, true)
 
 	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
@@ -203,17 +205,28 @@ func (e *enemyShrimpy) getCurrentImagePointer() *int {
 	return &e.imgMove[n]
 }
 
-func (a *shrimpyAttack) Init() {
+func (a *shrimpyAttack) Set() {
 	a.count = 0
+	a.atkID = localanim.AnimNew(skill.Get(
+		resources.SkillEnemyWideShot, // TODO
+		skillcore.Argument{
+			OwnerID:    a.ownerID,
+			Power:      20,
+			TargetType: damage.TargetPlayer,
+		},
+	))
 }
 
 func (a *shrimpyAttack) Process() bool {
-	if a.count == 0 {
-		// TODO: wip
-	}
-
 	a.count++
-
-	// return !localanim.AnimIsProcessing(a.atkID)
+	if !localanim.AnimIsProcessing(a.atkID) {
+		a.atkID = ""
+		shrimpyAttacker = ""
+		return true
+	}
 	return false
+}
+
+func (a *shrimpyAttack) IsAttacking() bool {
+	return a.atkID != ""
 }
