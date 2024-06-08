@@ -30,10 +30,10 @@ var (
 )
 
 type shrimpyAttack struct {
-	ownerID string
-	count   int
-	images  []int
-	atkID   string
+	ownerID   string
+	count     int
+	images    []int
+	attacking bool
 }
 
 type enemyShrimpy struct {
@@ -102,7 +102,7 @@ func (e *enemyShrimpy) Process() (bool, error) {
 
 	e.count++
 
-	if e.atk.IsAttacking() {
+	if e.atk.attacking {
 		e.atk.Process()
 		return false, nil
 	}
@@ -207,7 +207,8 @@ func (e *enemyShrimpy) getCurrentImagePointer() *int {
 
 func (a *shrimpyAttack) Set() {
 	a.count = 0
-	a.atkID = localanim.AnimNew(skill.Get(
+	a.attacking = true
+	localanim.AnimNew(skill.Get(
 		resources.SkillShrimpyAttack,
 		skillcore.Argument{
 			OwnerID:    a.ownerID,
@@ -218,15 +219,12 @@ func (a *shrimpyAttack) Set() {
 }
 
 func (a *shrimpyAttack) Process() bool {
+	const atkWaitTime = 30
 	a.count++
-	if !localanim.AnimIsProcessing(a.atkID) {
-		a.atkID = ""
+	if a.count >= atkWaitTime {
+		a.attacking = false
 		shrimpyAttacker = ""
 		return true
 	}
 	return false
-}
-
-func (a *shrimpyAttack) IsAttacking() bool {
-	return a.atkID != ""
 }

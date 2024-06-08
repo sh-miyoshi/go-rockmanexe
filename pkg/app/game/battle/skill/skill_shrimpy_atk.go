@@ -4,7 +4,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+)
+
+const (
+	shrimpyAtkNextStepCount = 10
 )
 
 type shrimpyAtk struct {
@@ -12,21 +18,28 @@ type shrimpyAtk struct {
 	Arg skillcore.Argument
 
 	drawer skilldraw.DrawShrimpyAtk
+	pos    point.Point
+	count  int
+	state  int
 }
 
 func newShrimpyAtk(objID string, arg skillcore.Argument) *shrimpyAtk {
+	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
 	return &shrimpyAtk{
-		ID:  objID,
-		Arg: arg,
+		ID:    objID,
+		Arg:   arg,
+		pos:   pos,
+		state: resources.SkillShrimpyAttackStateBegin,
 	}
 }
 
 func (p *shrimpyAtk) Draw() {
-	p.drawer.Draw()
+	p.drawer.Draw(p.pos, p.count, shrimpyAtkNextStepCount, p.state)
 }
 
 func (p *shrimpyAtk) Process() (bool, error) {
 	// TODO
+	p.count++
 	return false, nil
 }
 

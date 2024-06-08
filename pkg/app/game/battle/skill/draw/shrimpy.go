@@ -21,21 +21,20 @@ func (p *DrawShrimpyAtk) Draw(pos point.Point, count int, nextStepCount int, sta
 
 	switch state {
 	case resources.SkillShrimpyAttackStateBegin:
-		n := (count / delayWideShot)
+		n := (count / delayShrimpyAttackBegin)
 
-		if n >= len(imgWideShotBegin) {
-			n = len(imgWideShotBegin) - 1
+		if n >= len(imgShrimpyAtkBegin) {
+			n = len(imgShrimpyAtkBegin) - 1
 		}
-		dxlib.DrawRotaGraph(view.X, view.Y+20, 1, 0, imgWideShotBegin[n], true)
+		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgShrimpyAtkBegin[n], true)
 	case resources.SkillShrimpyAttackStateMove:
-		n := (count / delayWideShot) % len(imgWideShotMove)
-		next := pos.X + 1
-		prev := pos.X - 1
-
+		n := (count / delayShrimpyAttackMove) % len(imgShrimpyAtkMove)
+		next := pos.X - 1
+		prev := pos.X + 1
 		c := count % nextStepCount
 		if c != 0 {
 			ofsx := battlecommon.GetOffset(next, pos.X, prev, c, nextStepCount, battlecommon.PanelSize.X)
-			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgShrimpyAtkMove[n], true)
 		}
 	}
 }
