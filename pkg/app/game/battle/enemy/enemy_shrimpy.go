@@ -25,11 +25,16 @@ const (
 	shrimpyActNextStepCount = 90
 )
 
+const (
+	shrimpyStateWait = iota
+	shrimpyStateMove
+	shrimpyStateAtk
+)
+
 type shrimpyAttack struct {
-	ownerID   string
-	count     int
-	images    []int
-	attacking bool
+	ownerID string
+	count   int
+	images  []int
 }
 
 type enemyShrimpy struct {
@@ -38,15 +43,20 @@ type enemyShrimpy struct {
 	count     int
 	atk       shrimpyAttack
 	waitCount int
+	state     int
+	nextState int
 	nextY     int
 	prevY     int
 	direct    int
 	moveCount int
+	prevOfsY  int
 }
 
 func (e *enemyShrimpy) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.waitCount = 20
+	e.state = shrimpyStateWait
+	e.nextState = shrimpyStateMove
 	e.nextY = e.pm.Pos.Y
 	e.prevY = e.pm.Pos.Y
 	e.direct = config.DirectUp
@@ -94,49 +104,63 @@ func (e *enemyShrimpy) Process() (bool, error) {
 	}
 
 	// Enemy Logic
-	if e.atk.attacking {
-		e.atk.Process()
-		return false, nil
-	}
-
-	if e.waitCount > 0 {
+	switch e.state {
+	case shrimpyStateWait:
 		e.waitCount--
-		return false, nil
-	}
-
-	// Move
-	cnt := e.count % shrimpyActNextStepCount
-	if cnt == 0 {
-		// Update current pos
-		e.prevY = e.pm.Pos.Y
-		if battlecommon.MoveObjectDirect(&e.pm.Pos, point.Point{X: e.pm.Pos.X, Y: e.nextY}, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
-			e.moveCount--
-		}
-	} else if cnt == shrimpyActNextStepCount/2 {
-		// 次の行動を決定
-		if e.moveCount <= 0 {
-			e.atk.Set()
-			e.setMoveCount()
-			e.waitCount = 60
+		if e.waitCount <= 0 {
+			e.setState(e.nextState)
 			return false, nil
 		}
+	case shrimpyStateMove:
+		if e.count == 0 {
+			e.count = shrimpyActNextStepCount/2 + 1
+		}
 
-		if e.direct == config.DirectUp {
-			if e.nextY > 0 {
-				e.nextY--
+		cnt := e.count % shrimpyActNextStepCount
+		if cnt == 0 {
+			// Update current pos
+			e.prevY = e.pm.Pos.Y
+			if battlecommon.MoveObjectDirect(&e.pm.Pos, point.Point{X: e.pm.Pos.X, Y: e.nextY}, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
+				e.moveCount--
+			}
+		} else if cnt == shrimpyActNextStepCount/2 {
+			// 次の行動を決定
+			if e.moveCount <= 0 {
+				e.setMoveCount()
+				e.waitCount = 10
+				e.nextState = shrimpyStateAtk
+				e.setState(shrimpyStateWait)
+				return false, nil
 			}
 
-			if e.nextY == 0 {
-				e.direct = config.DirectDown
-			}
-		} else { // Down
-			if e.nextY < battlecommon.FieldNum.Y-1 {
-				e.nextY++
-			}
+			if e.direct == config.DirectUp {
+				if e.nextY > 0 {
+					e.nextY--
+				}
 
-			if e.nextY == battlecommon.FieldNum.Y-1 {
-				e.direct = config.DirectUp
+				if e.nextY == 0 {
+					e.direct = config.DirectDown
+				}
+			} else { // Down
+				if e.nextY < battlecommon.FieldNum.Y-1 {
+					e.nextY++
+				}
+
+				if e.nextY == battlecommon.FieldNum.Y-1 {
+					e.direct = config.DirectUp
+				}
 			}
+		}
+	case shrimpyStateAtk:
+		if e.count == 0 {
+			e.atk.Set()
+		}
+
+		if e.atk.Process() {
+			e.waitCount = 40
+			e.nextState = shrimpyStateMove
+			e.setState(shrimpyStateWait)
+			return false, nil
 		}
 	}
 
@@ -153,8 +177,16 @@ func (e *enemyShrimpy) Draw() {
 
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
-	c := e.count % shrimpyActNextStepCount
-	ofsy := battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
+	var ofsy int
+	if e.state == shrimpyStateMove {
+		c := e.count % shrimpyActNextStepCount
+		if c == 0 || c == shrimpyActNextStepCount/2 {
+			ofsy = e.prevOfsY
+		} else {
+			ofsy = battlecommon.GetOffset(e.nextY, e.pm.Pos.Y, e.prevY, c, shrimpyActNextStepCount, battlecommon.PanelSize.Y)
+			e.prevOfsY = ofsy
+		}
+	}
 	dxlib.DrawRotaGraph(view.X, view.Y+ofsy, 1, 0, *img, true)
 
 	drawParalysis(view.X, view.Y, *img, e.pm.ParalyzedCount)
@@ -192,7 +224,7 @@ func (e *enemyShrimpy) MakeInvisible(count int) {
 }
 
 func (e *enemyShrimpy) getCurrentImagePointer() *int {
-	if e.atk.attacking {
+	if e.state == shrimpyStateAtk {
 		n := (e.atk.count / delayShrimpyAttack)
 		if n >= len(e.atk.images) {
 			n = len(e.atk.images) - 1
@@ -208,9 +240,13 @@ func (e *enemyShrimpy) setMoveCount() {
 	e.moveCount = 3 + rand.Intn(2)
 }
 
+func (e *enemyShrimpy) setState(state int) {
+	e.state = state
+	e.count = 0
+}
+
 func (a *shrimpyAttack) Set() {
 	a.count = 0
-	a.attacking = true
 	// localanim.AnimNew(skill.Get(
 	// 	resources.SkillShrimpyAttack,
 	// 	skillcore.Argument{
@@ -223,9 +259,5 @@ func (a *shrimpyAttack) Set() {
 
 func (a *shrimpyAttack) Process() bool {
 	a.count++
-	if a.count >= len(a.images)*delayShrimpyAttack {
-		a.attacking = false
-		return true
-	}
-	return false
+	return a.count >= len(a.images)*delayShrimpyAttack
 }
