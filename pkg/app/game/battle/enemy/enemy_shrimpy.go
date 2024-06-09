@@ -14,7 +14,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -173,8 +175,6 @@ func (e *enemyShrimpy) Draw() {
 		return
 	}
 
-	// TODO: 移動時にちらつく
-
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	var ofsy int
@@ -247,14 +247,14 @@ func (e *enemyShrimpy) setState(state int) {
 
 func (a *shrimpyAttack) Set() {
 	a.count = 0
-	// localanim.AnimNew(skill.Get(
-	// 	resources.SkillShrimpyAttack,
-	// 	skillcore.Argument{
-	// 		OwnerID:    a.ownerID,
-	// 		Power:      20,
-	// 		TargetType: damage.TargetPlayer,
-	// 	},
-	// ))
+	localanim.AnimNew(skill.Get(
+		resources.SkillShrimpyAttack,
+		skillcore.Argument{
+			OwnerID:    a.ownerID,
+			Power:      20,
+			TargetType: damage.TargetPlayer,
+		},
+	))
 }
 
 func (a *shrimpyAttack) Process() bool {

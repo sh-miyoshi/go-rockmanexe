@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -25,6 +26,7 @@ type shrimpyAtk struct {
 
 func newShrimpyAtk(objID string, arg skillcore.Argument) *shrimpyAtk {
 	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
+	pos.X--
 	return &shrimpyAtk{
 		ID:    objID,
 		Arg:   arg,
@@ -38,7 +40,6 @@ func (p *shrimpyAtk) Draw() {
 }
 
 func (p *shrimpyAtk) Process() (bool, error) {
-	p.count++
 	switch p.state {
 	case resources.SkillShrimpyAttackStateBegin:
 		if p.drawer.IsDrawEnd(p.count, p.state) {
@@ -47,8 +48,21 @@ func (p *shrimpyAtk) Process() (bool, error) {
 			return false, nil
 		}
 	case resources.SkillShrimpyAttackStateMove:
-		// TODO
+		if p.count%shrimpyAtkNextStepCount == 0 {
+			localanim.DamageManager().New(damage.Damage{
+				DamageType:    damage.TypePosition,
+				Pos:           p.pos,
+				Power:         int(p.Arg.Power),
+				TTL:           shrimpyAtkNextStepCount,
+				TargetObjType: p.Arg.TargetType,
+				ShowHitArea:   false,
+				BigDamage:     true,
+				Element:       damage.ElementWater,
+			})
+			p.pos.X--
+		}
 	}
+	p.count++
 	return false, nil
 }
 
