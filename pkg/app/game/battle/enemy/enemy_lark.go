@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	attacker string = ""
+	larkAttacker string = ""
 )
 
 type larkAtk struct {
@@ -140,8 +140,8 @@ func (e *enemyLark) Process() (bool, error) {
 	np := (e.movePointer + 1) % 6
 
 	if cnt == larkMoveNextStepCount/2 {
-		if e.moveCount >= moveNum && e.pm.Pos.Y != 1 && attacker == "" {
-			attacker = e.pm.ObjectID
+		if e.moveCount >= moveNum && e.pm.Pos.Y != 1 && larkAttacker == "" {
+			larkAttacker = e.pm.ObjectID
 			e.moveCount = 0
 			e.atk.SetAttack()
 			return false, nil
@@ -241,7 +241,7 @@ func (a *larkAtk) Process() {
 		// Reset params
 		a.count = 0
 		a.attacking = false
-		attacker = ""
+		larkAttacker = ""
 	}
 }
 

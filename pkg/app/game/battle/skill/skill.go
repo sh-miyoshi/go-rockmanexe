@@ -100,6 +100,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newQuickGauge(objID, arg, core)
 	case resources.SkillCirkillShot:
 		return newCirkillShot(objID, arg)
+	case resources.SkillShrimpyAttack:
+		return newShrimpyAtk(objID, arg)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
