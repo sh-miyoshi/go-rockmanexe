@@ -2,6 +2,7 @@ package enemy
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
@@ -13,20 +14,15 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
 	delayShrimpyMove        = 16
+	delayShrimpyAttack      = 4
 	shrimpyActNextStepCount = 90
-)
-
-var (
-	shrimpyAttacker string = ""
 )
 
 type shrimpyAttack struct {
@@ -37,15 +33,15 @@ type shrimpyAttack struct {
 }
 
 type enemyShrimpy struct {
-	pm              EnemyParam
-	imgMove         []int
-	count           int
-	atk             shrimpyAttack
-	waitCount       int
-	nextY           int
-	prevY           int
-	direct          int
-	moveFailedCount int
+	pm        EnemyParam
+	imgMove   []int
+	count     int
+	atk       shrimpyAttack
+	waitCount int
+	nextY     int
+	prevY     int
+	direct    int
+	moveCount int
 }
 
 func (e *enemyShrimpy) Init(objID string) error {
@@ -54,8 +50,8 @@ func (e *enemyShrimpy) Init(objID string) error {
 	e.nextY = e.pm.Pos.Y
 	e.prevY = e.pm.Pos.Y
 	e.direct = config.DirectUp
-	e.moveFailedCount = 0
 	e.atk.ownerID = objID
+	e.setMoveCount()
 
 	// Load Images
 	name, ext := GetStandImageFile(IDShrimpy)
@@ -98,10 +94,6 @@ func (e *enemyShrimpy) Process() (bool, error) {
 	}
 
 	// Enemy Logic
-	const forceAttackCount = 3
-
-	e.count++
-
 	if e.atk.attacking {
 		e.atk.Process()
 		return false, nil
@@ -118,17 +110,13 @@ func (e *enemyShrimpy) Process() (bool, error) {
 		// Update current pos
 		e.prevY = e.pm.Pos.Y
 		if battlecommon.MoveObjectDirect(&e.pm.Pos, point.Point{X: e.pm.Pos.X, Y: e.nextY}, battlecommon.PanelTypeEnemy, true, field.GetPanelInfo) {
-			e.moveFailedCount = 0
-		} else {
-			e.moveFailedCount++
+			e.moveCount--
 		}
 	} else if cnt == shrimpyActNextStepCount/2 {
 		// 次の行動を決定
-		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
-		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount && shrimpyAttacker == "" {
-			shrimpyAttacker = e.pm.ObjectID
+		if e.moveCount <= 0 {
 			e.atk.Set()
-			e.moveFailedCount = 0
+			e.setMoveCount()
 			e.waitCount = 60
 			return false, nil
 		}
@@ -152,6 +140,7 @@ func (e *enemyShrimpy) Process() (bool, error) {
 		}
 	}
 
+	e.count++
 	return false, nil
 }
 
@@ -159,6 +148,8 @@ func (e *enemyShrimpy) Draw() {
 	if e.pm.InvincibleCount/5%2 != 0 {
 		return
 	}
+
+	// TODO: 移動時にちらつく
 
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
@@ -201,29 +192,39 @@ func (e *enemyShrimpy) MakeInvisible(count int) {
 }
 
 func (e *enemyShrimpy) getCurrentImagePointer() *int {
+	if e.atk.attacking {
+		n := (e.atk.count / delayShrimpyAttack)
+		if n >= len(e.atk.images) {
+			n = len(e.atk.images) - 1
+		}
+		return &e.atk.images[n]
+	}
+
 	n := (e.count / delayShrimpyMove) % len(e.imgMove)
 	return &e.imgMove[n]
+}
+
+func (e *enemyShrimpy) setMoveCount() {
+	e.moveCount = 3 + rand.Intn(2)
 }
 
 func (a *shrimpyAttack) Set() {
 	a.count = 0
 	a.attacking = true
-	localanim.AnimNew(skill.Get(
-		resources.SkillShrimpyAttack,
-		skillcore.Argument{
-			OwnerID:    a.ownerID,
-			Power:      20,
-			TargetType: damage.TargetPlayer,
-		},
-	))
+	// localanim.AnimNew(skill.Get(
+	// 	resources.SkillShrimpyAttack,
+	// 	skillcore.Argument{
+	// 		OwnerID:    a.ownerID,
+	// 		Power:      20,
+	// 		TargetType: damage.TargetPlayer,
+	// 	},
+	// ))
 }
 
 func (a *shrimpyAttack) Process() bool {
-	const atkWaitTime = 30
 	a.count++
-	if a.count >= atkWaitTime {
+	if a.count >= len(a.images)*delayShrimpyAttack {
 		a.attacking = false
-		shrimpyAttacker = ""
 		return true
 	}
 	return false
