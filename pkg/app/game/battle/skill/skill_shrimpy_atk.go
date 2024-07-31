@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	shrimpyAtkNextStepCount = 10
+	shrimpyAtkNextStepCount = 20
 )
 
 type shrimpyAtk struct {
@@ -55,11 +55,16 @@ func (p *shrimpyAtk) Process() (bool, error) {
 				Power:         int(p.Arg.Power),
 				TTL:           shrimpyAtkNextStepCount,
 				TargetObjType: p.Arg.TargetType,
-				ShowHitArea:   false,
+				ShowHitArea:   true,
 				BigDamage:     true,
 				Element:       damage.ElementWater,
 			})
+		}
+		if p.count%shrimpyAtkNextStepCount == shrimpyAtkNextStepCount-1 {
 			p.pos.X--
+			if p.pos.X < 0 {
+				return true, nil
+			}
 		}
 	}
 	p.count++
