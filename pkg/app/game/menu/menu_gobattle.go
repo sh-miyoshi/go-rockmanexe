@@ -222,6 +222,19 @@ func goBattleNew() (*menuGoBattle, error) {
 			},
 		},
 		{
+			Name: "水玉バブル",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDShrimpy,
+						Pos:    point.Point{X: 5, Y: 1},
+						HP:     80,
+					},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y},
+				},
+			},
+		},
+		{
 			Name: "水を操りし者",
 			Enemies: []selectEnemyData{
 				{
