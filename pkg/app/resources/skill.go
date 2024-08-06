@@ -39,6 +39,7 @@ const (
 	SkillQuickGauge
 	SkillCirkillShot
 	SkillEnemyWideShot
+	SkillShrimpyAttack
 
 	SkillFailed
 )
@@ -66,4 +67,9 @@ const (
 	SkillFlamePillarStateDoing
 	SkillFlamePillarStateEnd
 	SkillFlamePillarStateDeleted
+)
+
+const (
+	SkillShrimpyAttackStateBegin int = iota
+	SkillShrimpyAttackStateMove
 )

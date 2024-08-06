@@ -31,6 +31,7 @@ const (
 	IDSupportNPC
 	IDColdman
 	IDCirKill
+	IDShrimpy
 )
 
 type EnemyChipInfo struct {
@@ -72,7 +73,7 @@ var (
 		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
 		{CharID: IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
 		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
-		// TODO: コールドマン、サーキラーのチップ
+		// TODO: コールドマン、サーキラー、エビロンのチップ
 	}
 )
 
@@ -157,6 +158,8 @@ func GetName(id int) string {
 		return "コールドマン"
 	case IDCirKill:
 		return "サーキラー"
+	case IDShrimpy:
+		return "エビロン"
 	}
 	return ""
 }
@@ -190,6 +193,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyColdman{pm: initParam}
 	case IDCirKill:
 		return &enemyCirKill{pm: initParam}
+	case IDShrimpy:
+		return &enemyShrimpy{pm: initParam}
 	}
 	return nil
 }
