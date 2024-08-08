@@ -250,3 +250,21 @@
   player_act: -1
   for_me: true
   description: 'ＨＰを３００回復'
+- id: 12
+  name: 'バブルショット'
+  power: 50
+  type: 10
+  player_act: 2
+  description: ヒットすると奥の１マスにも誘爆
+- id: 13
+  name: 'バブルブイ'
+  power: 80
+  type: 10
+  player_act: 2
+  description: ヒットするとななめ奥にも誘爆
+- id: 14
+  name: 'バブルサイド'
+  power: 110
+  type: 10
+  player_act: 2
+  description: ヒットすると上下１マスにも誘爆
