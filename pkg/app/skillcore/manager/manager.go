@@ -84,6 +84,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.ThunderBall{Arg: arg}
 		res.Init()
 		return res
+	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
+		return &processor.BubbleShot{Arg: arg, SkillID: id}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

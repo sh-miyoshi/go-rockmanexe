@@ -103,6 +103,12 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillFailed
 	case chip.IDQuickGauge:
 		return resources.SkillQuickGauge
+	case chip.IDBubbleShot:
+		return resources.SkillBubbleShot
+	case chip.IDBubbleV:
+		return resources.SkillBubbleV
+	case chip.IDBubbleSide:
+		return resources.SkillBubbleSide
 	}
 
 	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

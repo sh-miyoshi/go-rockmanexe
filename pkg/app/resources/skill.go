@@ -40,6 +40,9 @@ const (
 	SkillCirkillShot
 	SkillEnemyWideShot
 	SkillShrimpyAttack
+	SkillBubbleShot
+	SkillBubbleV
+	SkillBubbleSide
 
 	SkillFailed
 )
