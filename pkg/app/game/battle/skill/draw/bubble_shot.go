@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	delayBubbleShot = 3
+	delayBubbleShotBody = 2
+	delayBubbleShotAtk  = 4
 )
 
 type DrawBubbleShot struct {
@@ -15,7 +16,7 @@ type DrawBubbleShot struct {
 
 func (p *DrawBubbleShot) Draw(viewPos point.Point, count int, isPlayer bool) {
 	opt := dxlib.OptXReverse(!isPlayer)
-	n := count / delayBubbleShot
+	n := count / delayBubbleShotBody
 
 	// Show body
 	if n < len(imgBubbleShotBody) {
@@ -23,7 +24,7 @@ func (p *DrawBubbleShot) Draw(viewPos point.Point, count int, isPlayer bool) {
 	}
 
 	// Show atk
-	n = (count - 4) / delayBubbleShot
+	n = (count - 4) / delayBubbleShotAtk
 	if n >= 0 && n < len(imgBubbleShotAtk) {
 		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-20, 1, 0, imgBubbleShotAtk[n], true, opt)
 	}
