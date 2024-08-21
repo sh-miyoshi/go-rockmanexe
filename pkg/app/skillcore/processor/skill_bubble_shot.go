@@ -22,13 +22,14 @@ type BubbleShot struct {
 }
 
 func (p *BubbleShot) Process() (bool, error) {
-	if p.count == bubbleShotAtkDelay {
-		p.Arg.SoundOn(resources.SEGun)
+	p.Arg.SoundOn(resources.SEBubbleShot)
 
+	if p.count == bubbleShotAtkDelay {
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 			target := point.Point{X: x, Y: pos.Y}
 			if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
+				p.Arg.SoundOn(resources.SEWaterLanding)
 				// Hit
 				p.Arg.DamageMgr.New(damage.Damage{
 					OwnerClientID: p.Arg.OwnerClientID,
