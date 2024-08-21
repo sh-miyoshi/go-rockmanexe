@@ -249,6 +249,7 @@ func Process() error {
 		}
 
 		if loseInst.Process() {
+			sound.SEClear()
 			loseInst.End()
 			return ErrLose
 		}

@@ -104,3 +104,13 @@ func On(typ resources.SEType) {
 	}
 	dxlib.PlaySoundMem(soundEffects[typ], dxlib.DX_PLAYTYPE_BACK, true)
 }
+
+func SEClear() {
+	if config.Get().Sound.SE.Disabled {
+		return
+	}
+
+	for _, s := range soundEffects {
+		dxlib.StopSoundMem(s)
+	}
+}

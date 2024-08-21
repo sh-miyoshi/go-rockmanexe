@@ -106,6 +106,7 @@ func Init(args WinArg, plyr *player.Player) error {
 }
 
 func End() {
+	sound.SEClear()
 	dxlib.DeleteGraph(imgFrame)
 	dxlib.DeleteGraph(imgZenny)
 	if winMsgInst != nil {
