@@ -53,6 +53,7 @@ const (
 	SECountBombEnd
 	SETornado
 	SEFailed
+	SEBubbleShot
 
 	SEMax
 )

@@ -47,6 +47,8 @@ var (
 	imgCountBombNumber   []int
 	imgShrimpyAtkBegin   []int
 	imgShrimpyAtkMove    []int
+	imgBubbleShotBody    []int
+	imgBubbleShotAtk     []int
 )
 
 func LoadImages() error {
@@ -285,6 +287,18 @@ func LoadImages() error {
 	fname = config.ImagePath + "battle/skill/エビロン_atk_move.png"
 	imgShrimpyAtkMove = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 74, 60, imgShrimpyAtkMove); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	fname = config.ImagePath + "battle/skill/バブルショット_body.png"
+	imgBubbleShotBody = make([]int, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 70, 60, imgBubbleShotBody); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	fname = config.ImagePath + "battle/skill/バブルショット_atk.png"
+	imgBubbleShotAtk = make([]int, 2)
+	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 40, 60, imgBubbleShotAtk); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 

@@ -39,6 +39,9 @@ const (
 	IDHeatShot    = 9
 	IDHeatV       = 10
 	IDHeatSide    = 11
+	IDBubbleShot  = 12
+	IDBubbleV     = 13
+	IDBubbleSide  = 14
 	IDThunderBall = 15
 	IDWideShot    = 18
 	IDFlameLine1  = 21
