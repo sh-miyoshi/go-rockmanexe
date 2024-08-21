@@ -1,270 +1,270 @@
 # type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
 # player_act.type: -1(none), 2(shot), 3(cannon), 4(sword), 5(bomb), 6(buster), 7(pick), 8(throw)
 - id: 1
-  name: 'キャノン'
+  name: キャノン
   power: 40
   type: 0
   player_act: 3
-  description: '前方の敵１体を攻撃できるキャノン砲'
+  description: 前方の敵１体を攻撃できるキャノン砲
 - id: 2
-  name: 'ハイキャノン'
+  name: ハイキャノン
   power: 80
   type: 0
   player_act: 3
-  description: '前方の敵１体を攻撃できるキャノン砲'
+  description: 前方の敵１体を攻撃できるキャノン砲
 - id: 3
-  name: 'メガキャノン'
+  name: メガキャノン
   power: 120
   type: 0
   player_act: 3
-  description: '前方の敵１体を攻撃できるキャノン砲'
-- id: 44
-  name: 'ミニボム'
-  power: 50
-  type: 0
-  player_act: 5
-  description: '３マス前に落ちるボムを投げつける'
-- id: 54
-  name: 'ソード'
-  power: 80
-  type: 3
-  player_act: 4
-  description: '目の前の敵を切りつける！攻撃範囲は１マス'
-- id: 55
-  name: 'ワイドソード'
-  power: 80
-  type: 3
-  player_act: 4
-  description: '目の前の敵を切りつける！範囲は縦３マス'
-- id: 56
-  name: 'ロングソード'
-  power: 80
-  type: 3
-  player_act: 4
-  description: '目の前の敵を切りつける！範囲は横２マス'
-- id: 109
-  name: 'リカバリー10'
-  power: 10
-  type: 6
-  player_act: -1
-  for_me: true
-  description: 'ＨＰを１０回復'
-- id: 110
-  name: 'リカバリー30'
-  power: 30
-  type: 6
-  player_act: -1
-  for_me: true
-  description: 'ＨＰを３０回復'
-- id: 8
-  name: 'スプレッドガン'
-  power: 30
-  type: 0
-  player_act: 2
-  description: 'ヒットするとまわりの１マスに誘爆'
+  description: 前方の敵１体を攻撃できるキャノン砲
 - id: 5
-  name: 'バルカン1'
+  name: バルカン1
   power: 10
   type: 0
   player_act: 2
   keep_cnt: 5
-  description: '３連射バルカン　ヒットすると１マス奥にも貫通！'
-- id: 229
-  name: 'ショックウェーブ'
-  power: 40
+  description: ３連射バルカン　ヒットすると１マス奥にも貫通！
+- id: 8
+  name: スプレッドガン
+  power: 30
   type: 0
-  player_act: 7
-  description: '地面に沿って衝撃波を放つ'
-- id: 15
-  name: 'サンダーボール1'
-  power: 40
-  type: 11
-  player_act: -1
-  description: 'ゆっくりと進む追尾電気攻撃　当たるとマヒする！'
-- id: 18
-  name: 'ワイドショット1'
-  power: 60
-  type: 10
   player_act: 2
-  description: '横３マスのワイドショットを前方へ発射！'
-- id: 69
-  name: 'ブーメラン1'
-  power: 60
-  type: 0
-  player_act: -1
-  description: 'バトルフィールドの端にそって飛ぶ貫通ブーメラン'
-- id: 211
-  name: 'アクアマン'
-  power: 70
-  type: 10
-  player_act: -1
-  description: 'スイドウカンを置きその２マス前方まで放水攻撃'
-- id: 106
-  name: 'クラックアウト'
-  power: 0
-  type: 4
-  player_act: 8
-  description: 'パネル破壊攻撃！目の前の１マスを消し去ってしまう'
-- id: 107
-  name: 'ダブルクラック'
-  power: 0
-  type: 4
-  player_act: 8
-  description: 'パネル破壊攻撃！前の横２マスをを消し去ってしまう'
-- id: 108
-  name: 'トリプルクラック'
-  power: 0
-  type: 4
-  player_act: 8
-  description: 'パネル破壊攻撃！前の縦３マスをを消し去ってしまう'
-- id: 75
-  name: 'バンブーランス'
-  power: 100
-  type: 12
-  player_act: -1
-  description: エリアの右端に竹やり攻撃　ヒットした敵を前に押し出す
-- id: 133
-  name: 'インビジブル'
-  power: 0
-  type: 7
-  player_act: -1
-  description: 少しの間透明になり、殆どの攻撃に当たらなくなる
+  description: ヒットするとまわりの１マスに誘爆
 - id: 9
-  name: 'ヒートショット'
+  name: ヒートショット
   power: 40
   type: 9
   player_act: 2
   keep_cnt: 2
   description: ヒットすると奥の１マスにも誘爆
 - id: 10
-  name: 'ヒートブイ'
+  name: ヒートブイ
   power: 70
   type: 9
   player_act: 2
   keep_cnt: 2
   description: ヒットするとななめ奥にも誘爆
 - id: 11
-  name: 'ヒートサイド'
+  name: ヒートサイド
   power: 100
   type: 9
   player_act: 2
   keep_cnt: 2
   description: ヒットすると上下１マスにも誘爆
+- id: 12
+  name: バブルショット
+  power: 50
+  type: 10
+  player_act: 2
+  description: ヒットすると奥の１マスにも誘爆
+- id: 13
+  name: バブルブイ
+  power: 80
+  type: 10
+  player_act: 2
+  description: ヒットするとななめ奥にも誘爆
+- id: 14
+  name: バブルサイド
+  power: 110
+  type: 10
+  player_act: 2
+  description: ヒットすると上下１マスにも誘爆
+- id: 15
+  name: サンダーボール1
+  power: 40
+  type: 11
+  player_act: -1
+  description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+- id: 18
+  name: ワイドショット1
+  power: 60
+  type: 10
+  player_act: 2
+  description: 横３マスのワイドショットを前方へ発射！
 - id: 21
-  name: 'フレイムライン1'
+  name: フレイムライン1
   power: 70
   type: 9
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
 - id: 22
-  name: 'フレイムライン2'
+  name: フレイムライン2
   power: 120
   type: 9
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
 - id: 23
-  name: 'フレイムライン3'
+  name: フレイムライン3
   power: 170
   type: 9
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
-- id: 119
-  name: 'エリアスチール'
-  power: 0
-  type: 0
-  player_act: -1
-  description: 敵エリアの左端タテ一列を自分のエリアに塗り替える
-- id: 118
-  name: 'パネルスチール'
-  power: 0
-  type: 0
-  player_act: -1
-  description: 前方の敵エリア1マスを自分のエリアに塗り替える
-- id: 93
-  name: 'カウントボム'
-  power: 150
-  type: 0
-  player_act: -1
-  description: 敵エリア全体を巻き込む時限爆弾を設置
 - id: 42
-  name: 'トルネード'
+  name: トルネード
   power: 20
   type: 1
   player_act: 2
   description: ２マス前方に最大８ヒットの竜巻を発生させる
   keep_cnt: 10
-- id: 148
-  name: 'アタック＋１０'
-  power: 0
+- id: 44
+  name: ミニボム
+  power: 50
+  type: 0
+  player_act: 5
+  description: ３マス前に落ちるボムを投げつける
+- id: 54
+  name: ソード
+  power: 80
+  type: 3
+  player_act: 4
+  description: 目の前の敵を切りつける！攻撃範囲は１マス
+- id: 55
+  name: ワイドソード
+  power: 80
+  type: 3
+  player_act: 4
+  description: 目の前の敵を切りつける！範囲は縦３マス
+- id: 56
+  name: ロングソード
+  power: 80
+  type: 3
+  player_act: 4
+  description: 目の前の敵を切りつける！範囲は横２マス
+- id: 69
+  name: ブーメラン1
+  power: 60
   type: 0
   player_act: -1
-  description: 次に選択するチップの威力を１０上げる
-- id: 128
-  name: 'クイックゲージ'
-  power: 0
+  description: バトルフィールドの端にそって飛ぶ貫通ブーメラン
+- id: 75
+  name: バンブーランス
+  power: 100
+  type: 12
+  player_act: -1
+  description: エリアの右端に竹やり攻撃　ヒットした敵を前に押し出す
+- id: 93
+  name: カウントボム
+  power: 150
   type: 0
   player_act: -1
-  description: カスタムゲージの回復スピードがアップ
+  description: 敵エリア全体を巻き込む時限爆弾を設置
+- id: 106
+  name: クラックアウト
+  power: 0
+  type: 4
+  player_act: 8
+  description: パネル破壊攻撃！目の前の１マスを消し去ってしまう
+- id: 107
+  name: ダブルクラック
+  power: 0
+  type: 4
+  player_act: 8
+  description: パネル破壊攻撃！前の横２マスをを消し去ってしまう
+- id: 108
+  name: トリプルクラック
+  power: 0
+  type: 4
+  player_act: 8
+  description: パネル破壊攻撃！前の縦３マスをを消し去ってしまう
+- id: 109
+  name: リカバリー10
+  power: 10
+  type: 6
+  player_act: -1
+  for_me: true
+  description: ＨＰを１０回復
+- id: 110
+  name: リカバリー30
+  power: 30
+  type: 6
+  player_act: -1
+  for_me: true
+  description: ＨＰを３０回復
 - id: 111
-  name: 'リカバリー50'
+  name: リカバリー50
   power: 50
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを５０回復'
+  description: ＨＰを５０回復
 - id: 112
-  name: 'リカバリー80'
+  name: リカバリー80
   power: 80
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを８０回復'
+  description: ＨＰを８０回復
 - id: 113
-  name: 'リカバリー120'
+  name: リカバリー120
   power: 120
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを１２０回復'
+  description: ＨＰを１２０回復
 - id: 114
-  name: 'リカバリー150'
+  name: リカバリー150
   power: 150
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを１５０回復'
+  description: ＨＰを１５０回復
 - id: 115
-  name: 'リカバリー200'
+  name: リカバリー200
   power: 200
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを２００回復'
+  description: ＨＰを２００回復
 - id: 116
-  name: 'リカバリー300'
+  name: リカバリー300
   power: 300
   type: 6
   player_act: -1
   for_me: true
-  description: 'ＨＰを３００回復'
-- id: 12
-  name: 'バブルショット'
-  power: 50
+  description: ＨＰを３００回復
+- id: 118
+  name: パネルスチール
+  power: 0
+  type: 0
+  player_act: -1
+  description: 前方の敵エリア1マスを自分のエリアに塗り替える
+- id: 119
+  name: エリアスチール
+  power: 0
+  type: 0
+  player_act: -1
+  description: 敵エリアの左端タテ一列を自分のエリアに塗り替える
+- id: 128
+  name: クイックゲージ
+  power: 0
+  type: 0
+  player_act: -1
+  description: カスタムゲージの回復スピードがアップ
+- id: 133
+  name: インビジブル
+  power: 0
+  type: 7
+  player_act: -1
+  description: 少しの間透明になり、殆どの攻撃に当たらなくなる
+- id: 148
+  name: アタック＋１０
+  power: 0
+  type: 0
+  player_act: -1
+  description: 次に選択するチップの威力を１０上げる
+- id: 211
+  name: アクアマン
+  power: 70
   type: 10
-  player_act: 2
-  description: ヒットすると奥の１マスにも誘爆
-- id: 13
-  name: 'バブルブイ'
-  power: 80
-  type: 10
-  player_act: 2
-  description: ヒットするとななめ奥にも誘爆
-- id: 14
-  name: 'バブルサイド'
-  power: 110
-  type: 10
-  player_act: 2
-  description: ヒットすると上下１マスにも誘爆
+  player_act: -1
+  description: スイドウカンを置きその２マス前方まで放水攻撃
+- id: 229
+  name: ショックウェーブ
+  power: 40
+  type: 0
+  player_act: 7
+  description: 地面に沿って衝撃波を放つ
