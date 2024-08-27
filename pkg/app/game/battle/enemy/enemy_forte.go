@@ -1,6 +1,8 @@
 package enemy
 
 import (
+	"math/rand"
+
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -10,8 +12,10 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -32,15 +36,19 @@ var (
 )
 
 type enemyForte struct {
-	pm     EnemyParam
-	images [forteActTypeMax][]int
-	count  int
-	state  int
+	pm        EnemyParam
+	images    [forteActTypeMax][]int
+	count     int
+	state     int
+	waitCount int
+	nextState int
 }
 
 func (e *enemyForte) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = forteActTypeStand
+	e.waitCount = 80
+	e.nextState = forteActTypeMove
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -114,7 +122,19 @@ func (e *enemyForte) Process() (bool, error) {
 		e.pm.InvincibleCount--
 	}
 
-	// WIP
+	switch e.state {
+	case forteActTypeStand:
+		e.waitCount--
+		if e.waitCount <= 0 {
+			return e.stateChange(e.nextState)
+		}
+	case forteActTypeMove:
+		if e.count == 3*forteDelays[forteActTypeMove] {
+			e.moveRandom()
+			e.waitCount = 60
+			return e.stateChange(forteActTypeStand)
+		}
+	}
 
 	e.count++
 	return false, nil
@@ -129,22 +149,14 @@ func (e *enemyForte) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 
-	ofs := [forteActTypeMax]point.Point{
-		{X: 0, Y: -20}, // Stand
-		{X: 0, Y: 0},   // Move
-		{X: 0, Y: 0},   // Shooting
-		{X: 0, Y: 0},   // HellsRolling
-		{X: 0, Y: 0},   // DarkArmBlade
-		{X: 0, Y: 0},   // Damage
-	}
-
+	ofsY := -20
 	if e.state == forteActTypeStand {
-		ofs[e.state].Y -= math.MountainIndex(e.count/10%5, 5)
+		ofsY -= math.MountainIndex(e.count/10%5, 5)
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
+	dxlib.DrawRotaGraph(view.X, view.Y+ofsY, 1, 0, *img, true)
 
-	drawParalysis(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, *img, e.pm.ParalyzedCount)
+	drawParalysis(view.X, view.Y+ofsY, *img, e.pm.ParalyzedCount)
 
 	// Show HP
 	if e.pm.HP > 0 {
@@ -195,4 +207,32 @@ func (e *enemyForte) getCurrentImagePointer() *int {
 		n = len(e.images[e.state]) - 1
 	}
 	return &e.images[e.state][n]
+}
+
+func (e *enemyForte) stateChange(next int) (bool, error) {
+	logger.Info("change forte state to %d", next)
+	e.state = next
+	e.count = 0
+
+	return false, nil
+}
+
+func (e *enemyForte) moveRandom() {
+	// 全エリアの中で移動可能な場所を探す
+	movables := []point.Point{}
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			pos := point.Point{X: x, Y: y}
+			if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
+				movables = append(movables, pos)
+			}
+		}
+	}
+
+	// 移動可能な場所があればランダムで移動
+	if len(movables) > 0 {
+		n := rand.Intn(len(movables))
+		logger.Debug("Forte move to %v", movables[n])
+		battlecommon.MoveObjectDirect(&e.pm.Pos, movables[n], battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
+	}
 }
