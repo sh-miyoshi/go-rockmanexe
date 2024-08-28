@@ -129,7 +129,7 @@ func (e *enemyForte) Process() (bool, error) {
 			return e.stateChange(e.nextState)
 		}
 	case forteActTypeMove:
-		if e.count == 3*forteDelays[forteActTypeMove] {
+		if e.count == 6*forteDelays[forteActTypeMove] {
 			e.moveRandom()
 			e.waitCount = 60
 			return e.stateChange(forteActTypeStand)
