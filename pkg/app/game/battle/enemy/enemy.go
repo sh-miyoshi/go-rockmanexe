@@ -48,6 +48,7 @@ type EnemyParam struct {
 	PlayerID        string
 	Pos             point.Point
 	HP              int
+	HPMax           int
 	ActNo           int
 	InvincibleCount int
 	DamageElement   int
@@ -82,6 +83,7 @@ func Init(playerID string, enemyList []EnemyParam) error {
 	for i, e := range enemyList {
 		e.PlayerID = playerID
 		e.ActNo = i
+		e.HPMax = e.HP
 		obj := getObject(e.CharID, e)
 		objID := localanim.ObjAnimNew(obj)
 		enemies[objID] = obj

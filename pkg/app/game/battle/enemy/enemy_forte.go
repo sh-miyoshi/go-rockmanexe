@@ -25,14 +25,17 @@ const (
 	forteActTypeMove
 	forteActTypeShooting
 	forteActTypeHellsRolling
-	forteActTypeDarkArmBlade
+	forteActTypeDarkArmBlade1
+	forteActTypeDarkArmBlade3
+	forteActTypeDarknessOverload
 	forteActTypeDamage
 
 	forteActTypeMax
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 1, 3, 1, 1, 1, 1}
+	debug       = true // TODO: 削除する
 )
 
 type enemyForte struct {
@@ -42,13 +45,17 @@ type enemyForte struct {
 	state     int
 	waitCount int
 	nextState int
+	moveNum   int
+	targetPos point.Point
 }
 
 func (e *enemyForte) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = forteActTypeStand
-	e.waitCount = 80
+	e.waitCount = 20
 	e.nextState = forteActTypeMove
+	e.moveNum = 2
+	e.targetPos = point.Point{X: -1, Y: -1}
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -62,7 +69,9 @@ func (e *enemyForte) Init(objID string) error {
 	e.images[forteActTypeMove] = make([]int, 6)
 	e.images[forteActTypeShooting] = make([]int, 9)
 	e.images[forteActTypeHellsRolling] = make([]int, 9)
-	e.images[forteActTypeDarkArmBlade] = make([]int, 3)
+	e.images[forteActTypeDarkArmBlade1] = make([]int, 1)
+	e.images[forteActTypeDarkArmBlade3] = make([]int, 3)
+	e.images[forteActTypeDarknessOverload] = make([]int, 1) // debug
 	e.images[forteActTypeDamage] = make([]int, 1)
 
 	e.images[forteActTypeStand][0] = tmp[0]
@@ -73,9 +82,11 @@ func (e *enemyForte) Init(objID string) error {
 		e.images[forteActTypeShooting][i] = tmp[9+i]
 		e.images[forteActTypeHellsRolling][i] = tmp[18+i]
 	}
+	e.images[forteActTypeDarkArmBlade1][0] = tmp[27]
 	for i := 0; i < 3; i++ {
-		e.images[forteActTypeDarkArmBlade][i] = tmp[27+i]
+		e.images[forteActTypeDarkArmBlade3][i] = tmp[27+i]
 	}
+	e.images[forteActTypeDarknessOverload][0] = tmp[0] // debug
 	e.images[forteActTypeDamage][0] = tmp[36]
 
 	cleanup := []int{6, 7, 8}
@@ -130,10 +141,98 @@ func (e *enemyForte) Process() (bool, error) {
 		}
 	case forteActTypeMove:
 		if e.count == 6*forteDelays[forteActTypeMove] {
+			if e.targetPos.X != -1 && e.targetPos.Y != -1 {
+				if !battlecommon.MoveObjectDirect(
+					&e.pm.Pos,
+					e.targetPos,
+					battlecommon.PanelTypeEnemy,
+					true,
+					field.GetPanelInfo,
+				) {
+					// 移動に失敗したら、ランダム移動からやり直し
+					e.nextState = forteActTypeMove
+					e.moveNum = rand.Intn(2) + 2
+				}
+				e.targetPos = point.Point{X: -1, Y: -1}
+				e.waitCount = 20
+				return e.stateChange(forteActTypeStand)
+			}
+
 			e.moveRandom()
 			e.waitCount = 60
+			e.moveNum--
+			if e.moveNum <= 0 {
+				if debug {
+					e.moveNum = 3
+					e.nextState = forteActTypeHellsRolling
+					return e.stateChange(forteActTypeStand)
+				}
+
+				e.moveNum = rand.Intn(3) + 3
+
+				// Action process
+				// 攻撃処理(HPの減り具合から乱数で攻撃決定)
+				// シューティングバスター(S),ヘルズローリング(H),ダークアームブレード(D1or3),ダークネスオーバーロード(O)
+				// HP: MAX～1/2 -> D1(60%), D3(20%), H(10%), S(10%)
+				// HP: 1/2～1/4 -> D1(30%), D3(20%), H(20%), S(25%), O(5%)
+				// HP: 1/4～0   -> D1(10%), D3(25%), H(20%), S(35%), O(10%)
+				prob := rand.Intn(100)
+				halfHP := e.pm.HPMax / 2
+				quarterHP := e.pm.HPMax / 4
+				var d1Line, d3Line, hLine, sLine int
+				if e.pm.HP > halfHP {
+					d1Line = 60
+					d3Line = 80
+					hLine = 90
+					sLine = 100
+				} else if e.pm.HP > quarterHP {
+					d1Line = 30
+					d3Line = 50
+					hLine = 70
+					sLine = 95
+				} else {
+					d1Line = 10
+					d3Line = 35
+					hLine = 55
+					sLine = 90
+				}
+				if prob < d1Line {
+					e.nextState = forteActTypeDarkArmBlade1
+				} else if prob < d3Line {
+					e.nextState = forteActTypeDarkArmBlade3
+				} else if prob < hLine {
+					e.nextState = forteActTypeHellsRolling
+				} else if prob < sLine {
+					e.nextState = forteActTypeShooting
+				} else {
+					e.nextState = forteActTypeDarknessOverload
+				}
+			}
 			return e.stateChange(forteActTypeStand)
 		}
+	case forteActTypeShooting:
+		// WIP
+	case forteActTypeHellsRolling:
+		if e.count == 0 {
+			// Move to attack position
+			targetPos := point.Point{X: 5, Y: 1}
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = forteActTypeHellsRolling
+				return e.stateChange(forteActTypeMove)
+			}
+		}
+
+		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
+			logger.Debug("Forte Hells Rolling Attack 1st")
+		}
+		// WIP
+	case forteActTypeDarkArmBlade1:
+		// WIP
+	case forteActTypeDarkArmBlade3:
+		// WIP
+	case forteActTypeDarknessOverload:
+		// WIP
 	}
 
 	e.count++
@@ -202,6 +301,10 @@ func (e *enemyForte) MakeInvisible(count int) {
 }
 
 func (e *enemyForte) getCurrentImagePointer() *int {
+	if e.count == 0 {
+		return &e.images[forteActTypeStand][0]
+	}
+
 	n := (e.count / forteDelays[e.state])
 	if n >= len(e.images[e.state]) {
 		n = len(e.images[e.state]) - 1
