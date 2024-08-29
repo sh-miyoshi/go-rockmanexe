@@ -162,7 +162,7 @@ func (e *enemyColdman) Process() (bool, error) {
 				}
 				e.targetPos = point.Point{X: -1, Y: -1}
 				e.waitCount = 20
-				return e.stateChange(aquamanActTypeStand)
+				return e.stateChange(coldmanActTypeStand)
 			}
 
 			e.moveRandom()
