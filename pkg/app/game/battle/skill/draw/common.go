@@ -49,6 +49,7 @@ var (
 	imgShrimpyAtkMove    []int
 	imgBubbleShotBody    []int
 	imgBubbleShotAtk     []int
+	imgForteHellsRolling []int
 )
 
 func LoadImages() error {
@@ -302,6 +303,12 @@ func LoadImages() error {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
+	fname = config.ImagePath + "battle/skill/フォルテ_ヘルズローリング.png"
+	imgForteHellsRolling = make([]int, 5)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 82, imgForteHellsRolling); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -450,4 +457,8 @@ func ClearImages() {
 		dxlib.DeleteGraph(imgShrimpyAtkMove[i])
 	}
 	imgShrimpyAtkMove = []int{}
+	for i := 0; i < len(imgForteHellsRolling); i++ {
+		dxlib.DeleteGraph(imgForteHellsRolling[i])
+	}
+	imgForteHellsRolling = []int{}
 }
