@@ -104,6 +104,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newShrimpyAtk(objID, arg)
 	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
 		return newBubbleShot(objID, arg, core)
+	case resources.SkillForteHellsRolling:
+		return newForteHellsRolling(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

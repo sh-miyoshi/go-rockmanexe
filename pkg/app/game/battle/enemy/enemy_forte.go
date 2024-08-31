@@ -13,7 +13,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
@@ -34,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 3, 1, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 1, 1, 1, 1}
 	debug       = true // TODO: 削除する
 )
 
@@ -225,6 +227,11 @@ func (e *enemyForte) Process() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
 			logger.Debug("Forte Hells Rolling Attack 1st")
+			localanim.AnimNew(skill.Get(resources.SkillForteHellsRolling, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      50,
+				TargetType: damage.TargetPlayer,
+			}))
 		}
 		// WIP
 	case forteActTypeDarkArmBlade1:
