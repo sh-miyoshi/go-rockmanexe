@@ -76,3 +76,7 @@ func (p *ForteHellsRolling) GetCount() int {
 func (p *ForteHellsRolling) GetPos() point.Point {
 	return p.pos
 }
+
+func (p *ForteHellsRolling) GetNextStepCount() int {
+	return nextStepCount
+}

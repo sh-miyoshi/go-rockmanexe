@@ -3,7 +3,6 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
-	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -26,8 +25,7 @@ func newForteHellsRolling(objID string, arg skillcore.Argument, core skillcore.S
 }
 
 func (p *skillHellsRolling) Draw() {
-	view := battlecommon.ViewPos(p.Core.GetPos())
-	p.drawer.Draw(view, p.Core.GetCount())
+	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
 func (p *skillHellsRolling) Process() (bool, error) {
