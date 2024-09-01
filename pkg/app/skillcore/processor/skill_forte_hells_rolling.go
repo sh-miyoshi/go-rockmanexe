@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -53,7 +54,17 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 		}
 
 		// WIP: 一度だけプレイヤー方向に曲がる
-		// WIP: ダメージ判定
+
+		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
+			DamageType:    damage.TypePosition,
+			Pos:           p.pos,
+			Power:         int(p.Arg.Power),
+			TTL:           nextStepCount,
+			TargetObjType: p.Arg.TargetType,
+			HitEffectType: resources.EffectTypeNone,
+			BigDamage:     true,
+		})
 	}
 	return false, nil
 }
