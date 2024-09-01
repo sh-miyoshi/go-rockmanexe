@@ -161,7 +161,7 @@ func (e *enemyForte) Process() (bool, error) {
 			}
 
 			e.moveRandom()
-			e.waitCount = 60
+			e.waitCount = 40
 			e.moveNum--
 			if e.moveNum <= 0 {
 				if debug {
@@ -227,7 +227,7 @@ func (e *enemyForte) Process() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
 			logger.Debug("Forte Hells Rolling Attack 1st")
-			localanim.AnimNew(skill.Get(resources.SkillForteHellsRolling, skillcore.Argument{
+			localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,

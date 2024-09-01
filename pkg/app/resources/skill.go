@@ -43,7 +43,8 @@ const (
 	SkillBubbleShot
 	SkillBubbleV
 	SkillBubbleSide
-	SkillForteHellsRolling
+	SkillForteHellsRollingUp
+	SkillForteHellsRollingDown
 
 	SkillFailed
 )

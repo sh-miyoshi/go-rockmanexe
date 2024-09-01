@@ -26,13 +26,12 @@ func newForteHellsRolling(objID string, arg skillcore.Argument, core skillcore.S
 }
 
 func (p *skillHellsRolling) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-	view := battlecommon.ViewPos(pos)
+	view := battlecommon.ViewPos(p.Core.GetPos())
 	p.drawer.Draw(view, p.Core.GetCount())
 }
 
 func (p *skillHellsRolling) Process() (bool, error) {
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *skillHellsRolling) GetParam() anim.Param {
