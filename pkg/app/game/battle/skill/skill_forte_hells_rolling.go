@@ -25,7 +25,8 @@ func newForteHellsRolling(objID string, arg skillcore.Argument, core skillcore.S
 }
 
 func (p *skillHellsRolling) Draw() {
-	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount(), p.Core.GetNextStepCount())
+	prev, current, next := p.Core.GetPos()
+	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
 func (p *skillHellsRolling) Process() (bool, error) {

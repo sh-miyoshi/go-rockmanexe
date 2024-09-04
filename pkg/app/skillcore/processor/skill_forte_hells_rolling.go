@@ -8,57 +8,48 @@ import (
 )
 
 const (
-	forteActTypeUp = iota
-	forteActTypeDown
-)
-
-const (
-	nextStepCount = 20 // num(5) x delay(4)
+	nextStepCount = 24
 )
 
 type ForteHellsRolling struct {
 	Arg skillcore.Argument
 
-	count       int
-	actType     int
-	isFirstMove bool
-	pos         point.Point
+	count      int
+	prevPos    point.Point
+	currentPos point.Point
+	nextPos    point.Point
 }
 
 func (p *ForteHellsRolling) Init(skillID int) {
 	p.count = 0
-	p.isFirstMove = true
-	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
+	p.currentPos = p.Arg.GetObjectPos(p.Arg.OwnerID)
+	p.prevPos = p.currentPos
+	p.nextPos = p.currentPos
 	if skillID == resources.SkillForteHellsRollingUp {
-		p.actType = forteActTypeUp
+		p.nextPos.Y--
 	} else {
-		p.actType = forteActTypeDown
+		p.nextPos.Y++
 	}
+	p.nextPos.X--
 }
 
 func (p *ForteHellsRolling) Process() (bool, error) {
 	p.count++
 	if p.count%nextStepCount == 0 {
-		if p.isFirstMove {
-			switch p.actType {
-			case forteActTypeUp:
-				p.pos.Y--
-			case forteActTypeDown:
-				p.pos.Y++
-			}
-			p.isFirstMove = false
-		}
-		p.pos.X--
-		if p.pos.X < 0 {
+		p.prevPos = p.currentPos
+		p.currentPos = p.nextPos
+		if p.currentPos.X < 0 {
 			return true, nil
 		}
+
+		p.nextPos.X--
 
 		// WIP: 一度だけプレイヤー方向に曲がる
 
 		p.Arg.DamageMgr.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
-			Pos:           p.pos,
+			Pos:           p.currentPos,
 			Power:         int(p.Arg.Power),
 			TTL:           nextStepCount,
 			TargetObjType: p.Arg.TargetType,
@@ -73,8 +64,8 @@ func (p *ForteHellsRolling) GetCount() int {
 	return p.count
 }
 
-func (p *ForteHellsRolling) GetPos() point.Point {
-	return p.pos
+func (p *ForteHellsRolling) GetPos() (prev point.Point, current point.Point, next point.Point) {
+	return p.prevPos, p.currentPos, p.nextPos
 }
 
 func (p *ForteHellsRolling) GetNextStepCount() int {

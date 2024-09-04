@@ -305,7 +305,7 @@ func LoadImages() error {
 
 	fname = config.ImagePath + "battle/skill/フォルテ_ヘルズローリング.png"
 	imgForteHellsRolling = make([]int, 5)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 64, 82, imgForteHellsRolling); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 96, 123, imgForteHellsRolling); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
