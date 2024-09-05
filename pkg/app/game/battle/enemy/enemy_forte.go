@@ -233,6 +233,15 @@ func (e *enemyForte) Process() (bool, error) {
 				TargetType: damage.TargetPlayer,
 			}))
 		}
+
+		if e.count == 7*forteDelays[forteActTypeHellsRolling]+30 {
+			logger.Debug("Forte Hells Rolling Attack 2st")
+			localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      50,
+				TargetType: damage.TargetPlayer,
+			}))
+		}
 		// WIP
 	case forteActTypeDarkArmBlade1:
 		// WIP

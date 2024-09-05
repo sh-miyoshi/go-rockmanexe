@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	nextStepCount = 24
+	nextStepCount = 8
 )
 
 type ForteHellsRolling struct {

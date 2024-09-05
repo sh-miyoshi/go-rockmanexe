@@ -104,7 +104,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newShrimpyAtk(objID, arg)
 	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
 		return newBubbleShot(objID, arg, core)
-	case resources.SkillForteHellsRollingUp:
+	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		return newForteHellsRolling(objID, arg, core)
 	}
 
