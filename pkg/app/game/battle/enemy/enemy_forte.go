@@ -49,6 +49,7 @@ type enemyForte struct {
 	nextState int
 	moveNum   int
 	targetPos point.Point
+	atkIDs    []string
 }
 
 func (e *enemyForte) Init(objID string) error {
@@ -216,6 +217,8 @@ func (e *enemyForte) Process() (bool, error) {
 		// WIP
 	case forteActTypeHellsRolling:
 		if e.count == 0 {
+			e.atkIDs = []string{}
+
 			// Move to attack position
 			targetPos := point.Point{X: 5, Y: 1}
 			if !targetPos.Equal(e.pm.Pos) {
@@ -227,22 +230,36 @@ func (e *enemyForte) Process() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
 			logger.Debug("Forte Hells Rolling Attack 1st")
-			localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,
-			}))
+			})))
 		}
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling]+30 {
 			logger.Debug("Forte Hells Rolling Attack 2st")
-			localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      50,
 				TargetType: damage.TargetPlayer,
-			}))
+			})))
 		}
-		// WIP
+
+		if len(e.atkIDs) > 0 {
+			end := true
+			for _, id := range e.atkIDs {
+				if localanim.AnimIsProcessing(id) {
+					end = false
+					break
+				}
+			}
+			if end {
+				e.waitCount = 20
+				e.nextState = forteActTypeMove
+				return e.stateChange(forteActTypeStand)
+			}
+		}
 	case forteActTypeDarkArmBlade1:
 		// WIP
 	case forteActTypeDarkArmBlade3:
