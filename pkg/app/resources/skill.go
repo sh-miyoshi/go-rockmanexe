@@ -45,6 +45,8 @@ const (
 	SkillBubbleSide
 	SkillForteHellsRollingUp
 	SkillForteHellsRollingDown
+	SkillForteDarkArmBladeType1
+	SkillForteDarkArmBladeType2
 
 	SkillFailed
 )

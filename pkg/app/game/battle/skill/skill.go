@@ -106,6 +106,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newBubbleShot(objID, arg, core)
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		return newForteHellsRolling(objID, arg, core)
+	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
+		return newForteDarkArmBlade(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -120,19 +122,20 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type tmpskill struct {
 	ID  string
 	Arg skillcore.Argument
-
-	count int
+	Core *processor.TmpSkill
 }
 
-func newTmpSkill(objID string, arg skillcore.Argument) *tmpskill {
+func newTmpSkill(objID string, arg skillcore.Argument, core skillcore.SkillCore) *tmpskill {
 	return &tmpskill{
 		ID:  objID,
 		Arg: arg,
+		Core: core.(*processor.TmpSkill),
 	}
 }
 
@@ -141,9 +144,7 @@ func (p *tmpskill) Draw() {
 }
 
 func (p *tmpskill) Process() (bool, error) {
-	p.count++
-
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *tmpskill) GetParam() anim.Param {
