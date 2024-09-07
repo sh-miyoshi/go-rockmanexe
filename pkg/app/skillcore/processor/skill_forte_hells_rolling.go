@@ -16,11 +16,11 @@ const (
 type ForteHellsRolling struct {
 	Arg skillcore.Argument
 
-	count      int
-	prevPos    point.Point
-	currentPos point.Point
-	nextPos    point.Point
-	isCurved   bool
+	count       int
+	prevPos     point.Point
+	currentPos  point.Point
+	nextPos     point.Point
+	curveDirect int
 }
 
 func (p *ForteHellsRolling) Init(skillID int) {
@@ -34,7 +34,7 @@ func (p *ForteHellsRolling) Init(skillID int) {
 		p.nextPos.Y++
 	}
 	p.nextPos.X--
-	p.isCurved = false
+	p.curveDirect = 0
 }
 
 func (p *ForteHellsRolling) Process() (bool, error) {
@@ -47,14 +47,14 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 		}
 
 		p.nextPos.X--
+		p.nextPos.Y += p.curveDirect
 
-		// WIP: 一度だけプレイヤー方向に曲がる
-		if !p.isCurved {
+		// 一度だけプレイヤー方向に曲がる
+		if p.curveDirect == 0 {
 			objType := objanim.ObjTypePlayer
 			objs := p.Arg.GetObjects(objanim.Filter{ObjType: objType})
 			if len(objs) > 0 && math.Abs(objs[0].Pos.X-p.nextPos.X) == 1 {
-				p.nextPos.Y += math.Sign(objs[0].Pos.Y - p.nextPos.Y)
-				p.isCurved = true
+				p.curveDirect = math.Sign(objs[0].Pos.Y - p.nextPos.Y)
 			}
 		}
 
