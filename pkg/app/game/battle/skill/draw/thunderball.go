@@ -15,7 +15,7 @@ type DrawThunderBall struct {
 
 func (p *DrawThunderBall) Draw(prevPos, currentPos, nextPos point.Point, count int, nextStepCount int) {
 	view := battlecommon.ViewPos(currentPos)
-	n := (count / delayThunderBall) % len(imgThunderBall)
+	n := (count / delayThunderBall) % len(images[imageTypeThunderBall])
 
 	cnt := count % nextStepCount
 	if cnt == 0 {
@@ -26,5 +26,5 @@ func (p *DrawThunderBall) Draw(prevPos, currentPos, nextPos point.Point, count i
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
 	ofsy := battlecommon.GetOffset(nextPos.Y, currentPos.Y, prevPos.Y, cnt, nextStepCount, battlecommon.PanelSize.Y)
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgThunderBall[n], true)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, images[imageTypeThunderBall][n], true)
 }

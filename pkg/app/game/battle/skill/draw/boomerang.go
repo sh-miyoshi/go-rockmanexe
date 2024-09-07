@@ -15,7 +15,7 @@ type DrawBoomerang struct {
 
 func (p *DrawBoomerang) Draw(prevPos, currentPos, nextPos point.Point, count int, nextStepCount int) {
 	view := battlecommon.ViewPos(currentPos)
-	n := (count / delayBoomerang) % len(imgBoomerang)
+	n := (count / delayBoomerang) % len(images[imageTypeBoomerang])
 
 	cnt := count % nextStepCount
 	if cnt == 0 {
@@ -25,5 +25,5 @@ func (p *DrawBoomerang) Draw(prevPos, currentPos, nextPos point.Point, count int
 
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
 	ofsy := battlecommon.GetOffset(nextPos.Y, currentPos.Y, prevPos.Y, cnt, nextStepCount, battlecommon.PanelSize.Y)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, imgBoomerang[n], true)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+25+ofsy, 1, 0, images[imageTypeBoomerang][n], true)
 }

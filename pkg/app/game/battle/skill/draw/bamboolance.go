@@ -14,7 +14,7 @@ type DrawBamboolance struct {
 
 func (p *DrawBamboolance) Init() {
 	var sx, sy int
-	dxlib.GetGraphSize(imgBambooLance[0], &sx, &sy)
+	dxlib.GetGraphSize(images[imageTypeBambooLance][0], &sx, &sy)
 
 	p.imgSizeX = sx
 }
@@ -39,7 +39,7 @@ func (p *DrawBamboolance) Draw(count int, isPlayer bool) {
 
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		v := battlecommon.ViewPos(point.Point{X: 0, Y: y})
-		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, imgBambooLance[0], true, opt)
+		dxlib.DrawRotaGraph(x, v.Y+battlecommon.PanelSize.Y/2, 1, 0, images[imageTypeBambooLance][0], true, opt)
 	}
 
 }

@@ -17,12 +17,12 @@ func (p *DrawFlamePillerManager) Draw(viewPos point.Point, count int, showBody b
 
 	if showBody {
 		imageNo := count / 4
-		if imageNo >= len(imgFlameLineBody) {
-			imageNo = len(imgFlameLineBody) - 1
+		if imageNo >= len(images[imageTypeFlameLineBody]) {
+			imageNo = len(images[imageTypeFlameLineBody]) - 1
 		}
 
 		// Show body
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(35, !isPlayer), viewPos.Y-15, 1, 0, imgFlameLineBody[imageNo], true, opt)
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(35, !isPlayer), viewPos.Y-15, 1, 0, images[imageTypeFlameLineBody][imageNo], true, opt)
 	}
 
 	for _, pillar := range pillars {
@@ -40,18 +40,18 @@ func drawPillar(viewPos point.Point, count int, state int, delay int) {
 	switch state {
 	case resources.SkillFlamePillarStateWakeup:
 		n = count / delay
-		if n >= len(imgFlamePillar) {
-			n = len(imgFlamePillar) - 1
+		if n >= len(images[imageTypeFlamePillar]) {
+			n = len(images[imageTypeFlamePillar]) - 1
 		}
 	case resources.SkillFlamePillarStateDoing:
 		t := (count / delay) % 2
-		n = len(imgFlamePillar) - (t + 1)
+		n = len(images[imageTypeFlamePillar]) - (t + 1)
 	case resources.SkillFlamePillarStateEnd:
-		n = len(imgFlamePillar) - (1 + count/delay)
+		n = len(images[imageTypeFlamePillar]) - (1 + count/delay)
 		if n < 0 {
 			n = 0
 		}
 	}
 
-	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgFlamePillar[n], true)
+	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, images[imageTypeFlamePillar][n], true)
 }

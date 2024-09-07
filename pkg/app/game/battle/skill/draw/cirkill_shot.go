@@ -15,7 +15,7 @@ type DrawCirkillShot struct {
 
 func (p *DrawCirkillShot) Draw(prevPos, currentPos, nextPos point.Point, count int, nextStepCount int) {
 	view := battlecommon.ViewPos(currentPos)
-	n := (count / delayCirkillShot) % len(imgCirkillShot)
+	n := (count / delayCirkillShot) % len(images[imageTypeCirkillShot])
 
 	cnt := count % nextStepCount
 	if cnt == 0 {
@@ -24,5 +24,5 @@ func (p *DrawCirkillShot) Draw(prevPos, currentPos, nextPos point.Point, count i
 	}
 
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y, 1, 0, imgCirkillShot[n], true, dxlib.OptXReverse(true))
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y, 1, 0, images[imageTypeCirkillShot][n], true, dxlib.OptXReverse(true))
 }

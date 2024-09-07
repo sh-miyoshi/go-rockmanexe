@@ -18,5 +18,5 @@ func (p *DrawForteHellsRolling) Draw(prev, current, next point.Point, count int,
 		n = 2
 	}
 	viewPos := battlecommon.ViewPos(current)
-	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1.0, 0.0, imgForteHellsRolling[n], true)
+	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1.0, 0.0, images[imageTypeForteHellsRolling][n], true)
 }

@@ -17,13 +17,13 @@ func (p *DrawVulcan) Draw(viewPos point.Point, count int, delay int, isPlayer bo
 	opt := dxlib.OptXReverse(!isPlayer)
 
 	// Show body
-	dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, imgVulcan[imgNo], true, opt)
+	dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, images[imageTypeVulcan][imgNo], true, opt)
 	// Show attack
 	if imgNo != 0 {
 		if imgNo%2 == 0 {
-			dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-10, 1, 0, imgVulcan[3], true, opt)
+			dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-10, 1, 0, images[imageTypeVulcan][3], true, opt)
 		} else {
-			dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-15, 1, 0, imgVulcan[3], true, opt)
+			dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-15, 1, 0, images[imageTypeVulcan][3], true, opt)
 		}
 	}
 }

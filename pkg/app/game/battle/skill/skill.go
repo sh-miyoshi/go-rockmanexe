@@ -51,7 +51,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 
 	switch skillID {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return newCannon(objID, arg, core)
+		return newCannon(objID, arg, core, skillID)
 	case resources.SkillMiniBomb:
 		return newMiniBomb(objID, arg, core)
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:

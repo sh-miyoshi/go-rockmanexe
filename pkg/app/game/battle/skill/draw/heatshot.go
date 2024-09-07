@@ -18,13 +18,13 @@ func (p *DrawHeatShot) Draw(viewPos point.Point, count int, isPlayer bool) {
 	n := count / delayHeatShot
 
 	// Show body
-	if n < len(imgHeatShotBody) {
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, imgHeatShotBody[n], true, opt)
+	if n < len(images[imageTypeHeatShotBody]) {
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, images[imageTypeHeatShotBody][n], true, opt)
 	}
 
 	// Show atk
 	n = (count - 4) / delayHeatShot
-	if n >= 0 && n < len(imgHeatShotAtk) {
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-20, 1, 0, imgHeatShotAtk[n], true, opt)
+	if n >= 0 && n < len(images[imageTypeHeatShotAtk]) {
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-20, 1, 0, images[imageTypeHeatShotAtk][n], true, opt)
 	}
 }
