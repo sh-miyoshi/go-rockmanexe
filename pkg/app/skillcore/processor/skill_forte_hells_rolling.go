@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	nextStepCount = 8
+	forteHellsRollingNextStepCount = 8
 )
 
 type ForteHellsRolling struct {
@@ -39,7 +39,7 @@ func (p *ForteHellsRolling) Init(skillID int) {
 
 func (p *ForteHellsRolling) Process() (bool, error) {
 	p.count++
-	if p.count%nextStepCount == 0 {
+	if p.count%forteHellsRollingNextStepCount == 0 {
 		p.prevPos = p.currentPos
 		p.currentPos = p.nextPos
 		if p.currentPos.X < 0 {
@@ -63,7 +63,7 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.currentPos,
 			Power:         int(p.Arg.Power),
-			TTL:           nextStepCount,
+			TTL:           forteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			BigDamage:     true,
@@ -81,5 +81,5 @@ func (p *ForteHellsRolling) GetPos() (prev point.Point, current point.Point, nex
 }
 
 func (p *ForteHellsRolling) GetNextStepCount() int {
-	return nextStepCount
+	return forteHellsRollingNextStepCount
 }
