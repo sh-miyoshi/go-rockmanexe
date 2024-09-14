@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -29,6 +30,22 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 
 func (p *ForteDarkArmBlade) Process() (bool, error) {
 	p.count++
+	if p.count == 3 {
+		// TODO: Soune On
+		if objID := p.Arg.GetPanelInfo(p.atkPos).ObjectID; objID != "" {
+			p.Arg.DamageMgr.New(damage.Damage{
+				OwnerClientID: p.Arg.OwnerClientID,
+				TargetObjID:   objID,
+				DamageType:    damage.TypeObject,
+				Power:         int(p.Arg.Power),
+				TargetObjType: p.Arg.TargetType,
+				HitEffectType: resources.EffectTypeNone,
+				BigDamage:     true,
+				Element:       damage.ElementNone,
+			})
+		}
+	}
+
 	return p.count >= forteDarkArmBladeEndCount, nil
 }
 

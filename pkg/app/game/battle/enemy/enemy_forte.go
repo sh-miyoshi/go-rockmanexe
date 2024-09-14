@@ -41,15 +41,16 @@ var (
 )
 
 type enemyForte struct {
-	pm        EnemyParam
-	images    [forteActTypeMax][]int
-	count     int
-	state     int
-	waitCount int
-	nextState int
-	moveNum   int
-	targetPos point.Point
-	atkIDs    []string
+	pm               EnemyParam
+	images           [forteActTypeMax][]int
+	count            int
+	state            int
+	waitCount        int
+	nextState        int
+	moveNum          int
+	targetPos        point.Point
+	isTargetPosMoved bool
+	atkIDs           []string
 }
 
 func (e *enemyForte) Init(objID string) error {
@@ -59,6 +60,7 @@ func (e *enemyForte) Init(objID string) error {
 	e.nextState = forteActTypeMove
 	e.moveNum = 2
 	e.targetPos = point.Point{X: -1, Y: -1}
+	e.isTargetPosMoved = false
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -153,6 +155,7 @@ func (e *enemyForte) Process() (bool, error) {
 					field.GetPanelInfo,
 				) {
 					// 移動に失敗したら、ランダム移動からやり直し
+					e.isTargetPosMoved = false
 					e.nextState = forteActTypeMove
 					e.moveNum = rand.Intn(2) + 2
 				}
@@ -261,10 +264,13 @@ func (e *enemyForte) Process() (bool, error) {
 			}
 		}
 	case forteActTypeDarkArmBlade1:
-		if e.count == 0 {
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
+				// エラー処理
 				logger.Info("Failed to get player position")
 				e.waitCount = 20
 				e.nextState = forteActTypeMove
@@ -284,10 +290,10 @@ func (e *enemyForte) Process() (bool, error) {
 				Power:      50,
 				TargetType: damage.TargetPlayer,
 			}))
-			// TODO: Attack
 		}
 
 		if e.count == 5*forteDelays[forteActTypeDarkArmBlade1] {
+			e.isTargetPosMoved = false
 			e.waitCount = 20
 			e.nextState = forteActTypeMove
 			return e.stateChange(forteActTypeStand)

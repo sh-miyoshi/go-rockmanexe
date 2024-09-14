@@ -4,7 +4,6 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -22,6 +21,5 @@ func (p *DrawForteDarkArmBlade) Draw(pos point.Point, count int, skillID int) {
 		n = (len(images[imageTypeForteDarkArmBlade]) / 2) - 1
 	}
 	viewPos := battlecommon.ViewPos(pos)
-	logger.Debug("Draw ForteDarkArmBlade at %d, %d: %d", viewPos.X, viewPos.Y, n+index)
 	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, images[imageTypeForteDarkArmBlade][n+index], true)
 }
