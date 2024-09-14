@@ -45,6 +45,7 @@ const (
 	imageTypeBubbleShotBody
 	imageTypeBubbleShotAtk
 	imageTypeForteHellsRolling
+	imageTypeForteDarkArmBlade
 
 	imageTypeMax
 )
@@ -273,6 +274,12 @@ func LoadImages() error {
 	fname = config.ImagePath + "battle/skill/フォルテ_ヘルズローリング.png"
 	images[imageTypeForteHellsRolling] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 96, 123, images[imageTypeForteHellsRolling]); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	fname = config.ImagePath + "battle/skill/フォルテ_ダークアームブレード.png"
+	images[imageTypeForteDarkArmBlade] = make([]int, 8)
+	if res := dxlib.LoadDivGraph(fname, 8, 4, 2, 188, 150, images[imageTypeForteDarkArmBlade]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 

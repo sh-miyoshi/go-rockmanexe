@@ -279,6 +279,11 @@ func (e *enemyForte) Process() (bool, error) {
 		}
 		if e.count == 2*forteDelays[forteActTypeDarkArmBlade1] {
 			logger.Debug("Forte Dark Arm Blade 1st Attack")
+			localanim.AnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      50,
+				TargetType: damage.TargetPlayer,
+			}))
 			// TODO: Attack
 		}
 

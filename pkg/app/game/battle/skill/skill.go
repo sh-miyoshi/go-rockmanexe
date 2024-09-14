@@ -107,7 +107,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		return newForteHellsRolling(objID, arg, core)
 	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
-		return newForteDarkArmBlade(objID, arg, core)
+		return newForteDarkArmBlade(objID, arg, core, skillID)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
