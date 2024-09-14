@@ -36,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 4, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 2, 1, 1, 1}
 	debug       = true // TODO: 削除する
 )
 

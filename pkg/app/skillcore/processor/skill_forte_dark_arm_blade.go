@@ -6,6 +6,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
+const (
+	forteDarkArmBladeEndCount = 16
+)
+
 type ForteDarkArmBlade struct {
 	Arg skillcore.Argument
 
@@ -25,7 +29,7 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 
 func (p *ForteDarkArmBlade) Process() (bool, error) {
 	p.count++
-	return false, nil
+	return p.count >= forteDarkArmBladeEndCount, nil
 }
 
 func (p *ForteDarkArmBlade) GetCount() int {
