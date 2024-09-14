@@ -32,7 +32,7 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 func (p *ForteDarkArmBlade) Process() (bool, error) {
 	p.count++
 	if p.count == 3 {
-		// TODO: Soune On
+		p.Arg.SoundOn(resources.SESword)
 		if objID := p.Arg.GetPanelInfo(p.atkPos).ObjectID; objID != "" {
 			p.Arg.DamageMgr.New(damage.Damage{
 				OwnerClientID: p.Arg.OwnerClientID,
