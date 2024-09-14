@@ -77,6 +77,9 @@ var (
 		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
 		// TODO: コールドマン、サーキラー、エビロンのチップ
 	}
+
+	// 設定されてない場所であることがわかるような絶対にあり得ない座標
+	emptyPos = point.Point{X: -100, Y: -100}
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {

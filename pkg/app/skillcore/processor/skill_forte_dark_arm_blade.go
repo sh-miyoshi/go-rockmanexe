@@ -25,6 +25,7 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 	case resources.SkillForteDarkArmBladeType1:
 		p.atkPos.X--
 	case resources.SkillForteDarkArmBladeType2:
+		p.atkPos.X++
 	}
 }
 

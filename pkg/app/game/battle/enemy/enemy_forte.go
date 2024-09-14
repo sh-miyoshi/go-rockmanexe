@@ -36,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 2, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 2, 2, 1, 1}
 	debug       = true // TODO: 削除する
 )
 
@@ -50,6 +50,7 @@ type enemyForte struct {
 	moveNum          int
 	targetPos        point.Point
 	isTargetPosMoved bool
+	bladeAtkCount    int
 	atkIDs           []string
 }
 
@@ -59,8 +60,9 @@ func (e *enemyForte) Init(objID string) error {
 	e.waitCount = 20
 	e.nextState = forteActTypeMove
 	e.moveNum = 2
-	e.targetPos = point.Point{X: -1, Y: -1}
+	e.targetPos = emptyPos
 	e.isTargetPosMoved = false
+	e.bladeAtkCount = 0
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -146,7 +148,7 @@ func (e *enemyForte) Process() (bool, error) {
 		}
 	case forteActTypeMove:
 		if e.count == 6*forteDelays[forteActTypeMove] {
-			if e.targetPos.X != -1 && e.targetPos.Y != -1 {
+			if !e.targetPos.Equal(emptyPos) {
 				if !battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
 					e.targetPos,
@@ -154,12 +156,11 @@ func (e *enemyForte) Process() (bool, error) {
 					true,
 					field.GetPanelInfo,
 				) {
-					// 移動に失敗したら、ランダム移動からやり直し
-					e.isTargetPosMoved = false
-					e.nextState = forteActTypeMove
-					e.moveNum = rand.Intn(2) + 2
+					// 移動に失敗したら、移動からやり直し
+					logger.Debug("Forte move failed. retry")
+					return e.clearState()
 				}
-				e.targetPos = point.Point{X: -1, Y: -1}
+				e.targetPos = emptyPos
 				e.waitCount = 20
 				return e.stateChange(forteActTypeStand)
 			}
@@ -170,7 +171,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debug {
 					e.moveNum = 3
-					e.nextState = forteActTypeDarkArmBlade1
+					e.nextState = forteActTypeDarkArmBlade3
 					return e.stateChange(forteActTypeStand)
 				}
 
@@ -258,9 +259,7 @@ func (e *enemyForte) Process() (bool, error) {
 				}
 			}
 			if end {
-				e.waitCount = 20
-				e.nextState = forteActTypeMove
-				return e.stateChange(forteActTypeStand)
+				return e.clearState()
 			}
 		}
 	case forteActTypeDarkArmBlade1:
@@ -272,9 +271,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
-				e.waitCount = 20
-				e.nextState = forteActTypeMove
-				return e.stateChange(forteActTypeStand)
+				return e.clearState()
 			}
 			targetPos := point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y}
 			if !targetPos.Equal(e.pm.Pos) {
@@ -293,12 +290,70 @@ func (e *enemyForte) Process() (bool, error) {
 		}
 
 		if e.count == 5*forteDelays[forteActTypeDarkArmBlade1] {
-			e.isTargetPosMoved = false
-			e.waitCount = 20
-			e.nextState = forteActTypeMove
-			return e.stateChange(forteActTypeStand)
+			return e.clearState()
 		}
 	case forteActTypeDarkArmBlade3:
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
+			// Move to attack position
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				return e.clearState()
+			}
+			var targetPos point.Point
+			switch e.bladeAtkCount {
+			case 0, 2:
+				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y}
+			case 1:
+				targetPos = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
+			}
+
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = forteActTypeDarkArmBlade3
+				return e.stateChange(forteActTypeMove)
+			}
+		}
+
+		if e.count == 2*forteDelays[forteActTypeDarkArmBlade3] {
+			logger.Debug("Forte Dark Arm Blade %d times Attack", e.bladeAtkCount+1)
+			skillType := resources.SkillForteDarkArmBladeType1
+			if e.bladeAtkCount == 1 {
+				skillType = resources.SkillForteDarkArmBladeType2
+			}
+			e.atkIDs = []string{
+				localanim.AnimNew(
+					skill.Get(
+						skillType,
+						skillcore.Argument{
+							OwnerID:    e.pm.ObjectID,
+							Power:      50,
+							TargetType: damage.TargetPlayer,
+						},
+					),
+				),
+			}
+		}
+
+		if len(e.atkIDs) > 0 {
+			if !localanim.AnimIsProcessing(e.atkIDs[0]) {
+				e.bladeAtkCount++
+				if e.bladeAtkCount == 3 {
+					// 終了
+					e.nextState = forteActTypeMove
+				} else {
+					e.nextState = forteActTypeDarkArmBlade3
+				}
+				e.isTargetPosMoved = false
+				e.waitCount = 20
+				e.atkIDs = []string{}
+				return e.stateChange(forteActTypeStand)
+			}
+		}
+
 		// WIP
 	case forteActTypeDarknessOverload:
 		// WIP
@@ -344,6 +399,7 @@ func (e *enemyForte) DamageProc(dm *damage.Damage) bool {
 		e.state = forteActTypeDamage
 		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
 		e.count = 0
+		// WIP
 		return true
 	}
 
@@ -407,4 +463,16 @@ func (e *enemyForte) moveRandom() {
 		logger.Debug("Forte move to %v", movables[n])
 		battlecommon.MoveObjectDirect(&e.pm.Pos, movables[n], battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 	}
+}
+
+func (e *enemyForte) clearState() (bool, error) {
+	e.waitCount = 20
+	e.nextState = forteActTypeMove
+	e.moveNum = 3 + rand.Intn(3)
+	e.targetPos = emptyPos
+	e.isTargetPosMoved = false
+	e.bladeAtkCount = 0
+	e.atkIDs = []string{}
+
+	return e.stateChange(forteActTypeStand)
 }
