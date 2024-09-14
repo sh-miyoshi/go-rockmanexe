@@ -21,5 +21,12 @@ func (p *DrawForteDarkArmBlade) Draw(pos point.Point, count int, skillID int) {
 		n = (len(images[imageTypeForteDarkArmBlade]) / 2) - 1
 	}
 	viewPos := battlecommon.ViewPos(pos)
-	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, images[imageTypeForteDarkArmBlade][n+index], true)
+
+	opt := dxlib.DrawRotaGraphOption{}
+	if skillID == resources.SkillForteDarkArmBladeType2 {
+		t := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &t
+	}
+
+	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, images[imageTypeForteDarkArmBlade][n+index], true, opt)
 }

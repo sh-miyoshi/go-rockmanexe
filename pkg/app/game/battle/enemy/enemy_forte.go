@@ -52,6 +52,7 @@ type enemyForte struct {
 	isTargetPosMoved bool
 	bladeAtkCount    int
 	atkIDs           []string
+	isCharReverse    bool
 }
 
 func (e *enemyForte) Init(objID string) error {
@@ -63,6 +64,7 @@ func (e *enemyForte) Init(objID string) error {
 	e.targetPos = emptyPos
 	e.isTargetPosMoved = false
 	e.bladeAtkCount = 0
+	e.isCharReverse = false
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -306,8 +308,10 @@ func (e *enemyForte) Process() (bool, error) {
 			var targetPos point.Point
 			switch e.bladeAtkCount {
 			case 0, 2:
+				e.isCharReverse = false
 				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y}
 			case 1:
+				e.isCharReverse = true
 				targetPos = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
 			}
 
@@ -375,7 +379,13 @@ func (e *enemyForte) Draw() {
 		ofsY -= math.MountainIndex(e.count/10%5, 5)
 	}
 
-	dxlib.DrawRotaGraph(view.X, view.Y+ofsY, 1, 0, *img, true)
+	opt := dxlib.DrawRotaGraphOption{}
+	if e.isCharReverse {
+		t := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &t
+	}
+
+	dxlib.DrawRotaGraph(view.X, view.Y+ofsY, 1, 0, *img, true, opt)
 
 	drawParalysis(view.X, view.Y+ofsY, *img, e.pm.ParalyzedCount)
 
@@ -471,6 +481,7 @@ func (e *enemyForte) clearState() (bool, error) {
 	e.isTargetPosMoved = false
 	e.bladeAtkCount = 0
 	e.atkIDs = []string{}
+	e.isCharReverse = false
 
 	return e.stateChange(forteActTypeStand)
 }
