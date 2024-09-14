@@ -1,5 +1,18 @@
 # TODO List
 
+## フォルテ
+
+- Action
+  - forteActTypeShooting
+  - forteActTypeDarkArmBlade3
+    - 2回目の反転処理
+  - forteActTypeDarknessOverload
+- その他
+  - ダメージ時の初期化処理
+  - 攻撃のダメージ量
+  - チップ
+  - 導線
+
 ## v0.13でやりたいこと
 
 - ネットバトルの整備
