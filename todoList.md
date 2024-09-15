@@ -5,7 +5,7 @@
 - Action
   - forteActTypeShooting
   - forteActTypeDarkArmBlade3
-    - 2回目の反転処理
+    - 速度調整
   - forteActTypeDarknessOverload
 - その他
   - ダメージ時の初期化処理
