@@ -94,6 +94,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.ForteDarkArmBlade{Arg: arg}
 		res.Init(id)
 		return res
+	case resources.SkillForteShootingBuster:
+		return &processor.ForteShootingBuster{Arg: arg}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

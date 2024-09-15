@@ -47,6 +47,7 @@ const (
 	SkillForteHellsRollingDown
 	SkillForteDarkArmBladeType1
 	SkillForteDarkArmBladeType2
+	SkillForteShootingBuster
 
 	SkillFailed
 )

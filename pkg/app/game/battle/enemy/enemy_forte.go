@@ -222,7 +222,15 @@ func (e *enemyForte) Process() (bool, error) {
 	case forteActTypeShooting:
 		if e.count < 180 {
 			// 攻撃フェーズ
-			// WIP
+			// WIP: とりあえず1回だけ攻撃
+			if e.count == 0 {
+				logger.Debug("Forte Shooting Buster Attack")
+				localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
+					OwnerID:    e.pm.ObjectID,
+					Power:      50, // WIP: 要調整
+					TargetType: damage.TargetPlayer,
+				}))
+			}
 		} else {
 			// 終了チェックフェーズ
 			end := true

@@ -46,6 +46,7 @@ const (
 	imageTypeBubbleShotAtk
 	imageTypeForteHellsRolling
 	imageTypeForteDarkArmBlade
+	imageTypeForteShootingBuster
 
 	imageTypeMax
 )
