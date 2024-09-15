@@ -173,7 +173,7 @@ func GetName(id int) string {
 }
 
 func IsBoss(id int) bool {
-	bossList := []int{IDAquaman, IDRockman}
+	bossList := []int{IDAquaman, IDRockman, IDForte}
 	return slice.Contains(bossList, id)
 }
 
