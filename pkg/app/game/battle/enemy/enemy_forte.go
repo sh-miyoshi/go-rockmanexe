@@ -173,7 +173,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debug {
 					e.moveNum = 3
-					e.nextState = forteActTypeDarkArmBlade3
+					e.nextState = forteActTypeShooting
 					return e.stateChange(forteActTypeStand)
 				}
 
@@ -220,7 +220,22 @@ func (e *enemyForte) Process() (bool, error) {
 			return e.stateChange(forteActTypeStand)
 		}
 	case forteActTypeShooting:
-		// WIP
+		if e.count < 180 {
+			// 攻撃フェーズ
+			// WIP
+		} else {
+			// 終了チェックフェーズ
+			end := true
+			for _, id := range e.atkIDs {
+				if localanim.AnimIsProcessing(id) {
+					end = false
+					break
+				}
+			}
+			if end {
+				return e.clearState()
+			}
+		}
 	case forteActTypeHellsRolling:
 		if e.count == 0 {
 			e.atkIDs = []string{}
