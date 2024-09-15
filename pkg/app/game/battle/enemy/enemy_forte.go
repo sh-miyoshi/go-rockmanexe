@@ -36,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 2, 2, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 1, 1, 1, 1}
 	debug       = true // TODO: 削除する
 )
 
@@ -163,7 +163,9 @@ func (e *enemyForte) Process() (bool, error) {
 					return e.clearState()
 				}
 				e.targetPos = emptyPos
-				e.waitCount = 20
+				if e.waitCount == 0 {
+					e.waitCount = 20
+				}
 				return e.stateChange(forteActTypeStand)
 			}
 
@@ -173,7 +175,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debug {
 					e.moveNum = 3
-					e.nextState = forteActTypeShooting
+					e.nextState = forteActTypeDarkArmBlade3
 					return e.stateChange(forteActTypeStand)
 				}
 
@@ -341,11 +343,12 @@ func (e *enemyForte) Process() (bool, error) {
 			if !targetPos.Equal(e.pm.Pos) {
 				e.targetPos = targetPos
 				e.nextState = forteActTypeDarkArmBlade3
+				e.waitCount = 15
 				return e.stateChange(forteActTypeMove)
 			}
 		}
 
-		if e.count == 2*forteDelays[forteActTypeDarkArmBlade3] {
+		if e.count == 1*forteDelays[forteActTypeDarkArmBlade3] {
 			logger.Debug("Forte Dark Arm Blade %d times Attack", e.bladeAtkCount+1)
 			skillType := resources.SkillForteDarkArmBladeType1
 			if e.bladeAtkCount == 1 {
@@ -370,14 +373,14 @@ func (e *enemyForte) Process() (bool, error) {
 				e.bladeAtkCount++
 				if e.bladeAtkCount == 3 {
 					// 終了
-					e.nextState = forteActTypeMove
+					return e.clearState()
 				} else {
 					e.nextState = forteActTypeDarkArmBlade3
+					e.waitCount = 5
+					e.isTargetPosMoved = false
+					e.atkIDs = []string{}
+					return e.stateChange(forteActTypeStand)
 				}
-				e.isTargetPosMoved = false
-				e.waitCount = 20
-				e.atkIDs = []string{}
-				return e.stateChange(forteActTypeStand)
 			}
 		}
 	case forteActTypeDarknessOverload:
