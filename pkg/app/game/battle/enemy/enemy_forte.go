@@ -175,7 +175,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debug {
 					e.moveNum = 3
-					e.nextState = forteActTypeDarkArmBlade3
+					e.nextState = forteActTypeShooting
 					return e.stateChange(forteActTypeStand)
 				}
 
@@ -222,16 +222,16 @@ func (e *enemyForte) Process() (bool, error) {
 			return e.stateChange(forteActTypeStand)
 		}
 	case forteActTypeShooting:
-		if e.count < 180 {
+		if e.count < 120 {
 			// 攻撃フェーズ
 			// WIP: とりあえず1回だけ攻撃
-			if e.count == 0 {
+			if e.count == 5 {
 				logger.Debug("Forte Shooting Buster Attack")
-				localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
+				e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
 					OwnerID:    e.pm.ObjectID,
 					Power:      50, // WIP: 要調整
 					TargetType: damage.TargetPlayer,
-				}))
+				})))
 			}
 		} else {
 			// 終了チェックフェーズ

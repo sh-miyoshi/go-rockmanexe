@@ -95,7 +95,9 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res.Init(id)
 		return res
 	case resources.SkillForteShootingBuster:
-		return &processor.ForteShootingBuster{Arg: arg}
+		res := &processor.ForteShootingBuster{Arg: arg}
+		res.Init()
+		return res
 	case resources.SkillForteDarknessOverload:
 		return &processor.ForteDarknessOverload{Arg: arg}
 	default:

@@ -3,7 +3,9 @@ package skilldraw
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
@@ -306,4 +308,14 @@ func ClearImages() {
 			dxlib.DeleteGraph(img)
 		}
 	}
+}
+
+func drawHitArea(panelPos point.Point) {
+	view := battlecommon.ViewPos(panelPos)
+	x1 := view.X - battlecommon.PanelSize.X/2
+	y1 := view.Y
+	x2 := view.X + battlecommon.PanelSize.X/2
+	y2 := view.Y + battlecommon.PanelSize.Y
+	const s = 5
+	dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 }
