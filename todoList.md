@@ -3,7 +3,6 @@
 ## フォルテ
 
 - Action
-  - forteActTypeShooting
   - forteActTypeDarknessOverload
 - その他
   - ダメージ時の初期化処理
