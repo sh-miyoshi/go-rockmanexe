@@ -25,7 +25,7 @@ func newForteShootingBuster(objID string, arg skillcore.Argument, core skillcore
 }
 
 func (p *skillForteShootingBuster) Draw() {
-	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount())
+	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount(), p.Core.GetInitWait())
 }
 
 func (p *skillForteShootingBuster) Process() (bool, error) {

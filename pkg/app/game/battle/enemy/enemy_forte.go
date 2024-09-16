@@ -36,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 1, 6, 1, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 1, 1}
 	debug       = true // TODO: 削除する
 )
 
@@ -222,16 +222,19 @@ func (e *enemyForte) Process() (bool, error) {
 			return e.stateChange(forteActTypeStand)
 		}
 	case forteActTypeShooting:
-		if e.count < 120 {
+		initWait := 4 * forteDelays[forteActTypeShooting]
+		if e.count < 120+initWait {
 			// 攻撃フェーズ
-			// WIP: とりあえず1回だけ攻撃
-			if e.count == 5 {
-				logger.Debug("Forte Shooting Buster Attack")
-				e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
-					OwnerID:    e.pm.ObjectID,
-					Power:      50, // WIP: 要調整
-					TargetType: damage.TargetPlayer,
-				})))
+			// 3回攻撃する
+			if e.count%40 == initWait {
+				logger.Debug("Forte Shooting Buster Attack at %d", e.count)
+				for i := 0; i < 3; i++ {
+					e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
+						OwnerID:    e.pm.ObjectID,
+						Power:      50, // WIP: 要調整
+						TargetType: damage.TargetPlayer,
+					})))
+				}
 			}
 		} else {
 			// 終了チェックフェーズ

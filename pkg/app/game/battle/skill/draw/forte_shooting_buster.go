@@ -9,9 +9,11 @@ import (
 type DrawForteShootingBuster struct {
 }
 
-func (p *DrawForteShootingBuster) Draw(pos point.Point, count int) {
+func (p *DrawForteShootingBuster) Draw(pos point.Point, count int, initWait int) {
 	viewPos := battlecommon.ViewPos(pos)
 	n := count / 4 % len(images[imageTypeForteShootingBuster])
-	drawHitArea(pos)
+	if count > initWait {
+		drawHitArea(pos)
+	}
 	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1.0, 0.0, images[imageTypeForteShootingBuster][n], true)
 }

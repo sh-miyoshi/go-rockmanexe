@@ -311,11 +311,13 @@ func ClearImages() {
 }
 
 func drawHitArea(panelPos point.Point) {
-	view := battlecommon.ViewPos(panelPos)
-	x1 := view.X - battlecommon.PanelSize.X/2
-	y1 := view.Y
-	x2 := view.X + battlecommon.PanelSize.X/2
-	y2 := view.Y + battlecommon.PanelSize.Y
+	vx := battlecommon.PanelSize.X * panelPos.X
+	vy := battlecommon.PanelSize.Y*panelPos.Y + battlecommon.DrawPanelTopY
+
+	x1 := vx
+	y1 := vy
+	x2 := vx + battlecommon.PanelSize.X
+	y2 := vy + battlecommon.PanelSize.Y
 	const s = 5
 	dxlib.DrawBox(x1+s, y1+s, x2-s, y2-s, 0xffff00, true)
 }
