@@ -36,7 +36,7 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 1, 1}
+	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 1}
 	debug       = true // TODO: 削除する
 )
 
@@ -80,7 +80,7 @@ func (e *enemyForte) Init(objID string) error {
 	e.images[forteActTypeHellsRolling] = make([]int, 9)
 	e.images[forteActTypeDarkArmBlade1] = make([]int, 1)
 	e.images[forteActTypeDarkArmBlade3] = make([]int, 3)
-	e.images[forteActTypeDarknessOverload] = make([]int, 1) // debug
+	e.images[forteActTypeDarknessOverload] = make([]int, 9)
 	e.images[forteActTypeDamage] = make([]int, 1)
 
 	e.images[forteActTypeStand][0] = tmp[0]
@@ -90,12 +90,12 @@ func (e *enemyForte) Init(objID string) error {
 	for i := 0; i < 9; i++ {
 		e.images[forteActTypeShooting][i] = tmp[9+i]
 		e.images[forteActTypeHellsRolling][i] = tmp[18+i]
+		e.images[forteActTypeDarknessOverload][i] = tmp[18+i]
 	}
 	e.images[forteActTypeDarkArmBlade1][0] = tmp[27]
 	for i := 0; i < 3; i++ {
 		e.images[forteActTypeDarkArmBlade3][i] = tmp[27+i]
 	}
-	e.images[forteActTypeDarknessOverload][0] = tmp[0] // debug
 	e.images[forteActTypeDamage][0] = tmp[36]
 
 	cleanup := []int{6, 7, 8}
@@ -175,7 +175,7 @@ func (e *enemyForte) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debug {
 					e.moveNum = 3
-					e.nextState = forteActTypeShooting
+					e.nextState = forteActTypeDarknessOverload
 					return e.stateChange(forteActTypeStand)
 				}
 
@@ -387,7 +387,27 @@ func (e *enemyForte) Process() (bool, error) {
 			}
 		}
 	case forteActTypeDarknessOverload:
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
+			// Move to attack position
+			targetPos := point.Point{X: 2, Y: 1}
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = forteActTypeDarknessOverload
+				return e.stateChange(forteActTypeMove)
+			}
+		}
+
 		// WIP
+		if e.count == 7*forteDelays[forteActTypeDarknessOverload] {
+			logger.Debug("Forte Darkness Overload Attack")
+			localanim.AnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      50, // WIP: 要調整
+				TargetType: damage.TargetPlayer,
+			}))
+		}
 	}
 
 	e.count++
