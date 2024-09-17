@@ -16,14 +16,17 @@ type ForteDarknessOverload struct {
 
 func (p *ForteDarknessOverload) Process() (bool, error) {
 	p.count++
-	if p.count >= forteDarknessOverloadEndCount {
-		// WIP: damage
-		return true, nil
+	if p.count == p.GetDelay()*3 {
+		// p.Arg.PanelCrack()
 	}
 
-	return false, nil
+	return p.count >= forteDarknessOverloadEndCount, nil
 }
 
 func (p *ForteDarknessOverload) GetCount() int {
 	return p.count
+}
+
+func (p *ForteDarknessOverload) GetDelay() int {
+	return 3
 }

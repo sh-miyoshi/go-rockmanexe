@@ -1,6 +1,7 @@
 package processor
 
 import (
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -35,7 +36,7 @@ func (p *Crack) Process() (bool, error) {
 	if p.count > 5 {
 		p.Arg.SoundOn(resources.SEPanelBreak)
 		for _, pos := range p.attackPos {
-			p.Arg.PanelBreak(pos)
+			p.Arg.PanelCrack(pos, battlecommon.PanelStatusHole)
 		}
 
 		return true, nil

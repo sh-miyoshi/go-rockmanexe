@@ -395,18 +395,26 @@ func (e *enemyForte) Process() (bool, error) {
 			if !targetPos.Equal(e.pm.Pos) {
 				e.targetPos = targetPos
 				e.nextState = forteActTypeDarknessOverload
+				e.waitCount = 5
 				return e.stateChange(forteActTypeMove)
 			}
 		}
 
-		// WIP
 		if e.count == 7*forteDelays[forteActTypeDarknessOverload] {
 			logger.Debug("Forte Darkness Overload Attack")
-			localanim.AnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
-				OwnerID:    e.pm.ObjectID,
-				Power:      50, // WIP: 要調整
-				TargetType: damage.TargetPlayer,
-			}))
+			e.atkIDs = []string{
+				localanim.AnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
+					OwnerID:    e.pm.ObjectID,
+					Power:      50, // WIP: 要調整
+					TargetType: damage.TargetPlayer,
+				})),
+			}
+		}
+
+		if len(e.atkIDs) > 0 {
+			if !localanim.AnimIsProcessing(e.atkIDs[0]) {
+				return e.clearState()
+			}
 		}
 	}
 

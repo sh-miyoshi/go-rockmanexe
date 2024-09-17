@@ -22,7 +22,7 @@ const (
 // 主にobjectやskillで使用されます
 type FieldFuncs struct {
 	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
-	PanelBreak      func(clientID string, pos point.Point)
+	PanelCrack      func(clientID string, pos point.Point, crackType int)
 	ChangePanelType func(clientID string, pos point.Point, pnType int)
 }
 
@@ -189,7 +189,7 @@ func (p *GameInfo) GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 	}
 }
 
-func (p *GameInfo) PanelBreak(pos point.Point) {
+func (p *GameInfo) PanelCrack(pos point.Point, crackType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
@@ -201,8 +201,12 @@ func (p *GameInfo) PanelBreak(pos point.Point) {
 	if p.Panels[pos.X][pos.Y].ObjectID != "" {
 		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusCrack
 	} else {
-		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
-		p.Panels[pos.X][pos.Y].HoleCount = battlecommon.DefaultPanelHoleEndCount
+		if crackType == battlecommon.PanelStatusHole {
+			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
+			p.Panels[pos.X][pos.Y].HoleCount = battlecommon.DefaultPanelHoleEndCount
+		} else if crackType == battlecommon.PanelStatusCrack {
+			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusCrack
+		}
 	}
 }
 

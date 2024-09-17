@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
@@ -39,7 +40,7 @@ func (p *waterBomb) Process() (bool, error) {
 	}
 	for _, hit := range p.Core.PopHits() {
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
-		field.PanelCrack(hit)
+		field.PanelBreak(hit, battlecommon.PanelStatusCrack)
 	}
 	return res, nil
 }

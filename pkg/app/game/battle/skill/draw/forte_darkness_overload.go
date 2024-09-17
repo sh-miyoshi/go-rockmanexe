@@ -9,9 +9,9 @@ import (
 type DrawForteDarknessOverload struct {
 }
 
-func (p *DrawForteDarknessOverload) Draw(pos point.Point, count int) {
+func (p *DrawForteDarknessOverload) Draw(pos point.Point, count int, delay int) {
 	viewPos := battlecommon.ViewPos(pos)
-	n := count / 4
+	n := count / delay
 	index := n
 	if n >= 8 && n < 11 {
 		index = n - 3

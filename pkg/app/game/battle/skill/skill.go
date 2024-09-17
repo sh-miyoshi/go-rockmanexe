@@ -36,7 +36,7 @@ func End() {
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
-	arg.PanelBreak = field.PanelBreak
+	arg.PanelCrack = field.PanelBreak
 	arg.DamageMgr = localanim.DamageManager()
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs

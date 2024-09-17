@@ -27,7 +27,7 @@ func newForteDarknessOverload(objID string, arg skillcore.Argument, core skillco
 
 func (p *skillForteDarknessOverload) Draw() {
 	pos := point.Point{X: 0, Y: 1}
-	p.drawer.Draw(pos, p.Core.GetCount())
+	p.drawer.Draw(pos, p.Core.GetCount(), p.Core.GetDelay())
 }
 
 func (p *skillForteDarknessOverload) Process() (bool, error) {

@@ -29,8 +29,8 @@ type SkillAnim interface {
 }
 
 func Get(id int, arg Argument) SkillAnim {
-	panelBreak := func(pos point.Point) {
-		arg.FieldFuncs.PanelBreak(arg.OwnerClientID, pos)
+	panelCrack := func(pos point.Point, crackType int) {
+		arg.FieldFuncs.PanelCrack(arg.OwnerClientID, pos, crackType)
 	}
 	changePanelType := func(pos point.Point, pnType int) {
 		arg.FieldFuncs.ChangePanelType(arg.OwnerClientID, pos, pnType)
@@ -47,7 +47,7 @@ func Get(id int, arg Argument) SkillAnim {
 		SoundOn:      arg.Manager.SoundOn,
 		GetObjects:   arg.Manager.ObjAnimGetObjs,
 		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
-		PanelBreak:   panelBreak,
+		PanelCrack:   panelCrack,
 		Cutin: func(skillName string, count int) {
 			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
 		},
