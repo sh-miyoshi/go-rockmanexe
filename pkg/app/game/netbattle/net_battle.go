@@ -94,6 +94,9 @@ var (
 		chip.IDDoubleCrack,
 		chip.IDTripleCrack,
 		chip.IDAreaSteal,
+		chip.IDBubbleShot,
+		chip.IDBubbleSide,
+		chip.IDBubbleV,
 	}
 
 	inst NetBattle

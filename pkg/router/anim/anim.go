@@ -20,14 +20,13 @@ const (
 	TypeVulcan
 	TypeWideShot
 	TypeHeatShot
-	TypeHeatV
-	TypeHeatSide
 	TypeFlameLine
 	TypeTornado
 	TypeBoomerang
 	TypeBambooLance
 	TypeCrack
 	TypeAreaSteal
+	TypeBubbleShot
 
 	TypeMax
 )

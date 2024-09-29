@@ -10,25 +10,25 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/gameinfo"
 )
 
-type heatShot struct {
+type bubbleShot struct {
 	ID   string
 	Arg  Argument
-	Core *processor.HeatShot
+	Core *processor.BubbleShot
 }
 
-func newHeatShot(arg Argument, core skillcore.SkillCore) *heatShot {
-	return &heatShot{
+func newBubbleShot(arg Argument, core skillcore.SkillCore) *bubbleShot {
+	return &bubbleShot{
 		ID:   arg.AnimObjID,
 		Arg:  arg,
-		Core: core.(*processor.HeatShot),
+		Core: core.(*processor.BubbleShot),
 	}
 }
 
-func (p *heatShot) Draw() {
+func (p *bubbleShot) Draw() {
 	// nothing to do at router
 }
 
-func (p *heatShot) Process() (bool, error) {
+func (p *bubbleShot) Process() (bool, error) {
 	res, err := p.Core.Process()
 	if err != nil {
 		return false, err
@@ -38,19 +38,18 @@ func (p *heatShot) Process() (bool, error) {
 			ID:            uuid.New().String(),
 			OwnerClientID: p.Arg.OwnerClientID,
 			Pos:           hit,
-			Type:          resources.EffectTypeHeatHit,
+			Type:          resources.EffectTypeWaterBomb,
 			RandRange:     0,
 		})
 	}
-
 	return res, nil
 }
 
-func (p *heatShot) GetParam() anim.Param {
+func (p *bubbleShot) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
-		AnimType:      routeranim.TypeHeatShot,
+		AnimType:      routeranim.TypeBubbleShot,
 	}
 
 	return anim.Param{
@@ -61,8 +60,6 @@ func (p *heatShot) GetParam() anim.Param {
 	}
 }
 
-func (p *heatShot) StopByOwner() {
-	if p.Core.GetCount() < p.Core.GetDelay() {
-		p.Arg.Manager.AnimDelete(p.ID)
-	}
+func (p *bubbleShot) StopByOwner() {
+	p.Arg.Manager.AnimDelete(p.ID)
 }
