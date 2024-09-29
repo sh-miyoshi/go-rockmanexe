@@ -72,7 +72,7 @@ const (
 	IDQuickGauge  = 128
 	IDInvisible   = 133
 	IDAttack10    = 148
-	IDAquaman     = 211
+	IDAquaman     = 181
 	IDShockWave   = 229
 
 	// Program Advance
