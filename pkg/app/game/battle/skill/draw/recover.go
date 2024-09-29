@@ -13,8 +13,8 @@ type DrawRecover struct {
 }
 
 func (p *DrawRecover) Draw(viewPos point.Point, count int) {
-	n := (count / delayRecover) % len(imgRecover)
+	n := (count / delayRecover) % len(images[imageTypeRecover])
 	if n >= 0 {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, imgRecover[n], true)
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, images[imageTypeRecover][n], true)
 	}
 }

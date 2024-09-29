@@ -28,7 +28,7 @@ type Argument struct {
 	GetObjectPos    func(objID string) point.Point
 	SoundOn         func(typ resources.SEType)
 	GetObjects      func(filter objanim.Filter) []objanim.Param
-	PanelBreak      func(pos point.Point)
+	PanelCrack      func(pos point.Point, crackType int)
 	Cutin           func(skillName string, count int)
 	ChangePanelType func(pos point.Point, pnType int)
 	MakeInvisible   func(objID string, count int)

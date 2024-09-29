@@ -32,6 +32,7 @@ const (
 	IDColdman
 	IDCirKill
 	IDShrimpy
+	IDForte
 )
 
 type EnemyChipInfo struct {
@@ -47,6 +48,7 @@ type EnemyParam struct {
 	PlayerID        string
 	Pos             point.Point
 	HP              int
+	HPMax           int
 	ActNo           int
 	InvincibleCount int
 	DamageElement   int
@@ -75,12 +77,16 @@ var (
 		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
 		// TODO: コールドマン、サーキラー、エビロンのチップ
 	}
+
+	// 設定されてない場所であることがわかるような絶対にあり得ない座標
+	emptyPos = point.Point{X: -100, Y: -100}
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {
 	for i, e := range enemyList {
 		e.PlayerID = playerID
 		e.ActNo = i
+		e.HPMax = e.HP
 		obj := getObject(e.CharID, e)
 		objID := localanim.ObjAnimNew(obj)
 		enemies[objID] = obj
@@ -160,12 +166,14 @@ func GetName(id int) string {
 		return "サーキラー"
 	case IDShrimpy:
 		return "エビロン"
+	case IDForte:
+		return "フォルテ"
 	}
 	return ""
 }
 
 func IsBoss(id int) bool {
-	bossList := []int{IDAquaman, IDRockman}
+	bossList := []int{IDAquaman, IDRockman, IDForte}
 	return slice.Contains(bossList, id)
 }
 
@@ -195,6 +203,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyCirKill{pm: initParam}
 	case IDShrimpy:
 		return &enemyShrimpy{pm: initParam}
+	case IDForte:
+		return &enemyForte{pm: initParam}
 	}
 	return nil
 }

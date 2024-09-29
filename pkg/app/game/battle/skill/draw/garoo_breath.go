@@ -15,7 +15,7 @@ type DrawGarooBreath struct {
 
 func (p *DrawGarooBreath) Draw(prevPos, currentPos, nextPos point.Point, count int, nextStepCount int) {
 	view := battlecommon.ViewPos(currentPos)
-	n := (count / delayGarooBreath) % len(imgGarooBreath)
+	n := (count / delayGarooBreath) % len(images[imageTypeGarooBreath])
 
 	cnt := count % nextStepCount
 	if cnt == 0 {
@@ -25,5 +25,5 @@ func (p *DrawGarooBreath) Draw(prevPos, currentPos, nextPos point.Point, count i
 
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
 	ofsy := -15
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgGarooBreath[n], true, dxlib.OptXReverse(true))
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, images[imageTypeGarooBreath][n], true, dxlib.OptXReverse(true))
 }

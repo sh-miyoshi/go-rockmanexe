@@ -261,6 +261,19 @@ func goBattleNew() (*menuGoBattle, error) {
 			},
 		},
 		{
+			Name: "闇よりの使徒",
+			Enemies: []selectEnemyData{
+				{
+					BattleParam: enemy.EnemyParam{
+						CharID: enemy.IDForte,
+						Pos:    point.Point{X: 4, Y: 1},
+						HP:     1500,
+					},
+					View: point.Point{X: viewCenter.X, Y: viewCenter.Y},
+				},
+			},
+		},
+		{
 			Name: "練習",
 			Enemies: []selectEnemyData{
 				{

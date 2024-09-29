@@ -17,9 +17,9 @@ type DrawTornado struct {
 func (p *DrawTornado) Draw(viewPos, targetPos point.Point, count int, isPlayer bool) {
 	opt := dxlib.OptXReverse(!isPlayer)
 
-	n := (count / delayTornadoBody) % len(imgTornadoBody)
-	dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(48, !isPlayer), viewPos.Y-12, 1, 0, imgTornadoBody[n], true, opt)
+	n := (count / delayTornadoBody) % len(images[imageTypeTornadoBody])
+	dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(48, !isPlayer), viewPos.Y-12, 1, 0, images[imageTypeTornadoBody][n], true, opt)
 
-	n = (count / delayTornadoAtk) % len(imgTornadoAtk)
-	dxlib.DrawRotaGraph(targetPos.X, targetPos.Y, 1, 0, imgTornadoAtk[n], true)
+	n = (count / delayTornadoAtk) % len(images[imageTypeTornadoAtk])
+	dxlib.DrawRotaGraph(targetPos.X, targetPos.Y, 1, 0, images[imageTypeTornadoAtk][n], true)
 }

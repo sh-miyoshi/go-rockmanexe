@@ -21,15 +21,17 @@ func (p *DrawSword) Draw(skillID int, viewPos point.Point, count int, delay int,
 }
 
 func getSwordImages(id int) []int {
+	n := len(images[imageTypeSword]) / 3
+
 	switch id {
 	case resources.SkillSword:
-		return imgSword[0]
+		return images[imageTypeSword][0 : n-1]
 	case resources.SkillWideSword:
-		return imgSword[1]
+		return images[imageTypeSword][2*n:]
 	case resources.SkillLongSword:
-		return imgSword[2]
+		return images[imageTypeSword][n : 2*n-1]
 	case resources.SkillDreamSword:
-		return imgDreamSword
+		return images[imageTypeDreamSword]
 	}
 	return []int{}
 }

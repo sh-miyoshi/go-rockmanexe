@@ -10,25 +10,27 @@ import (
 )
 
 type cannon struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.Cannon
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.Cannon
+	SkillID int
 
 	drawer skilldraw.DrawCannon
 }
 
-func newCannon(objID string, arg skillcore.Argument, core skillcore.SkillCore) *cannon {
+func newCannon(objID string, arg skillcore.Argument, core skillcore.SkillCore, skillID int) *cannon {
 	return &cannon{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.Cannon),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.Cannon),
+		SkillID: skillID,
 	}
 }
 
 func (p *cannon) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
-	p.drawer.Draw(p.Core.GetCannonType(), view, p.Core.GetCount(), true)
+	p.drawer.Draw(p.SkillID, view, p.Core.GetCount(), true)
 }
 
 func (p *cannon) Process() (bool, error) {

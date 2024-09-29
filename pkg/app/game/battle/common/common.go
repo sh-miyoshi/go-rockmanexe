@@ -11,24 +11,12 @@ func MoveObject(pos *point.Point, direct int, objPanelType int, isMove bool, Get
 	// Check field out
 	switch direct {
 	case config.DirectUp:
-		if next.Y <= 0 {
-			return false
-		}
 		next.Y--
 	case config.DirectDown:
-		if next.Y >= FieldNum.Y-1 {
-			return false
-		}
 		next.Y++
 	case config.DirectLeft:
-		if next.X <= 0 {
-			return false
-		}
 		next.X--
 	case config.DirectRight:
-		if next.X >= FieldNum.X-1 {
-			return false
-		}
 		next.X++
 	}
 
@@ -36,6 +24,10 @@ func MoveObject(pos *point.Point, direct int, objPanelType int, isMove bool, Get
 }
 
 func MoveObjectDirect(pos *point.Point, target point.Point, objPanelType int, isMove bool, GetPanelInfo func(pos point.Point) PanelInfo) bool {
+	if target.X < 0 || target.Y < 0 || target.X >= FieldNum.X || target.Y >= FieldNum.Y {
+		return false
+	}
+
 	pn := GetPanelInfo(target)
 	// Object exists?
 	if pn.ObjectID != "" {

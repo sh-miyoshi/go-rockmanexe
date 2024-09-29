@@ -1,19 +1,11 @@
 package skill
 
 import (
-	"bytes"
-	"encoding/gob"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	routeranim "github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 )
-
-type CannonDrawParam struct {
-	Type int
-}
 
 type cannon struct {
 	ID   string
@@ -43,17 +35,6 @@ func (p *cannon) GetParam() anim.Param {
 		ActCount:      p.Core.GetCount(),
 	}
 
-	switch p.Core.GetCannonType() {
-	case resources.SkillCannon:
-		info.AnimType = routeranim.TypeCannonNormal
-	case resources.SkillHighCannon:
-		info.AnimType = routeranim.TypeCannonHigh
-	case resources.SkillMegaCannon:
-		info.AnimType = routeranim.TypeCannonMega
-	}
-	drawPm := CannonDrawParam{Type: p.Core.GetCannonType()}
-	info.DrawParam = drawPm.Marshal()
-
 	return anim.Param{
 		ObjID:     p.ID,
 		DrawType:  anim.DrawTypeSkill,
@@ -64,15 +45,4 @@ func (p *cannon) GetParam() anim.Param {
 
 func (p *cannon) StopByOwner() {
 	p.Arg.Manager.AnimDelete(p.ID)
-}
-
-func (p *CannonDrawParam) Marshal() []byte {
-	buf := bytes.NewBuffer(nil)
-	gob.NewEncoder(buf).Encode(p)
-	return buf.Bytes()
-}
-
-func (p *CannonDrawParam) Unmarshal(data []byte) {
-	buf := bytes.NewBuffer(data)
-	_ = gob.NewDecoder(buf).Decode(p)
 }

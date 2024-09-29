@@ -77,7 +77,7 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 		IsReverse:     false,
 	}, g.manager, gameinfo.FieldFuncs{
 		GetPanelInfo:    g.objects[index].info.GetPanelInfo,
-		PanelBreak:      g.panelBreak,
+		PanelCrack:      g.panelCrack,
 		ChangePanelType: g.changePanelType,
 	})
 	g.manager.ObjAnimNew(g.objects[index].playerObject)
@@ -208,15 +208,16 @@ func (g *GameHandler) indexForClient(clientID string) int {
 	return -1
 }
 
-func (g *GameHandler) panelBreak(clientID string, pos point.Point) {
+func (g *GameHandler) panelCrack(clientID string, pos point.Point, crackType int) {
 	index := g.indexForClient(clientID)
 	for i := 0; i < clientNum; i++ {
 		if i == index {
-			g.objects[i].info.PanelBreak(pos)
+			// WIP
+			g.objects[i].info.PanelCrack(pos, crackType)
 		} else {
 			// 敵によるPanelBreakの場合場所を反転させる
 			bpos := point.Point{X: battlecommon.FieldNum.X - pos.X - 1, Y: pos.Y}
-			g.objects[i].info.PanelBreak(bpos)
+			g.objects[i].info.PanelCrack(bpos, crackType)
 		}
 	}
 }

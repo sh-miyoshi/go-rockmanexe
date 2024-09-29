@@ -9,5 +9,5 @@ type DrawAquamanShot struct {
 }
 
 func (p *DrawAquamanShot) Draw(viewPos, ofs point.Point) {
-	dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, imgAquamanShot[0], true)
+	dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, images[imageTypeAquamanShot][0], true)
 }

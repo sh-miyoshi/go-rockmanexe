@@ -21,3 +21,12 @@ func ReverseIf(val int, isReverse bool) int {
 	}
 	return val
 }
+
+func Sign(x int) int {
+	if x > 0 {
+		return 1
+	} else if x < 0 {
+		return -1
+	}
+	return 0
+}

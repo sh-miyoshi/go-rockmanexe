@@ -10,7 +10,7 @@ type DrawWaterBomb struct {
 }
 
 func (p *DrawWaterBomb) Draw(objPos, targetPos point.Point, count int, endCount int) {
-	imgNo := (count / delayBombThrow) % len(imgBombThrow)
+	imgNo := (count / delayBombThrow) % len(images[imageTypeBombThrow])
 	view := battlecommon.ViewPos(objPos)
 
 	// y = ax^2 + bx + c
@@ -27,5 +27,5 @@ func (p *DrawWaterBomb) Draw(objPos, targetPos point.Point, count int, endCount 
 		ofsy += dy
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, imgBombThrow[imgNo], true)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+ofsy, 1, 0, images[imageTypeBombThrow][imgNo], true)
 }

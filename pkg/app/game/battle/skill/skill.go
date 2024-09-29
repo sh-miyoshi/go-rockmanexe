@@ -36,7 +36,7 @@ func End() {
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
-	arg.PanelBreak = field.PanelBreak
+	arg.PanelCrack = field.PanelBreak
 	arg.DamageMgr = localanim.DamageManager()
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
@@ -51,7 +51,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 
 	switch skillID {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return newCannon(objID, arg, core)
+		return newCannon(objID, arg, core, skillID)
 	case resources.SkillMiniBomb:
 		return newMiniBomb(objID, arg, core)
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:
@@ -104,6 +104,14 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newShrimpyAtk(objID, arg)
 	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
 		return newBubbleShot(objID, arg, core)
+	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
+		return newForteHellsRolling(objID, arg, core)
+	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
+		return newForteDarkArmBlade(objID, arg, core, skillID)
+	case resources.SkillForteShootingBuster:
+		return newForteShootingBuster(objID, arg, core)
+	case resources.SkillForteDarknessOverload:
+		return newForteDarknessOverload(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
@@ -117,19 +125,21 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type tmpskill struct {
 	ID  string
 	Arg skillcore.Argument
-
-	count int
+	Core *processor.TmpSkill
 }
 
-func newTmpSkill(objID string, arg skillcore.Argument) *tmpskill {
+func newTmpSkill(objID string, arg skillcore.Argument, core skillcore.SkillCore) *tmpskill {
 	return &tmpskill{
 		ID:  objID,
 		Arg: arg,
+		Core: core.(*processor.TmpSkill),
 	}
 }
 
@@ -138,9 +148,7 @@ func (p *tmpskill) Draw() {
 }
 
 func (p *tmpskill) Process() (bool, error) {
-	p.count++
-
-	return false, nil
+	return p.Core.Process()
 }
 
 func (p *tmpskill) GetParam() anim.Param {

@@ -20,19 +20,19 @@ func (p *DrawSpreadGun) Draw(viewPos point.Point, count int, isPlayer bool) {
 	opt := dxlib.OptXReverse(!isPlayer)
 
 	// Show body
-	if n < len(imgSpreadGunBody) {
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, imgSpreadGunBody[n], true, opt)
+	if n < len(images[imageTypeSpreadGunBody]) {
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(50, !isPlayer), viewPos.Y-18, 1, 0, images[imageTypeSpreadGunBody][n], true, opt)
 	}
 
 	// Show atk
 	n = (count - 4) / delaySpreadGun
-	if n >= 0 && n < len(imgSpreadGunAtk) {
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-20, 1, 0, imgSpreadGunAtk[n], true, opt)
+	if n >= 0 && n < len(images[imageTypeSpreadGunAtk]) {
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y-20, 1, 0, images[imageTypeSpreadGunAtk][n], true, opt)
 	}
 }
 
 func (p *DrawSpreadHit) Draw(viewPos point.Point, count int) {
-	if count < len(imgSpreadHit) {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+15, 1, 0, imgSpreadHit[count], true)
+	if count < len(images[imageTypeSpreadHit]) {
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y+15, 1, 0, images[imageTypeSpreadHit][count], true)
 	}
 }

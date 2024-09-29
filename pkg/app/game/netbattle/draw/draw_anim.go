@@ -7,6 +7,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
@@ -52,9 +53,15 @@ func (d *animDraw) Draw() {
 
 		switch a.AnimType {
 		case anim.TypeCannonNormal, anim.TypeCannonHigh, anim.TypeCannonMega:
-			var drawPm skill.CannonDrawParam
-			drawPm.Unmarshal(a.DrawParam)
-			d.drawCannonInst.Draw(drawPm.Type, pos, a.ActCount, isPlayer)
+			skillID := resources.SkillCannon
+			switch a.AnimType {
+			case anim.TypeCannonHigh:
+				skillID = resources.SkillHighCannon
+			case anim.TypeCannonMega:
+				skillID = resources.SkillMegaCannon
+			}
+
+			d.drawCannonInst.Draw(skillID, pos, a.ActCount, isPlayer)
 		case anim.TypeMiniBomb:
 			var drawPm skill.MiniBombDrawParam
 			drawPm.Unmarshal(a.DrawParam)

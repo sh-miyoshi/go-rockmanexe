@@ -43,6 +43,12 @@ const (
 	SkillBubbleShot
 	SkillBubbleV
 	SkillBubbleSide
+	SkillForteHellsRollingUp
+	SkillForteHellsRollingDown
+	SkillForteDarkArmBladeType1
+	SkillForteDarkArmBladeType2
+	SkillForteShootingBuster
+	SkillForteDarknessOverload
 
 	SkillFailed
 )

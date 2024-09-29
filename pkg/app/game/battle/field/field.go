@@ -213,7 +213,7 @@ func ChangePanelType(pos point.Point, pnType int) {
 	panels[pos.X][pos.Y].info.Type = pnType
 }
 
-func PanelBreak(pos point.Point) {
+func PanelBreak(pos point.Point, crackType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
@@ -225,21 +225,13 @@ func PanelBreak(pos point.Point) {
 	if panels[pos.X][pos.Y].info.ObjectID != "" {
 		panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
 	} else {
-		panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusHole
-		panels[pos.X][pos.Y].info.HoleCount = battlecommon.DefaultPanelHoleEndCount
+		if crackType == battlecommon.PanelStatusHole {
+			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusHole
+			panels[pos.X][pos.Y].info.HoleCount = battlecommon.DefaultPanelHoleEndCount
+		} else if crackType == battlecommon.PanelStatusCrack {
+			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
+		}
 	}
-}
-
-func PanelCrack(pos point.Point) {
-	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
-		return
-	}
-
-	if panels[pos.X][pos.Y].info.Status == battlecommon.PanelStatusHole {
-		return
-	}
-
-	panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
 }
 
 func Set4x4Area() {

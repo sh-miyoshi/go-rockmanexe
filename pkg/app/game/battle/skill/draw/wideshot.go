@@ -24,15 +24,15 @@ func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody boo
 	case resources.SkillWideShotStateBegin:
 		n := (count / delayWideShot)
 
-		if n < len(imgWideShotBody) && showBody {
-			dxlib.DrawRotaGraph(view.X+math.ReverseIf(40, direct == config.DirectLeft), view.Y-13, 1, 0, imgWideShotBody[n], true, opt)
+		if n < len(images[imageTypeWideShotBody]) && showBody {
+			dxlib.DrawRotaGraph(view.X+math.ReverseIf(40, direct == config.DirectLeft), view.Y-13, 1, 0, images[imageTypeWideShotBody][n], true, opt)
 		}
-		if n >= len(imgWideShotBegin) {
-			n = len(imgWideShotBegin) - 1
+		if n >= len(images[imageTypeWideShotBegin]) {
+			n = len(images[imageTypeWideShotBegin]) - 1
 		}
-		dxlib.DrawRotaGraph(view.X+math.ReverseIf(62, direct == config.DirectLeft), view.Y+20, 1, 0, imgWideShotBegin[n], true, opt)
+		dxlib.DrawRotaGraph(view.X+math.ReverseIf(62, direct == config.DirectLeft), view.Y+20, 1, 0, images[imageTypeWideShotBegin][n], true, opt)
 	case resources.SkillWideShotStateMove:
-		n := (count / delayWideShot) % len(imgWideShotMove)
+		n := (count / delayWideShot) % len(images[imageTypeWideShotMove])
 		next := pos.X + 1
 		prev := pos.X - 1
 		if direct == config.DirectLeft {
@@ -42,7 +42,7 @@ func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody boo
 		c := count % nextStepCount
 		if c != 0 {
 			ofsx := battlecommon.GetOffset(next, pos.X, prev, c, nextStepCount, battlecommon.PanelSize.X)
-			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, imgWideShotMove[n], true, opt)
+			dxlib.DrawRotaGraph(view.X+ofsx, view.Y+20, 1, 0, images[imageTypeWideShotMove][n], true, opt)
 		}
 	}
 }
