@@ -71,7 +71,7 @@ func Init(plyr *player.Player) error {
 		// Start from battle mode for debug, so set debug data
 		battleEnemies = []enemy.EnemyParam{
 			{
-				CharID: enemy.IDForte,
+				CharID: enemy.IDTarget,
 				Pos:    point.Point{X: 4, Y: 1},
 				HP:     1000,
 			},
