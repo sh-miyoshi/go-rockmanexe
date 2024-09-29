@@ -30,6 +30,7 @@ type animDraw struct {
 	drawBoomerang    skilldraw.DrawBoomerang
 	drawBamboolance  skilldraw.DrawBamboolance
 	drawAreaSteal    skilldraw.DrawAreaSteal
+	drawBubbleShot   skilldraw.DrawBubbleShot
 }
 
 func (d *animDraw) Init() error {
@@ -100,7 +101,7 @@ func (d *animDraw) Draw() {
 				drawPm.Direct = battlecommon.ReverseDirect(drawPm.Direct)
 			}
 			d.drawWideShot.Draw(a.Pos, a.ActCount, drawPm.Direct, true, drawPm.NextStepCount, drawPm.State)
-		case anim.TypeHeatShot, anim.TypeHeatV, anim.TypeHeatSide:
+		case anim.TypeHeatShot:
 			d.drawHeatShot.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeFlameLine:
 			var drawPm skill.FlameLineDrawParam
@@ -136,6 +137,8 @@ func (d *animDraw) Draw() {
 			d.drawAreaSteal.Draw(a.ActCount, drawPm.State, drawPm.Targets)
 		case anim.TypeCrack:
 			// no animation
+		case anim.TypeBubbleShot:
+			d.drawBubbleShot.Draw(pos, a.ActCount, isPlayer)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

@@ -49,6 +49,7 @@ func (p *bubbleShot) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
+		AnimType:      routeranim.TypeBubbleShot,
 	}
 
 	return anim.Param{

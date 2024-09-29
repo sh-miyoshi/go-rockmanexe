@@ -74,7 +74,7 @@ func Get(id int, arg Argument) SkillAnim {
 	case resources.SkillPlayerWideShot:
 		return newWideShot(arg, core)
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
-		return newHeatShot(id, arg, core)
+		return newHeatShot(arg, core)
 	case resources.SkillFlamePillarLine:
 		return newFlameLine(arg, core)
 	case resources.SkillPlayerShockWave:

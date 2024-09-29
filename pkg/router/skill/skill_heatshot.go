@@ -11,18 +11,16 @@ import (
 )
 
 type heatShot struct {
-	ID      string
-	SkillID int
-	Arg     Argument
-	Core    *processor.HeatShot
+	ID   string
+	Arg  Argument
+	Core *processor.HeatShot
 }
 
-func newHeatShot(skillID int, arg Argument, core skillcore.SkillCore) *heatShot {
+func newHeatShot(arg Argument, core skillcore.SkillCore) *heatShot {
 	return &heatShot{
-		ID:      arg.AnimObjID,
-		SkillID: skillID,
-		Arg:     arg,
-		Core:    core.(*processor.HeatShot),
+		ID:   arg.AnimObjID,
+		Arg:  arg,
+		Core: core.(*processor.HeatShot),
 	}
 }
 
@@ -52,15 +50,7 @@ func (p *heatShot) GetParam() anim.Param {
 	info := routeranim.NetInfo{
 		OwnerClientID: p.Arg.OwnerClientID,
 		ActCount:      p.Core.GetCount(),
-	}
-
-	switch p.SkillID {
-	case resources.SkillHeatShot:
-		info.AnimType = routeranim.TypeHeatShot
-	case resources.SkillHeatV:
-		info.AnimType = routeranim.TypeHeatV
-	case resources.SkillHeatSide:
-		info.AnimType = routeranim.TypeHeatSide
+		AnimType:      routeranim.TypeHeatShot,
 	}
 
 	return anim.Param{
