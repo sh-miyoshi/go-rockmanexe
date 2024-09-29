@@ -36,8 +36,9 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 5}
-	debugFlag   = true
+	forteDelays   = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 5}
+	forteAtkPower = [forteActTypeMax]uint{0, 0, 50, 80, 100, 100, 280, 0}
+	debugFlag     = false
 )
 
 type enemyForte struct {
@@ -231,7 +232,7 @@ func (e *enemyForte) Process() (bool, error) {
 				for i := 0; i < 3; i++ {
 					e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
 						OwnerID:    e.pm.ObjectID,
-						Power:      50, // WIP: 要調整
+						Power:      forteAtkPower[e.state],
 						TargetType: damage.TargetPlayer,
 					})))
 				}
@@ -266,7 +267,7 @@ func (e *enemyForte) Process() (bool, error) {
 			logger.Debug("Forte Hells Rolling Attack 1st")
 			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      50, // WIP: 要調整
+				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 			})))
 		}
@@ -275,7 +276,7 @@ func (e *enemyForte) Process() (bool, error) {
 			logger.Debug("Forte Hells Rolling Attack 2st")
 			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      50, // WIP: 要調整
+				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 			})))
 		}
@@ -314,7 +315,7 @@ func (e *enemyForte) Process() (bool, error) {
 			logger.Debug("Forte Dark Arm Blade 1st Attack")
 			localanim.AnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      50, // WIP: 要調整
+				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 			}))
 		}
@@ -363,7 +364,7 @@ func (e *enemyForte) Process() (bool, error) {
 						skillType,
 						skillcore.Argument{
 							OwnerID:    e.pm.ObjectID,
-							Power:      50, // WIP: 要調整
+							Power:      forteAtkPower[e.state],
 							TargetType: damage.TargetPlayer,
 						},
 					),
@@ -405,7 +406,7 @@ func (e *enemyForte) Process() (bool, error) {
 			e.atkIDs = []string{
 				localanim.AnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
 					OwnerID:    e.pm.ObjectID,
-					Power:      50, // WIP: 要調整
+					Power:      forteAtkPower[e.state],
 					TargetType: damage.TargetPlayer,
 				})),
 			}
