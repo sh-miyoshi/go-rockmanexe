@@ -89,6 +89,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newCrack(arg, core)
 	case resources.SkillAreaSteal:
 		return newAreaSteal(arg, core)
+	case resources.SkillBubbleShot, resources.SkillBubbleSide, resources.SkillBubbleV:
+		return newBubbleShot(arg, core)
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 		return nil
