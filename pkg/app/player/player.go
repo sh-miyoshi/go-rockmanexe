@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"io"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/cockroachdb/errors"
@@ -100,12 +100,12 @@ func NewWithSaveData(fname string, key []byte) (*Player, error) {
 
 	if key == nil {
 		var err error
-		bin, err = ioutil.ReadFile(fname)
+		bin, err = os.ReadFile(fname)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to read save data")
 		}
 	} else {
-		src, err := ioutil.ReadFile(fname)
+		src, err := os.ReadFile(fname)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to read save data")
 		}
@@ -188,7 +188,7 @@ func (p *Player) Save(fname string, key []byte) error {
 		stream.XORKeyStream(dst[aes.BlockSize:], src)
 	}
 
-	return ioutil.WriteFile(fname, dst, 0644)
+	return os.WriteFile(fname, dst, 0644)
 }
 
 func (p *Player) UpdateMoney(diff int) {

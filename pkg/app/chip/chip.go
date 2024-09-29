@@ -2,7 +2,7 @@ package chip
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	yaml "gopkg.in/yaml.v2"
@@ -103,7 +103,7 @@ var (
 
 func Init(fname string) error {
 	// Load chip data
-	buf, err := ioutil.ReadFile(fname)
+	buf, err := os.ReadFile(fname)
 	if err != nil {
 		return err
 	}

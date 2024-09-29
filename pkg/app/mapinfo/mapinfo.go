@@ -2,7 +2,7 @@ package mapinfo
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -53,7 +53,7 @@ var (
 )
 
 func Init(fname string) error {
-	buf, err := ioutil.ReadFile(fname)
+	buf, err := os.ReadFile(fname)
 	if err != nil {
 		return err
 	}
