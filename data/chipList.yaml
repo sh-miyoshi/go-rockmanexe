@@ -304,7 +304,7 @@
   keep_cnt: 10
   is_implemented: true
 - id: 43
-  name: ''
+  name: ノイズストーム
   power: 0
   type: 0
   player_act: 0
@@ -318,63 +318,63 @@
   description: ３マス前に落ちるボムを投げつける
   is_implemented: true
 - id: 45
-  name: ''
+  name: エナジーボム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 46
-  name: ''
+  name: メガエナジーボム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 47
-  name: ''
+  name: ホウガン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 48
-  name: ''
+  name: ブラックボム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 49
-  name: ''
+  name: カンケツセン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 50
-  name: ''
+  name: バグボム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 51
-  name: ''
+  name: バウンドノート1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 52
-  name: ''
+  name: バウンドノート2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 53
-  name: ''
+  name: バウンドノート3
   power: 0
   type: 0
   player_act: 0
@@ -402,84 +402,84 @@
   description: 目の前の敵を切りつける！範囲は横２マス
   is_implemented: true
 - id: 57
-  name: ''
+  name: ワイドブレード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 58
-  name: ''
+  name: ロングブレード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 59
-  name: ''
+  name: カスタムソード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 60
-  name: ''
+  name: バリアブルソード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 61
-  name: ''
+  name: イアイフォーム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 62
-  name: ''
+  name: フウジンラケット
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 63
-  name: ''
+  name: エアホッケー1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 64
-  name: ''
+  name: エアホッケー2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 65
-  name: ''
+  name: エアホッケー3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 66
-  name: ''
+  name: カウンター1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 67
-  name: ''
+  name: カウンター2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 68
-  name: ''
+  name: カウンター3
   power: 0
   type: 0
   player_act: 0
@@ -493,35 +493,35 @@
   description: バトルフィールドの端にそって飛ぶ貫通ブーメラン
   is_implemented: true
 - id: 70
-  name: ''
+  name: ブーメラン2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 71
-  name: ''
+  name: ブーメラン3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 72
-  name: ''
+  name: サイドバンブー1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 73
-  name: ''
+  name: サイドバンブー2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 74
-  name: ''
+  name: サイドバンブー3
   power: 0
   type: 0
   player_act: 0
@@ -535,119 +535,119 @@
   description: エリアの右端に竹やり攻撃　ヒットした敵を前に押し出す
   is_implemented: true
 - id: 76
-  name: ''
+  name: ホワイトウェブ1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 77
-  name: ''
+  name: ホワイトウェブ2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 78
-  name: ''
+  name: ホワイトウェブ3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 79
-  name: ''
+  name: モコラッシュ1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 80
-  name: ''
+  name: モコラッシュ2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 81
-  name: ''
+  name: モコラッシュ3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 82
-  name: ''
+  name: サークルガン1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 83
-  name: ''
+  name: サークルガン2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 84
-  name: ''
+  name: サークルガン3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 85
-  name: ''
+  name: カモンスネーク
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 86
-  name: ''
+  name: マグナム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 87
-  name: ''
+  name: ビッグハンマー1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 88
-  name: ''
+  name: ビッグハンマー2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 89
-  name: ''
+  name: ビッグハンマー3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 90
-  name: ''
+  name: ボーイズボム1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 91
-  name: ''
+  name: ボーイズボム2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 92
-  name: ''
+  name: ボーイズボム3
   power: 0
   type: 0
   player_act: 0
@@ -661,84 +661,84 @@
   description: 敵エリア全体を巻き込む時限爆弾を設置
   is_implemented: true
 - id: 94
-  name: ''
+  name: ステルスマイン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 95
-  name: ''
+  name: ストーンキューブ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 96
-  name: ''
+  name: トップウ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 97
-  name: ''
+  name: スイコミ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 98
-  name: ''
+  name: オウエンカ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 99
-  name: ''
+  name: ディスコード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 100
-  name: ''
+  name: ティンパニー
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 101
-  name: ''
+  name: サイレンス
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 102
-  name: ''
+  name: ワラニンギョウ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 103
-  name: ''
+  name: メットガード1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 104
-  name: ''
+  name: メットガード2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 105
-  name: ''
+  name: メットガード3
   power: 0
   type: 0
   player_act: 0
@@ -830,7 +830,7 @@
   description: ＨＰを３００回復
   is_implemented: true
 - id: 117
-  name: ''
+  name: リペアー
   power: 0
   type: 0
   player_act: 0
@@ -851,56 +851,56 @@
   description: 敵エリアの左端タテ一列を自分のエリアに塗り替える
   is_implemented: true
 - id: 120
-  name: ''
+  name: スチールゼリー
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 121
-  name: ''
+  name: スチールパニシュ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 122
-  name: ''
+  name: スチールリベンジ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 123
-  name: ''
+  name: パネルリターン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 124
-  name: ''
+  name: デスマッチ1
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 125
-  name: ''
+  name: デスマッチ2
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 126
-  name: ''
+  name: デスマッチ3
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 127
-  name: ''
+  name: ヘビーゲージ
   power: 0
   type: 0
   player_act: 0
@@ -914,28 +914,28 @@
   description: カスタムゲージの回復スピードがアップ
   is_implemented: true
 - id: 129
-  name: ''
+  name: ブラインド
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 130
-  name: ''
+  name: スーパーキタカゼ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 131
-  name: ''
+  name: ホーリーパネル
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 132
-  name: ''
+  name: ダークホール
   power: 0
   type: 0
   player_act: 0
@@ -949,98 +949,98 @@
   description: 少しの間透明になり、殆どの攻撃に当たらなくなる
   is_implemented: true
 - id: 134
-  name: ''
+  name: ユカシタ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 135
-  name: ''
+  name: バリア
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 136
-  name: ''
+  name: バリア100
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 137
-  name: ''
+  name: バリア200
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 138
-  name: ''
+  name: カキゲンキン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 139
-  name: ''
+  name: ダイコウズイ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 140
-  name: ''
+  name: ヒライシン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 141
-  name: ''
+  name: マヨイノモリ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 142
-  name: ''
+  name: カワリミ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 143
-  name: ''
+  name: シラハドリ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 144
-  name: ''
+  name: ナビスカウト
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 145
-  name: ''
+  name: バッドメディスン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 146
-  name: ''
+  name: コピーダメージ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 147
-  name: ''
+  name: ライフシンクロ
   power: 0
   type: 0
   player_act: 0
@@ -1054,14 +1054,14 @@
   description: 次に選択するチップの威力を１０上げる
   is_implemented: true
 - id: 149
-  name: ''
+  name: ナビ＋２０
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
 - id: 150
-  name: ''
+  name: カラーポイント
   power: 0
   type: 0
   player_act: 0
