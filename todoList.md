@@ -2,10 +2,7 @@
 
 ## フォルテ
 
-- Action
-  - forteActTypeDarknessOverload
 - その他
-  - ダメージ時の初期化処理
   - 攻撃のダメージ量
   - チップ
   - 導線

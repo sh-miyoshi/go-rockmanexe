@@ -36,8 +36,8 @@ const (
 )
 
 var (
-	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 1}
-	debug       = true // TODO: 削除する
+	forteDelays = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 5}
+	debugFlag   = true
 )
 
 type enemyForte struct {
@@ -173,7 +173,7 @@ func (e *enemyForte) Process() (bool, error) {
 			e.waitCount = 40
 			e.moveNum--
 			if e.moveNum <= 0 {
-				if debug {
+				if debugFlag {
 					e.moveNum = 3
 					e.nextState = forteActTypeDarknessOverload
 					return e.stateChange(forteActTypeStand)
@@ -416,6 +416,10 @@ func (e *enemyForte) Process() (bool, error) {
 				return e.clearState()
 			}
 		}
+	case forteActTypeDamage:
+		if e.count == 2*forteDelays[forteActTypeDamage] {
+			return e.clearState()
+		}
 	}
 
 	e.count++
@@ -464,7 +468,6 @@ func (e *enemyForte) DamageProc(dm *damage.Damage) bool {
 		e.state = forteActTypeDamage
 		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
 		e.count = 0
-		// WIP
 		return true
 	}
 
