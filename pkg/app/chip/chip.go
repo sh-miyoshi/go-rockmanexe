@@ -10,14 +10,15 @@ import (
 
 // Chip ...
 type Chip struct {
-	ID          int    `yaml:"id"`
-	Name        string `yaml:"name"`
-	Power       uint   `yaml:"power"`
-	Type        int    `yaml:"type"`
-	PlayerAct   int    `yaml:"player_act"`
-	ForMe       bool   `yaml:"for_me"`
-	KeepCount   int    `yaml:"keep_cnt"`
-	Description string `yaml:"description"`
+	ID            int    `yaml:"id"`
+	Name          string `yaml:"name"`
+	Power         uint   `yaml:"power"`
+	Type          int    `yaml:"type"`
+	PlayerAct     int    `yaml:"player_act"`
+	ForMe         bool   `yaml:"for_me"`
+	KeepCount     int    `yaml:"keep_cnt"`
+	Description   string `yaml:"description"`
+	IsImplemented bool   `yaml:"is_implemented"`
 
 	IsProgramAdvance bool
 }
@@ -120,7 +121,9 @@ func Init(fname string) error {
 func GetIDList() []int {
 	res := []int{}
 	for _, c := range chipData {
-		res = append(res, c.ID)
+		if c.IsImplemented {
+			res = append(res, c.ID)
+		}
 	}
 	return res
 }
@@ -128,6 +131,9 @@ func GetIDList() []int {
 func Get(id int) Chip {
 	for _, c := range chipData {
 		if c.ID == id {
+			if !c.IsImplemented {
+				system.SetError(fmt.Sprintf("Chip ID %d is not implemented", id))
+			}
 			return c
 		}
 	}
@@ -139,6 +145,9 @@ func Get(id int) Chip {
 func GetByName(name string) Chip {
 	for _, c := range chipData {
 		if c.Name == name {
+			if !c.IsImplemented {
+				system.SetError(fmt.Sprintf("Chip ID %d is not implemented", c.ID))
+			}
 			return c
 		}
 	}
