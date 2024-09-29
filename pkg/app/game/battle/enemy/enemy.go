@@ -75,7 +75,11 @@ var (
 		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
 		{CharID: IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
 		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
-		// TODO: コールドマン、サーキラー、エビロンのチップ
+		{CharID: IDShrimpy, ChipID: chip.IDBubbleShot, Code: "b", RequiredLevel: 7},
+		{CharID: IDShrimpy, ChipID: chip.IDBubbleShot, Code: "c", RequiredLevel: 7},
+		{CharID: IDShrimpy, ChipID: chip.IDBubbleSide, Code: "f", RequiredLevel: 9},
+		{CharID: IDShrimpy, ChipID: chip.IDBubbleV, Code: "f", RequiredLevel: 9},
+		// TODO: コールドマン、サーキラー、フォルテのチップ
 	}
 
 	// 設定されてない場所であることがわかるような絶対にあり得ない座標
