@@ -19,6 +19,7 @@ type Chip struct {
 	KeepCount     int    `yaml:"keep_cnt"`
 	Description   string `yaml:"description"`
 	IsImplemented bool   `yaml:"is_implemented"`
+	IconIndex     int    `yaml:"icon_index"`
 
 	IsProgramAdvance bool
 }
@@ -73,7 +74,7 @@ const (
 	IDInvisible   = 133
 	IDAttack10    = 148
 	IDAquaman     = 181
-	IDShockWave   = 229
+	IDShockWave   = 247
 
 	// Program Advance
 	IDPAIndex    = 1000

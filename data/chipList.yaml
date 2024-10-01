@@ -1201,6 +1201,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 170
   name: ブルースＳＰ
   power: 0
@@ -1208,6 +1209,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 171
   name: ブルースＤＳ
   power: 0
@@ -1215,6 +1217,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 172
   name: ナンバーマン
   power: 0
@@ -1222,6 +1225,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 173
   name: ナンバーマンＳＰ
   power: 0
@@ -1229,6 +1233,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 174
   name: ナンバーマンＤＳ
   power: 0
@@ -1236,6 +1241,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 175
   name: メタルマン
   power: 0
@@ -1243,6 +1249,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 176
   name: メタルマンＳＰ
   power: 0
@@ -1250,6 +1257,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 177
   name: メタルマンＤＳ
   power: 0
@@ -1257,6 +1265,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 178
   name: ジャンクマン
   power: 0
@@ -1264,6 +1273,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 179
   name: ジャンクマンＳＰ
   power: 0
@@ -1271,6 +1281,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 180
   name: ジャンクマンＤＳ
   power: 0
@@ -1278,6 +1289,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 181
   name: アクアマン
   power: 70
@@ -1285,6 +1297,7 @@
   player_act: -1
   description: スイドウカンを置きその２マス前方まで放水攻撃
   is_implemented: true
+  icon_index: 169
 - id: 182
   name: アクアマンＳＰ
   power: 0
@@ -1292,6 +1305,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 183
   name: アクアマンＤＳ
   power: 0
@@ -1299,6 +1313,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 184
   name: ウッドマン
   power: 0
@@ -1306,6 +1321,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 185
   name: ウッドマンＳＰ
   power: 0
@@ -1313,6 +1329,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 186
   name: ウッドマンＤＳ
   power: 0
@@ -1320,6 +1337,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 187
   name: タップマン
   power: 0
@@ -1327,6 +1345,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 188
   name: タップマンＳＰ
   power: 0
@@ -1334,6 +1353,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 189
   name: タップマンＤＳ
   power: 0
@@ -1341,6 +1361,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 190
   name: バーナーマン
   power: 0
@@ -1348,6 +1369,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 191
   name: バーナーマンＳＰ
   power: 0
@@ -1355,6 +1377,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 192
   name: バーナーマンＤＳ
   power: 0
@@ -1362,6 +1385,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 193
   name: コールドマン
   power: 0
@@ -1369,6 +1393,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 194
   name: コールドマンＳＰ
   power: 0
@@ -1376,6 +1401,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 195
   name: コールドマンＤＳ
   power: 0
@@ -1383,6 +1409,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 196
   name: スパークマン
   power: 0
@@ -1390,6 +1417,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 197
   name: スパークマンＳＰ
   power: 0
@@ -1397,6 +1425,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 198
   name: スパークマンＤＳ
   power: 0
@@ -1404,6 +1433,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 199
   name: シェードマン
   power: 0
@@ -1411,6 +1441,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 200
   name: シェードマンＳＰ
   power: 0
@@ -1418,6 +1449,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 201
   name: シェードマンＤＳ
   power: 0
@@ -1425,6 +1457,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 202
   name: レーザーマン
   power: 0
@@ -1432,6 +1465,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 203
   name: レーザーマンＳＰ
   power: 0
@@ -1439,6 +1473,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 204
   name: レーザーマンＤＳ
   power: 0
@@ -1446,6 +1481,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 205
   name: ケンドーマン
   power: 0
@@ -1453,6 +1489,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 206
   name: ケンドーマンＳＰ
   power: 0
@@ -1460,6 +1497,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 207
   name: ケンドーマンＤＳ
   power: 0
@@ -1467,6 +1505,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 208
   name: ビデオマン
   power: 0
@@ -1474,6 +1513,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 209
   name: ビデオマンＳＰ
   power: 0
@@ -1481,6 +1521,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 210
   name: ビデオマンＤＳ
   power: 0
@@ -1488,6 +1529,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 211
   name: ''
   power: 0
@@ -1495,6 +1537,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 212
   name: ''
   power: 0
@@ -1502,6 +1545,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 213
   name: ''
   power: 0
@@ -1509,6 +1553,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 214
   name: ''
   power: 0
@@ -1516,6 +1561,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 215
   name: ''
   power: 0
@@ -1523,6 +1569,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 216
   name: ''
   power: 0
@@ -1530,6 +1577,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 217
   name: ''
   power: 0
@@ -1537,6 +1585,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 218
   name: ''
   power: 0
@@ -1544,6 +1593,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 219
   name: ''
   power: 0
@@ -1551,6 +1601,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 220
   name: ''
   power: 0
@@ -1558,6 +1609,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 221
   name: ''
   power: 0
@@ -1565,6 +1617,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 222
   name: ''
   power: 0
@@ -1572,6 +1625,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 223
   name: ''
   power: 0
@@ -1579,6 +1633,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 224
   name: ''
   power: 0
@@ -1586,6 +1641,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 225
   name: ''
   power: 0
@@ -1593,6 +1649,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 226
   name: ''
   power: 0
@@ -1600,6 +1657,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 227
   name: ''
   power: 0
@@ -1607,6 +1665,7 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 - id: 228
   name: ''
   power: 0
@@ -1614,71 +1673,80 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 169
 # ギガチップ(229 ~ 237)
 - id: 229
-  name: ''
+  name: メテオレッドサン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 170
 - id: 230
-  name: ''
+  name: ホーリードリーム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 171
 - id: 231
-  name: ''
+  name: フォルテ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 172
 - id: 232
-  name: ''
+  name: バグチャージ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 173
 - id: 233
-  name: ''
+  name: ブラックバリア
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 174
 - id: 234
-  name: ''
+  name: ブルームーンレイ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 175
 - id: 235
-  name: ''
+  name: シグナルレッド
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 176
 - id: 236
-  name: ''
+  name: フォルテアナザー
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 177
 - id: 237
-  name: ''
+  name: カースオブバグ
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
-# ダークチップ(238 ~ 245)
+  icon_index: 178
 - id: 238
   name: ''
   power: 0
@@ -1686,60 +1754,78 @@
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 179
+# ダークチップ(239 ~ 246)
 - id: 239
-  name: ''
+  name: ダークキャノン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 219
 - id: 240
-  name: ''
+  name: ダークバルカン
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 220
 - id: 241
-  name: ''
+  name: ダークスプレッド
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 221
 - id: 242
-  name: ''
+  name: ダークボム
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 222
 - id: 243
-  name: ''
+  name: ダークソード
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 223
 - id: 244
-  name: ''
+  name: ダークバンブー
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
+  icon_index: 224
 - id: 245
-  name: ''
+  name: ダークリカバリー
   power: 0
   type: 0
   player_act: 0
   description: ''
   is_implemented: false
-# その他のチップ(246 ~)
+  icon_index: 225
 - id: 246
+  name: ダークステージ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 226
+# その他のチップ(246 ~)
+- id: 247
   name: ショックウェーブ
   power: 40
   type: 0
   player_act: 7
   description: 地面に沿って衝撃波を放つ
   is_implemented: true
+  icon_index: 229

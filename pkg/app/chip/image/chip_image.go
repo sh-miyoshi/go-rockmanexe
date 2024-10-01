@@ -7,13 +7,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/stretchr/stew/slice"
 )
 
 var (
 	imgDetails   map[int]int
-	imgIcons     map[int]int
-	imgMonoIcons map[int]int
+	imgIcons     []int
+	imgPAIcon    int
+	imgMonoIcons []int
 	imgTypes     []int
 )
 
@@ -47,44 +47,21 @@ func Init() error {
 	}
 
 	// Load Icon Image
-	tmp = make([]int, 240)
-	tmp2 := make([]int, 240)
+	imgIcons = make([]int, 230)
 	fname = config.ImagePath + "chipInfo/chip_icon.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, imgIcons); res == -1 {
 		return errors.Newf("failed to read chip icon image %s", fname)
 	}
+	imgMonoIcons = make([]int, 230)
 	fname = config.ImagePath + "chipInfo/chip_icon_mono.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp2); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, imgMonoIcons); res == -1 {
 		return errors.Newf("failed to read chip monochro icon image %s", fname)
 	}
 
-	imgIcons = make(map[int]int)
-	imgMonoIcons = make(map[int]int)
-	used := []int{}
-
-	// Set icons by manual
-	for _, id := range chip.GetIDList() {
-		if id >= chip.IDPAIndex {
-			continue
-		}
-
-		// tmp and tmp2 start with 0, but chip id start with 1
-		imgIcons[id] = tmp[id-1]
-		imgMonoIcons[id] = tmp2[id-1]
-		used = append(used, id-1)
-	}
 	fname = config.ImagePath + "chipInfo/pa_icon.png"
-	imgIcons[chip.IDPAIndex] = dxlib.LoadGraph(fname)
-	if imgIcons[chip.IDPAIndex] == -1 {
+	imgPAIcon = dxlib.LoadGraph(fname)
+	if imgPAIcon == -1 {
 		return errors.Newf("failed to load image %s", fname)
-	}
-
-	// Release unused images
-	for i := 0; i < 240; i++ {
-		if !slice.Contains(used, i) {
-			dxlib.DeleteGraph(tmp[i])
-			dxlib.DeleteGraph(tmp2[i])
-		}
 	}
 
 	return nil
@@ -100,13 +77,19 @@ func GetDetail(id int) int {
 
 func GetIcon(id int, colored bool) int {
 	if id > chip.IDPAIndex {
-		return imgIcons[chip.IDPAIndex]
+		return imgPAIcon
+	}
+
+	c := chip.Get(id)
+	index := id
+	if c.IconIndex > 0 {
+		index = c.IconIndex
 	}
 
 	if colored {
-		return imgIcons[id]
+		return imgIcons[index]
 	}
-	return imgMonoIcons[id]
+	return imgMonoIcons[index]
 }
 
 func GetType(typ int) int {
