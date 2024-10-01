@@ -129,6 +129,16 @@ func GetIDList() []int {
 	return res
 }
 
+func GetList() []Chip {
+	res := []Chip{}
+	for _, c := range chipData {
+		if c.IsImplemented {
+			res = append(res, c)
+		}
+	}
+	return res
+}
+
 func Get(id int) Chip {
 	for _, c := range chipData {
 		if c.ID == id {

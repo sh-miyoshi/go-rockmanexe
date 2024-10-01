@@ -276,6 +276,13 @@ func (p *Player) initChipData() {
 			{ID: chip.IDCannon, Code: "*"},
 			{ID: chip.IDCannon, Code: "*"},
 		}
+
+		for _, c := range chip.GetIDList() {
+			p.BackPack = append(p.BackPack, ChipInfo{
+				ID:   c,
+				Code: "*",
+			})
+		}
 	} else {
 		// For production
 		p.ChipFolder = [FolderSize]ChipInfo{

@@ -11,9 +11,8 @@ import (
 
 var (
 	imgDetails   map[int]int
-	imgIcons     []int
-	imgPAIcon    int
-	imgMonoIcons []int
+	imgIcons     map[int]int
+	imgMonoIcons map[int]int
 	imgTypes     []int
 )
 
@@ -47,20 +46,33 @@ func Init() error {
 	}
 
 	// Load Icon Image
-	imgIcons = make([]int, 230)
+	imgIcons = make(map[int]int)
+	imgMonoIcons = make(map[int]int)
+
+	tmp = make([]int, 230)
+	tmp2 := make([]int, 230)
 	fname = config.ImagePath + "chipInfo/chip_icon.png"
-	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, imgIcons); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, tmp); res == -1 {
 		return errors.Newf("failed to read chip icon image %s", fname)
 	}
-	imgMonoIcons = make([]int, 230)
+
 	fname = config.ImagePath + "chipInfo/chip_icon_mono.png"
-	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, imgMonoIcons); res == -1 {
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, tmp2); res == -1 {
 		return errors.Newf("failed to read chip monochro icon image %s", fname)
+	}
+	for _, c := range chip.GetList() {
+		index := c.ID - 1
+		if c.IconIndex > 0 {
+			index = c.IconIndex
+		}
+
+		imgIcons[c.ID] = tmp[index]
+		imgMonoIcons[c.ID] = tmp2[index]
 	}
 
 	fname = config.ImagePath + "chipInfo/pa_icon.png"
-	imgPAIcon = dxlib.LoadGraph(fname)
-	if imgPAIcon == -1 {
+	imgIcons[chip.IDPAIndex] = dxlib.LoadGraph(fname)
+	if imgIcons[chip.IDPAIndex] == -1 {
 		return errors.Newf("failed to load image %s", fname)
 	}
 
@@ -77,19 +89,13 @@ func GetDetail(id int) int {
 
 func GetIcon(id int, colored bool) int {
 	if id > chip.IDPAIndex {
-		return imgPAIcon
-	}
-
-	c := chip.Get(id)
-	index := id
-	if c.IconIndex > 0 {
-		index = c.IconIndex
+		return imgIcons[chip.IDPAIndex]
 	}
 
 	if colored {
-		return imgIcons[index]
+		return imgIcons[id]
 	}
-	return imgMonoIcons[index]
+	return imgMonoIcons[id]
 }
 
 func GetType(typ int) int {
