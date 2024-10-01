@@ -69,7 +69,7 @@ func Get(id int, arg Argument) SkillAnim {
 		return newSpreadGun(arg, core)
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword:
 		return newSword(id, arg, core)
-	case resources.SkillVulcan1:
+	case resources.SkillVulcan1, resources.SkillVulcan2, resources.SkillVulcan3:
 		return newVulcan(arg, core)
 	case resources.SkillPlayerWideShot:
 		return newWideShot(arg, core)

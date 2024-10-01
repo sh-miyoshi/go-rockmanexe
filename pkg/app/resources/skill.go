@@ -12,6 +12,8 @@ const (
 	SkillRecover
 	SkillSpreadGun
 	SkillVulcan1
+	SkillVulcan2
+	SkillVulcan3
 	SkillPlayerShockWave
 	SkillThunderBall
 	SkillPlayerWideShot

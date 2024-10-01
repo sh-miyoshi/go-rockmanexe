@@ -39,18 +39,20 @@
   is_implemented: true
 - id: 6
   name: バルカン2
-  power: 0
+  power: 10
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: 2
+  keep_cnt: 12
+  description: ５連射バルカン　ヒットすると１マス奥にも貫通！
+  is_implemented: true
 - id: 7
   name: バルカン3
-  power: 0
+  power: 10
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: 2
+  keep_cnt: 24
+  description: ７連射バルカン　ヒットすると１マス奥にも貫通！
+  is_implemented: true
 - id: 8
   name: スプレッドガン
   power: 30

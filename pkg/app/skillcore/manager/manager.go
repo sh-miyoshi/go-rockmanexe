@@ -35,6 +35,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.Sword{Arg: arg, SkillID: id}
 	case resources.SkillVulcan1:
 		return &processor.Vulcan{Arg: arg, Times: 3}
+	case resources.SkillVulcan2:
+		return &processor.Vulcan{Arg: arg, Times: 5}
+	case resources.SkillVulcan3:
+		return &processor.Vulcan{Arg: arg, Times: 7}
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
 		res := &processor.WideShot{Arg: arg}
 		res.Init(id == resources.SkillPlayerWideShot)
