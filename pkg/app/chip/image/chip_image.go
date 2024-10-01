@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
-	"github.com/stretchr/stew/slice"
 )
 
 var (
@@ -47,44 +46,34 @@ func Init() error {
 	}
 
 	// Load Icon Image
-	tmp = make([]int, 240)
-	tmp2 := make([]int, 240)
-	fname = config.ImagePath + "chipInfo/chip_icon.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp); res == -1 {
-		return errors.Newf("failed to read chip icon image %s", fname)
-	}
-	fname = config.ImagePath + "chipInfo/chip_icon_mono.png"
-	if res := dxlib.LoadDivGraph(fname, 240, 30, 8, 28, 28, tmp2); res == -1 {
-		return errors.Newf("failed to read chip monochro icon image %s", fname)
-	}
-
 	imgIcons = make(map[int]int)
 	imgMonoIcons = make(map[int]int)
-	used := []int{}
 
-	// Set icons by manual
-	for _, id := range chip.GetIDList() {
-		if id >= chip.IDPAIndex {
-			continue
+	tmp = make([]int, 230)
+	tmp2 := make([]int, 230)
+	fname = config.ImagePath + "chipInfo/chip_icon.png"
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, tmp); res == -1 {
+		return errors.Newf("failed to read chip icon image %s", fname)
+	}
+
+	fname = config.ImagePath + "chipInfo/chip_icon_mono.png"
+	if res := dxlib.LoadDivGraph(fname, 230, 30, 8, 28, 28, tmp2); res == -1 {
+		return errors.Newf("failed to read chip monochro icon image %s", fname)
+	}
+	for _, c := range chip.GetList() {
+		index := c.ID - 1
+		if c.IconIndex > 0 {
+			index = c.IconIndex
 		}
 
-		// tmp and tmp2 start with 0, but chip id start with 1
-		imgIcons[id] = tmp[id-1]
-		imgMonoIcons[id] = tmp2[id-1]
-		used = append(used, id-1)
+		imgIcons[c.ID] = tmp[index]
+		imgMonoIcons[c.ID] = tmp2[index]
 	}
+
 	fname = config.ImagePath + "chipInfo/pa_icon.png"
 	imgIcons[chip.IDPAIndex] = dxlib.LoadGraph(fname)
 	if imgIcons[chip.IDPAIndex] == -1 {
 		return errors.Newf("failed to load image %s", fname)
-	}
-
-	// Release unused images
-	for i := 0; i < 240; i++ {
-		if !slice.Contains(used, i) {
-			dxlib.DeleteGraph(tmp[i])
-			dxlib.DeleteGraph(tmp2[i])
-		}
 	}
 
 	return nil

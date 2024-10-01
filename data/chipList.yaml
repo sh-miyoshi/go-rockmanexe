@@ -1,23 +1,34 @@
 # type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
 # player_act.type: -1(none), 2(shot), 3(cannon), 4(sword), 5(bomb), 6(buster), 7(pick), 8(throw)
+# スタンダードチップ(1 ~ 150)
 - id: 1
   name: キャノン
   power: 40
   type: 0
   player_act: 3
   description: 前方の敵１体を攻撃できるキャノン砲
+  is_implemented: true
 - id: 2
   name: ハイキャノン
   power: 80
   type: 0
   player_act: 3
   description: 前方の敵１体を攻撃できるキャノン砲
+  is_implemented: true
 - id: 3
   name: メガキャノン
   power: 120
   type: 0
   player_act: 3
   description: 前方の敵１体を攻撃できるキャノン砲
+  is_implemented: true
+- id: 4
+  name: エアシュート
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 5
   name: バルカン1
   power: 10
@@ -25,12 +36,28 @@
   player_act: 2
   keep_cnt: 5
   description: ３連射バルカン　ヒットすると１マス奥にも貫通！
+  is_implemented: true
+- id: 6
+  name: バルカン2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 7
+  name: バルカン3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 8
   name: スプレッドガン
   power: 30
   type: 0
   player_act: 2
   description: ヒットするとまわりの１マスに誘爆
+  is_implemented: true
 - id: 9
   name: ヒートショット
   power: 40
@@ -38,6 +65,7 @@
   player_act: 2
   keep_cnt: 2
   description: ヒットすると奥の１マスにも誘爆
+  is_implemented: true
 - id: 10
   name: ヒートブイ
   power: 70
@@ -45,6 +73,7 @@
   player_act: 2
   keep_cnt: 2
   description: ヒットするとななめ奥にも誘爆
+  is_implemented: true
 - id: 11
   name: ヒートサイド
   power: 100
@@ -52,36 +81,70 @@
   player_act: 2
   keep_cnt: 2
   description: ヒットすると上下１マスにも誘爆
+  is_implemented: true
 - id: 12
   name: バブルショット
   power: 50
   type: 10
   player_act: 2
   description: ヒットすると奥の１マスにも誘爆
+  is_implemented: true
 - id: 13
   name: バブルブイ
   power: 80
   type: 10
   player_act: 2
   description: ヒットするとななめ奥にも誘爆
+  is_implemented: true
 - id: 14
   name: バブルサイド
   power: 110
   type: 10
   player_act: 2
   description: ヒットすると上下１マスにも誘爆
+  is_implemented: true
 - id: 15
   name: サンダーボール1
   power: 40
   type: 11
   player_act: -1
   description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+  is_implemented: true
+- id: 16
+  name: サンダーボール2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 17
+  name: サンダーボール3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 18
   name: ワイドショット1
   power: 60
   type: 10
   player_act: 2
   description: 横３マスのワイドショットを前方へ発射！
+  is_implemented: true
+- id: 19
+  name: ワイドショット2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 20
+  name: ワイドショット3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 21
   name: フレイムライン1
   power: 70
@@ -89,6 +152,7 @@
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
+  is_implemented: true
 - id: 22
   name: フレイムライン2
   power: 120
@@ -96,6 +160,7 @@
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
+  is_implemented: true
 - id: 23
   name: フレイムライン3
   power: 170
@@ -103,6 +168,133 @@
   player_act: 2
   keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
+  is_implemented: true
+- id: 24
+  name: ガンデルソル1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 25
+  name: ガンデルソル2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 26
+  name: ガンデルソル3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 27
+  name: ブリザード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 28
+  name: ヒートブレス
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 29
+  name: エレキショック
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 30
+  name: ウッディパウダー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 31
+  name: サンドリング
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 32
+  name: ツインファング1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 33
+  name: ツインファング2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 34
+  name: ツインファング3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 35
+  name: エレメントフレア
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 36
+  name: エレメントアイス
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 37
+  name: エレメントリース
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 38
+  name: エレメントサンド
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 39
+  name: マグボルト1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 40
+  name: マグボルト2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 41
+  name: マグボルト3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 42
   name: トルネード
   power: 20
@@ -110,66 +302,469 @@
   player_act: 2
   description: ２マス前方に最大８ヒットの竜巻を発生させる
   keep_cnt: 10
+  is_implemented: true
+- id: 43
+  name: ノイズストーム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 44
   name: ミニボム
   power: 50
   type: 0
   player_act: 5
   description: ３マス前に落ちるボムを投げつける
+  is_implemented: true
+- id: 45
+  name: エナジーボム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 46
+  name: メガエナジーボム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 47
+  name: ホウガン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 48
+  name: ブラックボム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 49
+  name: カンケツセン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 50
+  name: バグボム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 51
+  name: バウンドノート1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 52
+  name: バウンドノート2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 53
+  name: バウンドノート3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 54
   name: ソード
   power: 80
   type: 3
   player_act: 4
   description: 目の前の敵を切りつける！攻撃範囲は１マス
+  is_implemented: true
 - id: 55
   name: ワイドソード
   power: 80
   type: 3
   player_act: 4
   description: 目の前の敵を切りつける！範囲は縦３マス
+  is_implemented: true
 - id: 56
   name: ロングソード
   power: 80
   type: 3
   player_act: 4
   description: 目の前の敵を切りつける！範囲は横２マス
+  is_implemented: true
+- id: 57
+  name: ワイドブレード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 58
+  name: ロングブレード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 59
+  name: カスタムソード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 60
+  name: バリアブルソード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 61
+  name: イアイフォーム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 62
+  name: フウジンラケット
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 63
+  name: エアホッケー1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 64
+  name: エアホッケー2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 65
+  name: エアホッケー3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 66
+  name: カウンター1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 67
+  name: カウンター2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 68
+  name: カウンター3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 69
   name: ブーメラン1
   power: 60
   type: 0
   player_act: -1
   description: バトルフィールドの端にそって飛ぶ貫通ブーメラン
+  is_implemented: true
+- id: 70
+  name: ブーメラン2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 71
+  name: ブーメラン3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 72
+  name: サイドバンブー1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 73
+  name: サイドバンブー2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 74
+  name: サイドバンブー3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 75
   name: バンブーランス
   power: 100
   type: 12
   player_act: -1
   description: エリアの右端に竹やり攻撃　ヒットした敵を前に押し出す
+  is_implemented: true
+- id: 76
+  name: ホワイトウェブ1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 77
+  name: ホワイトウェブ2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 78
+  name: ホワイトウェブ3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 79
+  name: モコラッシュ1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 80
+  name: モコラッシュ2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 81
+  name: モコラッシュ3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 82
+  name: サークルガン1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 83
+  name: サークルガン2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 84
+  name: サークルガン3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 85
+  name: カモンスネーク
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 86
+  name: マグナム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 87
+  name: ビッグハンマー1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 88
+  name: ビッグハンマー2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 89
+  name: ビッグハンマー3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 90
+  name: ボーイズボム1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 91
+  name: ボーイズボム2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 92
+  name: ボーイズボム3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 93
   name: カウントボム
   power: 150
   type: 0
   player_act: -1
   description: 敵エリア全体を巻き込む時限爆弾を設置
+  is_implemented: true
+- id: 94
+  name: ステルスマイン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 95
+  name: ストーンキューブ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 96
+  name: トップウ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 97
+  name: スイコミ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 98
+  name: オウエンカ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 99
+  name: ディスコード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 100
+  name: ティンパニー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 101
+  name: サイレンス
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 102
+  name: ワラニンギョウ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 103
+  name: メットガード1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 104
+  name: メットガード2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 105
+  name: メットガード3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 106
   name: クラックアウト
   power: 0
   type: 4
   player_act: 8
   description: パネル破壊攻撃！目の前の１マスを消し去ってしまう
+  is_implemented: true
 - id: 107
   name: ダブルクラック
   power: 0
   type: 4
   player_act: 8
   description: パネル破壊攻撃！前の横２マスをを消し去ってしまう
+  is_implemented: true
 - id: 108
   name: トリプルクラック
   power: 0
   type: 4
   player_act: 8
   description: パネル破壊攻撃！前の縦３マスをを消し去ってしまう
+  is_implemented: true
 - id: 109
   name: リカバリー10
   power: 10
@@ -177,6 +772,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを１０回復
+  is_implemented: true
 - id: 110
   name: リカバリー30
   power: 30
@@ -184,6 +780,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを３０回復
+  is_implemented: true
 - id: 111
   name: リカバリー50
   power: 50
@@ -191,6 +788,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを５０回復
+  is_implemented: true
 - id: 112
   name: リカバリー80
   power: 80
@@ -198,6 +796,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを８０回復
+  is_implemented: true
 - id: 113
   name: リカバリー120
   power: 120
@@ -205,6 +804,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを１２０回復
+  is_implemented: true
 - id: 114
   name: リカバリー150
   power: 150
@@ -212,6 +812,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを１５０回復
+  is_implemented: true
 - id: 115
   name: リカバリー200
   power: 200
@@ -219,6 +820,7 @@
   player_act: -1
   for_me: true
   description: ＨＰを２００回復
+  is_implemented: true
 - id: 116
   name: リカバリー300
   power: 300
@@ -226,45 +828,1004 @@
   player_act: -1
   for_me: true
   description: ＨＰを３００回復
+  is_implemented: true
+- id: 117
+  name: リペアー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 118
   name: パネルスチール
   power: 0
   type: 0
   player_act: -1
   description: 前方の敵エリア1マスを自分のエリアに塗り替える
+  is_implemented: true
 - id: 119
   name: エリアスチール
   power: 0
   type: 0
   player_act: -1
   description: 敵エリアの左端タテ一列を自分のエリアに塗り替える
+  is_implemented: true
+- id: 120
+  name: スチールゼリー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 121
+  name: スチールパニシュ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 122
+  name: スチールリベンジ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 123
+  name: パネルリターン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 124
+  name: デスマッチ1
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 125
+  name: デスマッチ2
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 126
+  name: デスマッチ3
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 127
+  name: ヘビーゲージ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 128
   name: クイックゲージ
   power: 0
   type: 0
   player_act: -1
   description: カスタムゲージの回復スピードがアップ
+  is_implemented: true
+- id: 129
+  name: ブラインド
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 130
+  name: スーパーキタカゼ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 131
+  name: ホーリーパネル
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 132
+  name: ダークホール
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 133
   name: インビジブル
   power: 0
   type: 7
   player_act: -1
   description: 少しの間透明になり、殆どの攻撃に当たらなくなる
+  is_implemented: true
+- id: 134
+  name: ユカシタ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 135
+  name: バリア
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 136
+  name: バリア100
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 137
+  name: バリア200
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 138
+  name: カキゲンキン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 139
+  name: ダイコウズイ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 140
+  name: ヒライシン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 141
+  name: マヨイノモリ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 142
+  name: カワリミ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 143
+  name: シラハドリ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 144
+  name: ナビスカウト
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 145
+  name: バッドメディスン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 146
+  name: コピーダメージ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 147
+  name: ライフシンクロ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
 - id: 148
   name: アタック＋１０
   power: 0
   type: 0
   player_act: -1
   description: 次に選択するチップの威力を１０上げる
-- id: 211
+  is_implemented: true
+- id: 149
+  name: ナビ＋２０
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 150
+  name: カラーポイント
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+# メガチップ(151 ~ 210)
+- id: 151
+  name: スーパーバルカン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 152
+  name: ネオバリアブル
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 153
+  name: リュウセイグン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 154
+  name: ゴッドハンマー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 155
+  name: オジゾウサン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 156
+  name: ジェラシー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 157
+  name: バグチェーン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 158
+  name: バグシュウセイ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 159
+  name: フルカスタム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 160
+  name: ドリームオーラ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 161
+  name: サンクチュアリ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 162
+  name: アタック＋３０
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 163
+  name: ダブルポイント
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 164
+  name: ムラマサブレード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 165
+  name: ポイズンアヌビス
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 166
+  name: エレメントダーク
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 167
+  name: ブラックウイング
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 168
+  name: ダークライン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+- id: 169
+  name: ブルース
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 170
+  name: ブルースＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 171
+  name: ブルースＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 172
+  name: ナンバーマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 173
+  name: ナンバーマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 174
+  name: ナンバーマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 175
+  name: メタルマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 176
+  name: メタルマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 177
+  name: メタルマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 178
+  name: ジャンクマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 179
+  name: ジャンクマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 180
+  name: ジャンクマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 181
   name: アクアマン
   power: 70
   type: 10
   player_act: -1
   description: スイドウカンを置きその２マス前方まで放水攻撃
+  is_implemented: true
+  icon_index: 168
+- id: 182
+  name: アクアマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 183
+  name: アクアマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 184
+  name: ウッドマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 185
+  name: ウッドマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 186
+  name: ウッドマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 187
+  name: タップマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 188
+  name: タップマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 189
+  name: タップマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 190
+  name: バーナーマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 191
+  name: バーナーマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 192
+  name: バーナーマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 193
+  name: コールドマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 194
+  name: コールドマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 195
+  name: コールドマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 196
+  name: スパークマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 197
+  name: スパークマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 198
+  name: スパークマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 199
+  name: シェードマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 200
+  name: シェードマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 201
+  name: シェードマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 202
+  name: レーザーマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 203
+  name: レーザーマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 204
+  name: レーザーマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 205
+  name: ケンドーマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 206
+  name: ケンドーマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 207
+  name: ケンドーマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 208
+  name: ビデオマン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 209
+  name: ビデオマンＳＰ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 210
+  name: ビデオマンＤＳ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 211
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 212
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 213
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 214
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 215
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 216
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 217
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 218
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 219
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 220
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 221
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 222
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 223
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 224
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 225
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 226
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 227
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+- id: 228
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 168
+# ギガチップ(229 ~ 237)
 - id: 229
+  name: メテオレッドサン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 170
+- id: 230
+  name: ホーリードリーム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 171
+- id: 231
+  name: フォルテ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 172
+- id: 232
+  name: バグチャージ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 173
+- id: 233
+  name: ブラックバリア
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 174
+- id: 234
+  name: ブルームーンレイ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 175
+- id: 235
+  name: シグナルレッド
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 176
+- id: 236
+  name: フォルテアナザー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 177
+- id: 237
+  name: カースオブバグ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 178
+- id: 238
+  name: ''
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 179
+# ダークチップ(239 ~ 246)
+- id: 239
+  name: ダークキャノン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 219
+- id: 240
+  name: ダークバルカン
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 220
+- id: 241
+  name: ダークスプレッド
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 221
+- id: 242
+  name: ダークボム
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 222
+- id: 243
+  name: ダークソード
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 223
+- id: 244
+  name: ダークバンブー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 224
+- id: 245
+  name: ダークリカバリー
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 225
+- id: 246
+  name: ダークステージ
+  power: 0
+  type: 0
+  player_act: 0
+  description: ''
+  is_implemented: false
+  icon_index: 226
+# その他のチップ(246 ~)
+- id: 247
   name: ショックウェーブ
   power: 40
   type: 0
   player_act: 7
   description: 地面に沿って衝撃波を放つ
+  is_implemented: true
+  icon_index: 229
