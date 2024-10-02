@@ -69,7 +69,7 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillPlayerShockWave
 	case chip.IDThunderBall:
 		return resources.SkillThunderBall
-	case chip.IDWideShot:
+	case chip.IDWideShot1, chip.IDWideShot2, chip.IDWideShot3:
 		return resources.SkillPlayerWideShot
 	case chip.IDBoomerang1:
 		return resources.SkillBoomerang

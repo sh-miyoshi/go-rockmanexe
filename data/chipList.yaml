@@ -135,18 +135,18 @@
   is_implemented: true
 - id: 19
   name: ワイドショット2
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 80
+  type: 10
+  player_act: 2
+  description: 横３マスのワイドショットを前方へ発射！
+  is_implemented: true
 - id: 20
   name: ワイドショット3
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 100
+  type: 10
+  player_act: 2
+  description: 横３マスのワイドショットを前方へ発射！
+  is_implemented: true
 - id: 21
   name: フレイムライン1
   power: 70

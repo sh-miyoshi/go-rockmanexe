@@ -306,7 +306,7 @@ func (p *Player) initChipData() {
 			{ID: chip.IDWideSword, Code: "s"},
 			{ID: chip.IDVulcan1, Code: "b"},
 			{ID: chip.IDVulcan1, Code: "b"},
-			{ID: chip.IDWideShot, Code: "m"},
+			{ID: chip.IDWideShot1, Code: "m"},
 			{ID: chip.IDHeatShot, Code: "f"},
 			{ID: chip.IDFlameLine1, Code: "f"},
 			{ID: chip.IDFlameLine1, Code: "f"},

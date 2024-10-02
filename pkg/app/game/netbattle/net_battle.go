@@ -80,7 +80,7 @@ var (
 		chip.IDWideSword,
 		chip.IDLongSword,
 		chip.IDVulcan1,
-		chip.IDWideShot,
+		chip.IDWideShot1,
 		chip.IDHeatShot,
 		chip.IDHeatV,
 		chip.IDHeatSide,
