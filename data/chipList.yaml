@@ -39,18 +39,20 @@
   is_implemented: true
 - id: 6
   name: バルカン2
-  power: 0
+  power: 10
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: 2
+  keep_cnt: 12
+  description: ５連射バルカン　ヒットすると１マス奥にも貫通！
+  is_implemented: true
 - id: 7
   name: バルカン3
-  power: 0
+  power: 10
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: 2
+  keep_cnt: 24
+  description: ７連射バルカン　ヒットすると１マス奥にも貫通！
+  is_implemented: true
 - id: 8
   name: スプレッドガン
   power: 30
@@ -112,18 +114,18 @@
   is_implemented: true
 - id: 16
   name: サンダーボール2
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 50
+  type: 11
+  player_act: -1
+  description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+  is_implemented: true
 - id: 17
   name: サンダーボール3
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 60
+  type: 11
+  player_act: -1
+  description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+  is_implemented: true
 - id: 18
   name: ワイドショット1
   power: 60
@@ -133,18 +135,18 @@
   is_implemented: true
 - id: 19
   name: ワイドショット2
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 80
+  type: 10
+  player_act: 2
+  description: 横３マスのワイドショットを前方へ発射！
+  is_implemented: true
 - id: 20
   name: ワイドショット3
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 100
+  type: 10
+  player_act: 2
+  description: 横３マスのワイドショットを前方へ発射！
+  is_implemented: true
 - id: 21
   name: フレイムライン1
   power: 70
