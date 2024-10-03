@@ -135,12 +135,12 @@ func (f *menuFolder) Process() bool {
 			f.selected = -1
 		}
 	} else if inputs.CheckKey(inputs.KeyCancel) == 1 {
+		sound.On(resources.SECancel)
 		if f.selected == -1 {
 			return true
 		} else {
 			f.selected = -1
 		}
-		sound.On(resources.SECancel)
 	} else {
 		if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 			if f.pointer[f.currentWindow] > 0 {

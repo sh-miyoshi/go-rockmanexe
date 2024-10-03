@@ -114,18 +114,18 @@
   is_implemented: true
 - id: 16
   name: サンダーボール2
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 50
+  type: 11
+  player_act: -1
+  description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+  is_implemented: true
 - id: 17
   name: サンダーボール3
-  power: 0
-  type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  power: 60
+  type: 11
+  player_act: -1
+  description: ゆっくりと進む追尾電気攻撃　当たるとマヒする！
+  is_implemented: true
 - id: 18
   name: ワイドショット1
   power: 60
