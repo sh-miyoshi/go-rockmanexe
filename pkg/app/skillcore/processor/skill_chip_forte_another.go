@@ -31,9 +31,14 @@ func (p *ChipForteAnother) Init() {
 func (p *ChipForteAnother) Process() (bool, error) {
 	switch p.state {
 	case resources.SkillChipForteAnotherStateInit:
-		p.Arg.Cutin("フォルテアナザー", 300)
-		p.setState(resources.SkillChipForteAnotherStateAppear)
-		return false, nil
+		if p.count == 0 {
+			p.Arg.Cutin("フォルテアナザー", 300)
+		}
+		if p.count == 30 {
+			p.Arg.MakeInvisible(p.Arg.OwnerID, 5) // ロックマンを消す
+			p.setState(resources.SkillChipForteAnotherStateAppear)
+			return false, nil
+		}
 	case resources.SkillChipForteAnotherStateAppear:
 		if p.count == 70 {
 			p.setState(resources.SkillChipForteAnotherStateAttack)
@@ -48,6 +53,10 @@ func (p *ChipForteAnother) Process() (bool, error) {
 
 func (p *ChipForteAnother) GetCount() int {
 	return p.count
+}
+
+func (p *ChipForteAnother) GetPos() point.Point {
+	return p.Arg.GetObjectPos(p.Arg.OwnerID)
 }
 
 func (p *ChipForteAnother) GetState() int {

@@ -9,7 +9,7 @@ import (
 type DrawForteHellsRolling struct {
 }
 
-func (p *DrawForteHellsRolling) Draw(prev, current, next point.Point, count int, nextStepCount int) {
+func (p *DrawForteHellsRolling) Draw(prev, current, next point.Point, count int, nextStepCount int, isFlip bool) {
 	ofsx := battlecommon.GetOffset(next.X, current.X, prev.X, count%nextStepCount, nextStepCount, battlecommon.PanelSize.X) - battlecommon.PanelSize.X/2
 	ofsy := battlecommon.GetOffset(next.Y, current.Y, prev.Y, count%nextStepCount, nextStepCount, battlecommon.PanelSize.Y)
 	n := 0
@@ -17,6 +17,12 @@ func (p *DrawForteHellsRolling) Draw(prev, current, next point.Point, count int,
 	if ydiff != 0 {
 		n = 2
 	}
+	opt := dxlib.DrawRotaGraphOption{}
+	if isFlip {
+		flag := int32(dxlib.TRUE)
+		opt.ReverseXFlag = &flag
+	}
+
 	viewPos := battlecommon.ViewPos(current)
-	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1.0, 0.0, images[imageTypeForteHellsRolling][n], true)
+	dxlib.DrawRotaGraph(viewPos.X+ofsx, viewPos.Y+ofsy, 1.0, 0.0, images[imageTypeForteHellsRolling][n], true, opt)
 }

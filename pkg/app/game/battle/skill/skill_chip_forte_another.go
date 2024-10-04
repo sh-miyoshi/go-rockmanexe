@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -15,7 +16,7 @@ type chipForteAnother struct {
 	Arg  skillcore.Argument
 	Core *processor.ChipForteAnother
 
-	drawer skilldraw.DrawForteHellsRolling
+	drawer skilldraw.DrawChipForteAnother
 }
 
 func newChipForteAnother(objID string, arg skillcore.Argument, core skillcore.SkillCore) *chipForteAnother {
@@ -27,11 +28,18 @@ func newChipForteAnother(objID string, arg skillcore.Argument, core skillcore.Sk
 }
 
 func (p *chipForteAnother) Draw() {
-	if p.Core.GetState() == resources.SkillChipForteAnotherStateAttack {
+	state := p.Core.GetState()
+	pm := skilldraw.DrawChipForteAnotherParam{}
+	if state == resources.SkillChipForteAnotherStateAttack {
 		prev, current, next := p.Core.GetAttackPos()
-		// WIP: flip
-		p.drawer.Draw(prev, current, next, p.Core.GetAttackCount(), p.Core.GetAttackNextStepCount())
+		pm.AttackPrevPos = prev
+		pm.AttackCurrentPos = current
+		pm.AttackNextPos = next
+		pm.AttackCount = p.Core.GetAttackCount()
+		pm.AttackNextStepCount = p.Core.GetAttackNextStepCount()
 	}
+	view := battlecommon.ViewPos(p.Core.GetPos())
+	p.drawer.Draw(p.Core.GetCount(), state, view, pm)
 }
 
 func (p *chipForteAnother) Process() (bool, error) {
