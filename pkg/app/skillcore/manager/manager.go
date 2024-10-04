@@ -104,6 +104,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillForteDarknessOverload:
 		return &processor.ForteDarknessOverload{Arg: arg}
+	case resources.SkillChipForteAnother:
+		return &processor.ChipForteAnother{Arg: arg}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

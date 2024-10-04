@@ -51,6 +51,7 @@ const (
 	SkillForteDarkArmBladeType2
 	SkillForteShootingBuster
 	SkillForteDarknessOverload
+	SkillChipForteAnother
 
 	SkillFailed
 )
