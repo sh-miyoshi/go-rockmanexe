@@ -21,19 +21,26 @@ type ForteHellsRolling struct {
 	currentPos  point.Point
 	nextPos     point.Point
 	curveDirect int
+	isPlayer    bool
 }
 
-func (p *ForteHellsRolling) Init(skillID int) {
+func (p *ForteHellsRolling) Init(skillID int, isPlayer bool) {
 	p.count = 0
 	p.currentPos = p.Arg.GetObjectPos(p.Arg.OwnerID)
 	p.prevPos = p.currentPos
 	p.nextPos = p.currentPos
+	p.isPlayer = isPlayer
 	if skillID == resources.SkillForteHellsRollingUp {
 		p.nextPos.Y--
 	} else {
 		p.nextPos.Y++
 	}
-	p.nextPos.X--
+
+	if isPlayer {
+		p.nextPos.X++
+	} else {
+		p.nextPos.X--
+	}
 	p.curveDirect = 0
 }
 
@@ -46,12 +53,20 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 			return true, nil
 		}
 
-		p.nextPos.X--
+		if p.isPlayer {
+			p.nextPos.X++
+		} else {
+			p.nextPos.X--
+		}
 		p.nextPos.Y += p.curveDirect
 
 		// 一度だけプレイヤー方向に曲がる
 		if p.curveDirect == 0 {
 			objType := objanim.ObjTypePlayer
+			if p.isPlayer {
+				objType = objanim.ObjTypeEnemy
+			}
+
 			objs := p.Arg.GetObjects(objanim.Filter{ObjType: objType})
 			if len(objs) > 0 && math.Abs(objs[0].Pos.X-p.nextPos.X) == 1 {
 				p.curveDirect = math.Sign(objs[0].Pos.Y - p.nextPos.Y)

@@ -85,3 +85,9 @@ const (
 	SkillShrimpyAttackStateBegin int = iota
 	SkillShrimpyAttackStateMove
 )
+
+const (
+	SkillChipForteAnotherStateInit int = iota
+	SkillChipForteAnotherStateAppear
+	SkillChipForteAnotherStateAttack
+)
