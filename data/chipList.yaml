@@ -1684,7 +1684,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 170
+  icon_index: 169
 - id: 230
   name: ホーリードリーム
   power: 0
@@ -1692,7 +1692,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 171
+  icon_index: 170
 - id: 231
   name: フォルテ
   power: 0
@@ -1700,7 +1700,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 172
+  icon_index: 171
 - id: 232
   name: バグチャージ
   power: 0
@@ -1708,7 +1708,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 173
+  icon_index: 172
 - id: 233
   name: ブラックバリア
   power: 0
@@ -1716,7 +1716,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 174
+  icon_index: 173
 - id: 234
   name: ブルームーンレイ
   power: 0
@@ -1724,7 +1724,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 175
+  icon_index: 174
 - id: 235
   name: シグナルレッド
   power: 0
@@ -1732,15 +1732,15 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 176
+  icon_index: 175
 - id: 236
   name: フォルテアナザー
-  power: 0
+  power: 160
   type: 0
-  player_act: 0
+  player_act: -1
   description: ''
-  is_implemented: false
-  icon_index: 177
+  is_implemented: true
+  icon_index: 176
 - id: 237
   name: カースオブバグ
   power: 0
@@ -1748,7 +1748,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 178
+  icon_index: 177
 - id: 238
   name: ''
   power: 0
@@ -1756,7 +1756,7 @@
   player_act: 0
   description: ''
   is_implemented: false
-  icon_index: 179
+  icon_index: 178
 # ダークチップ(239 ~ 246)
 - id: 239
   name: ダークキャノン
