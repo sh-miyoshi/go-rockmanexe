@@ -51,6 +51,7 @@ const (
 	SkillForteDarkArmBladeType2
 	SkillForteShootingBuster
 	SkillForteDarknessOverload
+	SkillChipForteAnother
 
 	SkillFailed
 )
@@ -83,4 +84,11 @@ const (
 const (
 	SkillShrimpyAttackStateBegin int = iota
 	SkillShrimpyAttackStateMove
+)
+
+const (
+	SkillChipForteAnotherStateInit int = iota
+	SkillChipForteAnotherStateAppear
+	SkillChipForteAnotherStateAttack
+	SkillChipForteAnotherStateEnd
 )

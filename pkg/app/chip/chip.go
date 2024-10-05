@@ -80,6 +80,7 @@ const (
 	IDInvisible    = 133
 	IDAttack10     = 148
 	IDAquaman      = 181
+	IDForteAnother = 236
 	IDShockWave    = 247
 
 	// Program Advance

@@ -40,6 +40,7 @@ type EnemyChipInfo struct {
 	ChipID        int
 	Code          string
 	RequiredLevel int
+	IsOnlyOne     bool
 }
 
 type EnemyParam struct {
@@ -79,7 +80,8 @@ var (
 		{CharID: IDShrimpy, ChipID: chip.IDBubbleShot, Code: "c", RequiredLevel: 7},
 		{CharID: IDShrimpy, ChipID: chip.IDBubbleSide, Code: "f", RequiredLevel: 9},
 		{CharID: IDShrimpy, ChipID: chip.IDBubbleV, Code: "f", RequiredLevel: 9},
-		// TODO: コールドマン、サーキラー、フォルテのチップ
+		{CharID: IDForte, ChipID: chip.IDForteAnother, Code: "x", RequiredLevel: 1, IsOnlyOne: true},
+		// TODO: コールドマン、サーキラーのチップ
 	}
 
 	// 設定されてない場所であることがわかるような絶対にあり得ない座標

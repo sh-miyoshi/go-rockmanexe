@@ -92,7 +92,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return &processor.BubbleShot{Arg: arg, SkillID: id}
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		res := &processor.ForteHellsRolling{Arg: arg}
-		res.Init(id)
+		res.Init(id, false)
 		return res
 	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
 		res := &processor.ForteDarkArmBlade{Arg: arg}
@@ -104,6 +104,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillForteDarknessOverload:
 		return &processor.ForteDarknessOverload{Arg: arg}
+	case resources.SkillChipForteAnother:
+		res := &processor.ChipForteAnother{Arg: arg}
+		res.Init()
+		return res
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

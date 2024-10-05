@@ -6,6 +6,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"github.com/stretchr/stew/slice"
 )
 
 const (
@@ -50,6 +51,8 @@ const (
 	imageTypeForteDarkArmBlade
 	imageTypeForteShootingBuster
 	imageTypeForteDarknessOverload
+	imageTypeForteStand
+	imageTypeForteAtatckHellsRolling
 
 	imageTypeMax
 )
@@ -297,6 +300,25 @@ func LoadImages() error {
 	images[imageTypeForteDarknessOverload] = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 4, 2, 240, 220, images[imageTypeForteDarknessOverload]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	tmp := make([]int, 45)
+	fname = config.ImagePath + "battle/character/フォルテ_all.png"
+	if res := dxlib.LoadDivGraph(fname, 45, 9, 5, 136, 172, tmp); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+	used := []int{0}
+	images[imageTypeForteStand] = make([]int, 1)
+	images[imageTypeForteStand][0] = tmp[0]
+	images[imageTypeForteAtatckHellsRolling] = make([]int, 9)
+	for i := 0; i < 9; i++ {
+		images[imageTypeForteAtatckHellsRolling][i] = tmp[i+18]
+		used = append(used, i+18)
+	}
+	for i := 0; i < 45; i++ {
+		if !slice.Contains(used, i) {
+			dxlib.DeleteGraph(tmp[i])
+		}
 	}
 
 	return nil
