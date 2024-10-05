@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/titlemsg"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win/reward"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
@@ -219,9 +220,17 @@ func Process() error {
 	case stateResultWin:
 		isRunAnim = true
 		if battleCount == 0 {
-			if err := win.Init(win.WinArg{
+			enemies := []reward.EnemyParam{}
+			for _, e := range enemyList {
+				enemies = append(enemies, reward.EnemyParam{
+					CharID: e.CharID,
+					IsBoss: enemy.IsBoss(e.CharID),
+				})
+			}
+
+			if err := win.Init(reward.WinArg{
 				GameTime:        gameCount,
-				DeletedEnemies:  enemyList,
+				DeletedEnemies:  enemies,
 				PlayerMoveNum:   playerInst.MoveNum,
 				PlayerDamageNum: playerInst.DamageNum,
 			}, basePlayerInst); err != nil {
