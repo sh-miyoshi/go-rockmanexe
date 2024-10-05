@@ -9,6 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 )
 
 type chipForteAnother struct {
@@ -49,6 +50,7 @@ func (p *chipForteAnother) Process() (bool, error) {
 	}
 	if end {
 		field.SetBlackoutCount(0)
+		logger.Debug("Forte Another Skill End")
 		return true, nil
 	}
 	return false, nil

@@ -45,7 +45,16 @@ func (p *ChipForteAnother) Process() (bool, error) {
 			return false, nil
 		}
 	case resources.SkillChipForteAnotherStateAttack:
-		return p.attacks[p.attackNo].Process()
+		end, err := p.attacks[p.attackNo].Process()
+		if err != nil {
+			return false, err
+		}
+		if end {
+			p.attackNo++
+			if p.attackNo >= 4 {
+				return true, nil
+			}
+		}
 	}
 	p.count++
 	return false, nil
