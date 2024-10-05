@@ -7,7 +7,7 @@ COPY cmd/router cmd/router
 COPY pkg pkg
 RUN go build ./cmd/router
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 WORKDIR /app
 COPY --from=builder /app/router router
