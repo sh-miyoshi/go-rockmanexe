@@ -19,8 +19,13 @@ type DrawChipForteAnother struct {
 }
 
 func (p *DrawChipForteAnother) Draw(count int, state int, viewPos point.Point, param DrawChipForteAnotherParam) {
+	flag := int32(dxlib.TRUE)
+	opt := dxlib.DrawRotaGraphOption{
+		ReverseXFlag: &flag,
+	}
+
 	if state == resources.SkillChipForteAnotherStateAppear {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteStand][0], true)
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteStand][0], true, opt)
 	}
 
 	if state == resources.SkillChipForteAnotherStateAttack {
@@ -29,7 +34,7 @@ func (p *DrawChipForteAnother) Draw(count int, state int, viewPos point.Point, p
 			n = len(images[imageTypeForteAtatckHellsRolling]) - 1
 		}
 
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteAtatckHellsRolling][n], true)
+		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteAtatckHellsRolling][n], true, opt)
 		p.drawer.Draw(param.AttackPrevPos, param.AttackCurrentPos, param.AttackNextPos, param.AttackCount, param.AttackNextStepCount, true)
 	}
 }
