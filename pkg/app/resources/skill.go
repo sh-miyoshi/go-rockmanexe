@@ -90,4 +90,5 @@ const (
 	SkillChipForteAnotherStateInit int = iota
 	SkillChipForteAnotherStateAppear
 	SkillChipForteAnotherStateAttack
+	SkillChipForteAnotherStateEnd
 )

@@ -32,7 +32,7 @@ func (p *ChipForteAnother) Process() (bool, error) {
 	switch p.state {
 	case resources.SkillChipForteAnotherStateInit:
 		if p.count == 0 {
-			p.Arg.Cutin("フォルテアナザー", 300)
+			p.Arg.Cutin("フォルテアナザー", 500)
 		}
 		if p.count == 30 {
 			p.Arg.MakeInvisible(p.Arg.OwnerID, 5) // ロックマンを消す
@@ -52,8 +52,14 @@ func (p *ChipForteAnother) Process() (bool, error) {
 		if end {
 			p.attackNo++
 			if p.attackNo >= 4 {
-				return true, nil
+				p.setState(resources.SkillChipForteAnotherStateEnd)
+				return false, nil
 			}
+		}
+	case resources.SkillChipForteAnotherStateEnd:
+		if p.count == 30 {
+			p.Arg.MakeInvisible(p.Arg.OwnerID, 0)
+			return true, nil
 		}
 	}
 	p.count++
