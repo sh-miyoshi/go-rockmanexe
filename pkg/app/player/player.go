@@ -202,6 +202,20 @@ func (p *Player) UpdateMoney(diff int) {
 	p.Zenny = uint(tmp)
 }
 
+func (p *Player) HaveChip(chipID int) bool {
+	for _, c := range p.ChipFolder {
+		if c.ID == chipID {
+			return true
+		}
+	}
+	for _, c := range p.BackPack {
+		if c.ID == chipID {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *Player) AddChip(id int, code string) error {
 	n := 0
 	for _, c := range p.ChipFolder {

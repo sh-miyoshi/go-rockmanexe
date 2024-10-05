@@ -87,6 +87,10 @@ func Init(args WinArg, plyr *player.Player) error {
 	}
 	for _, id := range enemyIDs {
 		for _, c := range enemy.GetEnemyChip(id, bustingLevel) {
+			if c.IsOnlyOne && plyr.HaveChip(c.ChipID) {
+				continue
+			}
+
 			chipInfo := chip.Get(c.ChipID)
 			list = append(list, rewardInfo{
 				Type:  rewardTypeChip,
