@@ -15,7 +15,7 @@
 
 ## 開発機能をONにする方法
 
-- 1. `data/config.yaml`を編集
+- 1: `data/config.yaml`を編集
 
   ```config.yaml
   # ↓を追加する
@@ -23,7 +23,7 @@
     enable_dev_feature: true
   ```
 
-- 2. メニュー画面でLボタン(Aキー)を押す
+- 2: メニュー画面でLボタン(Aキー)を押す
 
 ## ネット対戦のしかた
 
@@ -31,14 +31,14 @@
 
 ### GCPを使ってサーバーを起動する方法
 
-- 1. Cloud Runを作成します
+- 1: Cloud Runを作成します
   - Container image URL: `docker.io/smiyoshi/rockmanexe-router`
   - Container Port: 16283
   - Environment variables
     - `SESSION_ID`, `CLIENT_1_ID`, `CLIENT_1_KEY`, `CLIENT_2_ID`, `CLIENT_2_KEY`を指定してください
     - 任意の値で大丈夫ですが、そのまま認証情報となるためUUIDのような推測困難な値を推奨します
   - NETWORKINGSのタブから`Use HTTP/2 end-to-end`を有効にする
-- 2. 起動ファイルの設定情報を修正します
+- 2: 起動ファイルの設定情報を修正します
   - ファイル: `data/config.yaml`
   - 以下のように設定してください
 
@@ -49,5 +49,5 @@
     addr: "rockmanexe-test.a.run.app:443" # Clound RunのURLから「https://」を除いて「:443」を付与したアドレス
   ```
 
-- 3. アプリを起動
+- 3: アプリを起動
   - exeファイルを起動し、「ネット対戦」を選択してください
