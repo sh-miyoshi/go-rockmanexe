@@ -28,6 +28,11 @@ type ForteHellsRolling struct {
 func (p *ForteHellsRolling) Init(skillID int, isPlayer bool) {
 	p.count = 0
 	p.currentPos = p.Arg.GetObjectPos(p.Arg.OwnerID)
+	if isPlayer {
+		p.currentPos.X++
+	} else {
+		p.currentPos.X--
+	}
 	p.prevPos = p.currentPos
 	p.nextPos = p.currentPos
 	p.isPlayer = isPlayer
@@ -37,15 +42,23 @@ func (p *ForteHellsRolling) Init(skillID int, isPlayer bool) {
 		p.nextPos.Y++
 	}
 
-	if isPlayer {
-		p.nextPos.X++
-	} else {
-		p.nextPos.X--
-	}
 	p.curveDirect = 0
 }
 
 func (p *ForteHellsRolling) Process() (bool, error) {
+	if p.count == 0 {
+		p.Arg.DamageMgr.New(damage.Damage{
+			OwnerClientID: p.Arg.OwnerClientID,
+			DamageType:    damage.TypePosition,
+			Pos:           p.currentPos,
+			Power:         int(p.Arg.Power),
+			TTL:           forteHellsRollingNextStepCount,
+			TargetObjType: p.Arg.TargetType,
+			HitEffectType: resources.EffectTypeNone,
+			BigDamage:     true,
+		})
+	}
+
 	p.count++
 	if p.count%forteHellsRollingNextStepCount == 0 {
 		p.prevPos = p.currentPos
