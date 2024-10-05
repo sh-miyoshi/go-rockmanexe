@@ -115,6 +115,8 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillBubbleSide
 	case chip.IDForteAnother:
 		return resources.SkillChipForteAnother
+	case chip.IDDeathMatch1, chip.IDDeathMatch2:
+		return resources.SkillDeathMatch
 	}
 
 	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

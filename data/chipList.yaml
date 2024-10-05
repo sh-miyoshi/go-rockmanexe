@@ -884,16 +884,16 @@
   name: デスマッチ1
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: 'エリア全てのパネルをヒビ割れにする'
+  is_implemented: true
 - id: 125
   name: デスマッチ2
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: 'エリア全てのパネルを穴パネルにする'
+  is_implemented: true
 - id: 126
   name: デスマッチ3
   power: 0

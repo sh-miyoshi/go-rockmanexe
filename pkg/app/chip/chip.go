@@ -76,6 +76,8 @@ const (
 	IDRecover300   = 116
 	IDPanelSteal   = 118
 	IDAreaSteal    = 119
+	IDDeathMatch1  = 124
+	IDDeathMatch2  = 125
 	IDQuickGauge   = 128
 	IDInvisible    = 133
 	IDAttack10     = 148
