@@ -114,8 +114,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newForteDarknessOverload(objID, arg, core)
 	case resources.SkillChipForteAnother:
 		return newChipForteAnother(objID, arg, core)
-	case resources.SkillDeathMatch:
-		// WIP
+	case resources.SkillDeathMatch1, resources.SkillDeathMatch2:
+		return newDeathMatch(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

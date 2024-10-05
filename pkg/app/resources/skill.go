@@ -52,7 +52,8 @@ const (
 	SkillForteShootingBuster
 	SkillForteDarknessOverload
 	SkillChipForteAnother
-	SkillDeathMatch
+	SkillDeathMatch1
+	SkillDeathMatch2
 
 	SkillFailed
 )

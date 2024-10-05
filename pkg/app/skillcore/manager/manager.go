@@ -108,6 +108,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.ChipForteAnother{Arg: arg}
 		res.Init()
 		return res
+	case resources.SkillDeathMatch1, resources.SkillDeathMatch2:
+		res := &processor.DeathMatch{Arg: arg, SkillID: id}
+		res.Init()
+		return res
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
