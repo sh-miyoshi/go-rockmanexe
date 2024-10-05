@@ -7,7 +7,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/fps"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -17,6 +16,14 @@ const (
 	TypeMoney int = iota
 	TypeChip
 )
+
+type EnemyChipInfo struct {
+	CharID        int
+	ChipID        int
+	Code          string
+	RequiredLevel int
+	IsOnlyOne     bool
+}
 
 type EnemyParam struct {
 	CharID int
@@ -41,8 +48,13 @@ type Param struct {
 }
 
 var (
-	gotReward Param
+	gotReward     Param
+	enemyChipList = []EnemyChipInfo{}
 )
+
+func SetEnemyChipList(list []EnemyChipInfo) {
+	enemyChipList = list
+}
 
 func SetToPlayer(args WinArg, plyr *player.Player) {
 	deleteTimeSec := args.GameTime / int(fps.FPS)
@@ -58,7 +70,7 @@ func SetToPlayer(args WinArg, plyr *player.Player) {
 	}
 	haveOnlyOne := false
 	for _, id := range enemyIDs {
-		for _, c := range enemy.GetEnemyChip(id, bustingLevel) {
+		for _, c := range getEnemyChip(id, bustingLevel) {
 			if c.IsOnlyOne {
 				if plyr.HaveChip(c.ChipID) {
 					continue
@@ -120,7 +132,7 @@ func calcBustingLevel(deleteTimeSec int, args WinArg) int {
 
 	isBoss := false
 	for _, e := range args.DeletedEnemies {
-		if enemy.IsBoss(e.CharID) {
+		if e.IsBoss {
 			isBoss = true
 			break
 		}
@@ -193,4 +205,14 @@ func rewardProc(data Param, plyr *player.Player) {
 		c := chip.GetByName(data.Name)
 		plyr.AddChip(c.ID, data.Code)
 	}
+}
+
+func getEnemyChip(id int, bustingLv int) []EnemyChipInfo {
+	res := []EnemyChipInfo{}
+	for _, c := range enemyChipList {
+		if c.CharID == id && bustingLv >= c.RequiredLevel {
+			res = append(res, c)
+		}
+	}
+	return res
 }

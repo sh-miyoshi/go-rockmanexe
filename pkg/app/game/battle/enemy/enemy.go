@@ -11,6 +11,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win/reward"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -35,14 +36,6 @@ const (
 	IDForte
 )
 
-type EnemyChipInfo struct {
-	CharID        int
-	ChipID        int
-	Code          string
-	RequiredLevel int
-	IsOnlyOne     bool
-}
-
 type EnemyParam struct {
 	CharID          int
 	ObjectID        string
@@ -66,7 +59,12 @@ var (
 	ErrGameEnd = errors.New("game end")
 	enemies    = make(map[string]enemyObject)
 
-	enemyChipList = []EnemyChipInfo{
+	// 設定されてない場所であることがわかるような絶対にあり得ない座標
+	emptyPos = point.Point{X: -100, Y: -100}
+)
+
+func Init(playerID string, enemyList []EnemyParam) error {
+	reward.SetEnemyChipList([]reward.EnemyChipInfo{
 		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
 		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
 		{CharID: IDBilly, ChipID: chip.IDThunderBall1, Code: "l", RequiredLevel: 7},
@@ -82,13 +80,8 @@ var (
 		{CharID: IDShrimpy, ChipID: chip.IDBubbleV, Code: "f", RequiredLevel: 9},
 		{CharID: IDForte, ChipID: chip.IDForteAnother, Code: "x", RequiredLevel: 1, IsOnlyOne: true},
 		// TODO: コールドマン、サーキラーのチップ
-	}
+	})
 
-	// 設定されてない場所であることがわかるような絶対にあり得ない座標
-	emptyPos = point.Point{X: -100, Y: -100}
-)
-
-func Init(playerID string, enemyList []EnemyParam) error {
 	for i, e := range enemyList {
 		e.PlayerID = playerID
 		e.ActNo = i
@@ -127,16 +120,6 @@ func MgrProcess() error {
 	}
 
 	return nil
-}
-
-func GetEnemyChip(id int, bustingLv int) []EnemyChipInfo {
-	res := []EnemyChipInfo{}
-	for _, c := range enemyChipList {
-		if c.CharID == id && bustingLv >= c.RequiredLevel {
-			res = append(res, c)
-		}
-	}
-	return res
 }
 
 func GetStandImageFile(id int) (name, ext string) {
