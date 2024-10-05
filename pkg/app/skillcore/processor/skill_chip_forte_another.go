@@ -40,7 +40,7 @@ func (p *ChipForteAnother) Process() (bool, error) {
 			return false, nil
 		}
 	case resources.SkillChipForteAnotherStateAppear:
-		if p.count == 70 {
+		if p.count == 90 {
 			p.setState(resources.SkillChipForteAnotherStateAttack)
 			return false, nil
 		}

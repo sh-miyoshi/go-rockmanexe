@@ -2,6 +2,7 @@ package processor
 
 import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -49,7 +50,7 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 	if p.count%forteHellsRollingNextStepCount == 0 {
 		p.prevPos = p.currentPos
 		p.currentPos = p.nextPos
-		if p.currentPos.X < 0 {
+		if p.currentPos.X < 0 || p.currentPos.X >= battlecommon.FieldNum.X {
 			return true, nil
 		}
 

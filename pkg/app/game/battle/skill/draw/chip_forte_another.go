@@ -25,15 +25,19 @@ func (p *DrawChipForteAnother) Draw(count int, state int, viewPos point.Point, p
 	}
 
 	if state == resources.SkillChipForteAnotherStateAppear {
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteStand][0], true, opt)
+		if count < 60 {
+			dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteStand][0], true, opt)
+		} else {
+			n := (count - 60) / 2
+			if n >= len(images[imageTypeForteAtatckHellsRolling]) {
+				n = len(images[imageTypeForteAtatckHellsRolling]) - 1
+			}
+			dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteAtatckHellsRolling][n], true, opt)
+		}
 	}
 
 	if state == resources.SkillChipForteAnotherStateAttack {
-		n := count / 2
-		if n >= len(images[imageTypeForteAtatckHellsRolling]) {
-			n = len(images[imageTypeForteAtatckHellsRolling]) - 1
-		}
-
+		n := len(images[imageTypeForteAtatckHellsRolling]) - 1
 		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y-20, 1, 0, images[imageTypeForteAtatckHellsRolling][n], true, opt)
 		p.drawer.Draw(param.AttackPrevPos, param.AttackCurrentPos, param.AttackNextPos, param.AttackCount, param.AttackNextStepCount, true)
 	}
