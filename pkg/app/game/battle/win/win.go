@@ -77,18 +77,20 @@ func Init(args WinArg, plyr *player.Player) error {
 
 	bustingLevel = calcBustingLevel(args)
 
-	m := getMoney(bustingLevel)
-	list := []rewardInfo{
-		{Type: rewardTypeMoney, Name: fmt.Sprintf("%d ゼニー", m), Value: m, Image: imgZenny},
-	}
+	list := []rewardInfo{}
 	enemyIDs := map[int]int{}
 	for _, e := range args.DeletedEnemies {
 		enemyIDs[e.CharID] = e.CharID
 	}
+	haveOnlyOne := false
 	for _, id := range enemyIDs {
 		for _, c := range enemy.GetEnemyChip(id, bustingLevel) {
-			if c.IsOnlyOne && plyr.HaveChip(c.ChipID) {
-				continue
+			if c.IsOnlyOne {
+				if plyr.HaveChip(c.ChipID) {
+					continue
+				} else {
+					haveOnlyOne = true
+				}
 			}
 
 			chipInfo := chip.Get(c.ChipID)
@@ -100,6 +102,11 @@ func Init(args WinArg, plyr *player.Player) error {
 			})
 		}
 	}
+	if !haveOnlyOne {
+		m := getMoney(bustingLevel)
+		list = append(list, rewardInfo{Type: rewardTypeMoney, Name: fmt.Sprintf("%d ゼニー", m), Value: m, Image: imgZenny})
+	}
+
 	logger.Debug("Reward list: %+v", list)
 
 	reward = getReward(list)
