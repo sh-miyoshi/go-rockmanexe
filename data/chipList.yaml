@@ -263,7 +263,7 @@
   description: ''
   is_implemented: false
 - id: 37
-  name: エレメントリース
+  name: エレメントリーフ
   power: 0
   type: 0
   player_act: 0
