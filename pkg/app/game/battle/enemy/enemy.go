@@ -3,7 +3,6 @@ package enemy
 import (
 	"github.com/cockroachdb/errors"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
@@ -11,7 +10,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/win/reward"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -64,24 +62,6 @@ var (
 )
 
 func Init(playerID string, enemyList []EnemyParam) error {
-	reward.SetEnemyChipList([]reward.EnemyChipInfo{
-		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
-		{CharID: IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
-		{CharID: IDBilly, ChipID: chip.IDThunderBall1, Code: "l", RequiredLevel: 7},
-		{CharID: IDLark, ChipID: chip.IDWideShot1, Code: "c", RequiredLevel: 7},
-		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "m", RequiredLevel: 7},
-		{CharID: IDBoomer, ChipID: chip.IDBoomerang1, Code: "*", RequiredLevel: 9},
-		{CharID: IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
-		{CharID: IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
-		{CharID: IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
-		{CharID: IDShrimpy, ChipID: chip.IDBubbleShot, Code: "b", RequiredLevel: 7},
-		{CharID: IDShrimpy, ChipID: chip.IDBubbleShot, Code: "c", RequiredLevel: 7},
-		{CharID: IDShrimpy, ChipID: chip.IDBubbleSide, Code: "f", RequiredLevel: 9},
-		{CharID: IDShrimpy, ChipID: chip.IDBubbleV, Code: "f", RequiredLevel: 9},
-		{CharID: IDForte, ChipID: chip.IDForteAnother, Code: "x", RequiredLevel: 1, IsOnlyOne: true},
-		// TODO: コールドマン、サーキラーのチップ
-	})
-
 	for i, e := range enemyList {
 		e.PlayerID = playerID
 		e.ActNo = i

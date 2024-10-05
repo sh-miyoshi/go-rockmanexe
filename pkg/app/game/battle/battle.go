@@ -5,6 +5,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -112,6 +113,25 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	if err := sound.BGMPlay(bgm); err != nil {
 		return errors.Wrap(err, "failed to play bgm")
 	}
+
+	// 敵討伐時の報酬をセット
+	reward.SetEnemyChipList([]reward.EnemyChipInfo{
+		{CharID: enemy.IDMetall, ChipID: chip.IDShockWave, Code: "l", RequiredLevel: 7},
+		{CharID: enemy.IDMetall, ChipID: chip.IDShockWave, Code: "*", RequiredLevel: 9},
+		{CharID: enemy.IDBilly, ChipID: chip.IDThunderBall1, Code: "l", RequiredLevel: 7},
+		{CharID: enemy.IDLark, ChipID: chip.IDWideShot1, Code: "c", RequiredLevel: 7},
+		{CharID: enemy.IDBoomer, ChipID: chip.IDBoomerang1, Code: "m", RequiredLevel: 7},
+		{CharID: enemy.IDBoomer, ChipID: chip.IDBoomerang1, Code: "*", RequiredLevel: 9},
+		{CharID: enemy.IDAquaman, ChipID: chip.IDAquaman, Code: "a", RequiredLevel: 9},
+		{CharID: enemy.IDVolgear, ChipID: chip.IDFlameLine1, Code: "f", RequiredLevel: 7},
+		{CharID: enemy.IDGaroo, ChipID: chip.IDHeatShot, Code: "c", RequiredLevel: 7},
+		{CharID: enemy.IDShrimpy, ChipID: chip.IDBubbleShot, Code: "b", RequiredLevel: 7},
+		{CharID: enemy.IDShrimpy, ChipID: chip.IDBubbleShot, Code: "c", RequiredLevel: 7},
+		{CharID: enemy.IDShrimpy, ChipID: chip.IDBubbleSide, Code: "f", RequiredLevel: 9},
+		{CharID: enemy.IDShrimpy, ChipID: chip.IDBubbleV, Code: "f", RequiredLevel: 9},
+		{CharID: enemy.IDForte, ChipID: chip.IDForteAnother, Code: "x", RequiredLevel: 1, IsOnlyOne: true},
+		// TODO: コールドマン、サーキラーのチップ
+	})
 
 	// カスタムゲージのスピードをデフォルトにしておく
 	battlecommon.CustomGaugeSpeed = battlecommon.DefaultCustomGaugeSpeed
