@@ -48,8 +48,8 @@ func (p *DeathMatch) Process() (bool, error) {
 				crackType = battlecommon.PanelStatusCrack
 			}
 			p.Arg.PanelCrack(pos, crackType)
-			if p.count%18 == 1 {
-				p.Arg.SoundOn(resources.SEPanelBreak)
+			if p.count%9 == 1 {
+				p.Arg.SoundOn(resources.SEPanelBreakShort)
 			}
 		}
 	}

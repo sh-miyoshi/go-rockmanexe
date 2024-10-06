@@ -56,6 +56,7 @@ func Init() error {
 	soundEffects[resources.SEObjectCreate] = dxlib.LoadSoundMem(basePath + "object_create.wav")
 	soundEffects[resources.SEWaterpipeAttack] = dxlib.LoadSoundMem(basePath + "waterpipe_attack.mp3")
 	soundEffects[resources.SEPanelBreak] = dxlib.LoadSoundMem(basePath + "panel_break.mp3")
+	soundEffects[resources.SEPanelBreakShort] = dxlib.LoadSoundMem(basePath + "panel_break_short.mp3")
 	soundEffects[resources.SEPAPrepare] = dxlib.LoadSoundMem(basePath + "pa_prepare.mp3")
 	soundEffects[resources.SEPACreated] = dxlib.LoadSoundMem(basePath + "pa_created.mp3")
 	soundEffects[resources.SEDreamSword] = dxlib.LoadSoundMem(basePath + "dream_sword.mp3")

@@ -41,6 +41,7 @@ const (
 	SEObjectCreate
 	SEWaterpipeAttack
 	SEPanelBreak
+	SEPanelBreakShort
 	SEPAPrepare
 	SEPACreated
 	SEDreamSword
