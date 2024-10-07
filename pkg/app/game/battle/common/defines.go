@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	GaugeMaxCount            = 1200
-	ChargeViewDelay          = 20
-	DefaultCustomGaugeSpeed  = 4
-	DefaultPanelHoleEndCount = 480
-	PanelReturnAnimCount     = 60
+	GaugeMaxCount              = 1200
+	ChargeViewDelay            = 20
+	DefaultCustomGaugeSpeed    = 4
+	DefaultPanelStatusEndCount = 480
+	PanelReturnAnimCount       = 60
 )
 
 var (
@@ -79,8 +79,8 @@ const (
 )
 
 type PanelInfo struct {
-	Type      int
-	ObjectID  string
-	Status    int
-	HoleCount int
+	Type        int
+	ObjectID    string
+	Status      int
+	StatusCount int
 }

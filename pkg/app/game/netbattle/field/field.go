@@ -76,8 +76,8 @@ func (f *Field) Draw() {
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].HoleCount > 0 {
-				if panels[x][y].HoleCount < battlecommon.PanelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
+			if panels[x][y].StatusCount > 0 {
+				if panels[x][y].StatusCount < battlecommon.PanelReturnAnimCount && (panels[x][y].StatusCount/2)%2 == 0 {
 					img = f.imgPanel[battlecommon.PanelStatusHole][typ]
 				}
 			}
