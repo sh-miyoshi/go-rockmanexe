@@ -22,7 +22,7 @@ const (
 // 主にobjectやskillで使用されます
 type FieldFuncs struct {
 	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
-	PanelCrack      func(clientID string, pos point.Point, crackType int)
+	PanelChange     func(clientID string, pos point.Point, panelType int)
 	ChangePanelType func(clientID string, pos point.Point, pnType int)
 }
 
@@ -189,7 +189,7 @@ func (p *GameInfo) GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 	}
 }
 
-func (p *GameInfo) PanelCrack(pos point.Point, crackType int) {
+func (p *GameInfo) PanelChange(pos point.Point, crackType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}

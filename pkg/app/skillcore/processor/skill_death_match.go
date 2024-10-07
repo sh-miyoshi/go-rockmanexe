@@ -47,7 +47,7 @@ func (p *DeathMatch) Process() (bool, error) {
 			if p.SkillID == resources.SkillDeathMatch1 {
 				crackType = battlecommon.PanelStatusCrack
 			}
-			p.Arg.PanelCrack(pos, crackType)
+			p.Arg.PanelChange(pos, crackType)
 			if p.count%9 == 1 {
 				p.Arg.SoundOn(resources.SEPanelBreakShort)
 			}

@@ -66,6 +66,7 @@ const (
 	PanelStatusNormal int = iota
 	PanelStatusCrack
 	PanelStatusHole
+	PanelStatusPoison
 
 	PanelStatusMax
 )

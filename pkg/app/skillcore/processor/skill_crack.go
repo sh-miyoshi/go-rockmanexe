@@ -36,7 +36,7 @@ func (p *Crack) Process() (bool, error) {
 	if p.count > 5 {
 		p.Arg.SoundOn(resources.SEPanelBreak)
 		for _, pos := range p.attackPos {
-			p.Arg.PanelCrack(pos, battlecommon.PanelStatusHole)
+			p.Arg.PanelChange(pos, battlecommon.PanelStatusHole)
 		}
 
 		return true, nil
