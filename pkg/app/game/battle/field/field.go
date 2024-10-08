@@ -39,14 +39,18 @@ func Init() error {
 	// Initialize images
 	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
+		if i == battlecommon.PanelStatusPoison {
+			// TODO: 毒沼パネルは未実装
+			continue
+		}
+
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
 			return errors.Newf("failed to read player panel image %s", fname)
 		}
-	}
-	for i := 0; i < battlecommon.PanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
+
+		fname = fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return errors.Newf("failed to read enemy panel image %s", fname)
