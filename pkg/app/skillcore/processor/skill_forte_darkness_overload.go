@@ -24,7 +24,7 @@ func (p *ForteDarknessOverload) Process() (bool, error) {
 		for x := 0; x < 2; x++ {
 			for y := 0; y < battlecommon.FieldNum.Y; y++ {
 				pos := point.Point{X: x, Y: y}
-				p.Arg.PanelCrack(pos, battlecommon.PanelStatusCrack)
+				p.Arg.PanelChange(pos, battlecommon.PanelStatusCrack)
 				if objID := p.Arg.GetPanelInfo(pos).ObjectID; objID != "" {
 					p.Arg.DamageMgr.New(damage.Damage{
 						OwnerClientID: p.Arg.OwnerClientID,

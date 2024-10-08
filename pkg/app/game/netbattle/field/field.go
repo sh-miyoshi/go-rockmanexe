@@ -29,14 +29,18 @@ func New() (*Field, error) {
 	// Initialize images
 	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
+		if i == battlecommon.PanelStatusPoison {
+			// TODO: 毒沼パネルは未実装
+			continue
+		}
+
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
 			return nil, errors.Newf("failed to read player panel image %s", fname)
 		}
-	}
-	for i := 0; i < battlecommon.PanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
+
+		fname = fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		res.imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if res.imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return nil, errors.Newf("failed to read enemy panel image %s", fname)
@@ -76,8 +80,8 @@ func (f *Field) Draw() {
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].HoleCount > 0 {
-				if panels[x][y].HoleCount < battlecommon.PanelReturnAnimCount && (panels[x][y].HoleCount/2)%2 == 0 {
+			if panels[x][y].StatusCount > 0 {
+				if panels[x][y].StatusCount < battlecommon.PanelReturnAnimCount && (panels[x][y].StatusCount/2)%2 == 0 {
 					img = f.imgPanel[battlecommon.PanelStatusHole][typ]
 				}
 			}

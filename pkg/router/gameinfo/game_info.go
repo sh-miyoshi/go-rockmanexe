@@ -22,7 +22,7 @@ const (
 // 主にobjectやskillで使用されます
 type FieldFuncs struct {
 	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
-	PanelCrack      func(clientID string, pos point.Point, crackType int)
+	PanelChange     func(clientID string, pos point.Point, panelType int)
 	ChangePanelType func(clientID string, pos point.Point, pnType int)
 }
 
@@ -30,7 +30,7 @@ type PanelInfo struct {
 	OwnerClientID string
 	ObjectID      string
 	Status        int
-	HoleCount     int
+	StatusCount   int
 	ObjExists     bool
 }
 
@@ -97,13 +97,13 @@ func (p *GameInfo) Init(myClientID, opponentClientID string) {
 			p.Panels[x][y] = PanelInfo{
 				OwnerClientID: myClientID,
 				Status:        battlecommon.PanelStatusNormal,
-				HoleCount:     0,
+				StatusCount:   0,
 				ObjExists:     false,
 			}
 			p.Panels[x+hx][y] = PanelInfo{
 				OwnerClientID: opponentClientID,
 				Status:        battlecommon.PanelStatusNormal,
-				HoleCount:     0,
+				StatusCount:   0,
 				ObjExists:     false,
 			}
 		}
@@ -153,13 +153,13 @@ func (p *GameInfo) Update(objects []Object, anims []Anim, effects []Effect, soun
 	// Panel status update
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		for x := 0; x < battlecommon.FieldNum.X; x++ {
-			if p.Panels[x][y].HoleCount > 0 {
-				p.Panels[x][y].HoleCount--
+			if p.Panels[x][y].StatusCount > 0 {
+				p.Panels[x][y].StatusCount--
 			}
 
 			switch p.Panels[x][y].Status {
-			case battlecommon.PanelStatusHole:
-				if p.Panels[x][y].HoleCount <= battlecommon.PanelReturnAnimCount {
+			case battlecommon.PanelStatusHole, battlecommon.PanelStatusPoison:
+				if p.Panels[x][y].StatusCount <= battlecommon.PanelReturnAnimCount {
 					p.Panels[x][y].Status = battlecommon.PanelStatusNormal
 				}
 			case battlecommon.PanelStatusCrack:
@@ -168,7 +168,7 @@ func (p *GameInfo) Update(objects []Object, anims []Anim, effects []Effect, soun
 					p.Sounds = append(p.Sounds, Sound{ID: uuid.New().String(), Type: int(resources.SEPanelBreak)})
 					p.Panels[x][y].ObjExists = false
 					p.Panels[x][y].Status = battlecommon.PanelStatusHole
-					p.Panels[x][y].HoleCount = battlecommon.DefaultPanelHoleEndCount
+					p.Panels[x][y].StatusCount = battlecommon.DefaultPanelStatusEndCount
 				}
 			}
 		}
@@ -182,30 +182,36 @@ func (p *GameInfo) GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 
 	pn := p.Panels[pos.X][pos.Y]
 	return battlecommon.PanelInfo{
-		Type:      p.getPanelType(pn.OwnerClientID),
-		ObjectID:  pn.ObjectID,
-		Status:    pn.Status,
-		HoleCount: pn.HoleCount,
+		Type:        p.getPanelType(pn.OwnerClientID),
+		ObjectID:    pn.ObjectID,
+		Status:      pn.Status,
+		StatusCount: pn.StatusCount,
 	}
 }
 
-func (p *GameInfo) PanelCrack(pos point.Point, crackType int) {
+func (p *GameInfo) PanelChange(pos point.Point, panelType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
-	if p.Panels[pos.X][pos.Y].Status == battlecommon.PanelStatusHole {
+	if p.Panels[pos.X][pos.Y].Status == panelType {
 		return
 	}
 
-	if p.Panels[pos.X][pos.Y].ObjectID != "" {
+	switch panelType {
+	case battlecommon.PanelStatusCrack:
 		p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusCrack
-	} else {
-		if crackType == battlecommon.PanelStatusHole {
-			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
-			p.Panels[pos.X][pos.Y].HoleCount = battlecommon.DefaultPanelHoleEndCount
-		} else if crackType == battlecommon.PanelStatusCrack {
+	case battlecommon.PanelStatusHole:
+		if p.Panels[pos.X][pos.Y].ObjectID != "" {
 			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusCrack
+		} else {
+			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusHole
+			p.Panels[pos.X][pos.Y].StatusCount = battlecommon.DefaultPanelStatusEndCount
+		}
+	case battlecommon.PanelStatusPoison:
+		if p.Panels[pos.X][pos.Y].Status != battlecommon.PanelStatusHole {
+			p.Panels[pos.X][pos.Y].Status = battlecommon.PanelStatusPoison
+			p.Panels[pos.X][pos.Y].StatusCount = battlecommon.DefaultPanelStatusEndCount
 		}
 	}
 }

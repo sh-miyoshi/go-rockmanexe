@@ -39,14 +39,18 @@ func Init() error {
 	// Initialize images
 	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
+		if i == battlecommon.PanelStatusPoison {
+			// TODO: 毒沼パネルは未実装
+			continue
+		}
+
 		fname := fmt.Sprintf("%sbattle/panel_player_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypePlayer] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypePlayer] < 0 {
 			return errors.Newf("failed to read player panel image %s", fname)
 		}
-	}
-	for i := 0; i < battlecommon.PanelStatusMax; i++ {
-		fname := fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
+
+		fname = fmt.Sprintf("%sbattle/panel_enemy_%s.png", config.ImagePath, files[i])
 		imgPanel[i][battlecommon.PanelTypeEnemy] = dxlib.LoadGraph(fname)
 		if imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return errors.Newf("failed to read enemy panel image %s", fname)
@@ -62,9 +66,9 @@ func Init() error {
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
 			panels[x][y] = extendPanelInfo{
 				info: battlecommon.PanelInfo{
-					Status:    battlecommon.PanelStatusNormal,
-					Type:      t,
-					HoleCount: 0,
+					Status:      battlecommon.PanelStatusNormal,
+					Type:        t,
+					StatusCount: 0,
 				},
 				objExists: false,
 			}
@@ -110,8 +114,8 @@ func Draw() {
 			// Note:
 			//   panelReturnAnimCount以下の場合StatusはNormalになる
 			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].info.HoleCount > 0 {
-				if panels[x][y].info.HoleCount < battlecommon.PanelReturnAnimCount && (panels[x][y].info.HoleCount/2)%2 == 0 {
+			if panels[x][y].info.StatusCount > 0 {
+				if panels[x][y].info.StatusCount < battlecommon.PanelReturnAnimCount && (panels[x][y].info.StatusCount/2)%2 == 0 {
 					img = imgPanel[battlecommon.PanelStatusHole][panels[x][y].info.Type]
 				}
 			}
@@ -164,13 +168,13 @@ func Update() {
 	// Panel status update
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
-			if panels[x][y].info.HoleCount > 0 {
-				panels[x][y].info.HoleCount--
+			if panels[x][y].info.StatusCount > 0 {
+				panels[x][y].info.StatusCount--
 			}
 
 			switch panels[x][y].info.Status {
-			case battlecommon.PanelStatusHole:
-				if panels[x][y].info.HoleCount <= battlecommon.PanelReturnAnimCount {
+			case battlecommon.PanelStatusHole, battlecommon.PanelStatusPoison:
+				if panels[x][y].info.StatusCount <= battlecommon.PanelReturnAnimCount {
 					panels[x][y].info.Status = battlecommon.PanelStatusNormal
 				}
 			case battlecommon.PanelStatusCrack:
@@ -179,7 +183,7 @@ func Update() {
 					sound.On(resources.SEPanelBreak)
 					panels[x][y].objExists = false
 					panels[x][y].info.Status = battlecommon.PanelStatusHole
-					panels[x][y].info.HoleCount = battlecommon.DefaultPanelHoleEndCount
+					panels[x][y].info.StatusCount = battlecommon.DefaultPanelStatusEndCount
 				}
 			}
 		}
@@ -213,23 +217,29 @@ func ChangePanelType(pos point.Point, pnType int) {
 	panels[pos.X][pos.Y].info.Type = pnType
 }
 
-func PanelBreak(pos point.Point, crackType int) {
+func PanelChange(pos point.Point, panelType int) {
 	if pos.X < 0 || pos.X >= battlecommon.FieldNum.X || pos.Y < 0 || pos.Y >= battlecommon.FieldNum.Y {
 		return
 	}
 
-	if panels[pos.X][pos.Y].info.Status == battlecommon.PanelStatusHole {
+	if panels[pos.X][pos.Y].info.Status == panelType {
 		return
 	}
 
-	if panels[pos.X][pos.Y].info.ObjectID != "" {
+	switch panelType {
+	case battlecommon.PanelStatusCrack:
 		panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
-	} else {
-		if crackType == battlecommon.PanelStatusHole {
-			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusHole
-			panels[pos.X][pos.Y].info.HoleCount = battlecommon.DefaultPanelHoleEndCount
-		} else if crackType == battlecommon.PanelStatusCrack {
+	case battlecommon.PanelStatusHole:
+		if panels[pos.X][pos.Y].info.ObjectID != "" {
 			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
+		} else {
+			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusHole
+			panels[pos.X][pos.Y].info.StatusCount = battlecommon.DefaultPanelStatusEndCount
+		}
+	case battlecommon.PanelStatusPoison:
+		if panels[pos.X][pos.Y].info.Status != battlecommon.PanelStatusHole {
+			panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusPoison
+			panels[pos.X][pos.Y].info.StatusCount = battlecommon.DefaultPanelStatusEndCount
 		}
 	}
 }

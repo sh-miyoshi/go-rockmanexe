@@ -36,7 +36,7 @@ func End() {
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
-	arg.PanelCrack = field.PanelBreak
+	arg.PanelChange = field.PanelChange
 	arg.DamageMgr = localanim.DamageManager()
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
@@ -114,6 +114,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newForteDarknessOverload(objID, arg, core)
 	case resources.SkillChipForteAnother:
 		return newChipForteAnother(objID, arg, core)
+	case resources.SkillDeathMatch1, resources.SkillDeathMatch2:
+		return newDeathMatch(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

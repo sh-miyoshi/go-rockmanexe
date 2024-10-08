@@ -28,7 +28,7 @@ type Argument struct {
 	GetObjectPos    func(objID string) point.Point
 	SoundOn         func(typ resources.SEType)
 	GetObjects      func(filter objanim.Filter) []objanim.Param
-	PanelCrack      func(pos point.Point, crackType int)
+	PanelChange     func(pos point.Point, panelType int)
 	Cutin           func(skillName string, count int)
 	ChangePanelType func(pos point.Point, pnType int)
 	MakeInvisible   func(objID string, count int)
@@ -115,6 +115,10 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillBubbleSide
 	case chip.IDForteAnother:
 		return resources.SkillChipForteAnother
+	case chip.IDDeathMatch1:
+		return resources.SkillDeathMatch1
+	case chip.IDDeathMatch2:
+		return resources.SkillDeathMatch2
 	}
 
 	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
