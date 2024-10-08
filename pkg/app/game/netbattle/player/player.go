@@ -256,13 +256,13 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	// Move
 	moveDirect := -1
-	if inputs.CheckKey(inputs.KeyUp) == 1 {
+	if inputs.CheckKey(inputs.KeyUp)%10 == 1 {
 		moveDirect = config.DirectUp
-	} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+	} else if inputs.CheckKey(inputs.KeyDown)%10 == 1 {
 		moveDirect = config.DirectDown
-	} else if inputs.CheckKey(inputs.KeyRight) == 1 {
+	} else if inputs.CheckKey(inputs.KeyRight)%10 == 1 {
 		moveDirect = config.DirectRight
-	} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+	} else if inputs.CheckKey(inputs.KeyLeft)%10 == 1 {
 		moveDirect = config.DirectLeft
 	}
 
