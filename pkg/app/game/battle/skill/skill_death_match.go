@@ -23,7 +23,6 @@ func newDeathMatch(objID string, arg skillcore.Argument, core skillcore.SkillCor
 }
 
 func (p *deathMatch) Draw() {
-	// p.drawer.Draw()
 }
 
 func (p *deathMatch) Process() (bool, error) {
