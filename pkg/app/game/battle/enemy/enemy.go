@@ -32,6 +32,7 @@ const (
 	IDCirKill
 	IDShrimpy
 	IDForte
+	IDBlues
 )
 
 type EnemyParam struct {
@@ -137,6 +138,8 @@ func GetName(id int) string {
 		return "エビロン"
 	case IDForte:
 		return "フォルテ"
+	case IDBlues:
+		return "ブルース"
 	}
 	return ""
 }
@@ -174,6 +177,8 @@ func getObject(id int, initParam EnemyParam) enemyObject {
 		return &enemyShrimpy{pm: initParam}
 	case IDForte:
 		return &enemyForte{pm: initParam}
+	case IDBlues:
+		return &enemyBlues{pm: initParam}
 	}
 	return nil
 }
