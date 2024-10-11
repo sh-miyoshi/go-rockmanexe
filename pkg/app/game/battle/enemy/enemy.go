@@ -1,6 +1,8 @@
 package enemy
 
 import (
+	"math/rand"
+
 	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
@@ -13,6 +15,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
@@ -57,6 +60,7 @@ type enemyObject interface {
 var (
 	ErrGameEnd = errors.New("game end")
 	enemies    = make(map[string]enemyObject)
+	debugFlag  = false
 
 	// 設定されてない場所であることがわかるような絶対にあり得ない座標
 	emptyPos = point.Point{X: -100, Y: -100}
@@ -235,6 +239,26 @@ func drawParalysis(x, y int, image int, count int, opt ...dxlib.DrawRotaGraphOpt
 		dxlib.DrawRotaGraph(x, y, 1, 0, image, true, opt...)
 		dxlib.SetDrawBright(255, 255, 255)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+	}
+}
+
+func moveRandom(charPos *point.Point) {
+	// 全エリアの中で移動可能な場所を探す
+	movables := []point.Point{}
+	for x := 0; x < battlecommon.FieldNum.X; x++ {
+		for y := 0; y < battlecommon.FieldNum.Y; y++ {
+			pos := point.Point{X: x, Y: y}
+			if battlecommon.MoveObjectDirect(charPos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
+				movables = append(movables, pos)
+			}
+		}
+	}
+
+	// 移動可能な場所があればランダムで移動
+	if len(movables) > 0 {
+		n := rand.Intn(len(movables))
+		logger.Debug("enemy move to %v", movables[n])
+		battlecommon.MoveObjectDirect(charPos, movables[n], battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
 	}
 }
 

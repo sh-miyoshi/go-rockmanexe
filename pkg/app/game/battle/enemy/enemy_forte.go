@@ -38,7 +38,6 @@ const (
 var (
 	forteDelays   = [forteActTypeMax]int{1, 1, 6, 6, 1, 1, 6, 5}
 	forteAtkPower = [forteActTypeMax]uint{0, 0, 50, 80, 100, 100, 280, 0}
-	debugFlag     = false
 )
 
 type enemyForte struct {
@@ -170,7 +169,7 @@ func (e *enemyForte) Process() (bool, error) {
 				return e.stateChange(forteActTypeStand)
 			}
 
-			e.moveRandom()
+			moveRandom(&e.pm.Pos)
 			e.waitCount = 40
 			e.moveNum--
 			if e.moveNum <= 0 {
@@ -512,26 +511,6 @@ func (e *enemyForte) stateChange(next int) (bool, error) {
 	e.count = 0
 
 	return false, nil
-}
-
-func (e *enemyForte) moveRandom() {
-	// 全エリアの中で移動可能な場所を探す
-	movables := []point.Point{}
-	for x := 0; x < battlecommon.FieldNum.X; x++ {
-		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			pos := point.Point{X: x, Y: y}
-			if battlecommon.MoveObjectDirect(&e.pm.Pos, pos, battlecommon.PanelTypeEnemy, false, field.GetPanelInfo) {
-				movables = append(movables, pos)
-			}
-		}
-	}
-
-	// 移動可能な場所があればランダムで移動
-	if len(movables) > 0 {
-		n := rand.Intn(len(movables))
-		logger.Debug("Forte move to %v", movables[n])
-		battlecommon.MoveObjectDirect(&e.pm.Pos, movables[n], battlecommon.PanelTypeEnemy, true, field.GetPanelInfo)
-	}
 }
 
 func (e *enemyForte) clearState() (bool, error) {
