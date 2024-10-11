@@ -4,10 +4,15 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -23,15 +28,25 @@ const (
 	bluesActTypeMax
 )
 
+var (
+	bluesDelays = [bluesActTypeMax]int{1, 2, 1, 1, 1, 1, 1}
+)
+
 type enemyBlues struct {
-	pm     EnemyParam
-	state  int
-	images [bluesActTypeMax][]int
+	pm        EnemyParam
+	state     int
+	count     int
+	waitCount int
+	nextState int
+	images    [bluesActTypeMax][]int
 }
 
 func (e *enemyBlues) Init(objID string) error {
 	e.pm.ObjectID = objID
 	e.state = bluesActTypeStand
+	e.count = 0
+	e.waitCount = 20
+	e.nextState = bluesActTypeMove
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -85,8 +100,44 @@ func (e *enemyBlues) End() {
 }
 
 func (e *enemyBlues) Process() (bool, error) {
-	// Return true if finished(e.g. hp=0)
+	if e.pm.HP <= 0 {
+		// Delete Animation
+		img := e.getCurrentImagePointer()
+		deleteanim.New(*img, e.pm.Pos, false)
+		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		*img = -1 // DeleteGraph at delete animation
+		return true, nil
+	}
+
+	if e.pm.ParalyzedCount > 0 {
+		e.pm.ParalyzedCount--
+		return false, nil
+	}
+
 	// Enemy Logic
+	if e.pm.InvincibleCount > 0 {
+		e.pm.InvincibleCount--
+	}
+
+	switch e.state {
+	case bluesActTypeStand:
+		e.waitCount--
+		if e.waitCount <= 0 {
+			return e.stateChange(e.nextState)
+		}
+	case bluesActTypeMove:
+		if e.count == 3*bluesDelays[bluesActTypeMove] {
+			// WIP: targetPos
+			moveRandom(&e.pm.Pos)
+			e.waitCount = 40
+
+			// WIP: attack
+
+			return e.stateChange(bluesActTypeStand)
+		}
+	}
+
+	e.count++
 	return false, nil
 }
 
@@ -95,16 +146,21 @@ func (e *enemyBlues) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	ofs := [bluesActTypeMax]point.Point{
-		{X: 0, Y: 0}, // Stand
-		{X: 0, Y: 0}, // Move
-		{X: 0, Y: 0}, // Sword
-		{X: 0, Y: 0}, // Shot
-		{X: 0, Y: 0}, // Throw
-		{X: 0, Y: 0}, // Throw2
-		{X: 0, Y: 0}, // Damage
+		{X: -5, Y: -20}, // Stand
+		{X: -5, Y: -20}, // Move
+		{X: 0, Y: 0},    // Sword
+		{X: 0, Y: 0},    // Shot
+		{X: 0, Y: 0},    // Throw
+		{X: 0, Y: 0},    // Throw2
+		{X: 0, Y: 0},    // Damage
 	}
 
-	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true)
+	flag := int32(dxlib.TRUE)
+	opt := dxlib.DrawRotaGraphOption{
+		ReverseXFlag: &flag,
+	}
+
+	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true, opt)
 }
 
 func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
@@ -131,6 +187,21 @@ func (e *enemyBlues) MakeInvisible(count int) {
 }
 
 func (e *enemyBlues) getCurrentImagePointer() *int {
-	// WIP: 実装
-	return &e.images[e.state][0]
+	if e.count == 0 {
+		return &e.images[bluesActTypeStand][0]
+	}
+
+	n := (e.count / bluesDelays[e.state])
+	if n >= len(e.images[e.state]) {
+		n = len(e.images[e.state]) - 1
+	}
+	return &e.images[e.state][n]
+}
+
+func (e *enemyBlues) stateChange(next int) (bool, error) {
+	logger.Info("change blues state to %d", next)
+	e.state = next
+	e.count = 0
+
+	return false, nil
 }
