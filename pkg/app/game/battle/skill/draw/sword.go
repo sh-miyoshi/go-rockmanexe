@@ -30,6 +30,9 @@ func getSwordImages(id int) []int {
 		return images[imageTypeSword][2*n:]
 	case resources.SkillLongSword:
 		return images[imageTypeSword][n : 2*n-1]
+	case resources.SkillFighterSword:
+		// TODO: FighterSword用の画像を追加
+		return images[imageTypeSword][n : 2*n-1]
 	case resources.SkillDreamSword:
 		return images[imageTypeDreamSword]
 	}

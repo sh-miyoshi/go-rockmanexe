@@ -73,6 +73,17 @@ func (p *Sword) Process() (bool, error) {
 				dm.TargetObjID = objID
 				p.Arg.DamageMgr.New(dm)
 			}
+		case resources.SkillFighterSword:
+			targetPos.X = userPos.X + ofsx*2
+			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				p.Arg.DamageMgr.New(dm)
+			}
+			targetPos.X = userPos.X + ofsx*3
+			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
+				dm.TargetObjID = objID
+				p.Arg.DamageMgr.New(dm)
+			}
 		case resources.SkillDreamSword:
 			for x := 1; x <= 2; x++ {
 				for y := -1; y <= 1; y++ {

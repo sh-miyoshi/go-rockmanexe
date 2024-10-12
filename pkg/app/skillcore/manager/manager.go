@@ -31,7 +31,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillSpreadGun:
 		return &processor.SpreadGun{Arg: arg}
-	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword:
+	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword, resources.SkillFighterSword:
 		return &processor.Sword{Arg: arg, SkillID: id}
 	case resources.SkillVulcan1:
 		return &processor.Vulcan{Arg: arg, Times: 3}

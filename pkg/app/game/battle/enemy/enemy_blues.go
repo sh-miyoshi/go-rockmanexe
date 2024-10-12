@@ -165,7 +165,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debugFlag {
 					e.moveNum = 3
-					e.nextState = bluesActTypeWideSword
+					e.nextState = bluesActTypeFighterSword
 					return e.stateChange(bluesActTypeStand)
 				}
 
@@ -198,6 +198,45 @@ func (e *enemyBlues) Process() (bool, error) {
 		if e.count == 1*bluesDelays[bluesActTypeWideSword] {
 			logger.Debug("Blues Wide Sword Attack")
 			localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      forteAtkPower[e.state],
+				TargetType: damage.TargetPlayer,
+			}))
+		}
+
+		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
+			return e.clearState()
+		}
+	case bluesActTypeFighterSword:
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
+			// Move to attack position
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				return e.clearState()
+			}
+			tx := 0
+			for x := 0; x < battlecommon.FieldNum.X; x++ {
+				if field.GetPanelInfo(point.Point{X: x, Y: objs[0].Pos.Y}).Type == battlecommon.PanelTypeEnemy {
+					tx = x
+					break
+				}
+			}
+
+			targetPos := point.Point{X: tx, Y: objs[0].Pos.Y}
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = bluesActTypeFighterSword
+				return e.stateChange(bluesActTypeMove)
+			}
+		}
+
+		if e.count == 1*bluesDelays[bluesActTypeFighterSword] {
+			logger.Debug("Blues Fighter Sword Attack")
+			localanim.AnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,

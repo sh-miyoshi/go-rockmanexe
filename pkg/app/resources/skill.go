@@ -8,6 +8,7 @@ const (
 	SkillSword
 	SkillWideSword
 	SkillLongSword
+	SkillFighterSword
 	SkillEnemyShockWave
 	SkillRecover
 	SkillSpreadGun
