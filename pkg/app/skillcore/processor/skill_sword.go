@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -41,7 +42,12 @@ func (p *Sword) Process() (bool, error) {
 
 		userPos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 
-		targetPos := point.Point{X: userPos.X + 1, Y: userPos.Y}
+		ofsx := 1
+		if p.Arg.TargetType == damage.TargetPlayer {
+			ofsx = -1
+		}
+
+		targetPos := point.Point{X: userPos.X + ofsx, Y: userPos.Y}
 		if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 			dm.TargetObjID = objID
 			p.Arg.DamageMgr.New(dm)
@@ -62,7 +68,7 @@ func (p *Sword) Process() (bool, error) {
 				p.Arg.DamageMgr.New(dm)
 			}
 		case resources.SkillLongSword:
-			targetPos.X = userPos.X + 2
+			targetPos.X = userPos.X + ofsx*2
 			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID
 				p.Arg.DamageMgr.New(dm)
@@ -74,6 +80,10 @@ func (p *Sword) Process() (bool, error) {
 						// すでに登録済み
 						continue
 					}
+					if p.Arg.TargetType == damage.TargetPlayer {
+						system.SetError("DreamSwordを敵が使うことを想定していません")
+					}
+
 					if objID := p.Arg.GetPanelInfo(point.Point{X: userPos.X + x, Y: userPos.Y + y}).ObjectID; objID != "" {
 						dm.TargetObjID = objID
 						p.Arg.DamageMgr.New(dm)

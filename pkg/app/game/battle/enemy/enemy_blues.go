@@ -13,7 +13,9 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -187,6 +189,15 @@ func (e *enemyBlues) Process() (bool, error) {
 				e.nextState = bluesActTypeWideSword
 				return e.stateChange(bluesActTypeMove)
 			}
+		}
+
+		if e.count == 1*bluesDelays[bluesActTypeWideSword] {
+			logger.Debug("Blues Wide Sword Attack")
+			localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      forteAtkPower[e.state],
+				TargetType: damage.TargetPlayer,
+			}))
 		}
 
 		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
