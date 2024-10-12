@@ -19,10 +19,11 @@ import (
 const (
 	bluesActTypeStand = iota
 	bluesActTypeMove
-	bluesActTypeSword
-	bluesActTypeShot
-	bluesActTypeThrow
-	bluesActTypeThrow2
+	bluesActTypeWideSword
+	bluesActTypeFighterSword
+	bluesActTypeSonicBoom
+	bluesActTypeDeltaRayEdge
+	bluesActTypeBehindSlash
 	bluesActTypeDamage
 
 	bluesActTypeMax
@@ -38,6 +39,7 @@ type enemyBlues struct {
 	count     int
 	waitCount int
 	nextState int
+	targetPos point.Point
 	images    [bluesActTypeMax][]int
 }
 
@@ -57,35 +59,35 @@ func (e *enemyBlues) Init(objID string) error {
 		return errors.Newf("failed to load image %s", fname)
 	}
 
+	releases := [36]int{}
+	for i := 0; i < 36; i++ {
+		releases[i] = i
+	}
+
 	e.images[bluesActTypeStand] = make([]int, 1)
 	e.images[bluesActTypeStand][0] = tmp[0]
+	releases[0] = -1
 
 	e.images[bluesActTypeMove] = make([]int, 4)
 	for i := 0; i < 4; i++ {
 		e.images[bluesActTypeMove][i] = tmp[i]
+		releases[i] = -1
 	}
 
-	e.images[bluesActTypeSword] = make([]int, 6)
+	e.images[bluesActTypeWideSword] = make([]int, 6)
+	e.images[bluesActTypeFighterSword] = make([]int, 6)
 	for i := 0; i < 6; i++ {
-		e.images[bluesActTypeSword][i] = tmp[i+7]
+		e.images[bluesActTypeWideSword][i] = tmp[i+7]
+		e.images[bluesActTypeFighterSword][i] = tmp[i+7]
+		releases[i+7] = -1
 	}
 
-	e.images[bluesActTypeShot] = make([]int, 5)
-	for i := 0; i < 5; i++ {
-		e.images[bluesActTypeShot][i] = tmp[i+14]
+	// 使わないイメージを削除
+	for i, r := range releases {
+		if r != -1 {
+			dxlib.DeleteGraph(tmp[i])
+		}
 	}
-
-	e.images[bluesActTypeThrow] = make([]int, 5)
-	for i := 0; i < 5; i++ {
-		e.images[bluesActTypeThrow][i] = tmp[i+21]
-	}
-
-	e.images[bluesActTypeThrow2] = make([]int, 7)
-	for i := 0; i < 7; i++ {
-		e.images[bluesActTypeThrow2][i] = tmp[i+28]
-	}
-
-	// WIP: 使わないイメージを削除
 
 	return nil
 }
