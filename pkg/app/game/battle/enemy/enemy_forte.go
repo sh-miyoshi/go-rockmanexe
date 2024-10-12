@@ -40,6 +40,10 @@ var (
 	forteAtkPower = [forteActTypeMax]uint{0, 0, 50, 80, 100, 100, 280, 0}
 )
 
+// Note:
+//   キャラがロックマンを起点に移動する場合、移動後ロックマンが移動すると追従してしまう
+//   一回のみ移動させるためisTargetPosMovedを使用している
+
 type enemyForte struct {
 	pm               EnemyParam
 	images           [forteActTypeMax][]int

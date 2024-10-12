@@ -39,14 +39,15 @@ var (
 )
 
 type enemyBlues struct {
-	pm        EnemyParam
-	state     int
-	count     int
-	waitCount int
-	nextState int
-	targetPos point.Point
-	moveNum   int
-	images    [bluesActTypeMax][]int
+	pm               EnemyParam
+	state            int
+	count            int
+	waitCount        int
+	nextState        int
+	targetPos        point.Point
+	isTargetPosMoved bool
+	moveNum          int
+	images           [bluesActTypeMax][]int
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -57,6 +58,7 @@ func (e *enemyBlues) Init(objID string) error {
 	e.nextState = bluesActTypeMove
 	e.targetPos = emptyPos
 	e.moveNum = 2
+	e.isTargetPosMoved = false
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -174,7 +176,9 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.stateChange(bluesActTypeStand)
 		}
 	case bluesActTypeWideSword:
-		if e.count == 0 {
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -280,6 +284,7 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.nextState = forteActTypeMove
 	e.moveNum = 3 + rand.Intn(3)
 	e.targetPos = emptyPos
+	e.isTargetPosMoved = false
 
 	return e.stateChange(forteActTypeStand)
 }
