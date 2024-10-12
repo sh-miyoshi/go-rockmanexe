@@ -60,7 +60,7 @@ type enemyObject interface {
 var (
 	ErrGameEnd = errors.New("game end")
 	enemies    = make(map[string]enemyObject)
-	debugFlag  = false
+	debugFlag  = true
 
 	// 設定されてない場所であることがわかるような絶対にあり得ない座標
 	emptyPos = point.Point{X: -100, Y: -100}

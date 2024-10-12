@@ -1,6 +1,8 @@
 package enemy
 
 import (
+	"math/rand"
+
 	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
@@ -10,6 +12,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -30,7 +33,7 @@ const (
 )
 
 var (
-	bluesDelays = [bluesActTypeMax]int{1, 2, 1, 1, 1, 1, 1}
+	bluesDelays = [bluesActTypeMax]int{1, 2, 4, 4, 4, 4, 4, 1}
 )
 
 type enemyBlues struct {
@@ -40,6 +43,7 @@ type enemyBlues struct {
 	waitCount int
 	nextState int
 	targetPos point.Point
+	moveNum   int
 	images    [bluesActTypeMax][]int
 }
 
@@ -49,6 +53,8 @@ func (e *enemyBlues) Init(objID string) error {
 	e.count = 0
 	e.waitCount = 20
 	e.nextState = bluesActTypeMove
+	e.targetPos = emptyPos
+	e.moveNum = 2
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -129,13 +135,62 @@ func (e *enemyBlues) Process() (bool, error) {
 		}
 	case bluesActTypeMove:
 		if e.count == 3*bluesDelays[bluesActTypeMove] {
-			// WIP: targetPos
+			if !e.targetPos.Equal(emptyPos) {
+				if !battlecommon.MoveObjectDirect(
+					&e.pm.Pos,
+					e.targetPos,
+					-1, // プレイヤーのパネルでも移動可能
+					true,
+					field.GetPanelInfo,
+				) {
+					// 移動に失敗したら、移動からやり直し
+					logger.Debug("Forte move failed. retry")
+					return e.clearState()
+				}
+				e.targetPos = emptyPos
+				if e.waitCount == 0 {
+					e.waitCount = 20
+				}
+				return e.stateChange(forteActTypeStand)
+			}
+
 			moveRandom(&e.pm.Pos)
 			e.waitCount = 40
 
-			// WIP: attack
+			e.moveNum--
+			if e.moveNum <= 0 {
+				if debugFlag {
+					e.moveNum = 3
+					e.nextState = bluesActTypeWideSword
+					return e.stateChange(bluesActTypeStand)
+				}
+
+				e.moveNum = rand.Intn(3) + 3
+				// WIP: 確率によって行動を変える
+			}
 
 			return e.stateChange(bluesActTypeStand)
+		}
+	case bluesActTypeWideSword:
+		if e.count == 0 {
+			// Move to attack position
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				return e.clearState()
+			}
+			// TODO: 一旦右上だが、右下も候補にする
+			targetPos := point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
+			if !targetPos.Equal(e.pm.Pos) {
+				e.targetPos = targetPos
+				e.nextState = bluesActTypeWideSword
+				return e.stateChange(bluesActTypeMove)
+			}
+		}
+
+		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
+			return e.clearState()
 		}
 	}
 
@@ -148,13 +203,14 @@ func (e *enemyBlues) Draw() {
 	view := battlecommon.ViewPos(e.pm.Pos)
 	img := e.getCurrentImagePointer()
 	ofs := [bluesActTypeMax]point.Point{
-		{X: -5, Y: -20}, // Stand
-		{X: -5, Y: -20}, // Move
-		{X: 0, Y: 0},    // Sword
-		{X: 0, Y: 0},    // Shot
-		{X: 0, Y: 0},    // Throw
-		{X: 0, Y: 0},    // Throw2
-		{X: 0, Y: 0},    // Damage
+		{X: -5, Y: -20},  // Stand
+		{X: -5, Y: -20},  // Move
+		{X: -20, Y: -20}, // WideSword
+		{X: -20, Y: -20}, // FighterSword
+		{X: -20, Y: -20}, // SonicBoom
+		{X: -20, Y: -20}, // DeltaRayEdge
+		{X: -20, Y: -20}, // BehindSlash
+		{X: 0, Y: 0},     // Damage
 	}
 
 	flag := int32(dxlib.TRUE)
@@ -206,4 +262,13 @@ func (e *enemyBlues) stateChange(next int) (bool, error) {
 	e.count = 0
 
 	return false, nil
+}
+
+func (e *enemyBlues) clearState() (bool, error) {
+	e.waitCount = 20
+	e.nextState = forteActTypeMove
+	e.moveNum = 3 + rand.Intn(3)
+	e.targetPos = emptyPos
+
+	return e.stateChange(forteActTypeStand)
 }
