@@ -55,6 +55,7 @@ const (
 	SkillChipForteAnother
 	SkillDeathMatch1
 	SkillDeathMatch2
+	SkillNonEffectWideSword
 
 	SkillFailed
 )

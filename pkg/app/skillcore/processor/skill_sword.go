@@ -30,13 +30,18 @@ func (p *Sword) Process() (bool, error) {
 			p.Arg.SoundOn(resources.SESword)
 		}
 
+		bigDm := true
+		if p.SkillID == resources.SkillNonEffectWideSword {
+			bigDm = false
+		}
+
 		dm := damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypeObject,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			BigDamage:     bigDm,
 			Element:       damage.ElementNone,
 		}
 
@@ -56,7 +61,7 @@ func (p *Sword) Process() (bool, error) {
 		switch p.SkillID {
 		case resources.SkillSword:
 			// No more damage area
-		case resources.SkillWideSword:
+		case resources.SkillWideSword, resources.SkillNonEffectWideSword:
 			targetPos.Y = userPos.Y - 1
 			if objID := p.Arg.GetPanelInfo(targetPos).ObjectID; objID != "" {
 				dm.TargetObjID = objID

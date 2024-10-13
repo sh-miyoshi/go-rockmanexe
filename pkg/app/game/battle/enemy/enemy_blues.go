@@ -299,7 +299,12 @@ func (e *enemyBlues) Process() (bool, error) {
 
 		if e.count == 1*bluesDelays[bluesActTypeDeltaRayEdge] {
 			logger.Debug("Blues DeltaRayEdge %d times Attack", e.edgeAtkCount+1)
-			e.atkID = localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+			skillID := resources.SkillNonEffectWideSword
+			if e.edgeAtkCount == 2 {
+				skillID = resources.SkillWideSword
+			}
+
+			e.atkID = localanim.AnimNew(skill.Get(skillID, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
