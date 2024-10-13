@@ -53,6 +53,7 @@ const (
 	imageTypeForteDarknessOverload
 	imageTypeForteStand
 	imageTypeForteAtatckHellsRolling
+	imageTypeFighterSword
 
 	imageTypeMax
 )
@@ -250,55 +251,61 @@ func LoadImages() error {
 		return errors.Newf("failed to load image %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/カウントボム_数字.png"
+	fname = path + "カウントボム_数字.png"
 	images[imageTypeCountBombNumber] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 16, 16, images[imageTypeCountBombNumber]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/エビロン_atk_begin.png"
+	fname = path + "エビロン_atk_begin.png"
 	images[imageTypeShrimpyAtkBegin] = make([]int, 4)
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 46, 44, images[imageTypeShrimpyAtkBegin]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
-	fname = config.ImagePath + "battle/skill/エビロン_atk_move.png"
+	fname = path + "エビロン_atk_move.png"
 	images[imageTypeShrimpyAtkMove] = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 74, 60, images[imageTypeShrimpyAtkMove]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/バブルショット_body.png"
+	fname = path + "バブルショット_body.png"
 	images[imageTypeBubbleShotBody] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 70, 60, images[imageTypeBubbleShotBody]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
-	fname = config.ImagePath + "battle/skill/バブルショット_atk.png"
+	fname = path + "バブルショット_atk.png"
 	images[imageTypeBubbleShotAtk] = make([]int, 2)
 	if res := dxlib.LoadDivGraph(fname, 2, 2, 1, 40, 60, images[imageTypeBubbleShotAtk]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/フォルテ_ヘルズローリング.png"
+	fname = path + "フォルテ_ヘルズローリング.png"
 	images[imageTypeForteHellsRolling] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 96, 123, images[imageTypeForteHellsRolling]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/フォルテ_ダークアームブレード.png"
+	fname = path + "フォルテ_ダークアームブレード.png"
 	images[imageTypeForteDarkArmBlade] = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 4, 2, 188, 150, images[imageTypeForteDarkArmBlade]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/シューティングバスター.png"
+	fname = path + "シューティングバスター.png"
 	images[imageTypeForteShootingBuster] = make([]int, 5)
 	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 112, 96, images[imageTypeForteShootingBuster]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 
-	fname = config.ImagePath + "battle/skill/フォルテ_ダークネスオーバーロード.png"
+	fname = path + "フォルテ_ダークネスオーバーロード.png"
 	images[imageTypeForteDarknessOverload] = make([]int, 8)
 	if res := dxlib.LoadDivGraph(fname, 8, 4, 2, 240, 220, images[imageTypeForteDarknessOverload]); res == -1 {
+		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	fname = path + "ファイターソード.png"
+	images[imageTypeFighterSword] = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 256, 128, images[imageTypeFighterSword]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
 

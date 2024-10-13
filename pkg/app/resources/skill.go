@@ -8,6 +8,7 @@ const (
 	SkillSword
 	SkillWideSword
 	SkillLongSword
+	SkillFighterSword
 	SkillEnemyShockWave
 	SkillRecover
 	SkillSpreadGun
@@ -54,6 +55,7 @@ const (
 	SkillChipForteAnother
 	SkillDeathMatch1
 	SkillDeathMatch2
+	SkillNonEffectWideSword
 
 	SkillFailed
 )

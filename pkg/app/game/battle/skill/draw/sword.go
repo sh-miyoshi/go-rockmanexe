@@ -26,10 +26,12 @@ func getSwordImages(id int) []int {
 	switch id {
 	case resources.SkillSword:
 		return images[imageTypeSword][0 : n-1]
-	case resources.SkillWideSword:
+	case resources.SkillWideSword, resources.SkillNonEffectWideSword:
 		return images[imageTypeSword][2*n:]
 	case resources.SkillLongSword:
 		return images[imageTypeSword][n : 2*n-1]
+	case resources.SkillFighterSword:
+		return images[imageTypeFighterSword]
 	case resources.SkillDreamSword:
 		return images[imageTypeDreamSword]
 	}
