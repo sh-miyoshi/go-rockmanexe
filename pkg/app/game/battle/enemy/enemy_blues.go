@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	bluesDelays = [bluesActTypeMax]int{1, 2, 4, 4, 4, 4, 4, 1}
+	bluesDelays = [bluesActTypeMax]int{1, 2, 4, 4, 4, 1, 4, 1}
 )
 
 type enemyBlues struct {
@@ -49,8 +49,9 @@ type enemyBlues struct {
 	moveNum          int
 	images           [bluesActTypeMax][]int
 	edgeAtkCount     int
-	atkIDs           []string
+	atkID            string
 	isCharReverse    bool
+	isEdgeEffectOn   bool
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -64,6 +65,8 @@ func (e *enemyBlues) Init(objID string) error {
 	e.isTargetPosMoved = false
 	e.edgeAtkCount = 0
 	e.isCharReverse = false
+	e.isEdgeEffectOn = false
+	e.atkID = ""
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -91,14 +94,13 @@ func (e *enemyBlues) Init(objID string) error {
 
 	e.images[bluesActTypeWideSword] = make([]int, 6)
 	e.images[bluesActTypeFighterSword] = make([]int, 6)
+	e.images[bluesActTypeDeltaRayEdge] = make([]int, 6)
 	for i := 0; i < 6; i++ {
 		e.images[bluesActTypeWideSword][i] = tmp[i+7]
 		e.images[bluesActTypeFighterSword][i] = tmp[i+7]
+		e.images[bluesActTypeDeltaRayEdge][i] = tmp[i+7]
 		releases[i+7] = -1
 	}
-
-	e.images[bluesActTypeDeltaRayEdge] = make([]int, 1)
-	e.images[bluesActTypeDeltaRayEdge][0] = tmp[0]
 
 	// 使わないイメージを削除
 	for i, r := range releases {
@@ -255,8 +257,69 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.clearState()
 		}
 	case bluesActTypeDeltaRayEdge:
-		if e.count == 0 {
+		if e.count == 0 && !e.isEdgeEffectOn {
+			e.isEdgeEffectOn = true
 			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
+			e.nextState = bluesActTypeDeltaRayEdge
+			e.waitCount = 10
+			return e.stateChange(bluesActTypeStand)
+		}
+
+		if e.count == 0 && !e.isTargetPosMoved {
+			e.isTargetPosMoved = true
+
+			// Move to attack position
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				return e.clearState()
+			}
+
+			var targetPos point.Point
+			switch e.edgeAtkCount {
+			case 0:
+				e.isCharReverse = false
+				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
+			case 1:
+				e.isCharReverse = true
+				targetPos = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
+			case 2:
+				e.isCharReverse = false
+				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y + 1}
+			}
+
+			if !targetPos.Equal(e.pm.Pos) {
+				e.waitCount = 2
+				e.targetPos = targetPos
+				e.nextState = bluesActTypeDeltaRayEdge
+				return e.stateChange(bluesActTypeMove)
+			}
+		}
+
+		if e.count == 1*bluesDelays[bluesActTypeDeltaRayEdge] {
+			logger.Debug("Blues DeltaRayEdge %d times Attack", e.edgeAtkCount+1)
+			e.atkID = localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+				OwnerID:    e.pm.ObjectID,
+				Power:      forteAtkPower[e.state],
+				TargetType: damage.TargetPlayer,
+			}))
+		}
+
+		if e.atkID != "" {
+			if !localanim.AnimIsProcessing(e.atkID) {
+				e.edgeAtkCount++
+				if e.edgeAtkCount == 3 {
+					// WIP: 終了エフェクト
+					return e.clearState()
+				} else {
+					e.nextState = bluesActTypeDeltaRayEdge
+					e.waitCount = 2
+					e.isTargetPosMoved = false
+					e.atkID = ""
+					return e.stateChange(forteActTypeStand)
+				}
+			}
 		}
 	}
 
@@ -279,12 +342,21 @@ func (e *enemyBlues) Draw() {
 		{X: 0, Y: 0},     // Damage
 	}
 
+	// デフォルトは逆向き
 	flag := int32(dxlib.TRUE)
 	opt := dxlib.DrawRotaGraphOption{
 		ReverseXFlag: &flag,
 	}
+	if e.isCharReverse {
+		opt = dxlib.DrawRotaGraphOption{}
+	}
 
-	dxlib.DrawRotaGraph(view.X+ofs[e.state].X, view.Y+ofs[e.state].Y, 1, 0, *img, true, opt)
+	state := e.state
+	if e.count == 0 {
+		state = bluesActTypeStand
+	}
+
+	dxlib.DrawRotaGraph(view.X+ofs[state].X, view.Y+ofs[state].Y, 1, 0, *img, true, opt)
 }
 
 func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
@@ -336,6 +408,10 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.moveNum = 3 + rand.Intn(3)
 	e.targetPos = emptyPos
 	e.isTargetPosMoved = false
+	e.edgeAtkCount = 0
+	e.isCharReverse = false
+	e.isEdgeEffectOn = false
+	e.atkID = ""
 
 	return e.stateChange(forteActTypeStand)
 }
