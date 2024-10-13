@@ -48,6 +48,9 @@ type enemyBlues struct {
 	isTargetPosMoved bool
 	moveNum          int
 	images           [bluesActTypeMax][]int
+	edgeAtkCount     int
+	atkIDs           []string
+	isCharReverse    bool
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -59,6 +62,8 @@ func (e *enemyBlues) Init(objID string) error {
 	e.targetPos = emptyPos
 	e.moveNum = 2
 	e.isTargetPosMoved = false
+	e.edgeAtkCount = 0
+	e.isCharReverse = false
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -91,6 +96,9 @@ func (e *enemyBlues) Init(objID string) error {
 		e.images[bluesActTypeFighterSword][i] = tmp[i+7]
 		releases[i+7] = -1
 	}
+
+	e.images[bluesActTypeDeltaRayEdge] = make([]int, 1)
+	e.images[bluesActTypeDeltaRayEdge][0] = tmp[0]
 
 	// 使わないイメージを削除
 	for i, r := range releases {
@@ -165,7 +173,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debugFlag {
 					e.moveNum = 3
-					e.nextState = bluesActTypeFighterSword
+					e.nextState = bluesActTypeDeltaRayEdge
 					return e.stateChange(bluesActTypeStand)
 				}
 
@@ -245,6 +253,10 @@ func (e *enemyBlues) Process() (bool, error) {
 
 		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
 			return e.clearState()
+		}
+	case bluesActTypeDeltaRayEdge:
+		if e.count == 0 {
+			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
 		}
 	}
 

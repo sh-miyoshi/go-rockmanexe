@@ -19,6 +19,7 @@ const (
 	EffectTypeFailed
 	EffectTypeIceBreak
 	EffectTypeExplodeSmall
+	EffectTypeSpecialStart
 
 	EffectTypeMax
 )

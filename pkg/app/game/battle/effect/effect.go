@@ -178,6 +178,14 @@ func Get(typ int, pos point.Point, randRange int) anim.Anim {
 		}
 	case resources.EffectTypeExplodeSmall:
 		system.SetError("explode small effect is not implemented yet")
+	case resources.EffectTypeSpecialStart:
+		res := &specialStartEffect{
+			ID:  uuid.New().String(),
+			Pos: pos,
+			Ofs: ofs,
+		}
+		res.Init()
+		return res
 	}
 
 	return res
