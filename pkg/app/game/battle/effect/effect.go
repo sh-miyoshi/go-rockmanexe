@@ -116,6 +116,11 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 80, images[resources.EffectTypeExplodeSmall]); res == -1 {
 		return errors.Newf("failed to load image %s", fname)
 	}
+	images[resources.EffectTypeDeltaRayEdge] = make([]int, 3)
+	fname = config.ImagePath + "battle/effect/デルタレイエッジ.png"
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 210, 172, images[resources.EffectTypeDeltaRayEdge]); res == -1 {
+		return errors.Newf("failed to load image %s", fname)
+	}
 
 	for i := 0; i < resources.EffectTypeMax; i++ {
 		sounds[i] = -1

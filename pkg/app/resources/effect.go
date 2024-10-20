@@ -20,6 +20,7 @@ const (
 	EffectTypeIceBreak
 	EffectTypeExplodeSmall
 	EffectTypeSpecialStart
+	EffectTypeDeltaRayEdge
 
 	EffectTypeMax
 )
