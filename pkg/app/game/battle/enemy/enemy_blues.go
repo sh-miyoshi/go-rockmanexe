@@ -292,7 +292,10 @@ func (e *enemyBlues) Process() (bool, error) {
 		if e.count == 1*bluesDelays[bluesActTypeDeltaRayEdge] {
 			logger.Debug("Blues DeltaRayEdge %d times Attack", e.atkCount+1)
 			skillID := resources.SkillNonEffectWideSword
-			if e.atkCount == 2 {
+			isReverse := true
+			if e.atkCount == 1 {
+				isReverse = false
+			} else if e.atkCount == 2 {
 				skillID = resources.SkillWideSword
 			}
 
@@ -300,6 +303,7 @@ func (e *enemyBlues) Process() (bool, error) {
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
+				IsReverse:  isReverse,
 			}))
 		}
 

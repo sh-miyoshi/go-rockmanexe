@@ -10,13 +10,13 @@ import (
 type DrawSword struct {
 }
 
-func (p *DrawSword) Draw(skillID int, viewPos point.Point, count int, delay int, isPlayer bool) {
-	opt := dxlib.OptXReverse(!isPlayer)
+func (p *DrawSword) Draw(skillID int, viewPos point.Point, count int, delay int, isReverse bool) {
+	opt := dxlib.OptXReverse(isReverse)
 
 	n := (count - 5) / delay
 	imgs := getSwordImages(skillID)
 	if n >= 0 && n < len(imgs) {
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, !isPlayer), viewPos.Y, 1, 0, imgs[n], true, opt)
+		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(100, isReverse), viewPos.Y, 1, 0, imgs[n], true, opt)
 	}
 }
 
