@@ -252,9 +252,24 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.clearState()
 		}
 	case bluesActTypeDeltaRayEdge:
-		// TODO: 挙動の調整(最初に3か所の場所チェックしてから攻撃)
-
 		if e.count == 0 && !e.isEdgeEffectOn {
+			// 移動先を決める
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				return e.clearState()
+			}
+			e.targetPoses[0] = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
+			e.targetPoses[1] = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
+			e.targetPoses[2] = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y + 1}
+			for i := 0; i < 3; i++ {
+				if !battlecommon.MoveObjectDirect(&e.pm.Pos, e.targetPoses[i], -1, false, field.GetPanelInfo) {
+					logger.Debug("Blues DeltaRayEdge move failed at %d time.", i)
+					return e.clearState()
+				}
+			}
+
 			e.isEdgeEffectOn = true
 			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
 			e.nextState = bluesActTypeDeltaRayEdge
@@ -262,34 +277,16 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.stateChange(bluesActTypeStand)
 		}
 
-		if e.count == 0 && e.targetPoses[e.atkCount].Equal(emptyPos) {
-			// Move to attack position
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
-			if len(objs) == 0 {
-				// エラー処理
-				logger.Info("Failed to get player position")
-				return e.clearState()
-			}
-
-			var targetPos point.Point
-			switch e.atkCount {
-			case 0:
-				e.isCharReverse = false
-				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
-			case 1:
+		if e.count == 0 && !e.targetPoses[e.atkCount].Equal(emptyPos) {
+			logger.Debug("Blues move to %s", e.targetPoses[e.atkCount].String())
+			if e.atkCount == 1 {
 				e.isCharReverse = true
-				targetPos = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
-			case 2:
+			} else {
 				e.isCharReverse = false
-				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y + 1}
 			}
-
-			if !targetPos.Equal(e.pm.Pos) {
-				e.waitCount = 2
-				e.targetPoses[e.atkCount] = targetPos
-				e.nextState = bluesActTypeDeltaRayEdge
-				return e.stateChange(bluesActTypeMove)
-			}
+			e.waitCount = 2
+			e.nextState = bluesActTypeDeltaRayEdge
+			return e.stateChange(bluesActTypeMove)
 		}
 
 		if e.count == 1*bluesDelays[bluesActTypeDeltaRayEdge] {
