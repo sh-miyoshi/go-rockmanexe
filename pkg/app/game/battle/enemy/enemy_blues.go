@@ -40,19 +40,18 @@ var (
 )
 
 type enemyBlues struct {
-	pm               EnemyParam
-	state            int
-	count            int
-	waitCount        int
-	nextState        int
-	targetPos        point.Point
-	isTargetPosMoved bool
-	moveNum          int
-	images           [bluesActTypeMax][]int
-	edgeAtkCount     int
-	atkID            string
-	isCharReverse    bool
-	isEdgeEffectOn   bool
+	pm             EnemyParam
+	state          int
+	count          int
+	waitCount      int
+	nextState      int
+	targetPoses    [3]point.Point
+	moveNum        int
+	images         [bluesActTypeMax][]int
+	atkCount       int
+	atkID          string
+	isCharReverse  bool
+	isEdgeEffectOn bool
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -61,10 +60,9 @@ func (e *enemyBlues) Init(objID string) error {
 	e.count = 0
 	e.waitCount = 20
 	e.nextState = bluesActTypeMove
-	e.targetPos = emptyPos
+	e.targetPoses = [3]point.Point{emptyPos, emptyPos, emptyPos}
 	e.moveNum = 2
-	e.isTargetPosMoved = false
-	e.edgeAtkCount = 0
+	e.atkCount = 0
 	e.isCharReverse = false
 	e.isEdgeEffectOn = false
 	e.atkID = ""
@@ -150,10 +148,10 @@ func (e *enemyBlues) Process() (bool, error) {
 		}
 	case bluesActTypeMove:
 		if e.count == 3*bluesDelays[bluesActTypeMove] {
-			if !e.targetPos.Equal(emptyPos) {
+			if !e.targetPoses[e.atkCount].Equal(emptyPos) {
 				if !battlecommon.MoveObjectDirect(
 					&e.pm.Pos,
-					e.targetPos,
+					e.targetPoses[e.atkCount],
 					-1, // プレイヤーのパネルでも移動可能
 					true,
 					field.GetPanelInfo,
@@ -162,7 +160,7 @@ func (e *enemyBlues) Process() (bool, error) {
 					logger.Debug("Forte move failed. retry")
 					return e.clearState()
 				}
-				e.targetPos = emptyPos
+				e.targetPoses[e.atkCount] = emptyPos
 				if e.waitCount == 0 {
 					e.waitCount = 20
 				}
@@ -187,9 +185,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.stateChange(bluesActTypeStand)
 		}
 	case bluesActTypeWideSword:
-		if e.count == 0 && !e.isTargetPosMoved {
-			e.isTargetPosMoved = true
-
+		if e.count == 0 && e.targetPoses[0].Equal(emptyPos) {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -200,7 +196,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			// TODO: 一旦右上だが、右下も候補にする
 			targetPos := point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
 			if !targetPos.Equal(e.pm.Pos) {
-				e.targetPos = targetPos
+				e.targetPoses[0] = targetPos
 				e.nextState = bluesActTypeWideSword
 				return e.stateChange(bluesActTypeMove)
 			}
@@ -219,9 +215,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.clearState()
 		}
 	case bluesActTypeFighterSword:
-		if e.count == 0 && !e.isTargetPosMoved {
-			e.isTargetPosMoved = true
-
+		if e.count == 0 && e.targetPoses[0].Equal(emptyPos) {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -239,7 +233,7 @@ func (e *enemyBlues) Process() (bool, error) {
 
 			targetPos := point.Point{X: tx, Y: objs[0].Pos.Y}
 			if !targetPos.Equal(e.pm.Pos) {
-				e.targetPos = targetPos
+				e.targetPoses[0] = targetPos
 				e.nextState = bluesActTypeFighterSword
 				return e.stateChange(bluesActTypeMove)
 			}
@@ -268,9 +262,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.stateChange(bluesActTypeStand)
 		}
 
-		if e.count == 0 && !e.isTargetPosMoved {
-			e.isTargetPosMoved = true
-
+		if e.count == 0 && e.targetPoses[e.atkCount].Equal(emptyPos) {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -280,7 +272,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			}
 
 			var targetPos point.Point
-			switch e.edgeAtkCount {
+			switch e.atkCount {
 			case 0:
 				e.isCharReverse = false
 				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
@@ -294,16 +286,16 @@ func (e *enemyBlues) Process() (bool, error) {
 
 			if !targetPos.Equal(e.pm.Pos) {
 				e.waitCount = 2
-				e.targetPos = targetPos
+				e.targetPoses[e.atkCount] = targetPos
 				e.nextState = bluesActTypeDeltaRayEdge
 				return e.stateChange(bluesActTypeMove)
 			}
 		}
 
 		if e.count == 1*bluesDelays[bluesActTypeDeltaRayEdge] {
-			logger.Debug("Blues DeltaRayEdge %d times Attack", e.edgeAtkCount+1)
+			logger.Debug("Blues DeltaRayEdge %d times Attack", e.atkCount+1)
 			skillID := resources.SkillNonEffectWideSword
-			if e.edgeAtkCount == 2 {
+			if e.atkCount == 2 {
 				skillID = resources.SkillWideSword
 			}
 
@@ -316,14 +308,13 @@ func (e *enemyBlues) Process() (bool, error) {
 
 		if e.atkID != "" {
 			if !localanim.AnimIsProcessing(e.atkID) {
-				e.edgeAtkCount++
-				if e.edgeAtkCount == 3 {
+				e.atkCount++
+				if e.atkCount == 3 {
 					// WIP: 終了エフェクト
 					return e.clearState()
 				} else {
 					e.nextState = bluesActTypeDeltaRayEdge
 					e.waitCount = 2
-					e.isTargetPosMoved = false
 					e.atkID = ""
 					return e.stateChange(forteActTypeStand)
 				}
@@ -418,9 +409,8 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.waitCount = 20
 	e.nextState = forteActTypeMove
 	e.moveNum = 3 + rand.Intn(3)
-	e.targetPos = emptyPos
-	e.isTargetPosMoved = false
-	e.edgeAtkCount = 0
+	e.targetPoses = [3]point.Point{emptyPos, emptyPos, emptyPos}
+	e.atkCount = 0
 	e.isCharReverse = false
 	e.isEdgeEffectOn = false
 	e.atkID = ""
