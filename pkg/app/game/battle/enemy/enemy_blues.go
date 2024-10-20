@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -257,6 +258,8 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.clearState()
 		}
 	case bluesActTypeDeltaRayEdge:
+		// TODO: 挙動の調整(最初に3か所の場所チェックしてから攻撃)
+
 		if e.count == 0 && !e.isEdgeEffectOn {
 			e.isEdgeEffectOn = true
 			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
@@ -326,6 +329,10 @@ func (e *enemyBlues) Process() (bool, error) {
 				}
 			}
 		}
+	case bluesActTypeSonicBoom:
+		system.SetError("WIP: Blues SonicBoom is not implemented yet")
+	case bluesActTypeBehindSlash:
+		system.SetError("WIP: Blues BehindSlash is not implemented yet")
 	}
 
 	e.count++
