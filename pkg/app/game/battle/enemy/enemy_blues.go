@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
@@ -333,6 +334,7 @@ func (e *enemyBlues) Process() (bool, error) {
 	case bluesActTypeDeltaRayEdgeEnd:
 		if e.count == 0 {
 			localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
+			sound.On(resources.SEDeltaRayEdgeEnd)
 		}
 
 		// WIP: 終了処理

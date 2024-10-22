@@ -56,6 +56,7 @@ const (
 	SEFailed
 	SEBubbleShot
 	SEChing
+	SEDeltaRayEdgeEnd
 
 	SEMax
 )
