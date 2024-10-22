@@ -70,6 +70,7 @@ func Init() error {
 	soundEffects[resources.SETornado] = dxlib.LoadSoundMem(basePath + "tornado.mp3")
 	soundEffects[resources.SEFailed] = dxlib.LoadSoundMem(basePath + "failed.mp3")
 	soundEffects[resources.SEBubbleShot] = dxlib.LoadSoundMem(basePath + "bubble_shot.mp3")
+	soundEffects[resources.SEChing] = dxlib.LoadSoundMem(basePath + "ching.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {

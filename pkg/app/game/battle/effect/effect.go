@@ -31,10 +31,11 @@ type effect struct {
 	Pos  point.Point
 	Type int
 
-	count  int
-	images []int
-	delay  int
-	ofs    point.Point
+	count     int
+	images    []int
+	delay     int
+	ofs       point.Point
+	isReverse bool
 }
 
 type noEffect struct{}
@@ -191,6 +192,9 @@ func Get(typ int, pos point.Point, randRange int) anim.Anim {
 		}
 		res.Init()
 		return res
+	case resources.EffectTypeDeltaRayEdge:
+		res.delay = 10
+		res.isReverse = true
 	}
 
 	return res
@@ -214,8 +218,10 @@ func (e *effect) Draw() {
 		imgNo = e.count / e.delay
 	}
 
+	opt := dxlib.OptXReverse(e.isReverse)
+
 	view := battlecommon.ViewPos(e.Pos)
-	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], true)
+	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], true, opt)
 }
 
 func (e *effect) GetParam() anim.Param {

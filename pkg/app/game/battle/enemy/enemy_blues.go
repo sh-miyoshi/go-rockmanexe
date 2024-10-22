@@ -29,6 +29,7 @@ const (
 	bluesActTypeFighterSword
 	bluesActTypeSonicBoom
 	bluesActTypeDeltaRayEdge
+	bluesActTypeDeltaRayEdgeEnd
 	bluesActTypeBehindSlash
 	bluesActTypeDamage
 
@@ -45,13 +46,14 @@ type enemyBlues struct {
 	count          int
 	waitCount      int
 	nextState      int
-	targetPoses    [3]point.Point
+	targetPoses    [4]point.Point
 	moveNum        int
 	images         [bluesActTypeMax][]int
 	atkCount       int
 	atkID          string
 	isCharReverse  bool
 	isEdgeEffectOn bool
+	edgeEndPos     point.Point
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -60,7 +62,7 @@ func (e *enemyBlues) Init(objID string) error {
 	e.count = 0
 	e.waitCount = 20
 	e.nextState = bluesActTypeMove
-	e.targetPoses = [3]point.Point{emptyPos, emptyPos, emptyPos}
+	e.targetPoses = [4]point.Point{emptyPos, emptyPos, emptyPos, emptyPos}
 	e.moveNum = 2
 	e.atkCount = 0
 	e.isCharReverse = false
@@ -100,6 +102,9 @@ func (e *enemyBlues) Init(objID string) error {
 		e.images[bluesActTypeDeltaRayEdge][i] = tmp[i+7]
 		releases[i+7] = -1
 	}
+
+	e.images[bluesActTypeDeltaRayEdgeEnd] = make([]int, 1)
+	e.images[bluesActTypeDeltaRayEdgeEnd][0] = tmp[7]
 
 	// 使わないイメージを削除
 	for i, r := range releases {
@@ -263,12 +268,15 @@ func (e *enemyBlues) Process() (bool, error) {
 			e.targetPoses[0] = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
 			e.targetPoses[1] = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
 			e.targetPoses[2] = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y + 1}
+			// 最後は最初の場所に戻る
+			e.targetPoses[3] = e.pm.Pos
 			for i := 0; i < 3; i++ {
 				if !battlecommon.MoveObjectDirect(&e.pm.Pos, e.targetPoses[i], -1, false, field.GetPanelInfo) {
 					logger.Debug("Blues DeltaRayEdge move failed at %d time.", i)
 					return e.clearState()
 				}
 			}
+			e.edgeEndPos = objs[0].Pos
 
 			e.isEdgeEffectOn = true
 			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
@@ -311,8 +319,9 @@ func (e *enemyBlues) Process() (bool, error) {
 			if !localanim.AnimIsProcessing(e.atkID) {
 				e.atkCount++
 				if e.atkCount == 3 {
-					// WIP: 終了エフェクト
-					return e.clearState()
+					e.waitCount = 1
+					e.nextState = bluesActTypeDeltaRayEdgeEnd
+					return e.stateChange(bluesActTypeMove)
 				} else {
 					e.nextState = bluesActTypeDeltaRayEdge
 					e.waitCount = 2
@@ -321,6 +330,12 @@ func (e *enemyBlues) Process() (bool, error) {
 				}
 			}
 		}
+	case bluesActTypeDeltaRayEdgeEnd:
+		if e.count == 0 {
+			localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
+		}
+
+		// WIP: 終了処理
 	case bluesActTypeSonicBoom:
 		system.SetError("WIP: Blues SonicBoom is not implemented yet")
 	case bluesActTypeBehindSlash:
@@ -410,7 +425,7 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.waitCount = 20
 	e.nextState = forteActTypeMove
 	e.moveNum = 3 + rand.Intn(3)
-	e.targetPoses = [3]point.Point{emptyPos, emptyPos, emptyPos}
+	e.targetPoses = [4]point.Point{emptyPos, emptyPos, emptyPos, emptyPos}
 	e.atkCount = 0
 	e.isCharReverse = false
 	e.isEdgeEffectOn = false

@@ -4,6 +4,8 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -37,6 +39,10 @@ func (p *specialStartEffect) Init() {
 
 func (p *specialStartEffect) Process() (bool, error) {
 	p.count++
+	if p.count == 1 {
+		sound.On(resources.SEChing)
+	}
+
 	return p.count >= specialStartEffectEndCount, nil
 }
 
