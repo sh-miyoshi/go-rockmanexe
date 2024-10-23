@@ -48,6 +48,7 @@ type enemyBlues struct {
 	waitCount      int
 	nextState      int
 	targetPoses    [4]point.Point
+	isTargetMoved  bool
 	moveNum        int
 	images         [bluesActTypeMax][]int
 	atkCount       int
@@ -69,6 +70,7 @@ func (e *enemyBlues) Init(objID string) error {
 	e.isCharReverse = false
 	e.isEdgeEffectOn = false
 	e.atkID = ""
+	e.isTargetMoved = false
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -170,6 +172,7 @@ func (e *enemyBlues) Process() (bool, error) {
 				if e.waitCount == 0 {
 					e.waitCount = 20
 				}
+				e.isTargetMoved = true
 				return e.stateChange(forteActTypeStand)
 			}
 
@@ -180,7 +183,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debugFlag {
 					e.moveNum = 3
-					e.nextState = bluesActTypeDeltaRayEdge
+					e.nextState = bluesActTypeWideSword
 					return e.stateChange(bluesActTypeStand)
 				}
 
@@ -191,7 +194,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.stateChange(bluesActTypeStand)
 		}
 	case bluesActTypeWideSword:
-		if e.count == 0 && e.targetPoses[0].Equal(emptyPos) {
+		if e.count == 0 && !e.isTargetMoved {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -199,8 +202,12 @@ func (e *enemyBlues) Process() (bool, error) {
 				logger.Info("Failed to get player position")
 				return e.clearState()
 			}
-			// TODO: 一旦右上だが、右下も候補にする
+			// 一旦右上だが、移動できなければ右下も候補にする
 			targetPos := point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y - 1}
+			if !battlecommon.MoveObjectDirect(&e.pm.Pos, targetPos, -1, false, field.GetPanelInfo) {
+				targetPos = point.Point{X: objs[0].Pos.X + 1, Y: objs[0].Pos.Y + 1}
+			}
+
 			if !targetPos.Equal(e.pm.Pos) {
 				e.targetPoses[0] = targetPos
 				e.nextState = bluesActTypeWideSword
@@ -214,6 +221,7 @@ func (e *enemyBlues) Process() (bool, error) {
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
+				IsReverse:  true,
 			}))
 		}
 
@@ -221,7 +229,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			return e.clearState()
 		}
 	case bluesActTypeFighterSword:
-		if e.count == 0 && e.targetPoses[0].Equal(emptyPos) {
+		if e.count == 0 && !e.isTargetMoved {
 			// Move to attack position
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -434,6 +442,7 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.isCharReverse = false
 	e.isEdgeEffectOn = false
 	e.atkID = ""
+	e.isTargetMoved = false
 
 	return e.stateChange(forteActTypeStand)
 }
