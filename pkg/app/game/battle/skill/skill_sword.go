@@ -29,7 +29,7 @@ func (p *sword) Draw() {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
-	p.drawer.Draw(p.Core.GetID(), view, p.Core.GetCount(), p.Core.GetDelay(), true)
+	p.drawer.Draw(p.Core.GetID(), view, p.Core.GetCount(), p.Core.GetDelay(), p.Arg.IsReverse)
 }
 
 func (p *sword) Process() (bool, error) {

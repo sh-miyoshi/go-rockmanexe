@@ -163,21 +163,7 @@ func (e *enemyAquaman) Process() (bool, error) {
 				}
 			}
 
-			for i := 0; i < 10; i++ {
-				next := point.Point{
-					X: rand.Intn(battlecommon.FieldNum.X/2) + battlecommon.FieldNum.X/2,
-					Y: rand.Intn(battlecommon.FieldNum.Y),
-				}
-				if battlecommon.MoveObjectDirect(
-					&e.pm.Pos,
-					next,
-					battlecommon.PanelTypeEnemy,
-					true,
-					field.GetPanelInfo,
-				) {
-					break
-				}
-			}
+			moveRandom(&e.pm.Pos)
 			e.waitCount = 20
 			e.state = aquamanActTypeStand
 			e.moveNum--

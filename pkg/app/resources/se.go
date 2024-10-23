@@ -55,6 +55,8 @@ const (
 	SETornado
 	SEFailed
 	SEBubbleShot
+	SEChing
+	SEDeltaRayEdgeEnd
 
 	SEMax
 )
