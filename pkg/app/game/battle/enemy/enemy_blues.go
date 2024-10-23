@@ -333,11 +333,13 @@ func (e *enemyBlues) Process() (bool, error) {
 		}
 	case bluesActTypeDeltaRayEdgeEnd:
 		if e.count == 0 {
-			localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
+			e.atkID = localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
 			sound.On(resources.SEDeltaRayEdgeEnd)
 		}
 
-		// WIP: 終了処理
+		if !localanim.AnimIsProcessing(e.atkID) {
+			return e.clearState()
+		}
 	case bluesActTypeSonicBoom:
 		system.SetError("WIP: Blues SonicBoom is not implemented yet")
 	case bluesActTypeBehindSlash:
