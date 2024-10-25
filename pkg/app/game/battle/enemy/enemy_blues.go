@@ -5,6 +5,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -37,8 +38,13 @@ const (
 	bluesActTypeMax
 )
 
+const (
+	bluesShieldTime = 20
+)
+
 var (
-	bluesDelays = [bluesActTypeMax]int{1, 2, 4, 4, 4, 1, 4, 1}
+	bluesDelays      = [bluesActTypeMax]int{1, 2, 4, 4, 4, 1, 4, 1}
+	bluesShieldDelay = 4
 )
 
 type enemyBlues struct {
@@ -56,6 +62,8 @@ type enemyBlues struct {
 	isCharReverse  bool
 	isEdgeEffectOn bool
 	edgeEndPos     point.Point
+	imgShields     []int
+	shieldCount    int
 }
 
 func (e *enemyBlues) Init(objID string) error {
@@ -71,6 +79,7 @@ func (e *enemyBlues) Init(objID string) error {
 	e.isEdgeEffectOn = false
 	e.atkID = ""
 	e.isTargetMoved = false
+	e.shieldCount = 0
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBlues)
@@ -108,12 +117,20 @@ func (e *enemyBlues) Init(objID string) error {
 
 	e.images[bluesActTypeDeltaRayEdgeEnd] = make([]int, 1)
 	e.images[bluesActTypeDeltaRayEdgeEnd][0] = tmp[7]
+	e.images[bluesActTypeBehindSlash] = make([]int, 1)
+	e.images[bluesActTypeBehindSlash][0] = tmp[7]
 
 	// 使わないイメージを削除
 	for i, r := range releases {
 		if r != -1 {
 			dxlib.DeleteGraph(tmp[i])
 		}
+	}
+
+	e.imgShields = make([]int, 7)
+	fname = config.ImagePath + "battle/skill/ブルース_シールド.png"
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 64, 116, e.imgShields); res == -1 {
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	return nil
@@ -125,6 +142,9 @@ func (e *enemyBlues) End() {
 		for _, img := range imgs {
 			dxlib.DeleteGraph(img)
 		}
+	}
+	for _, img := range e.imgShields {
+		dxlib.DeleteGraph(img)
 	}
 }
 
@@ -183,7 +203,7 @@ func (e *enemyBlues) Process() (bool, error) {
 			if e.moveNum <= 0 {
 				if debugFlag {
 					e.moveNum = 3
-					e.nextState = bluesActTypeWideSword
+					e.nextState = bluesActTypeBehindSlash
 					return e.stateChange(bluesActTypeStand)
 				}
 
@@ -351,7 +371,15 @@ func (e *enemyBlues) Process() (bool, error) {
 	case bluesActTypeSonicBoom:
 		system.SetError("WIP: Blues SonicBoom is not implemented yet")
 	case bluesActTypeBehindSlash:
-		system.SetError("WIP: Blues BehindSlash is not implemented yet")
+		if e.count == 0 {
+			e.shieldCount = bluesShieldTime
+		}
+		if e.shieldCount > 0 {
+			e.shieldCount--
+			if e.shieldCount == 0 {
+				return e.clearState()
+			}
+		}
 	}
 
 	e.count++
@@ -369,6 +397,7 @@ func (e *enemyBlues) Draw() {
 		{X: -20, Y: -20}, // FighterSword
 		{X: -20, Y: -20}, // SonicBoom
 		{X: -20, Y: -20}, // DeltaRayEdge
+		{X: -20, Y: -20}, // DeltaRayEdgeEnd
 		{X: -20, Y: -20}, // BehindSlash
 		{X: 0, Y: 0},     // Damage
 	}
@@ -388,6 +417,13 @@ func (e *enemyBlues) Draw() {
 	}
 
 	dxlib.DrawRotaGraph(view.X+ofs[state].X, view.Y+ofs[state].Y, 1, 0, *img, true, opt)
+
+	if e.shieldCount > 0 {
+		n := (bluesShieldTime - e.shieldCount) / bluesShieldDelay
+		if n >= 0 && n < len(e.imgShields) {
+			dxlib.DrawRotaGraph(view.X-30, view.Y+8, 1, 0, e.imgShields[n], true, opt)
+		}
+	}
 }
 
 func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
@@ -443,6 +479,7 @@ func (e *enemyBlues) clearState() (bool, error) {
 	e.isEdgeEffectOn = false
 	e.atkID = ""
 	e.isTargetMoved = false
+	e.shieldCount = 0
 
 	return e.stateChange(forteActTypeStand)
 }
