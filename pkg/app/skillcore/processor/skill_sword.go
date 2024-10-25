@@ -48,7 +48,7 @@ func (p *Sword) Process() (bool, error) {
 		userPos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 
 		ofsx := 1
-		if p.Arg.TargetType == damage.TargetPlayer {
+		if p.Arg.IsReverse {
 			ofsx = -1
 		}
 

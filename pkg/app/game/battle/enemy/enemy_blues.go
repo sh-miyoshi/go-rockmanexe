@@ -44,6 +44,7 @@ const (
 
 var (
 	bluesDelays      = [bluesActTypeMax]int{1, 2, 4, 4, 4, 1, 4, 1}
+	bluesAtkPower    = [bluesActTypeMax]uint{10, 10, 10, 10, 10, 10, 10, 10}
 	bluesShieldDelay = 4
 )
 
@@ -239,9 +240,9 @@ func (e *enemyBlues) Process() (bool, error) {
 			logger.Debug("Blues Wide Sword Attack")
 			localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      forteAtkPower[e.state],
+				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
-				IsReverse:  true,
+				IsReverse:  !e.isCharReverse,
 			}))
 		}
 
@@ -277,8 +278,9 @@ func (e *enemyBlues) Process() (bool, error) {
 			logger.Debug("Blues Fighter Sword Attack")
 			localanim.AnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      forteAtkPower[e.state],
+				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
+				IsReverse:  true,
 			}))
 		}
 
@@ -338,7 +340,7 @@ func (e *enemyBlues) Process() (bool, error) {
 
 			e.atkID = localanim.AnimNew(skill.Get(skillID, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
-				Power:      forteAtkPower[e.state],
+				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 				IsReverse:  isReverse,
 			}))
@@ -373,6 +375,7 @@ func (e *enemyBlues) Process() (bool, error) {
 	case bluesActTypeBehindSlash:
 		if e.count == 0 {
 			e.shieldCount = bluesShieldTime
+			return false, nil
 		}
 		if e.shieldCount > 0 {
 			e.shieldCount--
@@ -427,7 +430,42 @@ func (e *enemyBlues) Draw() {
 }
 
 func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
-	return damageProc(dm, &e.pm)
+	if e.shieldCount > 0 {
+		// シールド中は反撃する
+		if dm.BigDamage {
+			// 背後に回ってワイドソード
+			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			if len(objs) == 0 {
+				// エラー処理
+				logger.Info("Failed to get player position")
+				e.clearState()
+				return true
+			}
+			e.targetPoses[0] = point.Point{X: objs[0].Pos.X - 1, Y: objs[0].Pos.Y}
+			e.nextState = bluesActTypeWideSword
+			e.shieldCount = 0
+			e.isCharReverse = true
+			e.waitCount = 2
+			e.stateChange(bluesActTypeMove)
+			return true
+		} else {
+			localanim.AnimNew(effect.Get(resources.EffectTypeBlock, e.pm.Pos, 5))
+			return true
+		}
+	}
+
+	if damageProc(dm, &e.pm) {
+		if !dm.BigDamage {
+			return true
+		}
+
+		e.state = bluesActTypeDamage
+		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		e.count = 0
+		return true
+	}
+
+	return false
 }
 
 func (e *enemyBlues) GetParam() objanim.Param {
