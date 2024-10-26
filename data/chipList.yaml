@@ -877,9 +877,9 @@
   name: パネルリターン
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: '自エリアのパネルを元に戻す'
+  is_implemented: true
 - id: 124
   name: デスマッチ1
   power: 0

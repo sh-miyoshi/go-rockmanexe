@@ -227,6 +227,9 @@ func PanelChange(pos point.Point, panelType int) {
 	}
 
 	switch panelType {
+	case battlecommon.PanelStatusNormal:
+		panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusNormal
+		panels[pos.X][pos.Y].info.StatusCount = 0
 	case battlecommon.PanelStatusCrack:
 		panels[pos.X][pos.Y].info.Status = battlecommon.PanelStatusCrack
 	case battlecommon.PanelStatusHole:

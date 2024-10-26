@@ -72,6 +72,7 @@ func Init() error {
 	soundEffects[resources.SEBubbleShot] = dxlib.LoadSoundMem(basePath + "bubble_shot.mp3")
 	soundEffects[resources.SEChing] = dxlib.LoadSoundMem(basePath + "ching.mp3")
 	soundEffects[resources.SEDeltaRayEdgeEnd] = dxlib.LoadSoundMem(basePath + "delta_ray_edge_end.mp3")
+	soundEffects[resources.SEPanelReturn] = dxlib.LoadSoundMem(basePath + "panel_return.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
@@ -88,6 +89,7 @@ func Init() error {
 	dxlib.ChangeVolumeSoundMem(192, soundEffects[resources.SEPlayerDeleted])
 	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SEPanelBreak])
 	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SEDeltaRayEdgeEnd])
+	dxlib.ChangeVolumeSoundMem(128, soundEffects[resources.SEPanelReturn])
 
 	return nil
 }

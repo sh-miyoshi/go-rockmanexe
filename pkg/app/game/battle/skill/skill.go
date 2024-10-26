@@ -118,6 +118,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newDeathMatch(objID, arg, core)
 	case resources.SkillFullCustom:
 		return newFullCustom(objID, arg, core)
+	case resources.SkillPanelReturn:
+		return newPanelReturn(objID, arg, core)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

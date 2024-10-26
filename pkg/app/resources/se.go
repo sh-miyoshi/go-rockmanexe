@@ -57,6 +57,7 @@ const (
 	SEBubbleShot
 	SEChing
 	SEDeltaRayEdgeEnd
+	SEPanelReturn
 
 	SEMax
 )
