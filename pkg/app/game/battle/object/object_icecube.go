@@ -48,7 +48,7 @@ func (o *IceCube) End() {
 	}
 }
 
-func (o *IceCube) Process() (bool, error) {
+func (o *IceCube) Update() (bool, error) {
 	if o.pm.HP <= 0 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
 		return true, nil

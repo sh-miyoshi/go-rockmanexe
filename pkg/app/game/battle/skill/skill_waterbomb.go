@@ -33,8 +33,8 @@ func (p *waterBomb) Draw() {
 	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetLandCount())
 }
 
-func (p *waterBomb) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *waterBomb) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

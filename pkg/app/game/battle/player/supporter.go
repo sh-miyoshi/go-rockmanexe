@@ -82,7 +82,7 @@ func (s *Supporter) Draw() {
 	}
 }
 
-func (s *Supporter) Process() (bool, error) {
+func (s *Supporter) Update() (bool, error) {
 	if s.HP <= 0 {
 		return true, nil
 	}
@@ -91,7 +91,7 @@ func (s *Supporter) Process() (bool, error) {
 		s.invincibleCount--
 	}
 
-	if s.act.Process() {
+	if s.act.Update() {
 		return false, nil
 	}
 

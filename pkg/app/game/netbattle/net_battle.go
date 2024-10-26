@@ -151,7 +151,7 @@ func End() {
 	localanim.AnimCleanup()
 }
 
-func Process() error {
+func Update() error {
 	battlecommon.SystemProcess()
 	inst.gameCount++
 	isRunAnim := false
@@ -180,7 +180,7 @@ func Process() error {
 			return nil
 		}
 	case stateOpening:
-		if inst.openingInst.Process() {
+		if inst.openingInst.Update() {
 			stateChange(stateChipSelect)
 			return nil
 		}
@@ -190,7 +190,7 @@ func Process() error {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}
 		}
-		if chipsel.Process() {
+		if chipsel.Update() {
 			// set selected chips
 			inst.playerInst.SetChipSelectResult(chipsel.GetSelected())
 			// TODO: 選択したチップ一覧を送る
@@ -214,14 +214,14 @@ func Process() error {
 			inst.playerInst.UpdatePA()
 		}
 
-		if inst.b4mainInst.Process() {
+		if inst.b4mainInst.Update() {
 			inst.b4mainInst.End()
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
 		isRunAnim = true
-		done, err := inst.playerInst.Process()
+		done, err := inst.playerInst.Update()
 		if err != nil {
 			return errors.Wrap(err, "player process failed")
 		}
@@ -261,7 +261,7 @@ func Process() error {
 			}
 		}
 
-		if inst.resultInst.Process() {
+		if inst.resultInst.Update() {
 			inst.resultInst.End()
 			if inst.playerInst.IsDead() {
 				return battle.ErrLose

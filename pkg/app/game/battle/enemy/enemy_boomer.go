@@ -92,7 +92,7 @@ func (e *enemyBoomer) End() {
 	}
 }
 
-func (e *enemyBoomer) Process() (bool, error) {
+func (e *enemyBoomer) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -155,7 +155,7 @@ func (e *enemyBoomer) Process() (bool, error) {
 			}
 		}
 	case boomerStateAtk:
-		if e.atk.Process() {
+		if e.atk.Update() {
 			e.waitCount = 60
 			e.nextState = boomerStateMove
 			e.setState(boomerStateWait)
@@ -245,7 +245,7 @@ func (a *boomerAtk) Init() {
 	a.count = 0
 }
 
-func (a *boomerAtk) Process() bool {
+func (a *boomerAtk) Update() bool {
 	if a.count == 0 {
 		a.atkID = localanim.AnimNew(skill.Get(
 			resources.SkillBoomerang,

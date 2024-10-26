@@ -83,7 +83,7 @@ func (e *enemyBilly) End() {
 	}
 }
 
-func (e *enemyBilly) Process() (bool, error) {
+func (e *enemyBilly) Update() (bool, error) {
 	// Return true if finished(e.g. hp=0)
 	// Enemy Logic
 	if e.pm.HP <= 0 {
@@ -100,7 +100,7 @@ func (e *enemyBilly) Process() (bool, error) {
 		return false, nil
 	}
 
-	if e.act.Process() {
+	if e.act.Update() {
 		return false, nil
 	}
 
@@ -208,7 +208,7 @@ func (a *billyAct) SetAnim(animType int, endCount int) {
 	a.endCount = endCount
 }
 
-func (a *billyAct) Process() bool {
+func (a *billyAct) Update() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false

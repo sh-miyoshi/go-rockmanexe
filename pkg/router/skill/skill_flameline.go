@@ -33,8 +33,8 @@ func (p *flameLine) Draw() {
 	// nothing to do at router
 }
 
-func (p *flameLine) Process() (bool, error) {
-	return p.Core.Process()
+func (p *flameLine) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *flameLine) GetParam() anim.Param {

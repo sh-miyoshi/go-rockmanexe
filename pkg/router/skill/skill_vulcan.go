@@ -34,8 +34,8 @@ func (p *vulcan) Draw() {
 	// nothing to do at router
 }
 
-func (p *vulcan) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *vulcan) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

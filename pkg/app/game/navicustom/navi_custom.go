@@ -242,7 +242,7 @@ func Draw() {
 	// TODO: RUNNING Line
 }
 
-func Process() bool {
+func Update() bool {
 	switch state {
 	case stateOpening:
 		if count == 0 {
@@ -258,7 +258,7 @@ func Process() bool {
 			return true
 		}
 
-		selected = itemList.Process()
+		selected = itemList.Update()
 		if selected != -1 {
 			sound.On(resources.SEMenuEnter)
 			if itemList.GetList()[selected] == runName {

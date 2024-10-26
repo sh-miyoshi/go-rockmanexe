@@ -117,7 +117,7 @@ func (e *enemyAquaman) End() {
 	e.waterPipeObjIDs = []string{}
 }
 
-func (e *enemyAquaman) Process() (bool, error) {
+func (e *enemyAquaman) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()

@@ -39,7 +39,7 @@ func (p *ThunderBall) Init() {
 	p.next = first
 }
 
-func (p *ThunderBall) Process() (bool, error) {
+func (p *ThunderBall) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.SoundOn(resources.SEThunderBall)
 	}

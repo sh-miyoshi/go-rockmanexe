@@ -46,7 +46,7 @@ func (n *Normal) End() {
 	}
 	n.images = make(map[int]int)
 }
-func (n *Normal) Process() bool {
+func (n *Normal) Update() bool {
 	if config.Get().Debug.SkipBattleOpening {
 		return true
 	}

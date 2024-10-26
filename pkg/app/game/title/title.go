@@ -89,7 +89,7 @@ func Draw() {
 	}
 }
 
-func Process() error {
+func Update() error {
 	if config.Get().Debug.SkipTitle {
 		if config.Get().Debug.StartContinue {
 			return ErrStartContinue

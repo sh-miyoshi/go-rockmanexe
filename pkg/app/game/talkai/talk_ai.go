@@ -66,8 +66,8 @@ func Draw() {
 	}
 }
 
-func Process() bool {
-	background.Process()
+func Update() bool {
+	background.Update()
 
 	switch state {
 	case stateInput:
@@ -80,9 +80,9 @@ func Process() bool {
 			serverSend()
 		}
 	case stateOutput:
-		return win.Process()
+		return win.Update()
 	case stateWaiting:
-		win.Process()
+		win.Update()
 		if serverReqError != nil {
 			logger.Error("Failed to request server: %v", serverReqError)
 			win.SetMessage("送信に失敗しました", window.FaceTypeNone)

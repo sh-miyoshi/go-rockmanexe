@@ -23,8 +23,8 @@ func newInvisible(objID string, arg skillcore.Argument, core skillcore.SkillCore
 func (p *invisible) Draw() {
 }
 
-func (p *invisible) Process() (bool, error) {
-	return p.Core.Process()
+func (p *invisible) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *invisible) GetParam() anim.Param {

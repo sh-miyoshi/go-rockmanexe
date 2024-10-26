@@ -30,8 +30,8 @@ func (p *skillForteDarkArmBlade) Draw() {
 	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount(), p.SkillID)
 }
 
-func (p *skillForteDarkArmBlade) Process() (bool, error) {
-	return p.Core.Process()
+func (p *skillForteDarkArmBlade) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *skillForteDarkArmBlade) GetParam() anim.Param {

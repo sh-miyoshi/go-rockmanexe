@@ -29,8 +29,8 @@ func (p *skillHellsRolling) Draw() {
 	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount(), false)
 }
 
-func (p *skillHellsRolling) Process() (bool, error) {
-	return p.Core.Process()
+func (p *skillHellsRolling) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *skillHellsRolling) GetParam() anim.Param {

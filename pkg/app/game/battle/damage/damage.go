@@ -82,7 +82,7 @@ func (m *DamageManager) New(dm Damage) string {
 	return dm.ID
 }
 
-func (m *DamageManager) Process() {
+func (m *DamageManager) Update() {
 	for id, d := range m.damages {
 		if d.DamageType == TypeObject {
 			delete(m.damages, id)

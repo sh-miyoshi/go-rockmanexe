@@ -30,8 +30,8 @@ func (p *miniBomb) Draw() {
 	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetLandCount())
 }
 
-func (p *miniBomb) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *miniBomb) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

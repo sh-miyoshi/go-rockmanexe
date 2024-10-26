@@ -21,7 +21,7 @@ type BubbleShot struct {
 	targets []point.Point
 }
 
-func (p *BubbleShot) Process() (bool, error) {
+func (p *BubbleShot) Update() (bool, error) {
 	p.Arg.SoundOn(resources.SEBubbleShot)
 
 	if p.count == bubbleShotAtkDelay {

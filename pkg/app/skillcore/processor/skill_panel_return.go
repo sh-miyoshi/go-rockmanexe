@@ -14,7 +14,7 @@ type PanelReturn struct {
 	targets []point.Point
 }
 
-func (p *PanelReturn) Process() (bool, error) {
+func (p *PanelReturn) Update() (bool, error) {
 	if p.count == 0 {
 		p.targets = []point.Point{}
 		p.Arg.Cutin("パネルリターン", 500)

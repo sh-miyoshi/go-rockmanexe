@@ -21,7 +21,7 @@ type HeatShot struct {
 	targets []point.Point
 }
 
-func (p *HeatShot) Process() (bool, error) {
+func (p *HeatShot) Update() (bool, error) {
 	if p.count == heatShotAtkDelay {
 		p.Arg.SoundOn(resources.SEGun)
 

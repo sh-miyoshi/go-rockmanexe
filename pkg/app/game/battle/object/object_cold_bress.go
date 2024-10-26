@@ -54,7 +54,7 @@ func (o *ColdBress) End() {
 	}
 }
 
-func (o *ColdBress) Process() (bool, error) {
+func (o *ColdBress) Update() (bool, error) {
 	if o.pm.HP <= 0 {
 		return true, nil
 	}

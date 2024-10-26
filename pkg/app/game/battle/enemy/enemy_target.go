@@ -36,7 +36,7 @@ func (e *enemyTarget) End() {
 	dxlib.DeleteGraph(e.image)
 }
 
-func (e *enemyTarget) Process() (bool, error) {
+func (e *enemyTarget) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		deleteanim.New(e.image, e.pm.Pos, false)
 		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))

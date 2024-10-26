@@ -63,7 +63,7 @@ func (o *CountBomb) Draw() {
 	dxlib.DrawRotaGraph(view.X, view.Y+20, 1, 0, o.imgNumber[cnt], true)
 }
 
-func (o *CountBomb) Process() (bool, error) {
+func (o *CountBomb) Update() (bool, error) {
 	o.count++
 
 	if o.pm.HP <= 0 {

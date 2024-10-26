@@ -24,8 +24,8 @@ func (p *recover) Draw() {
 	// nothing to do at router
 }
 
-func (p *recover) Process() (bool, error) {
-	return p.Core.Process()
+func (p *recover) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *recover) GetParam() anim.Param {

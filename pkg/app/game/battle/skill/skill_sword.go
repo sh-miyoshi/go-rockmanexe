@@ -32,8 +32,8 @@ func (p *sword) Draw() {
 	p.drawer.Draw(p.Core.GetID(), view, p.Core.GetCount(), p.Core.GetDelay(), p.Arg.IsReverse)
 }
 
-func (p *sword) Process() (bool, error) {
-	return p.Core.Process()
+func (p *sword) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *sword) GetParam() anim.Param {

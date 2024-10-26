@@ -89,7 +89,7 @@ func (p *AreaSteal) Init(skillID int) {
 	}
 }
 
-func (p *AreaSteal) Process() (bool, error) {
+func (p *AreaSteal) Update() (bool, error) {
 	p.count++
 
 	switch p.state {

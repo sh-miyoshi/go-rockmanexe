@@ -27,8 +27,8 @@ func (p *boomerang) Draw() {
 	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
-func (p *boomerang) Process() (bool, error) {
-	return p.Core.Process()
+func (p *boomerang) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *boomerang) GetParam() anim.Param {

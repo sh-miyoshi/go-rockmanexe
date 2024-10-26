@@ -72,7 +72,7 @@ func (e *enemyMetall) End() {
 	}
 }
 
-func (e *enemyMetall) Process() (bool, error) {
+func (e *enemyMetall) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := &e.imgMove[0]
@@ -202,7 +202,7 @@ func (a *metallAtk) Draw() {
 	// Nothing to do
 }
 
-func (a *metallAtk) Process() (bool, error) {
+func (a *metallAtk) Update() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {

@@ -25,8 +25,8 @@ func (p *cannon) Draw() {
 	// nothing to do at router
 }
 
-func (p *cannon) Process() (bool, error) {
-	return p.Core.Process()
+func (p *cannon) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *cannon) GetParam() anim.Param {

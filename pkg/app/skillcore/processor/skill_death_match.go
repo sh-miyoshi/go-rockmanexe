@@ -29,7 +29,7 @@ func (p *DeathMatch) Init() {
 	})
 }
 
-func (p *DeathMatch) Process() (bool, error) {
+func (p *DeathMatch) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.Cutin("デスマッチ", 500)
 	}

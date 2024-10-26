@@ -24,8 +24,8 @@ func (p *bambooLance) Draw() {
 	// nothing to do at router
 }
 
-func (p *bambooLance) Process() (bool, error) {
-	return p.Core.Process()
+func (p *bambooLance) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *bambooLance) GetParam() anim.Param {

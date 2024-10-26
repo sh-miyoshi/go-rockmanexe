@@ -28,7 +28,7 @@ func (p *ChipForteAnother) Init() {
 	}
 }
 
-func (p *ChipForteAnother) Process() (bool, error) {
+func (p *ChipForteAnother) Update() (bool, error) {
 	switch p.state {
 	case resources.SkillChipForteAnotherStateInit:
 		if p.count == 0 {
@@ -45,7 +45,7 @@ func (p *ChipForteAnother) Process() (bool, error) {
 			return false, nil
 		}
 	case resources.SkillChipForteAnotherStateAttack:
-		end, err := p.attacks[p.attackNo].Process()
+		end, err := p.attacks[p.attackNo].Update()
 		if err != nil {
 			return false, err
 		}

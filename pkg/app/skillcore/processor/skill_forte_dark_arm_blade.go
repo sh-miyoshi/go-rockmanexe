@@ -29,7 +29,7 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 	}
 }
 
-func (p *ForteDarkArmBlade) Process() (bool, error) {
+func (p *ForteDarkArmBlade) Update() (bool, error) {
 	p.count++
 	if p.count == 3 {
 		p.Arg.SoundOn(resources.SESword)

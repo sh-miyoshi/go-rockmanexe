@@ -28,8 +28,8 @@ func (p *skillForteShootingBuster) Draw() {
 	p.drawer.Draw(p.Core.GetPos(), p.Core.GetCount(), p.Core.GetInitWait())
 }
 
-func (p *skillForteShootingBuster) Process() (bool, error) {
-	return p.Core.Process()
+func (p *skillForteShootingBuster) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *skillForteShootingBuster) GetParam() anim.Param {

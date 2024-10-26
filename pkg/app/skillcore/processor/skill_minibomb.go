@@ -26,7 +26,7 @@ func (p *MiniBomb) Init() {
 	p.target = point.Point{X: p.pos.X + 3, Y: p.pos.Y}
 }
 
-func (p *MiniBomb) Process() (bool, error) {
+func (p *MiniBomb) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {

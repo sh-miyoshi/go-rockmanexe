@@ -150,7 +150,7 @@ func (e *enemyBlues) End() {
 	}
 }
 
-func (e *enemyBlues) Process() (bool, error) {
+func (e *enemyBlues) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()

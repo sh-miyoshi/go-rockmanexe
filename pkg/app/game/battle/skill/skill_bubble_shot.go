@@ -33,8 +33,8 @@ func (p *bubbleShot) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount(), true)
 }
 
-func (p *bubbleShot) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *bubbleShot) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

@@ -34,8 +34,8 @@ func (p *shockWave) Draw() {
 	// nothing to do at router
 }
 
-func (p *shockWave) Process() (bool, error) {
-	return p.Core.Process()
+func (p *shockWave) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *shockWave) GetParam() anim.Param {

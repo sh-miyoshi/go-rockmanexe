@@ -30,7 +30,7 @@ func (p *Crack) Init(skillID int) {
 	}
 }
 
-func (p *Crack) Process() (bool, error) {
+func (p *Crack) Update() (bool, error) {
 	p.count++
 
 	if p.count > 5 {

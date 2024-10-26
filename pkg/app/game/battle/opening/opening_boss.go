@@ -49,7 +49,7 @@ func (b *Boss) End() {
 	b.enemyImages = []int{}
 }
 
-func (b *Boss) Process() bool {
+func (b *Boss) Update() bool {
 	if config.Get().Debug.SkipBattleOpening {
 		return true
 	}

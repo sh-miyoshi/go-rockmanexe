@@ -23,8 +23,8 @@ func newQuickGauge(objID string, arg skillcore.Argument, core skillcore.SkillCor
 func (p *quickGauge) Draw() {
 }
 
-func (p *quickGauge) Process() (bool, error) {
-	return p.Core.Process()
+func (p *quickGauge) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *quickGauge) GetParam() anim.Param {

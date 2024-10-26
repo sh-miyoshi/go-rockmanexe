@@ -54,7 +54,7 @@ func (p *Boomerang) Init() {
 	p.prev = point.Point{X: px, Y: sy}
 }
 
-func (p *Boomerang) Process() (bool, error) {
+func (p *Boomerang) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.SoundOn(resources.SEBoomerangThrow)
 	}

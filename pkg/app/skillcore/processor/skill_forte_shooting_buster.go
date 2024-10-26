@@ -71,7 +71,7 @@ func (p *ForteShootingBuster) Init() {
 	forteShootingBusterActQueue = append(forteShootingBusterActQueue, p.pos)
 }
 
-func (p *ForteShootingBuster) Process() (bool, error) {
+func (p *ForteShootingBuster) Update() (bool, error) {
 	p.count++
 	if p.count == forteShootingBusterInitWait {
 		if objID := p.Arg.GetPanelInfo(p.pos).ObjectID; objID != "" {

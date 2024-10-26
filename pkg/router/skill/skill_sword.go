@@ -36,8 +36,8 @@ func (p *sword) Draw() {
 	// nothing to do at router
 }
 
-func (p *sword) Process() (bool, error) {
-	return p.Core.Process()
+func (p *sword) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *sword) GetParam() anim.Param {

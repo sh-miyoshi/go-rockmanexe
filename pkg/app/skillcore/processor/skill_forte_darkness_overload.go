@@ -18,7 +18,7 @@ type ForteDarknessOverload struct {
 	count int
 }
 
-func (p *ForteDarknessOverload) Process() (bool, error) {
+func (p *ForteDarknessOverload) Update() (bool, error) {
 	p.count++
 	if p.count == p.GetDelay()*3 {
 		for x := 0; x < 2; x++ {

@@ -28,8 +28,8 @@ func (p *bubbleShot) Draw() {
 	// nothing to do at router
 }
 
-func (p *bubbleShot) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *bubbleShot) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

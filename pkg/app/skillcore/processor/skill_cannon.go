@@ -19,7 +19,7 @@ type Cannon struct {
 	count int
 }
 
-func (p *Cannon) Process() (bool, error) {
+func (p *Cannon) Update() (bool, error) {
 	p.count++
 
 	if p.count == 20 {

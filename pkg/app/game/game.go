@@ -47,9 +47,9 @@ var (
 	playerInfo *player.Player
 )
 
-func Process() error {
-	background.Process()
-	fade.Process()
+func Update() error {
+	background.Update()
+	fade.Update()
 
 	if playerInfo != nil {
 		playerInfo.PlayCount++
@@ -66,7 +66,7 @@ func Process() error {
 				return errors.Wrap(err, "game process in state title failed")
 			}
 		}
-		if err := title.Process(); err != nil {
+		if err := title.Update(); err != nil {
 			if errors.Is(err, title.ErrStartInit) {
 				playerInfo = player.New()
 			} else if errors.Is(err, title.ErrStartContinue) {
@@ -95,7 +95,7 @@ func Process() error {
 				return errors.Wrap(err, "game process in state menu init failed")
 			}
 		}
-		result, err := menu.Process()
+		result, err := menu.Update()
 		if err != nil {
 			menu.End()
 			return errors.Wrap(err, "game process in state menu failed")
@@ -132,7 +132,7 @@ func Process() error {
 			return nil
 		}
 	case stateBattle:
-		if err := battle.Process(); err != nil {
+		if err := battle.Update(); err != nil {
 			battle.End()
 			if errors.Is(err, battle.ErrWin) {
 				playerInfo.WinNum++
@@ -156,7 +156,7 @@ func Process() error {
 			}
 		}
 
-		if err := netbattle.Process(); err != nil {
+		if err := netbattle.Update(); err != nil {
 			netbattle.End()
 
 			history := player.History{
@@ -192,7 +192,7 @@ func Process() error {
 				return errors.Wrap(err, "game process in state map move failed")
 			}
 		}
-		if err := mapmove.Process(); err != nil {
+		if err := mapmove.Update(); err != nil {
 			if errors.Is(err, mapmove.ErrGoBattle) {
 				mapmove.End()
 				stateChange(stateBattle)
@@ -217,9 +217,9 @@ func Process() error {
 		if count == 0 {
 			scratch.Init()
 		}
-		scratch.Process()
+		scratch.Update()
 	case stateEvent:
-		res, err := event.Process()
+		res, err := event.Update()
 		if err != nil {
 			return errors.Wrap(err, "event process failed")
 		}
@@ -235,7 +235,7 @@ func Process() error {
 		if count == 0 {
 			navicustom.Init(playerInfo)
 		}
-		if navicustom.Process() {
+		if navicustom.Update() {
 			navicustom.End()
 			stateChange(stateMenu)
 			return nil
@@ -244,7 +244,7 @@ func Process() error {
 		if count == 0 {
 			talkai.Init()
 		}
-		if talkai.Process() {
+		if talkai.Update() {
 			talkai.End()
 			stateChange(stateMenu)
 			return nil

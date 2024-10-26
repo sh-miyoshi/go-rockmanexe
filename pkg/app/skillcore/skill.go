@@ -36,7 +36,7 @@ type Argument struct {
 }
 
 type SkillCore interface {
-	Process() (bool, error)
+	Update() (bool, error)
 	GetCount() int
 }
 

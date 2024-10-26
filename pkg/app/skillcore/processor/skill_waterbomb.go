@@ -36,7 +36,7 @@ func (p *WaterBomb) Init() {
 	}
 }
 
-func (p *WaterBomb) Process() (bool, error) {
+func (p *WaterBomb) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {

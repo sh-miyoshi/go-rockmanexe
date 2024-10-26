@@ -22,7 +22,7 @@ type Vulcan struct {
 	effects  []resources.EffectParam
 }
 
-func (p *Vulcan) Process() (bool, error) {
+func (p *Vulcan) Update() (bool, error) {
 	p.count++
 	if p.count >= vulcanDelay*1 {
 		if p.count%(vulcanDelay*5) == vulcanDelay*1 {

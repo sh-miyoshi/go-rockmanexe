@@ -25,8 +25,8 @@ func newDeathMatch(objID string, arg skillcore.Argument, core skillcore.SkillCor
 func (p *deathMatch) Draw() {
 }
 
-func (p *deathMatch) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *deathMatch) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

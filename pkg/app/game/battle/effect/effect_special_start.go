@@ -37,7 +37,7 @@ func (p *specialStartEffect) Init() {
 	p.lines[3] = specialStartEffectLine{StartPos: view, StartCount: 15, Direct: config.DirectRight | config.DirectUp}
 }
 
-func (p *specialStartEffect) Process() (bool, error) {
+func (p *specialStartEffect) Update() (bool, error) {
 	p.count++
 	if p.count == 1 {
 		sound.On(resources.SEChing)

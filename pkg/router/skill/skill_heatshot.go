@@ -28,8 +28,8 @@ func (p *heatShot) Draw() {
 	// nothing to do at router
 }
 
-func (p *heatShot) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *heatShot) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

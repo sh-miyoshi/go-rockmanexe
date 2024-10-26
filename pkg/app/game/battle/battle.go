@@ -153,7 +153,7 @@ func End() {
 	logger.Info("End battle data")
 }
 
-func Process() error {
+func Update() error {
 	battlecommon.SystemProcess()
 	isRunAnim := false
 
@@ -171,7 +171,7 @@ func Process() error {
 			}
 		}
 
-		if openingInst.Process() {
+		if openingInst.Update() {
 			openingInst.End()
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return errors.Wrap(err, "enemy init failed")
@@ -186,7 +186,7 @@ func Process() error {
 			}
 			playerInst.SetFrameInfo(true, false)
 		}
-		if chipsel.Process() {
+		if chipsel.Update() {
 			// set selected chips
 			playerInst.SetChipSelectResult(chipsel.GetSelected())
 			stateChange(stateBeforeMain)
@@ -203,7 +203,7 @@ func Process() error {
 			playerInst.SetFrameInfo(false, true)
 		}
 
-		if b4mainInst.Process() {
+		if b4mainInst.Update() {
 			b4mainInst.End()
 			stateChange(stateMain)
 			return nil
@@ -262,7 +262,7 @@ func Process() error {
 			return errors.Wrap(err, "failed to handle object animation")
 		}
 
-		if win.Process() {
+		if win.Update() {
 			return ErrWin
 		}
 	case stateResultLose:
@@ -277,7 +277,7 @@ func Process() error {
 			playerInst.SetFrameInfo(false, false)
 		}
 
-		if loseInst.Process() {
+		if loseInst.Update() {
 			sound.SEClear()
 			loseInst.End()
 			return ErrLose

@@ -153,8 +153,8 @@ func (p *tmpskill) Draw() {
 	// p.drawer.Draw()
 }
 
-func (p *tmpskill) Process() (bool, error) {
-	return p.Core.Process()
+func (p *tmpskill) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *tmpskill) GetParam() anim.Param {

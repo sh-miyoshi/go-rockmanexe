@@ -23,7 +23,7 @@ type Param struct {
 }
 
 type Anim interface {
-	Process() (bool, error)
+	Update() (bool, error)
 	Draw()
 	GetParam() Param
 }
@@ -39,9 +39,9 @@ func NewManager() *AnimManager {
 	}
 }
 
-func (am *AnimManager) Process() error {
+func (am *AnimManager) Update() error {
 	for id, anim := range am.anims {
-		end, err := anim.Process()
+		end, err := anim.Update()
 		if err != nil {
 			return errors.Wrap(err, "Anim process failed")
 		}

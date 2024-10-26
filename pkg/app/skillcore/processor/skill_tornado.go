@@ -26,7 +26,7 @@ func (p *Tornado) Init() {
 	p.targetPos = point.Point{X: p.objPos.X + 2, Y: p.objPos.Y}
 }
 
-func (p *Tornado) Process() (bool, error) {
+func (p *Tornado) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {

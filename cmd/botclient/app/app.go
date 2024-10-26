@@ -34,7 +34,7 @@ func Init(clientID string, conn *netconn.NetConn) {
 	connInst = conn
 }
 
-func Process() error {
+func Update() error {
 	fps.FPS = 60
 	fpsMgr := fps.Fps{}
 

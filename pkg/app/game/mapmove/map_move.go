@@ -153,7 +153,7 @@ func Draw() {
 	}
 }
 
-func Process() error {
+func Update() error {
 	// デバッグ機能
 	if inputs.CheckKey(inputs.KeyLButton) == 1 {
 		// リロードの場合はyamlの情報も含めて再取得する

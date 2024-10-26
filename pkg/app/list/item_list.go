@@ -32,7 +32,7 @@ func (l *ItemList) GetScroll() int {
 	return l.scroll
 }
 
-func (l *ItemList) Process() int {
+func (l *ItemList) Update() int {
 	if inputs.CheckKey(inputs.KeyEnter) == 1 {
 		return l.cursor + l.scroll
 	}

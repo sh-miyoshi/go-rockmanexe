@@ -126,7 +126,7 @@ func (e *enemyForte) End() {
 	}
 }
 
-func (e *enemyForte) Process() (bool, error) {
+func (e *enemyForte) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()

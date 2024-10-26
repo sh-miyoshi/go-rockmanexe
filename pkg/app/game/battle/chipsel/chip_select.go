@@ -127,7 +127,7 @@ func Draw() {
 	}
 }
 
-func Process() bool {
+func Update() bool {
 	count++
 	max := len(selectList)
 

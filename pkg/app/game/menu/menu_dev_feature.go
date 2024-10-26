@@ -54,14 +54,14 @@ func (t *menuDevFeature) Draw() {
 	dxlib.DrawTriangle(40, y+s, 40+18-s*2, y+10, 40, y+20-s, 0xffffff, true)
 }
 
-func (t *menuDevFeature) Process() bool {
+func (t *menuDevFeature) Update() bool {
 	// 隠しコマンド
 	if inputs.CheckKey(inputs.KeyDebug) == 1 {
 		t.result = ResultGoScratch
 		return true
 	}
 
-	sel := t.itemList.Process()
+	sel := t.itemList.Update()
 	if sel != -1 {
 		sound.On(resources.SEMenuEnter)
 		switch t.itemList.GetPointer() {

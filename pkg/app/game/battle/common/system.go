@@ -2,7 +2,7 @@ package common
 
 type System interface {
 	Draw()
-	Process() bool
+	Update() bool
 }
 
 var (
@@ -22,7 +22,7 @@ func SystemDraw() {
 func SystemProcess() {
 	newTable := []System{}
 	for _, s := range systemTable {
-		if !s.Process() {
+		if !s.Update() {
 			newTable = append(newTable, s)
 		}
 	}

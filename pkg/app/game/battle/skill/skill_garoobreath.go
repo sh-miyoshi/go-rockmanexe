@@ -50,7 +50,7 @@ func (p *garooBreath) Draw() {
 	p.drawer.Draw(p.prev, p.pos, p.next, p.count, garooBreathNextStepCount)
 }
 
-func (p *garooBreath) Process() (bool, error) {
+func (p *garooBreath) Update() (bool, error) {
 	if p.count%garooBreathNextStepCount/2 == 0 {
 		// Finish if hit
 		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {

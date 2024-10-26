@@ -26,7 +26,7 @@ type SpreadGun struct {
 	hits  []SpreadHit
 }
 
-func (p *SpreadGun) Process() (bool, error) {
+func (p *SpreadGun) Update() (bool, error) {
 	if p.count == 5 {
 		p.Arg.SoundOn(resources.SEGun)
 
@@ -97,7 +97,7 @@ func (p *SpreadGun) PopSpreadHits() []SpreadHit {
 	return []SpreadHit{}
 }
 
-func (p *SpreadHit) Process() (bool, error) {
+func (p *SpreadHit) Update() (bool, error) {
 	p.count++
 	if p.count == 1 {
 		if objID := p.Arg.GetPanelInfo(p.Pos).ObjectID; objID != "" {

@@ -28,6 +28,6 @@ func (h *MessageHandler) Draw() {
 	h.win.Draw()
 }
 
-func (h *MessageHandler) Process() (bool, error) {
-	return h.win.Process(), nil
+func (h *MessageHandler) Update() (bool, error) {
+	return h.win.Update(), nil
 }

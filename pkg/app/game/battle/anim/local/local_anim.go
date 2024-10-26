@@ -19,7 +19,7 @@ func AnimMgrProcess() error {
 		animInst = anim.NewManager()
 	}
 
-	return animInst.Process()
+	return animInst.Update()
 }
 
 func AnimMgrDraw() {

@@ -35,7 +35,7 @@ type Param struct {
 }
 
 type Anim interface {
-	Process() (bool, error)
+	Update() (bool, error)
 	Draw()
 	DamageProc(dm *damage.Damage) bool
 	GetParam() Param
@@ -67,7 +67,7 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 			continue
 		}
 
-		end, err := anim.Process()
+		end, err := anim.Update()
 		if err != nil {
 			return errors.Wrap(err, "Anim process failed")
 		}
@@ -97,7 +97,7 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 			}
 		}
 
-		am.dmMgr.Process()
+		am.dmMgr.Update()
 	}
 
 	am.sortAnim()

@@ -33,8 +33,8 @@ func (p *heatShot) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount(), true)
 }
 
-func (p *heatShot) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *heatShot) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

@@ -43,8 +43,8 @@ func (p *chipForteAnother) Draw() {
 	p.drawer.Draw(p.Core.GetCount(), state, view, pm)
 }
 
-func (p *chipForteAnother) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *chipForteAnother) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

@@ -25,7 +25,7 @@ func (p *Aquaman) Init() {
 	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
 }
 
-func (p *Aquaman) Process() (bool, error) {
+func (p *Aquaman) Update() (bool, error) {
 	switch p.state {
 	case resources.SkillAquamanStateInit:
 		p.Arg.Cutin("アクアマン", 300)

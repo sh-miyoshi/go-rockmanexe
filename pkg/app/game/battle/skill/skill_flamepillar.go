@@ -31,8 +31,8 @@ func (p *flamePillarManager) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount(), p.Core.IsShowBody(), p.Core.GetPillars(), p.Core.GetDelay(), true)
 }
 
-func (p *flamePillarManager) Process() (bool, error) {
-	return p.Core.Process()
+func (p *flamePillarManager) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *flamePillarManager) GetParam() anim.Param {

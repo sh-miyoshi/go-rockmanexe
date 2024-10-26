@@ -48,7 +48,7 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 func (t *menuTop) End() {
 }
 
-func (t *menuTop) Process() bool {
+func (t *menuTop) Update() bool {
 	if config.Get().Debug.EnableDevFeature {
 		if inputs.CheckKey(inputs.KeyLButton) == 1 {
 			sound.On(resources.SEMenuEnter)
@@ -58,7 +58,7 @@ func (t *menuTop) Process() bool {
 		}
 	}
 
-	sel := t.itemList.Process()
+	sel := t.itemList.Update()
 	if sel != -1 {
 		sound.On(resources.SEMenuEnter)
 		t.result = ResultContinue

@@ -32,8 +32,8 @@ func (p *spreadGun) Draw() {
 	// nothing to do at router
 }
 
-func (p *spreadGun) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *spreadGun) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}
@@ -73,8 +73,8 @@ func (p *spreadHit) Draw() {
 	// nothing to do at router
 }
 
-func (p *spreadHit) Process() (bool, error) {
-	return p.Core.Process()
+func (p *spreadHit) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *spreadHit) GetParam() anim.Param {

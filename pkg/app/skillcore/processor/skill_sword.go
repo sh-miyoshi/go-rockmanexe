@@ -20,7 +20,7 @@ type Sword struct {
 	count int
 }
 
-func (p *Sword) Process() (bool, error) {
+func (p *Sword) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1*swordDelay {

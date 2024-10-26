@@ -30,8 +30,8 @@ func (p *skillForteDarknessOverload) Draw() {
 	p.drawer.Draw(pos, p.Core.GetCount(), p.Core.GetDelay())
 }
 
-func (p *skillForteDarknessOverload) Process() (bool, error) {
-	return p.Core.Process()
+func (p *skillForteDarknessOverload) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *skillForteDarknessOverload) GetParam() anim.Param {

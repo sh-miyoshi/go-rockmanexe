@@ -41,7 +41,7 @@ func (p *aquamanShot) Draw() {
 	p.drawer.Draw(p.pos, p.ofs)
 }
 
-func (p *aquamanShot) Process() (bool, error) {
+func (p *aquamanShot) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {

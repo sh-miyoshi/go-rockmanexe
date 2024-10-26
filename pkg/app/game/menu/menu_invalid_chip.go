@@ -37,8 +37,8 @@ func (i *menuInvalidChip) End() {
 	i.win.End()
 }
 
-func (i *menuInvalidChip) Process() bool {
-	if i.win.Process() {
+func (i *menuInvalidChip) Update() bool {
+	if i.win.Update() {
 		sound.On(resources.SECancel)
 		return true
 	}

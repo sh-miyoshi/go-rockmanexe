@@ -30,8 +30,8 @@ func (p *recover) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount())
 }
 
-func (p *recover) Process() (bool, error) {
-	return p.Core.Process()
+func (p *recover) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *recover) GetParam() anim.Param {

@@ -9,7 +9,7 @@ import (
 )
 
 type Act interface {
-	Process() bool
+	Update() bool
 	Interval() int
 }
 
@@ -22,7 +22,7 @@ func NewActTemplate() *ActTemplate {
 	return &ActTemplate{}
 }
 
-func (a *ActTemplate) Process() bool {
+func (a *ActTemplate) Update() bool {
 	return false
 }
 
@@ -42,7 +42,7 @@ func NewActWait(waitFrame int) *ActWait {
 	}
 }
 
-func (a *ActWait) Process() bool {
+func (a *ActWait) Update() bool {
 	return true
 }
 
@@ -64,7 +64,7 @@ func NewActMove(targetX, targetY int, conn *netconn.NetConn) *ActMove {
 	}
 }
 
-func (a *ActMove) Process() bool {
+func (a *ActMove) Update() bool {
 	logger.Debug("Move to (%d, %d)", a.targetX, a.targetY)
 	move := action.Move{
 		Type:    action.MoveTypeAbs,
@@ -97,7 +97,7 @@ func NewActBuster(conn *netconn.NetConn) *ActBuster {
 	}
 }
 
-func (a *ActBuster) Process() bool {
+func (a *ActBuster) Update() bool {
 	buster := action.Buster{
 		Power: 1,
 	}
@@ -127,7 +127,7 @@ func NewActSkill(chipID int, clientID string, conn *netconn.NetConn) *ActSkill {
 	}
 }
 
-func (a *ActSkill) Process() bool {
+func (a *ActSkill) Update() bool {
 	if a.count == 0 {
 		chipInfo := action.UseChip{
 			AnimID:           a.id,

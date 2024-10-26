@@ -41,7 +41,7 @@ func (m *menuNetBattle) End() {
 	dxlib.DeleteGraph(m.imgMsgFrame)
 }
 
-func (m *menuNetBattle) Process() bool {
+func (m *menuNetBattle) Update() bool {
 	if !m.isConnect {
 		m.isConnect = true
 

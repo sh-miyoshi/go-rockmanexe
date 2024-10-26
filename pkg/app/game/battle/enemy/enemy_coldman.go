@@ -119,7 +119,7 @@ func (e *enemyColdman) End() {
 	}
 }
 
-func (e *enemyColdman) Process() (bool, error) {
+func (e *enemyColdman) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()

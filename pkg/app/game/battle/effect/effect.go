@@ -200,7 +200,7 @@ func Get(typ int, pos point.Point, randRange int) anim.Anim {
 	return res
 }
 
-func (e *effect) Process() (bool, error) {
+func (e *effect) Update() (bool, error) {
 	e.count++
 
 	if e.count == 1 {
@@ -232,7 +232,7 @@ func (e *effect) GetParam() anim.Param {
 	}
 }
 
-func (e *noEffect) Process() (bool, error) {
+func (e *noEffect) Update() (bool, error) {
 	// Nothing to do, so return finish immediately
 	return true, nil
 }

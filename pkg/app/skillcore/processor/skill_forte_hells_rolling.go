@@ -45,7 +45,7 @@ func (p *ForteHellsRolling) Init(skillID int, isPlayer bool) {
 	p.curveDirect = 0
 }
 
-func (p *ForteHellsRolling) Process() (bool, error) {
+func (p *ForteHellsRolling) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.DamageMgr.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
