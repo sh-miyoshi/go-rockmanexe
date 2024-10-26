@@ -27,14 +27,15 @@ func (p *DrawCannon) Draw(skillID int, viewPos point.Point, count int, isPlayer 
 	}
 
 	n := count / delayCannonBody
-	if n < length {
-		ofs := 48
-		if n >= 3 {
-			ofs -= 15
-		}
-
-		dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(ofs, !isPlayer), viewPos.Y-12, 1, 0, images[imageTypeCannonBody][n+index], true, opt)
+	ofs := 48
+	if n >= 3 && n < 6 {
+		ofs -= 15
 	}
+	if n >= length {
+		n = length - 1
+	}
+
+	dxlib.DrawRotaGraph(viewPos.X+math.ReverseIf(ofs, !isPlayer), viewPos.Y-12, 1, 0, images[imageTypeCannonBody][n+index], true, opt)
 
 	n = (count - 15) / delayCannonAtk
 	if n >= 0 && n < length {

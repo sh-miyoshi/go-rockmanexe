@@ -44,7 +44,7 @@ type SelectChip struct {
 	PlusPower int
 }
 
-type act struct {
+type BattlePlayerAct struct {
 	MoveDirect int
 	Charged    bool
 	ShotPower  uint
@@ -76,7 +76,7 @@ type BattlePlayer struct {
 	IsUnderShirt  bool
 	ChipSelectMax int
 
-	act             act
+	act             BattlePlayerAct
 	invincibleCount int
 	visible         bool
 	isShiftFrame    bool
@@ -109,8 +109,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		IsUnderShirt:  plyr.IsUnderShirt(),
 		ChipSelectMax: plyr.ChipSelectMax,
 	}
-	res.act.typ = -1
-	res.act.pPos = &res.Pos
+	res.act.Init(&res.Pos)
 
 	if config.Get().Debug.AlwaysInvisible {
 		logger.Debug("enable inbisible mode")
@@ -456,12 +455,11 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skillcore.GetIDByChipID(c.ID)
-			p.act.skillInst = skill.Get(sid, skillcore.Argument{
+			p.act.SetSkill(sid, skillcore.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,
 			})
-			p.act.skillID = localanim.AnimNew(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -636,8 +634,13 @@ func (p *BattlePlayer) UpdateChipInfo() {
 	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 
+func (a *BattlePlayerAct) Init(pPos *point.Point) {
+	a.typ = -1
+	a.pPos = pPos
+}
+
 // Process method returns true if processing now
-func (a *act) Process() bool {
+func (a *BattlePlayerAct) Process() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
@@ -689,13 +692,13 @@ func (a *act) Process() bool {
 	return true // processing now
 }
 
-func (a *act) SetAnim(animType int, keepCount int) {
+func (a *BattlePlayerAct) SetAnim(animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
 	a.endCount = battlecommon.GetPlayerActCount(animType, keepCount)
 }
 
-func (a *act) GetImage() int {
+func (a *BattlePlayerAct) GetImage() int {
 	if a.typ == -1 {
 		// return stand image
 		return imgPlayers[battlecommon.PlayerActMove][0]
@@ -710,6 +713,11 @@ func (a *act) GetImage() int {
 	return imgPlayers[a.typ][imgNo]
 }
 
-func (a *act) IsParalyzed() bool {
+func (a *BattlePlayerAct) IsParalyzed() bool {
 	return a.typ == battlecommon.PlayerActParalyzed
+}
+
+func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
+	a.skillInst = skill.Get(id, arg)
+	a.skillID = localanim.AnimNew(a.skillInst)
 }
