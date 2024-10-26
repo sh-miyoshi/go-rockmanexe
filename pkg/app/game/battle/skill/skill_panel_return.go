@@ -22,7 +22,6 @@ func newPanelReturn(objID string, arg skillcore.Argument, core skillcore.SkillCo
 }
 
 func (p *panelReturn) Draw() {
-	// p.drawer.Draw()
 }
 
 func (p *panelReturn) Process() (bool, error) {
