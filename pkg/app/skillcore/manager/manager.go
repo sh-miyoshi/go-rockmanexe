@@ -112,6 +112,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.DeathMatch{Arg: arg, SkillID: id}
 		res.Init()
 		return res
+	case resources.SkillPanelReturn:
+		return &processor.PanelReturn{Arg: arg}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
