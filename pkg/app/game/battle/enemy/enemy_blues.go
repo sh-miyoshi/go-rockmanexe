@@ -6,6 +6,7 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
@@ -375,7 +376,6 @@ func (e *enemyBlues) Process() (bool, error) {
 	case bluesActTypeBehindSlash:
 		if e.count == 0 {
 			e.shieldCount = bluesShieldTime
-			return false, nil
 		}
 		if e.shieldCount > 0 {
 			e.shieldCount--
@@ -421,11 +421,21 @@ func (e *enemyBlues) Draw() {
 
 	dxlib.DrawRotaGraph(view.X+ofs[state].X, view.Y+ofs[state].Y, 1, 0, *img, true, opt)
 
+	drawParalysis(view.X+ofs[state].X, view.Y+ofs[state].Y, *img, e.pm.ParalyzedCount, opt)
+
 	if e.shieldCount > 0 {
 		n := (bluesShieldTime - e.shieldCount) / bluesShieldDelay
 		if n >= 0 && n < len(e.imgShields) {
 			dxlib.DrawRotaGraph(view.X-30, view.Y+8, 1, 0, e.imgShields[n], true, opt)
 		}
+	}
+
+	// Show HP
+	if e.pm.HP > 0 {
+		draw.Number(view.X, view.Y+40, e.pm.HP, draw.NumberOption{
+			Color:    draw.NumberColorWhiteSmall,
+			Centered: true,
+		})
 	}
 }
 
