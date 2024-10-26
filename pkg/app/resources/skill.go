@@ -56,6 +56,7 @@ const (
 	SkillDeathMatch1
 	SkillDeathMatch2
 	SkillNonEffectWideSword
+	SkillFullCustom
 
 	SkillFailed
 )
