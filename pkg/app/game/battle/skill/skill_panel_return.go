@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -25,7 +26,15 @@ func (p *panelReturn) Draw() {
 }
 
 func (p *panelReturn) Process() (bool, error) {
-	return p.Core.Process()
+	end, err := p.Core.Process()
+	if err != nil {
+		return false, err
+	}
+	if end {
+		field.SetBlackoutCount(0)
+		return true, nil
+	}
+	return false, nil
 }
 
 func (p *panelReturn) GetParam() anim.Param {
