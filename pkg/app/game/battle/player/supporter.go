@@ -40,7 +40,7 @@ type Supporter struct {
 	HP              uint
 	HPMax           uint
 	ShotPower       uint
-	act             act
+	act             BattlePlayerAct
 	invincibleCount int
 	status          int
 	waitCount       int
