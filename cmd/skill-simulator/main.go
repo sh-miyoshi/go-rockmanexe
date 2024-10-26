@@ -94,11 +94,10 @@ MAIN:
 		background.Draw()
 		field.Draw()
 		localanim.ObjAnimMgrProcess(false, field.IsBlackout())
+		playerDraw(pos, act)
 		localanim.AnimMgrProcess()
 		// localanim.ObjAnimMgrDraw()
 		localanim.AnimMgrDraw()
-
-		playerDraw(pos, act)
 
 		if !act.Process() && inputs.CheckKey(inputs.KeyEnter) == 1 {
 			cfg := loadConfig()
