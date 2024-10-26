@@ -261,7 +261,7 @@ func goBattleNew() (*menuGoBattle, error) {
 			},
 		},
 		{
-			Name: "好敵手",
+			Name: "永遠の好敵手",
 			Enemies: []selectEnemyData{
 				{
 					BattleParam: enemy.EnemyParam{
