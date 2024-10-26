@@ -22,6 +22,7 @@ type Argument struct {
 	OwnerClientID string
 	Power         uint
 	TargetType    int
+	IsReverse     bool
 
 	DamageMgr       DamageManager
 	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo

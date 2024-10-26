@@ -31,10 +31,11 @@ type effect struct {
 	Pos  point.Point
 	Type int
 
-	count  int
-	images []int
-	delay  int
-	ofs    point.Point
+	count     int
+	images    []int
+	delay     int
+	ofs       point.Point
+	isReverse bool
 }
 
 type noEffect struct{}
@@ -116,6 +117,11 @@ func Init() error {
 	if res := dxlib.LoadDivGraph(fname, 8, 8, 1, 84, 80, images[resources.EffectTypeExplodeSmall]); res == -1 {
 		return errors.Newf("failed to load image %s", fname)
 	}
+	images[resources.EffectTypeDeltaRayEdge] = make([]int, 3)
+	fname = config.ImagePath + "battle/effect/デルタレイエッジ.png"
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 210, 172, images[resources.EffectTypeDeltaRayEdge]); res == -1 {
+		return errors.Newf("failed to load image %s", fname)
+	}
 
 	for i := 0; i < resources.EffectTypeMax; i++ {
 		sounds[i] = -1
@@ -178,6 +184,17 @@ func Get(typ int, pos point.Point, randRange int) anim.Anim {
 		}
 	case resources.EffectTypeExplodeSmall:
 		system.SetError("explode small effect is not implemented yet")
+	case resources.EffectTypeSpecialStart:
+		res := &specialStartEffect{
+			ID:  uuid.New().String(),
+			Pos: pos,
+			Ofs: ofs,
+		}
+		res.Init()
+		return res
+	case resources.EffectTypeDeltaRayEdge:
+		res.delay = 10
+		res.isReverse = true
 	}
 
 	return res
@@ -201,8 +218,10 @@ func (e *effect) Draw() {
 		imgNo = e.count / e.delay
 	}
 
+	opt := dxlib.OptXReverse(e.isReverse)
+
 	view := battlecommon.ViewPos(e.Pos)
-	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], true)
+	dxlib.DrawRotaGraph(view.X+e.ofs.X, view.Y+e.ofs.Y+15, 1, 0, e.images[imgNo], true, opt)
 }
 
 func (e *effect) GetParam() anim.Param {
