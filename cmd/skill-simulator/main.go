@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"runtime"
 
 	"github.com/cockroachdb/errors"
@@ -8,10 +9,13 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
+	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -19,15 +23,20 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
+	"gopkg.in/yaml.v2"
 )
 
 var (
-	font int = -1
+	playerID string
 )
 
 const (
 	baseDir = "../../"
 )
+
+type appConfig struct {
+	Fps int64 `yaml:"fps"`
+}
 
 func init() {
 	runtime.LockOSThread()
@@ -73,6 +82,8 @@ func main() {
 	var act battleplayer.BattlePlayerAct
 	act.Init(&pos)
 
+	chipID := chip.IDCannon
+
 MAIN:
 	for system.Error() == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
@@ -82,14 +93,27 @@ MAIN:
 		field.Update()
 		background.Draw()
 		field.Draw()
+		localanim.ObjAnimMgrProcess(false, field.IsBlackout())
+		localanim.AnimMgrProcess()
+		// localanim.ObjAnimMgrDraw()
+		localanim.AnimMgrDraw()
 
 		playerDraw(pos, act)
 
 		if !act.Process() && inputs.CheckKey(inputs.KeyEnter) == 1 {
-			c := chip.Get(chip.IDCannon)
+			cfg := loadConfig()
+			fps.FPS = cfg.Fps
+
+			c := chip.Get(chipID)
 			if c.PlayerAct != -1 {
 				act.SetAnim(c.PlayerAct, c.KeepCount)
 			}
+			sid := skillcore.GetIDByChipID(c.ID)
+			act.SetSkill(sid, skillcore.Argument{
+				OwnerID:    playerID,
+				Power:      c.Power,
+				TargetType: 0,
+			})
 		}
 
 		if dxlib.CheckHitKey(dxlib.KEY_INPUT_ESCAPE) == 1 {
@@ -130,12 +154,17 @@ func appInit() error {
 		return errors.Wrap(err, "battle field init failed")
 	}
 
-	// 画像を読み込むためにロードする
-	battleplayer.New(&player.Player{
+	if err := skill.Init(); err != nil {
+		return errors.Wrap(err, "skill init failed")
+	}
+
+	playerInst, _ := battleplayer.New(&player.Player{
 		HP:         100,
 		ShotPower:  1,
 		ChargeTime: 120,
 	})
+	playerID = playerInst.ID
+	localanim.ObjAnimNew(playerInst)
 
 	return nil
 }
@@ -144,4 +173,14 @@ func playerDraw(pos point.Point, act battleplayer.BattlePlayerAct) {
 	view := battlecommon.ViewPos(pos)
 	img := act.GetImage()
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+}
+
+func loadConfig() appConfig {
+	fp, _ := os.Open("config.yaml")
+	defer fp.Close()
+
+	var conf appConfig
+
+	yaml.NewDecoder(fp).Decode(&conf)
+	return conf
 }

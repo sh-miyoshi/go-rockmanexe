@@ -33,6 +33,10 @@ localnet-mac:
 	cd tools/localnet-boot-mac && \
 	go build -o localnet-boot.out && \
 	./localnet-boot.out
+skill:
+	cd cmd/skill-simulator && \
+	go build -o app.exe && \
+	app.exe
 skill-mac:
 	cd cmd/skill-simulator && \
 	GOOS=windows go build -o app.out && \

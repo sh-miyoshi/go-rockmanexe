@@ -455,12 +455,11 @@ func (p *BattlePlayer) Process() (bool, error) {
 			}
 
 			sid := skillcore.GetIDByChipID(c.ID)
-			p.act.skillInst = skill.Get(sid, skillcore.Argument{
+			p.act.SetSkill(sid, skillcore.Argument{
 				OwnerID:    p.ID,
 				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
 				TargetType: target,
 			})
-			p.act.skillID = localanim.AnimNew(p.act.skillInst)
 			logger.Info("Use chip %d", sid)
 
 			p.SelectedChips = p.SelectedChips[1:]
@@ -716,4 +715,9 @@ func (a *BattlePlayerAct) GetImage() int {
 
 func (a *BattlePlayerAct) IsParalyzed() bool {
 	return a.typ == battlecommon.PlayerActParalyzed
+}
+
+func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
+	a.skillInst = skill.Get(id, arg)
+	a.skillID = localanim.AnimNew(a.skillInst)
 }

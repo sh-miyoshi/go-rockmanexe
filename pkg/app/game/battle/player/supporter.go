@@ -13,7 +13,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -57,8 +56,7 @@ func NewSupporter(param SupporterParam) (*Supporter, error) {
 		HPMax:     param.HP,
 		ShotPower: 5,
 	}
-	res.act.typ = -1
-	res.act.pPos = &res.Pos
+	res.act.Init(&res.Pos)
 
 	res.setAction(120, supporterStatusMove)
 
@@ -118,12 +116,11 @@ func (s *Supporter) Process() (bool, error) {
 		}
 
 		sid := skillcore.GetIDByChipID(c.ID)
-		s.act.skillInst = skill.Get(sid, skillcore.Argument{
+		s.act.SetSkill(sid, skillcore.Argument{
 			OwnerID:    s.ID,
 			Power:      c.Power,
 			TargetType: target,
 		})
-		s.act.skillID = localanim.AnimNew(s.act.skillInst)
 		s.setAction(60, supporterStatusMove)
 	case supporterStatusShot:
 		s.act.ShotPower = s.ShotPower
