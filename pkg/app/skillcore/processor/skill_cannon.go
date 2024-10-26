@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	cannonEndCount = 31 // imgAtkNum*delayAtk + 15
+	cannonEndCount = 34
 )
 
 type Cannon struct {
