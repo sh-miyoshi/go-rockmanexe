@@ -634,6 +634,10 @@ func (p *BattlePlayer) UpdateChipInfo() {
 	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 
+func (p *BattlePlayer) FullGauge() {
+	p.GaugeCount = battlecommon.GaugeMaxCount
+}
+
 func (a *BattlePlayerAct) Init(pPos *point.Point) {
 	a.typ = -1
 	a.pPos = pPos
