@@ -121,7 +121,7 @@ func GetIDByChipID(chipID int) int {
 	case chip.IDDeathMatch2:
 		return resources.SkillDeathMatch2
 	case chip.IDFullCustom:
-		return resources.SkillFullCustom=======
+		return resources.SkillFullCustom
 	case chip.IDPanelReturn:
 		return resources.SkillPanelReturn
 	}
