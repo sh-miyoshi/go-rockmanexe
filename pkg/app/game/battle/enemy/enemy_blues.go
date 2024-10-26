@@ -45,7 +45,7 @@ const (
 
 var (
 	bluesDelays      = [bluesActTypeMax]int{1, 2, 4, 4, 4, 1, 4, 1}
-	bluesAtkPower    = [bluesActTypeMax]uint{10, 10, 10, 10, 10, 10, 10, 10}
+	bluesAtkPower    = [bluesActTypeMax]uint{0, 0, 60, 60, 60, 90, 0, 60}
 	bluesShieldDelay = 4
 )
 
@@ -209,8 +209,40 @@ func (e *enemyBlues) Process() (bool, error) {
 					return e.stateChange(bluesActTypeStand)
 				}
 
-				e.moveNum = rand.Intn(3) + 3
-				// WIP: 確率によって行動を変える
+				e.moveNum = rand.Intn(2) + 3
+
+				// Action process
+				// 攻撃処理(HPの減り具合から乱数で攻撃決定)
+				// ワイドソード(W),　ファイターソード(F),ビハインドスラッシュ(B),デルタレイエッジ(D)
+				// HP: MAX～1/2 -> W(45%), F(45%), B(10%), D(0%)
+				// HP: 1/2～1/4 -> W(35%), F(40%), B(20%), D(5%)
+				// HP: 1/4～0   -> W(35%), F(35%), B(20%), D(10%)
+				prob := rand.Intn(100)
+				halfHP := e.pm.HPMax / 2
+				quarterHP := e.pm.HPMax / 4
+				var wLine, fLine, bLine int
+				if e.pm.HP > halfHP {
+					wLine = 45
+					fLine = 90
+					bLine = 100
+				} else if e.pm.HP > quarterHP {
+					wLine = 35
+					fLine = 70
+					bLine = 95
+				} else {
+					wLine = 35
+					fLine = 70
+					bLine = 90
+				}
+				if prob < wLine {
+					e.nextState = bluesActTypeWideSword
+				} else if prob < fLine {
+					e.nextState = bluesActTypeFighterSword
+				} else if prob < bLine {
+					e.nextState = bluesActTypeBehindSlash
+				} else {
+					e.nextState = bluesActTypeDeltaRayEdge
+				}
 			}
 
 			return e.stateChange(bluesActTypeStand)
