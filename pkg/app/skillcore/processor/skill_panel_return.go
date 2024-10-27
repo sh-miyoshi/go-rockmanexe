@@ -33,7 +33,7 @@ func (p *PanelReturn) Update() (bool, error) {
 		logger.Debug("Panel Return Target: %v", p.targets)
 	}
 
-	if p.count == 100 {
+	if p.count == 160 {
 		for _, pos := range p.targets {
 			p.Arg.PanelChange(pos, battlecommon.PanelStatusNormal)
 		}
