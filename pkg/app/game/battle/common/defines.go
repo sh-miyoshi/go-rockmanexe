@@ -67,6 +67,7 @@ const (
 	PanelStatusCrack
 	PanelStatusHole
 	PanelStatusPoison
+	PanelStatusEmpty
 
 	PanelStatusMax
 )

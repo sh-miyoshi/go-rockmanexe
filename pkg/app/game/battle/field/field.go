@@ -14,6 +14,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -23,9 +24,11 @@ type extendPanelInfo struct {
 }
 
 var (
-	imgPanel      [battlecommon.PanelStatusMax][battlecommon.PanelTypeMax]int
-	blackoutCount = 0
-	panels        [][]extendPanelInfo
+	imgPanel       [battlecommon.PanelStatusMax][battlecommon.PanelTypeMax]int
+	imgPanelPoison []int
+	blackoutCount  = 0
+	animCount      = 0
+	panels         [][]extendPanelInfo
 )
 
 func Init() error {
@@ -37,10 +40,10 @@ func Init() error {
 	}
 
 	// Initialize images
-	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
+	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole", "poison", "empty"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
 		if i == battlecommon.PanelStatusPoison {
-			// TODO: 毒沼パネルは未実装
+			// 毒沼パネルは別途読み込み
 			continue
 		}
 
@@ -55,6 +58,12 @@ func Init() error {
 		if imgPanel[i][battlecommon.PanelTypeEnemy] < 0 {
 			return errors.Newf("failed to read enemy panel image %s", fname)
 		}
+	}
+
+	imgPanelPoison = make([]int, 6)
+	fname := config.ImagePath + "battle/panel_poison.png"
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 64, 34, imgPanelPoison); res == -1 {
+		return errors.Newf("failed to read poison panel image %s", fname)
 	}
 
 	// Initialize panel info
@@ -89,7 +98,6 @@ func Init() error {
 	return nil
 }
 
-// End ...
 func End() {
 	logger.Info("Cleanup battle field data")
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
@@ -98,29 +106,35 @@ func End() {
 			imgPanel[i][j] = -1
 		}
 	}
+	for i := 0; i < len(imgPanelPoison); i++ {
+		dxlib.DeleteGraph(imgPanelPoison[i])
+	}
 
 	background.Unset()
 	logger.Info("Successfully cleanuped battle field data")
 }
 
-// Draw ...
 func Draw() {
 	for x := 0; x < battlecommon.FieldNum.X; x++ {
 		for y := 0; y < battlecommon.FieldNum.Y; y++ {
-			img := imgPanel[panels[x][y].info.Status][panels[x][y].info.Type]
 			vx := battlecommon.PanelSize.X * x
 			vy := battlecommon.DrawPanelTopY + battlecommon.PanelSize.Y*y
+			if panels[x][y].info.Status == battlecommon.PanelStatusPoison {
+				drawPoisonPanel(vx, vy, panels[x][y].info.Type)
+			} else {
+				img := imgPanel[panels[x][y].info.Status][panels[x][y].info.Type]
 
-			// Note:
-			//   panelReturnAnimCount以下の場合StatusはNormalになる
-			//   HoleとNormalを点滅させるためCountによってイメージを変える
-			if panels[x][y].info.StatusCount > 0 {
-				if panels[x][y].info.StatusCount < battlecommon.PanelReturnAnimCount && (panels[x][y].info.StatusCount/2)%2 == 0 {
-					img = imgPanel[battlecommon.PanelStatusHole][panels[x][y].info.Type]
+				// Note:
+				//   panelReturnAnimCount以下の場合StatusはNormalになる
+				//   HoleとNormalを点滅させるためCountによってイメージを変える
+				if panels[x][y].info.StatusCount > 0 {
+					if panels[x][y].info.StatusCount < battlecommon.PanelReturnAnimCount && (panels[x][y].info.StatusCount/2)%2 == 0 {
+						img = imgPanel[battlecommon.PanelStatusHole][panels[x][y].info.Type]
+					}
 				}
-			}
 
-			dxlib.DrawGraph(vx, vy, img, true)
+				dxlib.DrawGraph(vx, vy, img, true)
+			}
 
 			damages := localanim.DamageManager().GetHitDamages(point.Point{X: x, Y: y}, "")
 			for _, dm := range damages {
@@ -146,6 +160,8 @@ func DrawBlackout() {
 }
 
 func Update() {
+	animCount++
+
 	// Cleanup at first
 	for x := 0; x < len(panels); x++ {
 		for y := 0; y < len(panels[x]); y++ {
@@ -173,7 +189,7 @@ func Update() {
 			}
 
 			switch panels[x][y].info.Status {
-			case battlecommon.PanelStatusHole, battlecommon.PanelStatusPoison:
+			case battlecommon.PanelStatusHole:
 				if panels[x][y].info.StatusCount <= battlecommon.PanelReturnAnimCount {
 					panels[x][y].info.Status = battlecommon.PanelStatusNormal
 				}
@@ -265,4 +281,12 @@ func ResetSet4x4Area() {
 
 func Is4x4Area() bool {
 	return battlecommon.FieldNum.Equal(point.Point{X: 8, Y: 4})
+}
+
+func drawPoisonPanel(vx, vy int, pnType int) {
+	n := (animCount / 15) % (len(imgPanelPoison) * 2)
+	img := imgPanelPoison[math.MountainIndex(n, len(imgPanelPoison)*2)]
+	dxlib.DrawBox(vx, vy, vx+battlecommon.PanelSize.X, vy+battlecommon.PanelSize.Y, 0x000000, true)
+	dxlib.DrawGraph(vx, vy, imgPanel[battlecommon.PanelStatusEmpty][pnType], true)
+	dxlib.DrawGraph(vx+8, vy+8, img, true)
 }
