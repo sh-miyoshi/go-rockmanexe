@@ -5,11 +5,13 @@ import (
 	"math/rand"
 
 	"github.com/cockroachdb/errors"
+	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -200,6 +202,19 @@ func Update() {
 					panels[x][y].objExists = false
 					panels[x][y].info.Status = battlecommon.PanelStatusHole
 					panels[x][y].info.StatusCount = battlecommon.DefaultPanelStatusEndCount
+				}
+			case battlecommon.PanelStatusPoison:
+				// 上に載っているオブジェクトのHPを減らす
+				if animCount%30 == 0 {
+					if panels[x][y].info.ObjectID != "" {
+						localanim.DamageManager().New(damage.Damage{
+							ID:            uuid.New().String(),
+							Power:         1,
+							DamageType:    damage.TypeObject,
+							TargetObjID:   panels[x][y].info.ObjectID,
+							TargetObjType: damage.TargetPlayer | damage.TargetEnemy,
+						})
+					}
 				}
 			}
 		}
