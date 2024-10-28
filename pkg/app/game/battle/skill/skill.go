@@ -114,7 +114,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newForteDarknessOverload(objID, arg, core)
 	case resources.SkillChipForteAnother:
 		return newChipForteAnother(objID, arg, core)
-	case resources.SkillDeathMatch1, resources.SkillDeathMatch2:
+	case resources.SkillDeathMatch1, resources.SkillDeathMatch2, resources.SkillDeathMatch3:
 		return newDeathMatch(objID, arg, core)
 	case resources.SkillPanelReturn:
 		return newPanelReturn(objID, arg, core)

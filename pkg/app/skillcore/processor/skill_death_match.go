@@ -43,13 +43,23 @@ func (p *DeathMatch) Update() (bool, error) {
 			pos := p.breakList[0]
 			p.breakList = p.breakList[1:]
 
-			crackType := battlecommon.PanelStatusHole
-			if p.SkillID == resources.SkillDeathMatch1 {
+			var crackType int
+			switch p.SkillID {
+			case resources.SkillDeathMatch1:
 				crackType = battlecommon.PanelStatusCrack
+			case resources.SkillDeathMatch2:
+				crackType = battlecommon.PanelStatusHole
+			case resources.SkillDeathMatch3:
+				crackType = battlecommon.PanelStatusPoison
 			}
+
 			p.Arg.PanelChange(pos, crackType)
 			if p.count%9 == 1 {
-				p.Arg.SoundOn(resources.SEPanelBreakShort)
+				if p.SkillID == resources.SkillDeathMatch3 {
+					p.Arg.SoundOn(resources.SEMakePoison)
+				} else {
+					p.Arg.SoundOn(resources.SEPanelBreakShort)
+				}
 			}
 		}
 	}

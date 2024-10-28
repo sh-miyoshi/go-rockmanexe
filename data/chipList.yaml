@@ -898,9 +898,9 @@
   name: デスマッチ3
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: 'エリア全てのパネルを毒沼パネルにする'
+  is_implemented: true
 - id: 127
   name: ヘビーゲージ
   power: 0

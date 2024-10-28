@@ -120,6 +120,8 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillDeathMatch1
 	case chip.IDDeathMatch2:
 		return resources.SkillDeathMatch2
+	case chip.IDDeathMatch3:
+		return resources.SkillDeathMatch3
 	case chip.IDPanelReturn:
 		return resources.SkillPanelReturn
 	}
