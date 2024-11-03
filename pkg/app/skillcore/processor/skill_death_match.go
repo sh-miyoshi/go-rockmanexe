@@ -44,13 +44,13 @@ func (p *DeathMatch) Update() (bool, error) {
 			p.breakList = p.breakList[1:]
 
 			var crackType int
-			stEndCount := battlecommon.DefaultPanelStatusEndCount
+			stEndCount := 0
 			switch p.SkillID {
 			case resources.SkillDeathMatch1:
 				crackType = battlecommon.PanelStatusCrack
-				stEndCount = 0
 			case resources.SkillDeathMatch2:
 				crackType = battlecommon.PanelStatusHole
+				stEndCount = battlecommon.DefaultPanelStatusEndCount
 			case resources.SkillDeathMatch3:
 				crackType = battlecommon.PanelStatusPoison
 			}
