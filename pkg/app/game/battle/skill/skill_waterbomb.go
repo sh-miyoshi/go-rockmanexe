@@ -40,7 +40,7 @@ func (p *waterBomb) Update() (bool, error) {
 	}
 	for _, hit := range p.Core.PopHits() {
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
-		field.PanelChange(hit, battlecommon.PanelStatusCrack)
+		field.ChangePanelStatus(hit, battlecommon.PanelStatusCrack, 0)
 	}
 	return res, nil
 }

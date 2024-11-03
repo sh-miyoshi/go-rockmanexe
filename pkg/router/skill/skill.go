@@ -29,11 +29,11 @@ type SkillAnim interface {
 }
 
 func Get(id int, arg Argument) SkillAnim {
-	panelCrack := func(pos point.Point, crackType int) {
-		arg.FieldFuncs.PanelChange(arg.OwnerClientID, pos, crackType)
+	changePanelStatus := func(pos point.Point, crackType int, endCount int) {
+		arg.FieldFuncs.ChangePanelStatus(arg.OwnerClientID, pos, crackType, endCount)
 	}
-	changePanelType := func(pos point.Point, pnType int) {
-		arg.FieldFuncs.ChangePanelType(arg.OwnerClientID, pos, pnType)
+	changePanelType := func(pos point.Point, pnType int, endCount int) {
+		arg.FieldFuncs.ChangePanelType(arg.OwnerClientID, pos, pnType, endCount)
 	}
 
 	coreArg := skillcore.Argument{
@@ -42,12 +42,12 @@ func Get(id int, arg Argument) SkillAnim {
 		Power:         arg.Power,
 		TargetType:    arg.TargetType,
 
-		DamageMgr:    arg.Manager.DamageMgr(),
-		GetObjectPos: arg.Manager.ObjAnimGetObjPos,
-		SoundOn:      arg.Manager.SoundOn,
-		GetObjects:   arg.Manager.ObjAnimGetObjs,
-		GetPanelInfo: arg.FieldFuncs.GetPanelInfo,
-		PanelChange:  panelCrack,
+		DamageMgr:         arg.Manager.DamageMgr(),
+		GetObjectPos:      arg.Manager.ObjAnimGetObjPos,
+		SoundOn:           arg.Manager.SoundOn,
+		GetObjects:        arg.Manager.ObjAnimGetObjs,
+		GetPanelInfo:      arg.FieldFuncs.GetPanelInfo,
+		ChangePanelStatus: changePanelStatus,
 		Cutin: func(skillName string, count int) {
 			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
 		},

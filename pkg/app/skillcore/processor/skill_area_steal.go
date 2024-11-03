@@ -125,7 +125,7 @@ func (p *AreaSteal) Update() (bool, error) {
 				} else if pos.X >= 1 && pos.X < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え
 					// 最終ラインの場合は塗り替えない
-					p.Arg.ChangePanelType(pos, p.myPanelType)
+					p.Arg.ChangePanelType(pos, p.myPanelType, battlecommon.DefaultPanelTypeEndCount)
 				}
 			}
 			return true, nil

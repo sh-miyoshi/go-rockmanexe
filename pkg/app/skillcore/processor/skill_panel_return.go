@@ -35,7 +35,7 @@ func (p *PanelReturn) Update() (bool, error) {
 
 	if p.count == 160 {
 		for _, pos := range p.targets {
-			p.Arg.PanelChange(pos, battlecommon.PanelStatusNormal)
+			p.Arg.ChangePanelStatus(pos, battlecommon.PanelStatusNormal, 0)
 		}
 		return true, nil
 	}
