@@ -25,8 +25,9 @@ type extendPanelInfo struct {
 
 	objExists       bool
 	prevPanelStatus int
-	typeChangeCount int
 	statusCount     int
+	typeChangeCount int
+	prevPanelType   int
 }
 
 var (
@@ -137,12 +138,17 @@ func Draw() {
 				}
 			}
 
-			// WIP: typeChangeCount
+			pnType := panels[x][y].info.Type
+			if panels[x][y].typeChangeCount > 0 {
+				if panels[x][y].typeChangeCount < battlecommon.PanelReturnAnimCount && (panels[x][y].typeChangeCount/2)%2 == 0 {
+					pnType = panels[x][y].prevPanelType
+				}
+			}
 
 			if pnStatus == battlecommon.PanelStatusPoison {
-				drawPoisonPanel(vx, vy, panels[x][y].info.Type)
+				drawPoisonPanel(vx, vy, pnType)
 			} else {
-				img := imgPanel[pnStatus][panels[x][y].info.Type]
+				img := imgPanel[pnStatus][pnType]
 				dxlib.DrawGraph(vx, vy, img, true)
 			}
 
@@ -198,13 +204,13 @@ func Update() {
 			if panels[x][y].statusCount > 0 {
 				panels[x][y].statusCount--
 			}
+			if panels[x][y].statusCount == battlecommon.PanelReturnAnimCount {
+				panels[x][y].prevPanelStatus = panels[x][y].info.Status
+				panels[x][y].info.Status = battlecommon.PanelStatusNormal
+			}
 
 			switch panels[x][y].info.Status {
 			case battlecommon.PanelStatusHole:
-				if panels[x][y].statusCount <= battlecommon.PanelReturnAnimCount {
-					panels[x][y].info.Status = battlecommon.PanelStatusNormal
-					panels[x][y].prevPanelStatus = battlecommon.PanelStatusHole
-				}
 			case battlecommon.PanelStatusCrack:
 				// Objectが乗って離れたらHole状態へ
 				if panels[x][y].objExists && panels[x][y].info.ObjectID == "" {
@@ -231,7 +237,14 @@ func Update() {
 			if panels[x][y].typeChangeCount > 0 {
 				panels[x][y].typeChangeCount--
 			}
-			// WIP: typeChangeCount
+			if panels[x][y].typeChangeCount == battlecommon.PanelReturnAnimCount {
+				if panels[x][y].info.ObjectID != "" {
+					// オブジェクトが乗っている場合は次に判定持ち越し
+					panels[x][y].typeChangeCount = battlecommon.PanelReturnAnimCount + 1
+				} else {
+					panels[x][y].prevPanelType, panels[x][y].info.Type = panels[x][y].info.Type, panels[x][y].prevPanelType
+				}
+			}
 		}
 	}
 }
@@ -260,6 +273,7 @@ func ChangePanelType(pos point.Point, pnType int, endCount int) {
 		return
 	}
 
+	panels[pos.X][pos.Y].prevPanelType = panels[pos.X][pos.Y].info.Type
 	panels[pos.X][pos.Y].info.Type = pnType
 	panels[pos.X][pos.Y].typeChangeCount = endCount
 }
