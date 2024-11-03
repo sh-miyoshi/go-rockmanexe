@@ -58,6 +58,7 @@ const (
 	SEChing
 	SEDeltaRayEdgeEnd
 	SEPanelReturn
+	SEMakePoison
 
 	SEMax
 )

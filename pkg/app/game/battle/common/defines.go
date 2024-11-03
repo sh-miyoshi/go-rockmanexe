@@ -9,6 +9,7 @@ const (
 	GaugeMaxCount              = 1200
 	ChargeViewDelay            = 20
 	DefaultCustomGaugeSpeed    = 4
+	DefaultPanelTypeEndCount   = 480
 	DefaultPanelStatusEndCount = 480
 	PanelReturnAnimCount       = 60
 )
@@ -67,6 +68,7 @@ const (
 	PanelStatusCrack
 	PanelStatusHole
 	PanelStatusPoison
+	PanelStatusEmpty
 
 	PanelStatusMax
 )
@@ -79,8 +81,7 @@ const (
 )
 
 type PanelInfo struct {
-	Type        int
-	ObjectID    string
-	Status      int
-	StatusCount int
+	Type     int
+	ObjectID string
+	Status   int
 }
