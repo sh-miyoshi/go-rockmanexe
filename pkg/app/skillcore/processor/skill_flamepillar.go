@@ -214,7 +214,7 @@ func (p *FlamePillar) Update() (bool, error) {
 				TTL:           7 * flamePillarDelay,
 				TargetObjType: p.Arg.TargetType,
 				ShowHitArea:   true,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementFire,
 			})
 		}

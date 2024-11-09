@@ -118,7 +118,7 @@ func (p *AreaSteal) Update() (bool, error) {
 						Power:         10,
 						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     false,
+						StrengthType:  damage.StrengthBack,
 						Element:       damage.ElementNone,
 						TargetObjID:   pn.ObjectID,
 					})

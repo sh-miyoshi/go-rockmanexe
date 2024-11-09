@@ -168,7 +168,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		if !dm.BigDamage {
+		if dm.StrengthType == damage.StrengthNone {
 			return true
 		}
 
@@ -184,7 +184,9 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 			s.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
 			s.act.SetAnim(battlecommon.PlayerActDamage, 0)
-			s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			if dm.StrengthType == damage.StrengthHigh {
+				s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			}
 		}
 		logger.Debug("Supporter damaged: %+v", *dm)
 		return true

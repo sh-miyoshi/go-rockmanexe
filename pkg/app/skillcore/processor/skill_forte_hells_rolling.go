@@ -55,7 +55,7 @@ func (p *ForteHellsRolling) Update() (bool, error) {
 			TTL:           forteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 		})
 	}
 
@@ -95,7 +95,7 @@ func (p *ForteHellsRolling) Update() (bool, error) {
 			TTL:           forteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 		})
 	}
 	return false, nil

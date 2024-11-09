@@ -31,7 +31,7 @@ func (p *Cannon) Update() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementNone,
 		}
 

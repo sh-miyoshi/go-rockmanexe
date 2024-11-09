@@ -88,7 +88,7 @@ func (p *WideShot) Update() (bool, error) {
 					TTL:           p.pm.NextStepCount,
 					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 					Element:       damage.ElementWater,
 				})
 			}

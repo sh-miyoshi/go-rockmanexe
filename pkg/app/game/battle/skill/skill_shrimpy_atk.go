@@ -56,7 +56,7 @@ func (p *shrimpyAtk) Update() (bool, error) {
 				TTL:           shrimpyAtkNextStepCount,
 				TargetObjType: p.Arg.TargetType,
 				ShowHitArea:   true,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementWater,
 			})
 		}

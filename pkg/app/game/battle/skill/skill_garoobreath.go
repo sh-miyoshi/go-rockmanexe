@@ -71,7 +71,7 @@ func (p *garooBreath) Update() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   false,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementFire,
 		})
 

@@ -71,7 +71,7 @@ func (p *cirkillShot) Update() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   true,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementFire,
 		})
 

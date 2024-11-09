@@ -530,7 +530,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		if !dm.BigDamage {
+		if dm.StrengthType == damage.StrengthNone {
 			return true
 		}
 
@@ -547,7 +547,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
 			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
-			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			if dm.StrengthType == damage.StrengthHigh {
+				p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			}
 		}
 
 		p.DamageNum++

@@ -202,7 +202,7 @@ func (a *WaterPipeAtk) Update() {
 			TTL:           6 * delayWaterPipeAttack,
 			TargetObjType: target,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		}
 

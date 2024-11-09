@@ -39,7 +39,7 @@ func (p *BubbleShot) Update() (bool, error) {
 					HitEffectType: resources.EffectTypeWaterBomb,
 					Element:       damage.ElementFire,
 					TargetObjID:   objID,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 				})
 
 				// 誘爆
@@ -65,7 +65,7 @@ func (p *BubbleShot) Update() (bool, error) {
 							HitEffectType: resources.EffectTypeNone,
 							Element:       damage.ElementFire,
 							TargetObjID:   objID,
-							BigDamage:     true,
+							StrengthType:  damage.StrengthHigh,
 						})
 					}
 				}

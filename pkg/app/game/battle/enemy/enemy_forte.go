@@ -465,12 +465,14 @@ func (e *enemyForte) Draw() {
 
 func (e *enemyForte) DamageProc(dm *damage.Damage) bool {
 	if damageProc(dm, &e.pm) {
-		if !dm.BigDamage {
+		if dm.StrengthType == damage.StrengthNone {
 			return true
 		}
 
 		e.state = forteActTypeDamage
-		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		if dm.StrengthType == damage.StrengthHigh {
+			e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		}
 		e.count = 0
 		return true
 	}

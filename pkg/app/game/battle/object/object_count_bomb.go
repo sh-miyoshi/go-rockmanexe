@@ -85,7 +85,7 @@ func (o *CountBomb) Update() (bool, error) {
 				Power:         o.pm.Power,
 				TargetObjType: target,
 				HitEffectType: resources.EffectTypeExplode,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				TargetObjID:   obj.ObjID,
 			}
 			localanim.DamageManager().New(dm)
