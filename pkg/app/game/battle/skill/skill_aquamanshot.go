@@ -67,7 +67,7 @@ func (p *aquamanShot) Update() (bool, error) {
 			TTL:           20,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		})
 		target := point.Point{X: p.target.X - 1, Y: p.target.Y}
@@ -79,7 +79,7 @@ func (p *aquamanShot) Update() (bool, error) {
 			TTL:           20,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		})
 

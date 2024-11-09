@@ -41,7 +41,7 @@ func (p *ForteDarkArmBlade) Update() (bool, error) {
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,
 				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementNone,
 			})
 		}

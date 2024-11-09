@@ -35,12 +35,17 @@ func (p *Tornado) Update() (bool, error) {
 
 	if p.count%tornadoAtkInterval == 0 {
 		lastAtk := p.atkCount == tornadoHitNum-1
+		strengthType := damage.StrengthNone
+		if lastAtk {
+			strengthType = damage.StrengthHigh
+		}
+
 		p.Arg.DamageMgr.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
 			DamageType:    damage.TypePosition,
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
-			BigDamage:     lastAtk,
+			StrengthType:  strengthType,
 			Element:       damage.ElementNone,
 			Pos:           p.targetPos,
 			TTL:           tornadoAtkInterval,

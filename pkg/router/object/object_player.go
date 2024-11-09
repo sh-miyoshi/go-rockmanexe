@@ -164,7 +164,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return true
 	}
 
-	if !dm.BigDamage {
+	if dm.StrengthType == damage.StrengthNone {
 		return true
 	}
 
@@ -184,7 +184,9 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		system.SetError("TODO: not implemented yet")
 	} else {
 		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 0)
-		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		if dm.StrengthType == damage.StrengthHigh {
+			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
 	}
 
 	logger.Debug("Player damaged: %+v", *dm)

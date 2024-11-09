@@ -38,7 +38,7 @@ func (p *HeatShot) Update() (bool, error) {
 					HitEffectType: resources.EffectTypeHeatHit,
 					Element:       damage.ElementFire,
 					TargetObjID:   objID,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 				})
 
 				// 誘爆
@@ -64,7 +64,7 @@ func (p *HeatShot) Update() (bool, error) {
 							HitEffectType: resources.EffectTypeNone,
 							Element:       damage.ElementFire,
 							TargetObjID:   objID,
-							BigDamage:     true,
+							StrengthType:  damage.StrengthHigh,
 						})
 					}
 				}

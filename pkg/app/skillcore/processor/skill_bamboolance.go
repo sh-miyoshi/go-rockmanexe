@@ -27,7 +27,7 @@ func (p *BambooLance) Update() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeBambooHit,
 			ShowHitArea:   false,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthBack,
 			PushLeft:      1,
 			Element:       damage.ElementWood,
 		}

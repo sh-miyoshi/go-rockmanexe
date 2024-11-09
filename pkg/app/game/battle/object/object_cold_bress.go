@@ -94,7 +94,7 @@ func (o *ColdBress) Update() (bool, error) {
 			TargetObjType: target,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   false,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementNone,
 		})
 
