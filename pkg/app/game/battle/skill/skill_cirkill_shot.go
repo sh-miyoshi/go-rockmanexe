@@ -50,7 +50,7 @@ func (p *cirkillShot) Draw() {
 	p.drawer.Draw(p.prev, p.pos, p.next, p.count, cirkillShotNextStepCount)
 }
 
-func (p *cirkillShot) Process() (bool, error) {
+func (p *cirkillShot) Update() (bool, error) {
 	if p.count%cirkillShotNextStepCount/2 == 0 {
 		// Finish if hit
 		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
@@ -71,7 +71,7 @@ func (p *cirkillShot) Process() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeHeatHit,
 			ShowHitArea:   true,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementFire,
 		})
 

@@ -55,6 +55,7 @@ const (
 	SkillChipForteAnother
 	SkillDeathMatch1
 	SkillDeathMatch2
+	SkillDeathMatch3
 	SkillNonEffectWideSword
 	SkillFullCustom
 	SkillPanelReturn

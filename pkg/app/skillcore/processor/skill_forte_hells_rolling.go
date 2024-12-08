@@ -45,7 +45,7 @@ func (p *ForteHellsRolling) Init(skillID int, isPlayer bool) {
 	p.curveDirect = 0
 }
 
-func (p *ForteHellsRolling) Process() (bool, error) {
+func (p *ForteHellsRolling) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.DamageMgr.New(damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
@@ -55,7 +55,7 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 			TTL:           forteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 		})
 	}
 
@@ -95,7 +95,7 @@ func (p *ForteHellsRolling) Process() (bool, error) {
 			TTL:           forteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 		})
 	}
 	return false, nil

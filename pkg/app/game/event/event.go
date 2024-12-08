@@ -28,7 +28,7 @@ type Handler interface {
 	Init(values []byte) error
 	End()
 	Draw()
-	Process() (bool, error)
+	Update() (bool, error)
 }
 
 var (
@@ -67,9 +67,9 @@ func Draw() {
 	}
 }
 
-func Process() (int, error) {
+func Update() (int, error) {
 	if handler != nil {
-		end, err := handler.Process()
+		end, err := handler.Update()
 		if err != nil {
 			handler.End()
 			return ResultContinue, err

@@ -211,7 +211,7 @@ func (p *BattlePlayer) LocalDraw() {
 	}
 }
 
-func (p *BattlePlayer) Process() (bool, error) {
+func (p *BattlePlayer) Update() (bool, error) {
 	p.gaugeCount += battlecommon.CustomGaugeSpeed
 
 	info := net.GetInst().GetGameInfo()

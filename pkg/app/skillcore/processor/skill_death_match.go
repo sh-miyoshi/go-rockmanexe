@@ -29,7 +29,7 @@ func (p *DeathMatch) Init() {
 	})
 }
 
-func (p *DeathMatch) Process() (bool, error) {
+func (p *DeathMatch) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.Cutin("デスマッチ", 500)
 	}
@@ -43,13 +43,25 @@ func (p *DeathMatch) Process() (bool, error) {
 			pos := p.breakList[0]
 			p.breakList = p.breakList[1:]
 
-			crackType := battlecommon.PanelStatusHole
-			if p.SkillID == resources.SkillDeathMatch1 {
+			var crackType int
+			stEndCount := 0
+			switch p.SkillID {
+			case resources.SkillDeathMatch1:
 				crackType = battlecommon.PanelStatusCrack
+			case resources.SkillDeathMatch2:
+				crackType = battlecommon.PanelStatusHole
+				stEndCount = battlecommon.DefaultPanelStatusEndCount
+			case resources.SkillDeathMatch3:
+				crackType = battlecommon.PanelStatusPoison
 			}
-			p.Arg.PanelChange(pos, crackType)
+
+			p.Arg.ChangePanelStatus(pos, crackType, stEndCount)
 			if p.count%9 == 1 {
-				p.Arg.SoundOn(resources.SEPanelBreakShort)
+				if p.SkillID == resources.SkillDeathMatch3 {
+					p.Arg.SoundOn(resources.SEMakePoison)
+				} else {
+					p.Arg.SoundOn(resources.SEPanelBreakShort)
+				}
 			}
 		}
 	}

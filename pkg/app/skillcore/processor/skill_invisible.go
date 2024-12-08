@@ -10,7 +10,7 @@ type Invisible struct {
 	count int
 }
 
-func (p *Invisible) Process() (bool, error) {
+func (p *Invisible) Update() (bool, error) {
 	p.count++
 
 	showTm := 60

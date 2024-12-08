@@ -35,8 +35,8 @@ func Draw() {
 	bgInfo.Draw()
 }
 
-func Process() {
-	bgInfo.Process()
+func Update() {
+	bgInfo.Update()
 }
 
 func (i *info) Init(typ int) error {
@@ -113,7 +113,7 @@ func (i *info) Draw() {
 	}
 }
 
-func (i *info) Process() {
+func (i *info) Update() {
 	if len(i.Images) == 0 {
 		return
 	}

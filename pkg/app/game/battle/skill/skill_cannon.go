@@ -33,8 +33,8 @@ func (p *cannon) Draw() {
 	p.drawer.Draw(p.SkillID, view, p.Core.GetCount(), true)
 }
 
-func (p *cannon) Process() (bool, error) {
-	return p.Core.Process()
+func (p *cannon) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *cannon) GetParam() anim.Param {

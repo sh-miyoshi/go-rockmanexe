@@ -43,7 +43,7 @@ func (p *ShockWave) Init(isPlayer bool) {
 	p.pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
 }
 
-func (p *ShockWave) Process() (bool, error) {
+func (p *ShockWave) Update() (bool, error) {
 	if p.count < p.pm.InitWait {
 		p.count++
 		return false, nil
@@ -72,7 +72,7 @@ func (p *ShockWave) Process() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementNone,
 		})
 	}

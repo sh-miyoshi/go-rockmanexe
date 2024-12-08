@@ -29,7 +29,7 @@ func Draw() {
 	}
 }
 
-func Process() {
+func Update() {
 	switch workType {
 	case workFadeIn:
 		bright += speed

@@ -32,8 +32,8 @@ func (p *tornado) Draw() {
 	p.drawer.Draw(view, target, p.Core.GetCount(), true)
 }
 
-func (p *tornado) Process() (bool, error) {
-	return p.Core.Process()
+func (p *tornado) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *tornado) GetParam() anim.Param {

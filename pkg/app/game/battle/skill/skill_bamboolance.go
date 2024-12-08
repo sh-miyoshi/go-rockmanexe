@@ -29,8 +29,8 @@ func (p *bambooLance) Draw() {
 	p.drawer.Draw(p.Core.GetCount(), true)
 }
 
-func (p *bambooLance) Process() (bool, error) {
-	return p.Core.Process()
+func (p *bambooLance) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *bambooLance) GetParam() anim.Param {

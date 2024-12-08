@@ -20,7 +20,7 @@ type Sword struct {
 	count int
 }
 
-func (p *Sword) Process() (bool, error) {
+func (p *Sword) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1*swordDelay {
@@ -30,9 +30,9 @@ func (p *Sword) Process() (bool, error) {
 			p.Arg.SoundOn(resources.SESword)
 		}
 
-		bigDm := true
+		strengthType := damage.StrengthHigh
 		if p.SkillID == resources.SkillNonEffectWideSword {
-			bigDm = false
+			strengthType = damage.StrengthBack
 		}
 
 		dm := damage.Damage{
@@ -41,7 +41,7 @@ func (p *Sword) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     bigDm,
+			StrengthType:  strengthType,
 			Element:       damage.ElementNone,
 		}
 

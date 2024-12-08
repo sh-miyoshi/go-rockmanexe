@@ -35,8 +35,8 @@ func (p *boomerang) Draw() {
 	// nothing to do at router
 }
 
-func (p *boomerang) Process() (bool, error) {
-	return p.Core.Process()
+func (p *boomerang) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *boomerang) GetParam() anim.Param {

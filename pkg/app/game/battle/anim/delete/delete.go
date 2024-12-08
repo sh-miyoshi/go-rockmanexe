@@ -32,7 +32,7 @@ func New(image int, pos point.Point, isPlayer bool) {
 	})
 }
 
-func (p *deleteAction) Process() (bool, error) {
+func (p *deleteAction) Update() (bool, error) {
 	p.count++
 	if p.count == 15 {
 		dxlib.DeleteGraph(p.image)

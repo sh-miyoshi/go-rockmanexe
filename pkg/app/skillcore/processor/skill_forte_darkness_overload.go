@@ -18,13 +18,13 @@ type ForteDarknessOverload struct {
 	count int
 }
 
-func (p *ForteDarknessOverload) Process() (bool, error) {
+func (p *ForteDarknessOverload) Update() (bool, error) {
 	p.count++
 	if p.count == p.GetDelay()*3 {
 		for x := 0; x < 2; x++ {
 			for y := 0; y < battlecommon.FieldNum.Y; y++ {
 				pos := point.Point{X: x, Y: y}
-				p.Arg.PanelChange(pos, battlecommon.PanelStatusCrack)
+				p.Arg.ChangePanelStatus(pos, battlecommon.PanelStatusCrack, 0)
 				if objID := p.Arg.GetPanelInfo(pos).ObjectID; objID != "" {
 					p.Arg.DamageMgr.New(damage.Damage{
 						OwnerClientID: p.Arg.OwnerClientID,
@@ -33,7 +33,7 @@ func (p *ForteDarknessOverload) Process() (bool, error) {
 						Power:         int(p.Arg.Power),
 						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     true,
+						StrengthType:  damage.StrengthHigh,
 						Element:       damage.ElementNone,
 					})
 				}

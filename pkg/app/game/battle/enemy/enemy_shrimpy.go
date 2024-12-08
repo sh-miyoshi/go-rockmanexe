@@ -90,7 +90,7 @@ func (e *enemyShrimpy) End() {
 	}
 }
 
-func (e *enemyShrimpy) Process() (bool, error) {
+func (e *enemyShrimpy) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -158,7 +158,7 @@ func (e *enemyShrimpy) Process() (bool, error) {
 			e.atk.Set()
 		}
 
-		if e.atk.Process() {
+		if e.atk.Update() {
 			e.waitCount = 40
 			e.nextState = shrimpyStateMove
 			e.setState(shrimpyStateWait)
@@ -257,7 +257,7 @@ func (a *shrimpyAttack) Set() {
 	))
 }
 
-func (a *shrimpyAttack) Process() bool {
+func (a *shrimpyAttack) Update() bool {
 	a.count++
 	return a.count >= len(a.images)*delayShrimpyAttack
 }

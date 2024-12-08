@@ -288,7 +288,7 @@ func (e *enemy) End() {
 	// Delete Images
 }
 
-func (e *enemy) Process() (bool, error) {
+func (e *enemy) Update() (bool, error) {
 	// Return true if finished(e.g. hp=0)
 	// Enemy Logic
 	return false, nil

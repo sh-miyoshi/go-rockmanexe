@@ -11,7 +11,7 @@ type QuickGauge struct {
 	count int
 }
 
-func (p *QuickGauge) Process() (bool, error) {
+func (p *QuickGauge) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.Cutin("クイックゲージ", 90)
 		battlecommon.CustomGaugeSpeed = 6

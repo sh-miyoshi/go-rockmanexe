@@ -150,7 +150,7 @@ func (e *enemyBlues) End() {
 	}
 }
 
-func (e *enemyBlues) Process() (bool, error) {
+func (e *enemyBlues) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -474,7 +474,7 @@ func (e *enemyBlues) Draw() {
 func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 	if e.shieldCount > 0 {
 		// シールド中は反撃する
-		if dm.BigDamage {
+		if dm.StrengthType != damage.StrengthNone {
 			// 背後に回ってワイドソード
 			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
@@ -497,12 +497,14 @@ func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 	}
 
 	if damageProc(dm, &e.pm) {
-		if !dm.BigDamage {
+		if dm.StrengthType == damage.StrengthNone {
 			return true
 		}
 
 		e.state = bluesActTypeDamage
-		e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		if dm.StrengthType == damage.StrengthHigh {
+			e.pm.InvincibleCount = battlecommon.PlayerDefaultInvincibleTime
+		}
 		e.count = 0
 		return true
 	}

@@ -19,7 +19,7 @@ type Cannon struct {
 	count int
 }
 
-func (p *Cannon) Process() (bool, error) {
+func (p *Cannon) Update() (bool, error) {
 	p.count++
 
 	if p.count == 20 {
@@ -31,7 +31,7 @@ func (p *Cannon) Process() (bool, error) {
 			Power:         int(p.Arg.Power),
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeCannonHit,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementNone,
 		}
 

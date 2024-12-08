@@ -81,7 +81,7 @@ func (e *enemyGaroo) End() {
 	}
 }
 
-func (e *enemyGaroo) Process() (bool, error) {
+func (e *enemyGaroo) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -237,7 +237,7 @@ func (a *garooAtk) Draw() {
 	// Nothing to do
 }
 
-func (a *garooAtk) Process() (bool, error) {
+func (a *garooAtk) Update() (bool, error) {
 	a.count++
 
 	if a.count == delayGarooAtk*4 {

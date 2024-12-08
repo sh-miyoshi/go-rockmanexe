@@ -89,7 +89,7 @@ MAIN:
 		inputs.KeyStateUpdate()
 
 		// メインロジック
-		background.Process()
+		background.Update()
 		field.Update()
 		background.Draw()
 		field.Draw()
@@ -99,7 +99,7 @@ MAIN:
 		// localanim.ObjAnimMgrDraw()
 		localanim.AnimMgrDraw()
 
-		if !act.Process() && inputs.CheckKey(inputs.KeyEnter) == 1 {
+		if !act.Update() && inputs.CheckKey(inputs.KeyEnter) == 1 {
 			cfg := loadConfig()
 			fps.FPS = cfg.Fps
 

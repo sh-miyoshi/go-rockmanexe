@@ -17,7 +17,7 @@ type iceBreakEffect struct {
 	count int
 }
 
-func (e *iceBreakEffect) Process() (bool, error) {
+func (e *iceBreakEffect) Update() (bool, error) {
 	e.count++
 	return e.count >= len(images[resources.EffectTypeExplodeSmall]), nil
 }

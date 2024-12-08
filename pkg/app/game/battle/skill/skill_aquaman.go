@@ -35,8 +35,8 @@ func (p *aquaman) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetState())
 }
 
-func (p *aquaman) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *aquaman) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

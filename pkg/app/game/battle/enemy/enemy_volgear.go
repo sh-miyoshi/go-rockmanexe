@@ -80,7 +80,7 @@ func (e *enemyVolgear) End() {
 	}
 }
 
-func (e *enemyVolgear) Process() (bool, error) {
+func (e *enemyVolgear) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -228,7 +228,7 @@ func (a *volgearAtk) GetImageNo() int {
 	return 5 + n
 }
 
-func (a *volgearAtk) Process() (bool, error) {
+func (a *volgearAtk) Update() (bool, error) {
 	a.count++
 
 	if a.endCount > 0 {

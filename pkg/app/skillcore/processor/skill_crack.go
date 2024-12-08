@@ -30,13 +30,13 @@ func (p *Crack) Init(skillID int) {
 	}
 }
 
-func (p *Crack) Process() (bool, error) {
+func (p *Crack) Update() (bool, error) {
 	p.count++
 
 	if p.count > 5 {
 		p.Arg.SoundOn(resources.SEPanelBreak)
 		for _, pos := range p.attackPos {
-			p.Arg.PanelChange(pos, battlecommon.PanelStatusHole)
+			p.Arg.ChangePanelStatus(pos, battlecommon.PanelStatusHole, battlecommon.DefaultPanelStatusEndCount)
 		}
 
 		return true, nil

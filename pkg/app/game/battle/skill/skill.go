@@ -36,7 +36,7 @@ func End() {
 func Get(skillID int, arg skillcore.Argument) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
-	arg.PanelChange = field.PanelChange
+	arg.ChangePanelStatus = field.ChangePanelStatus
 	arg.DamageMgr = localanim.DamageManager()
 	arg.GetObjectPos = localanim.ObjAnimGetObjPos
 	arg.GetObjects = localanim.ObjAnimGetObjs
@@ -114,7 +114,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newForteDarknessOverload(objID, arg, core)
 	case resources.SkillChipForteAnother:
 		return newChipForteAnother(objID, arg, core)
-	case resources.SkillDeathMatch1, resources.SkillDeathMatch2:
+	case resources.SkillDeathMatch1, resources.SkillDeathMatch2, resources.SkillDeathMatch3:
 		return newDeathMatch(objID, arg, core)
 	case resources.SkillFullCustom:
 		return newFullCustom(objID, arg, core)
@@ -155,8 +155,8 @@ func (p *tmpskill) Draw() {
 	// p.drawer.Draw()
 }
 
-func (p *tmpskill) Process() (bool, error) {
-	return p.Core.Process()
+func (p *tmpskill) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *tmpskill) GetParam() anim.Param {

@@ -41,7 +41,7 @@ func (p *WideShot) Init(isPlayer bool) {
 	p.pm.State = resources.SkillWideShotStateBegin
 }
 
-func (p *WideShot) Process() (bool, error) {
+func (p *WideShot) Update() (bool, error) {
 	for _, did := range p.damageID {
 		if did != "" {
 			if !p.Arg.DamageMgr.Exists(did) && p.count%p.pm.NextStepCount != 0 {
@@ -88,7 +88,7 @@ func (p *WideShot) Process() (bool, error) {
 					TTL:           p.pm.NextStepCount,
 					TargetObjType: p.Arg.TargetType,
 					HitEffectType: resources.EffectTypeNone,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 					Element:       damage.ElementWater,
 				})
 			}

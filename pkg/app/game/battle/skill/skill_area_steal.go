@@ -28,8 +28,8 @@ func (p *skillAreaSteal) Draw() {
 	p.drawer.Draw(p.Core.GetCount(), p.Core.GetState(), p.Core.GetTargets())
 }
 
-func (p *skillAreaSteal) Process() (bool, error) {
-	return p.Core.Process()
+func (p *skillAreaSteal) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *skillAreaSteal) GetParam() anim.Param {

@@ -78,7 +78,7 @@ func (e *enemyCirKill) End() {
 	}
 }
 
-func (e *enemyCirKill) Process() (bool, error) {
+func (e *enemyCirKill) Update() (bool, error) {
 	// Return true if finished(e.g. hp=0)
 	// Enemy Logic
 	if e.pm.HP <= 0 {
@@ -97,7 +97,7 @@ func (e *enemyCirKill) Process() (bool, error) {
 
 	e.count++
 
-	e.atk.Process()
+	e.atk.Update()
 
 	if e.count < initialWaitCount {
 		return false, nil
@@ -220,7 +220,7 @@ func (a *cirKillAttack) Set() {
 	}
 }
 
-func (a *cirKillAttack) Process() {
+func (a *cirKillAttack) Update() {
 	if a.animID != "" && !localanim.AnimIsProcessing(a.animID) {
 		a.animID = ""
 	}

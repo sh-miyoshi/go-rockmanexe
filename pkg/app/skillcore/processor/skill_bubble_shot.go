@@ -21,7 +21,7 @@ type BubbleShot struct {
 	targets []point.Point
 }
 
-func (p *BubbleShot) Process() (bool, error) {
+func (p *BubbleShot) Update() (bool, error) {
 	p.Arg.SoundOn(resources.SEBubbleShot)
 
 	if p.count == bubbleShotAtkDelay {
@@ -39,7 +39,7 @@ func (p *BubbleShot) Process() (bool, error) {
 					HitEffectType: resources.EffectTypeWaterBomb,
 					Element:       damage.ElementFire,
 					TargetObjID:   objID,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 				})
 
 				// 誘爆
@@ -65,7 +65,7 @@ func (p *BubbleShot) Process() (bool, error) {
 							HitEffectType: resources.EffectTypeNone,
 							Element:       damage.ElementFire,
 							TargetObjID:   objID,
-							BigDamage:     true,
+							StrengthType:  damage.StrengthHigh,
 						})
 					}
 				}

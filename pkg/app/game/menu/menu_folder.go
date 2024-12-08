@@ -98,9 +98,9 @@ func (f *menuFolder) End() {
 	dxlib.DeleteGraph(f.imgScrollPointer)
 }
 
-func (f *menuFolder) Process() bool {
+func (f *menuFolder) Update() bool {
 	if f.msg != "" {
-		if f.win.Process() {
+		if f.win.Update() {
 			sound.On(resources.SECancel)
 			f.msg = ""
 		}

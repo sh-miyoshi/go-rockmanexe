@@ -26,7 +26,7 @@ func playerStatusNew(plyr *player.Player) (*menuPlayerStatus, error) {
 func (r *menuPlayerStatus) End() {
 }
 
-func (r *menuPlayerStatus) Process() bool {
+func (r *menuPlayerStatus) Update() bool {
 	if inputs.CheckKey(inputs.KeyCancel) == 1 {
 		sound.On(resources.SECancel)
 		return true

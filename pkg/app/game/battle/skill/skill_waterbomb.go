@@ -33,14 +33,14 @@ func (p *waterBomb) Draw() {
 	p.drawer.Draw(current, target, p.Core.GetCount(), p.Core.GetLandCount())
 }
 
-func (p *waterBomb) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *waterBomb) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}
 	for _, hit := range p.Core.PopHits() {
 		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
-		field.PanelChange(hit, battlecommon.PanelStatusCrack)
+		field.ChangePanelStatus(hit, battlecommon.PanelStatusCrack, 0)
 	}
 	return res, nil
 }

@@ -23,8 +23,8 @@ func newCrack(objID string, arg skillcore.Argument, core skillcore.SkillCore) *c
 func (p *crack) Draw() {
 }
 
-func (p *crack) Process() (bool, error) {
-	return p.Core.Process()
+func (p *crack) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *crack) GetParam() anim.Param {

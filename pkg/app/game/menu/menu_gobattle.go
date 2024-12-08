@@ -327,7 +327,7 @@ func (p *menuGoBattle) End() {
 	}
 }
 
-func (p *menuGoBattle) Process() bool {
+func (p *menuGoBattle) Update() bool {
 	if p.waitCount > 0 {
 		// 敵を決定後少し待ってからstateを変更する
 		p.waitCount++
@@ -338,7 +338,7 @@ func (p *menuGoBattle) Process() bool {
 		sound.On(resources.SECancel)
 		return true
 	}
-	if p.itemList.Process() != -1 {
+	if p.itemList.Update() != -1 {
 		sound.On(resources.SEGoBattle)
 		p.waitCount++
 		p.result = ResultGoBattle

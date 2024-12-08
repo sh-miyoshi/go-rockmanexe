@@ -75,12 +75,12 @@ func End() {
 	state = stateMsg
 }
 
-func Process() bool {
+func Update() bool {
 	count++
 
 	switch state {
 	case stateMsg:
-		if winMsgInst != nil && winMsgInst.Process() {
+		if winMsgInst != nil && winMsgInst.Update() {
 			stateChange(stateFrameIn)
 			return false
 		}

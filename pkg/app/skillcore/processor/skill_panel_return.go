@@ -14,7 +14,7 @@ type PanelReturn struct {
 	targets []point.Point
 }
 
-func (p *PanelReturn) Process() (bool, error) {
+func (p *PanelReturn) Update() (bool, error) {
 	if p.count == 0 {
 		p.targets = []point.Point{}
 		p.Arg.Cutin("パネルリターン", 500)
@@ -33,9 +33,9 @@ func (p *PanelReturn) Process() (bool, error) {
 		logger.Debug("Panel Return Target: %v", p.targets)
 	}
 
-	if p.count == 100 {
+	if p.count == 160 {
 		for _, pos := range p.targets {
-			p.Arg.PanelChange(pos, battlecommon.PanelStatusNormal)
+			p.Arg.ChangePanelStatus(pos, battlecommon.PanelStatusNormal, 0)
 		}
 		return true, nil
 	}

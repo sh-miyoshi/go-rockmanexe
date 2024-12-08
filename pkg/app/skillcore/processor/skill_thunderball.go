@@ -39,7 +39,7 @@ func (p *ThunderBall) Init() {
 	p.next = first
 }
 
-func (p *ThunderBall) Process() (bool, error) {
+func (p *ThunderBall) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.SoundOn(resources.SEThunderBall)
 	}
@@ -83,7 +83,7 @@ func (p *ThunderBall) Process() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			ShowHitArea:   true,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementElec,
 			IsParalyzed:   true,
 		})

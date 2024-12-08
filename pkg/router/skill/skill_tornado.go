@@ -25,8 +25,8 @@ func (p *tornado) Draw() {
 	// nothing to do at router
 }
 
-func (p *tornado) Process() (bool, error) {
-	return p.Core.Process()
+func (p *tornado) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *tornado) GetParam() anim.Param {

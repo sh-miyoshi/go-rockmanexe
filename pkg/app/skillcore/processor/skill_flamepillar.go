@@ -90,10 +90,10 @@ func (p *FlamePillarManager) Init(skillID int) {
 	}
 }
 
-func (p *FlamePillarManager) Process() (bool, error) {
+func (p *FlamePillarManager) Update() (bool, error) {
 	switch p.actType {
 	case flamePillarTypeTracking:
-		end, err := p.pillars[0].Process()
+		end, err := p.pillars[0].Update()
 		if err != nil {
 			return false, errors.Wrap(err, "flame pillar process failed")
 		}
@@ -145,7 +145,7 @@ func (p *FlamePillarManager) Process() (bool, error) {
 	case flamePillarTypeLine:
 		remove := []int{}
 		for i, pillar := range p.pillars {
-			end, err := pillar.Process()
+			end, err := pillar.Update()
 			if err != nil {
 				return false, errors.Wrap(err, "flame pillar process failed")
 			}
@@ -191,7 +191,7 @@ func (p *FlamePillarManager) IsShowBody() bool {
 	return false
 }
 
-func (p *FlamePillar) Process() (bool, error) {
+func (p *FlamePillar) Update() (bool, error) {
 	switch p.pm.State {
 	case resources.SkillFlamePillarStateWakeup:
 		if p.pm.Count == 0 {
@@ -214,7 +214,7 @@ func (p *FlamePillar) Process() (bool, error) {
 				TTL:           7 * flamePillarDelay,
 				TargetObjType: p.Arg.TargetType,
 				ShowHitArea:   true,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementFire,
 			})
 		}

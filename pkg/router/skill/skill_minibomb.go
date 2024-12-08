@@ -36,8 +36,8 @@ func (p *miniBomb) Draw() {
 	// nothing to do at router
 }
 
-func (p *miniBomb) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *miniBomb) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

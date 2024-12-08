@@ -16,7 +16,7 @@ type Recover struct {
 	count int
 }
 
-func (p *Recover) Process() (bool, error) {
+func (p *Recover) Update() (bool, error) {
 	if p.count == 0 {
 		p.Arg.SoundOn(resources.SERecover)
 		p.Arg.DamageMgr.New(damage.Damage{

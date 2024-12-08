@@ -79,6 +79,7 @@ const (
 	IDPanelReturn  = 123
 	IDDeathMatch1  = 124
 	IDDeathMatch2  = 125
+	IDDeathMatch3  = 126
 	IDQuickGauge   = 128
 	IDInvisible    = 133
 	IDAttack10     = 148

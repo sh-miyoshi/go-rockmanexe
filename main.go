@@ -104,7 +104,7 @@ func main() {
 MAIN:
 	for system.Error() == nil && dxlib.ScreenFlip() == 0 && dxlib.ProcessMessage() == 0 && dxlib.ClearDrawScreen() == 0 {
 		inputs.KeyStateUpdate()
-		if err := game.Process(); err != nil {
+		if err := game.Update(); err != nil {
 			logger.Error("Failed to play game: %+v", err)
 			system.SetError("ゲームプレイ中")
 			break MAIN

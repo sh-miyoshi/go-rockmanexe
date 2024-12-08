@@ -38,8 +38,8 @@ func (p *countBomb) Draw() {
 	}
 }
 
-func (p *countBomb) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *countBomb) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, errors.Wrap(err, "failed to process count bomb")
 	}

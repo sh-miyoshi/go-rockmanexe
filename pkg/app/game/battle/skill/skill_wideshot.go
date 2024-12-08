@@ -31,8 +31,8 @@ func (p *wideShot) Draw() {
 	p.drawer.Draw(pm.Pos, p.Core.GetCount(), pm.Direct, p.Arg.TargetType == damage.TargetEnemy, pm.NextStepCount, pm.State)
 }
 
-func (p *wideShot) Process() (bool, error) {
-	return p.Core.Process()
+func (p *wideShot) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *wideShot) GetParam() anim.Param {

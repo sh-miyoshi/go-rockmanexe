@@ -22,7 +22,7 @@ type Vulcan struct {
 	effects  []resources.EffectParam
 }
 
-func (p *Vulcan) Process() (bool, error) {
+func (p *Vulcan) Update() (bool, error) {
 	p.count++
 	if p.count >= vulcanDelay*1 {
 		if p.count%(vulcanDelay*5) == vulcanDelay*1 {
@@ -33,6 +33,11 @@ func (p *Vulcan) Process() (bool, error) {
 			hit := false
 			p.atkCount++
 			lastAtk := p.atkCount == p.Times
+			strengthType := damage.StrengthBack
+			if lastAtk {
+				strengthType = damage.StrengthHigh
+			}
+
 			for x := pos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				target := point.Point{X: x, Y: pos.Y}
 				if objID := p.Arg.GetPanelInfo(target).ObjectID; objID != "" {
@@ -42,7 +47,7 @@ func (p *Vulcan) Process() (bool, error) {
 						Power:         int(p.Arg.Power),
 						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeSpreadHit,
-						BigDamage:     lastAtk,
+						StrengthType:  strengthType,
 						Element:       damage.ElementNone,
 						TargetObjID:   objID,
 					})
@@ -65,7 +70,7 @@ func (p *Vulcan) Process() (bool, error) {
 								Power:         int(p.Arg.Power),
 								TargetObjType: p.Arg.TargetType,
 								HitEffectType: resources.EffectTypeNone,
-								BigDamage:     lastAtk,
+								StrengthType:  strengthType,
 								Element:       damage.ElementNone,
 								TargetObjID:   objID,
 							})

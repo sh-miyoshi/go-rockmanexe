@@ -96,7 +96,7 @@ func (b *BeforeMain) Draw() {
 	}
 }
 
-func (b *BeforeMain) Process() bool {
+func (b *BeforeMain) Update() bool {
 	b.count++
 
 	if b.paID != -1 {
@@ -121,7 +121,7 @@ func (b *BeforeMain) Process() bool {
 	}
 
 	if b.msgInst != nil {
-		return b.msgInst.Process()
+		return b.msgInst.Update()
 	}
 	return false
 }

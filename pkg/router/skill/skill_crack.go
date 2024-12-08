@@ -24,8 +24,8 @@ func (p *crack) Draw() {
 	// nothing to do at router
 }
 
-func (p *crack) Process() (bool, error) {
-	return p.Core.Process()
+func (p *crack) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *crack) GetParam() anim.Param {

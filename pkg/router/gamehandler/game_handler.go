@@ -76,9 +76,9 @@ func (g *GameHandler) AddPlayerObject(clientID string, param object.InitParam) e
 		Pos:           point.Point{X: param.X, Y: param.Y},
 		IsReverse:     false,
 	}, g.manager, gameinfo.FieldFuncs{
-		GetPanelInfo:    g.objects[index].info.GetPanelInfo,
-		PanelChange:     g.panelCrack,
-		ChangePanelType: g.changePanelType,
+		GetPanelInfo:      g.objects[index].info.GetPanelInfo,
+		ChangePanelStatus: g.changePanelStatus,
+		ChangePanelType:   g.changePanelType,
 	})
 	g.manager.ObjAnimNew(g.objects[index].playerObject)
 
@@ -208,7 +208,9 @@ func (g *GameHandler) indexForClient(clientID string) int {
 	return -1
 }
 
-func (g *GameHandler) panelCrack(clientID string, pos point.Point, crackType int) {
+func (g *GameHandler) changePanelStatus(clientID string, pos point.Point, crackType int, endCount int) {
+	// WIP: endCount
+
 	index := g.indexForClient(clientID)
 	for i := 0; i < clientNum; i++ {
 		if i == index {
@@ -221,7 +223,9 @@ func (g *GameHandler) panelCrack(clientID string, pos point.Point, crackType int
 	}
 }
 
-func (g *GameHandler) changePanelType(clientID string, pos point.Point, pnType int) {
+func (g *GameHandler) changePanelType(clientID string, pos point.Point, pnType int, endCount int) {
+	// WIP: endCount
+
 	index := g.indexForClient(clientID)
 	for i := 0; i < clientNum; i++ {
 		if i == index {

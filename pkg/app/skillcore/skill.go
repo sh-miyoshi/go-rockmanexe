@@ -24,19 +24,19 @@ type Argument struct {
 	TargetType    int
 	IsReverse     bool
 
-	DamageMgr       DamageManager
-	GetPanelInfo    func(pos point.Point) battlecommon.PanelInfo
-	GetObjectPos    func(objID string) point.Point
-	SoundOn         func(typ resources.SEType)
-	GetObjects      func(filter objanim.Filter) []objanim.Param
-	PanelChange     func(pos point.Point, panelType int)
-	Cutin           func(skillName string, count int)
-	ChangePanelType func(pos point.Point, pnType int)
-	MakeInvisible   func(objID string, count int)
+	DamageMgr         DamageManager
+	GetPanelInfo      func(pos point.Point) battlecommon.PanelInfo
+	GetObjectPos      func(objID string) point.Point
+	SoundOn           func(typ resources.SEType)
+	GetObjects        func(filter objanim.Filter) []objanim.Param
+	Cutin             func(skillName string, count int)
+	ChangePanelStatus func(pos point.Point, pnStatus int, endCount int)
+	ChangePanelType   func(pos point.Point, pnType int, endCount int)
+	MakeInvisible     func(objID string, count int)
 }
 
 type SkillCore interface {
-	Process() (bool, error)
+	Update() (bool, error)
 	GetCount() int
 }
 
@@ -122,6 +122,8 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillDeathMatch2
 	case chip.IDFullCustom:
 		return resources.SkillFullCustom
+	case chip.IDDeathMatch3:
+		return resources.SkillDeathMatch3
 	case chip.IDPanelReturn:
 		return resources.SkillPanelReturn
 	}

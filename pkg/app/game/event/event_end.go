@@ -16,7 +16,7 @@ func (h *EndHandler) End() {
 func (h *EndHandler) Draw() {
 }
 
-func (h *EndHandler) Process() (bool, error) {
+func (h *EndHandler) Update() (bool, error) {
 	resultCode = ResultEnd
 	return true, nil
 }

@@ -25,8 +25,8 @@ func newPanelReturn(objID string, arg skillcore.Argument, core skillcore.SkillCo
 func (p *panelReturn) Draw() {
 }
 
-func (p *panelReturn) Process() (bool, error) {
-	end, err := p.Core.Process()
+func (p *panelReturn) Update() (bool, error) {
+	end, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}

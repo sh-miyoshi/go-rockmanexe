@@ -36,7 +36,7 @@ func (p *WaterBomb) Init() {
 	}
 }
 
-func (p *WaterBomb) Process() (bool, error) {
+func (p *WaterBomb) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
@@ -58,7 +58,7 @@ func (p *WaterBomb) Process() (bool, error) {
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,
 				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementWater,
 				TargetObjID:   objID,
 			})

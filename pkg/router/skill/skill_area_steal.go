@@ -34,8 +34,8 @@ func (p *areaSteal) Draw() {
 	// nothing to do at router
 }
 
-func (p *areaSteal) Process() (bool, error) {
-	return p.Core.Process()
+func (p *areaSteal) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *areaSteal) GetParam() anim.Param {

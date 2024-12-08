@@ -52,7 +52,7 @@ func (m *Manager) Cleanup() {
 }
 
 func (m *Manager) Update() error {
-	if err := m.animMgr.Process(); err != nil {
+	if err := m.animMgr.Update(); err != nil {
 		return errors.Wrap(err, "anim manage process failed")
 	}
 

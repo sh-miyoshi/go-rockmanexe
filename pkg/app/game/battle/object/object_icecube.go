@@ -48,7 +48,7 @@ func (o *IceCube) End() {
 	}
 }
 
-func (o *IceCube) Process() (bool, error) {
+func (o *IceCube) Update() (bool, error) {
 	if o.pm.HP <= 0 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
 		return true, nil
@@ -112,7 +112,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 						DamageType:    damage.TypeObject,
 						Power:         10,
 						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     true,
+						StrengthType:  damage.StrengthHigh,
 						Element:       damage.ElementNone,
 						TargetObjID:   objs[0].ObjID,
 						TargetObjType: target,
@@ -143,7 +143,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 						DamageType:    damage.TypeObject,
 						Power:         10,
 						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     true,
+						StrengthType:  damage.StrengthHigh,
 						Element:       damage.ElementNone,
 						TargetObjID:   objs[0].ObjID,
 						TargetObjType: target,

@@ -41,7 +41,7 @@ func (p *aquamanShot) Draw() {
 	p.drawer.Draw(p.pos, p.ofs)
 }
 
-func (p *aquamanShot) Process() (bool, error) {
+func (p *aquamanShot) Update() (bool, error) {
 	p.count++
 
 	if p.count == 1 {
@@ -67,7 +67,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			TTL:           20,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		})
 		target := point.Point{X: p.target.X - 1, Y: p.target.Y}
@@ -79,7 +79,7 @@ func (p *aquamanShot) Process() (bool, error) {
 			TTL:           20,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		})
 

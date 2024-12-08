@@ -107,7 +107,7 @@ func (e *enemyLark) End() {
 	}
 }
 
-func (e *enemyLark) Process() (bool, error) {
+func (e *enemyLark) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
@@ -125,7 +125,7 @@ func (e *enemyLark) Process() (bool, error) {
 	e.count++
 
 	if e.atk.attacking {
-		e.atk.Process()
+		e.atk.Update()
 		return false, nil
 	}
 
@@ -223,7 +223,7 @@ func (a *larkAtk) SetAttack() {
 	a.attacking = true
 }
 
-func (a *larkAtk) Process() {
+func (a *larkAtk) Update() {
 	if a.count == 1*delayLarkAtk {
 		localanim.AnimNew(skill.Get(
 			resources.SkillEnemyWideShot,

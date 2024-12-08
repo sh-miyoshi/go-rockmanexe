@@ -43,7 +43,7 @@ func (c *chipNameDraw) Draw() {
 	draw.ExtendString(x, 70, r, 0xffffff, c.name)
 }
 
-func (c *chipNameDraw) Process() bool {
+func (c *chipNameDraw) Update() bool {
 	c.count++
 	return c.count > c.tm*4
 }

@@ -27,8 +27,8 @@ func (p *thunderBall) Draw() {
 	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
-func (p *thunderBall) Process() (bool, error) {
-	return p.Core.Process()
+func (p *thunderBall) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *thunderBall) GetParam() anim.Param {

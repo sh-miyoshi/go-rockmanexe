@@ -46,7 +46,7 @@ func (m *TitleMsg) Draw() {
 	dxlib.DrawRotaGraph(x, y, 1, 0, m.imgMsg[imgNo], true)
 }
 
-func (m *TitleMsg) Process() bool {
+func (m *TitleMsg) Update() bool {
 	m.count++
 	return m.count >= len(m.imgMsg)*delay+20+m.waitCount
 }

@@ -111,7 +111,7 @@ func (w *MessageWindow) Draw() {
 	}
 }
 
-func (w *MessageWindow) Process() bool {
+func (w *MessageWindow) Update() bool {
 	w.count++
 	if w.count%messageSpeed == 0 {
 		w.cursor++

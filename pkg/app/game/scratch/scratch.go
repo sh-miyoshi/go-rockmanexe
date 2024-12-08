@@ -79,6 +79,6 @@ func Draw() {
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgMetall, true)
 }
 
-func Process() {
+func Update() {
 	field.Update()
 }

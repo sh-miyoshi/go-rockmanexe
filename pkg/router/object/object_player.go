@@ -70,13 +70,13 @@ func (p *Player) End() {
 	queue.Delete(p.actQueueID)
 }
 
-func (p *Player) Process() (bool, error) {
+func (p *Player) Update() (bool, error) {
 	if p.invincibleCount > 0 {
 		p.invincibleCount--
 	}
 
 	// Action処理中
-	if p.act.Process() {
+	if p.act.Update() {
 		return false, nil
 	}
 
@@ -164,7 +164,7 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		return true
 	}
 
-	if !dm.BigDamage {
+	if dm.StrengthType == damage.StrengthNone {
 		return true
 	}
 
@@ -184,7 +184,9 @@ func (p *Player) DamageProc(dm *damage.Damage) bool {
 		system.SetError("TODO: not implemented yet")
 	} else {
 		p.act.SetAnim(battlecommon.PlayerActDamage, nil, 0)
-		p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		if dm.StrengthType == damage.StrengthHigh {
+			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+		}
 	}
 
 	logger.Debug("Player damaged: %+v", *dm)
@@ -252,7 +254,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 }
 
 // Process method returns true if processing now
-func (a *playerAct) Process() bool {
+func (a *playerAct) Update() bool {
 	a.count++
 
 	switch a.actType {

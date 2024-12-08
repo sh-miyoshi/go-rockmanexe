@@ -34,8 +34,8 @@ func (p *wideShot) Draw() {
 	// nothing to do at router
 }
 
-func (p *wideShot) Process() (bool, error) {
-	return p.Core.Process()
+func (p *wideShot) Update() (bool, error) {
+	return p.Core.Update()
 }
 
 func (p *wideShot) GetParam() anim.Param {

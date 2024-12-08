@@ -14,7 +14,7 @@ type BambooLance struct {
 	count int
 }
 
-func (p *BambooLance) Process() (bool, error) {
+func (p *BambooLance) Update() (bool, error) {
 	p.count++
 
 	if p.count == 5 {
@@ -27,7 +27,7 @@ func (p *BambooLance) Process() (bool, error) {
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeBambooHit,
 			ShowHitArea:   false,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthBack,
 			PushLeft:      1,
 			Element:       damage.ElementWood,
 		}

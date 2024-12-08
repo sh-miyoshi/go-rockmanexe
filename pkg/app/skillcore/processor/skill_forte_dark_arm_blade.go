@@ -29,7 +29,7 @@ func (p *ForteDarkArmBlade) Init(skillID int) {
 	}
 }
 
-func (p *ForteDarkArmBlade) Process() (bool, error) {
+func (p *ForteDarkArmBlade) Update() (bool, error) {
 	p.count++
 	if p.count == 3 {
 		p.Arg.SoundOn(resources.SESword)
@@ -41,7 +41,7 @@ func (p *ForteDarkArmBlade) Process() (bool, error) {
 				Power:         int(p.Arg.Power),
 				TargetObjType: p.Arg.TargetType,
 				HitEffectType: resources.EffectTypeNone,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementNone,
 			})
 		}

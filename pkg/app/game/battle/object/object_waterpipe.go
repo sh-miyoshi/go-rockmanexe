@@ -66,9 +66,9 @@ func (o *WaterPipe) End() {
 	o.atk.End()
 }
 
-func (o *WaterPipe) Process() (bool, error) {
+func (o *WaterPipe) Update() (bool, error) {
 	if o.atk.IsAttacking() {
-		o.atk.Process()
+		o.atk.Update()
 		return false, nil
 	}
 
@@ -182,7 +182,7 @@ func (a *WaterPipeAtk) Draw(pos point.Point) {
 	dxlib.DrawRotaGraph(pos.X+math.ReverseIf(-81, a.pm.xFlip), pos.Y+13, 1, 0, a.images[n], true, dxlib.OptXReverse(a.pm.xFlip))
 }
 
-func (a *WaterPipeAtk) Process() {
+func (a *WaterPipeAtk) Update() {
 	a.count++
 
 	if a.count == 1 {
@@ -202,7 +202,7 @@ func (a *WaterPipeAtk) Process() {
 			TTL:           6 * delayWaterPipeAttack,
 			TargetObjType: target,
 			HitEffectType: resources.EffectTypeNone,
-			BigDamage:     true,
+			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementWater,
 		}
 

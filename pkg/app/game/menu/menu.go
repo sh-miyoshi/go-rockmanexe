@@ -40,7 +40,7 @@ const (
 
 type menuStateInstance interface {
 	End()
-	Process() bool
+	Update() bool
 	Draw()
 	GetResult() Result
 }
@@ -89,7 +89,7 @@ func End() {
 	}
 }
 
-func Process() (Result, error) {
+func Update() (Result, error) {
 	if config.Get().Debug.SkipMenu {
 		return ResultGoBattle, nil
 	}
@@ -104,7 +104,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			if res := currentInst.GetResult(); res != ResultContinue {
 				return res, nil
 			}
@@ -119,7 +119,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			stateChange(stateTop)
 		}
 	case stateGoBattle:
@@ -130,7 +130,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			if res := currentInst.GetResult(); res != ResultContinue {
 				return res, nil
 			}
@@ -144,7 +144,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			stateChange(stateTop)
 		}
 	case stateNetBattle:
@@ -155,7 +155,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			if res := currentInst.GetResult(); res != ResultContinue {
 				return res, nil
 			}
@@ -169,7 +169,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			stateChange(stateTop)
 		}
 	case stateDevFeature:
@@ -180,7 +180,7 @@ func Process() (Result, error) {
 			}
 		}
 
-		if currentInst.Process() {
+		if currentInst.Update() {
 			return currentInst.GetResult(), nil
 		}
 	}

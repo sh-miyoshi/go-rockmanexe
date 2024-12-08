@@ -39,7 +39,7 @@ func (p *shrimpyAtk) Draw() {
 	p.drawer.Draw(p.pos, p.count, shrimpyAtkNextStepCount, p.state)
 }
 
-func (p *shrimpyAtk) Process() (bool, error) {
+func (p *shrimpyAtk) Update() (bool, error) {
 	switch p.state {
 	case resources.SkillShrimpyAttackStateBegin:
 		if p.drawer.IsDrawEnd(p.count, p.state) {
@@ -56,7 +56,7 @@ func (p *shrimpyAtk) Process() (bool, error) {
 				TTL:           shrimpyAtkNextStepCount,
 				TargetObjType: p.Arg.TargetType,
 				ShowHitArea:   true,
-				BigDamage:     true,
+				StrengthType:  damage.StrengthHigh,
 				Element:       damage.ElementWater,
 			})
 		}

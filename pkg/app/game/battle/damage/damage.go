@@ -26,6 +26,12 @@ const (
 	TypeObject
 )
 
+const (
+	StrengthNone int = iota
+	StrengthBack     // のけぞり
+	StrengthHigh     // のけぞり + インビジブル
+)
+
 type Damage struct {
 	OwnerClientID string // ネット対戦時のDamageを発生させたOwner
 	ID            string // Damage ID
@@ -33,7 +39,7 @@ type Damage struct {
 	PushRight     int  // ヒット時に右に押されるカウント
 	PushLeft      int  // ヒット時に左に押されるカウント
 	HitEffectType int  // ヒット時に表示されるEffect
-	BigDamage     bool // trueならのけぞる
+	StrengthType  int  // ダメージの強さ
 	Element       int  // 属性
 	IsParalyzed   bool // ヒット時に麻痺状態になる
 
@@ -82,7 +88,7 @@ func (m *DamageManager) New(dm Damage) string {
 	return dm.ID
 }
 
-func (m *DamageManager) Process() {
+func (m *DamageManager) Update() {
 	for id, d := range m.damages {
 		if d.DamageType == TypeObject {
 			delete(m.damages, id)

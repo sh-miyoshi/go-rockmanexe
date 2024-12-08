@@ -62,7 +62,7 @@ func (p *Player) Action() bool {
 		return false
 	}
 
-	if p.actTable[p.currentActNo].Process() {
+	if p.actTable[p.currentActNo].Update() {
 		logger.Info("finished process %d", p.currentActNo)
 		p.currentActNo++
 		if p.currentActNo >= len(p.actTable) {

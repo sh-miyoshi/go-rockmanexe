@@ -21,7 +21,7 @@ type HeatShot struct {
 	targets []point.Point
 }
 
-func (p *HeatShot) Process() (bool, error) {
+func (p *HeatShot) Update() (bool, error) {
 	if p.count == heatShotAtkDelay {
 		p.Arg.SoundOn(resources.SEGun)
 
@@ -38,7 +38,7 @@ func (p *HeatShot) Process() (bool, error) {
 					HitEffectType: resources.EffectTypeHeatHit,
 					Element:       damage.ElementFire,
 					TargetObjID:   objID,
-					BigDamage:     true,
+					StrengthType:  damage.StrengthHigh,
 				})
 
 				// 誘爆
@@ -64,7 +64,7 @@ func (p *HeatShot) Process() (bool, error) {
 							HitEffectType: resources.EffectTypeNone,
 							Element:       damage.ElementFire,
 							TargetObjID:   objID,
-							BigDamage:     true,
+							StrengthType:  damage.StrengthHigh,
 						})
 					}
 				}

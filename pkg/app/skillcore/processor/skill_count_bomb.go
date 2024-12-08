@@ -16,7 +16,7 @@ type CountBomb struct {
 	pos   point.Point
 }
 
-func (p *CountBomb) Process() (bool, error) {
+func (p *CountBomb) Update() (bool, error) {
 	if p.count == 0 {
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		p.pos = point.Point{X: pos.X + 1, Y: pos.Y}

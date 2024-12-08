@@ -27,7 +27,7 @@ func New() (*Field, error) {
 	}
 
 	// Initialize images
-	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole"}
+	files := [battlecommon.PanelStatusMax]string{"normal", "crack", "hole", "poison", "empty"}
 	for i := 0; i < battlecommon.PanelStatusMax; i++ {
 		if i == battlecommon.PanelStatusPoison {
 			// TODO: 毒沼パネルは未実装

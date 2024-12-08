@@ -41,8 +41,8 @@ func (p *spreadGun) Draw() {
 	p.drawer.Draw(view, p.Core.GetCount(), true)
 }
 
-func (p *spreadGun) Process() (bool, error) {
-	res, err := p.Core.Process()
+func (p *spreadGun) Update() (bool, error) {
+	res, err := p.Core.Update()
 	if err != nil {
 		return false, err
 	}
@@ -69,11 +69,11 @@ func (p *spreadGun) StopByOwner() {
 func (p *spreadHit) Draw() {
 }
 
-func (p *spreadHit) Process() (bool, error) {
+func (p *spreadHit) Update() (bool, error) {
 	if p.Core.GetCount() == 1 {
 		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.Core.Pos, 5))
 	}
-	return p.Core.Process()
+	return p.Core.Update()
 }
 
 func (p *spreadHit) GetParam() anim.Param {

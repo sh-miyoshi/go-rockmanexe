@@ -89,7 +89,7 @@ func (p *AreaSteal) Init(skillID int) {
 	}
 }
 
-func (p *AreaSteal) Process() (bool, error) {
+func (p *AreaSteal) Update() (bool, error) {
 	p.count++
 
 	switch p.state {
@@ -118,14 +118,14 @@ func (p *AreaSteal) Process() (bool, error) {
 						Power:         10,
 						TargetObjType: p.Arg.TargetType,
 						HitEffectType: resources.EffectTypeNone,
-						BigDamage:     false,
+						StrengthType:  damage.StrengthBack,
 						Element:       damage.ElementNone,
 						TargetObjID:   pn.ObjectID,
 					})
 				} else if pos.X >= 1 && pos.X < battlecommon.FieldNum.X-1 {
 					// パネルを塗り替え
 					// 最終ラインの場合は塗り替えない
-					p.Arg.ChangePanelType(pos, p.myPanelType)
+					p.Arg.ChangePanelType(pos, p.myPanelType, battlecommon.DefaultPanelTypeEndCount)
 				}
 			}
 			return true, nil

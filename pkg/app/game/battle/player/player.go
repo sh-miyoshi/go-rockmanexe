@@ -382,7 +382,7 @@ func (p *BattlePlayer) SetFrameInfo(xShift bool, showGauge bool) {
 	p.isShowGauge = showGauge
 }
 
-func (p *BattlePlayer) Process() (bool, error) {
+func (p *BattlePlayer) Update() (bool, error) {
 	if !p.EnableAct {
 		return false, nil
 	}
@@ -404,7 +404,7 @@ func (p *BattlePlayer) Process() (bool, error) {
 
 	p.GaugeCount += uint(battlecommon.CustomGaugeSpeed)
 
-	if p.act.Process() {
+	if p.act.Update() {
 		return false, nil
 	}
 
@@ -530,7 +530,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			return true
 		}
 
-		if !dm.BigDamage {
+		if dm.StrengthType == damage.StrengthNone {
 			return true
 		}
 
@@ -547,7 +547,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
 			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
-			p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			if dm.StrengthType == damage.StrengthHigh {
+				p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
+			}
 		}
 
 		p.DamageNum++
@@ -644,7 +646,7 @@ func (a *BattlePlayerAct) Init(pPos *point.Point) {
 }
 
 // Process method returns true if processing now
-func (a *BattlePlayerAct) Process() bool {
+func (a *BattlePlayerAct) Update() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
