@@ -57,6 +57,7 @@ const (
 	SkillDeathMatch2
 	SkillDeathMatch3
 	SkillNonEffectWideSword
+	SkillFullCustom
 	SkillPanelReturn
 
 	SkillFailed

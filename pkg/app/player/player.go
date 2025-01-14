@@ -259,7 +259,7 @@ func (p *Player) initChipData() {
 	if config.Get().Debug.UseDebugFolder {
 		// For debug
 		p.ChipFolder = [FolderSize]ChipInfo{
-			{ID: chip.IDCannon, Code: "*"},
+			{ID: chip.IDFullCustom, Code: "*"},
 			{ID: chip.IDCannon, Code: "*"},
 			{ID: chip.IDCannon, Code: "*"},
 			{ID: chip.IDCannon, Code: "*"},
