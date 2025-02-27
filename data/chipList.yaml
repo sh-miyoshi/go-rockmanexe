@@ -961,23 +961,23 @@
   name: バリア
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: '１０ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  is_implemented: true
 - id: 136
   name: バリア100
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: '１００ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  is_implemented: true
 - id: 137
   name: バリア200
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: '２００ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  is_implemented: true
 - id: 138
   name: カキゲンキン
   power: 0

@@ -58,6 +58,9 @@ const (
 	SkillDeathMatch3
 	SkillNonEffectWideSword
 	SkillPanelReturn
+	SkillBarrier
+	SkillBarrier100
+	SkillBarrier200
 
 	SkillFailed
 )

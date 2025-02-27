@@ -82,6 +82,9 @@ const (
 	IDDeathMatch3  = 126
 	IDQuickGauge   = 128
 	IDInvisible    = 133
+	IDBarrier      = 135
+	IDBarrier100   = 136
+	IDBarrier200   = 137
 	IDAttack10     = 148
 	IDAquaman      = 181
 	IDForteAnother = 236

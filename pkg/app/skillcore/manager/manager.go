@@ -114,6 +114,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillPanelReturn:
 		return &processor.PanelReturn{Arg: arg}
+	case resources.SkillBarrier:
+		res := &processor.Barrier{Arg: arg}
+		res.Init(id)
+		return res
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
