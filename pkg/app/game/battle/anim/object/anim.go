@@ -197,6 +197,13 @@ func (am *AnimManager) MakeInvisible(id string, count int) {
 	}
 }
 
+func (am *AnimManager) AddBarrier(id string, hp int) {
+	logger.Debug("Set %d barrier to ID: %s, anims: %+v", hp, id, am.anims)
+	if _, ok := am.anims[id]; ok {
+		am.anims[id].AddBarrier(hp)
+	}
+}
+
 func (am *AnimManager) ExistsObject(pos point.Point) string {
 	objs := am.GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
 	if len(objs) > 0 {

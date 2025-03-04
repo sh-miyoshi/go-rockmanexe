@@ -158,6 +158,14 @@ func ObjAnimMakeInvisible(id string, count int) {
 	objanimInst.MakeInvisible(id, count)
 }
 
+func ObjAnimAddBarrier(id string, hp int) {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	objanimInst.AddBarrier(id, hp)
+}
+
 func ObjAnimExistsObject(pos point.Point) string {
 	if objanimInst == nil {
 		objanimInst = objanim.NewManager()

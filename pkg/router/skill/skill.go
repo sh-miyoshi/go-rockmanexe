@@ -53,6 +53,7 @@ func Get(id int, arg Argument) SkillAnim {
 		},
 		ChangePanelType: changePanelType,
 		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,
+		AddBarrier:      arg.Manager.ObjAnimAddBarrier,
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 

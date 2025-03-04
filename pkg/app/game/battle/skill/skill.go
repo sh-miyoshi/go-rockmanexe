@@ -46,6 +46,7 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		SetChipNameDraw(skillName, true)
 	}
 	arg.MakeInvisible = localanim.ObjAnimMakeInvisible
+	arg.AddBarrier = localanim.ObjAnimAddBarrier
 	arg.ChangePanelType = field.ChangePanelType
 	core := localanim.SkillManager().Get(skillID, arg)
 

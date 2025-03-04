@@ -33,6 +33,7 @@ type Argument struct {
 	ChangePanelStatus func(pos point.Point, pnStatus int, endCount int)
 	ChangePanelType   func(pos point.Point, pnType int, endCount int)
 	MakeInvisible     func(objID string, count int)
+	AddBarrier        func(objID string, hp int)
 }
 
 type SkillCore interface {
