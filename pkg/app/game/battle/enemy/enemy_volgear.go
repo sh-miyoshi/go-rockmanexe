@@ -191,6 +191,8 @@ func (e *enemyVolgear) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyVolgear) AddBarrier(hp int) {}
+
 func (e *enemyVolgear) getCurrentImagePointer() *int {
 	if e.atkID != "" && e.atkID != volgearAtkStr {
 		return &e.atk.images[e.atk.GetImageNo()]

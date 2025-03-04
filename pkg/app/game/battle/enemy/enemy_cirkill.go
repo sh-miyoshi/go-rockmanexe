@@ -178,6 +178,8 @@ func (e *enemyCirKill) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyCirKill) AddBarrier(hp int) {}
+
 func (e *enemyCirKill) getCurrentImagePointer() *int {
 	if e.atk.attacking {
 		n := (e.count / delayCirkillAttack)

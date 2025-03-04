@@ -603,6 +603,10 @@ func (p *BattlePlayer) MakeInvisible(count int) {
 	p.invincibleCount = count
 }
 
+func (p *BattlePlayer) AddBarrier(hp int) {
+	p.BarrierHP = hp
+}
+
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	p.SelectedChips = []SelectChip{}
 	for _, s := range selected {

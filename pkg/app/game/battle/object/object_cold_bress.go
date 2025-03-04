@@ -170,6 +170,8 @@ func (o *ColdBress) GetObjectType() int {
 
 func (o *ColdBress) MakeInvisible(count int) {}
 
+func (o *ColdBress) AddBarrier(hp int) {}
+
 func (o *ColdBress) checkMove(next point.Point) bool {
 	objID := localanim.ObjAnimExistsObject(next)
 	if objID == "" {

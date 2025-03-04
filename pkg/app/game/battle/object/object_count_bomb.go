@@ -135,3 +135,5 @@ func (o *CountBomb) GetObjectType() int {
 
 func (o *CountBomb) MakeInvisible(count int) {
 }
+
+func (o *CountBomb) AddBarrier(hp int) {}

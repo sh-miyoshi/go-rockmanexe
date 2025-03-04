@@ -97,3 +97,5 @@ func (e *enemyTarget) GetObjectType() int {
 func (e *enemyTarget) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
+
+func (e *enemyTarget) AddBarrier(hp int) {}

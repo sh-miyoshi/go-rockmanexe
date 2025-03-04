@@ -499,6 +499,8 @@ func (e *enemyForte) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyForte) AddBarrier(hp int) {}
+
 func (e *enemyForte) getCurrentImagePointer() *int {
 	if e.count == 0 {
 		return &e.images[forteActTypeStand][0]

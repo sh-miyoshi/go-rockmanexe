@@ -182,6 +182,8 @@ func (e *enemyBilly) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyBilly) AddBarrier(hp int) {}
+
 func (e *enemyBilly) getCurrentImagePointer() *int {
 	img := &e.imgMove[0]
 	if e.act.typ != -1 {

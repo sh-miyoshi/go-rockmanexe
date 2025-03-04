@@ -41,6 +41,7 @@ type Anim interface {
 	GetParam() Param
 	GetObjectType() int
 	MakeInvisible(count int)
+	AddBarrier(hp int)
 }
 
 type AnimManager struct {
