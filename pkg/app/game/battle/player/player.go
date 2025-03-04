@@ -28,6 +28,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
@@ -75,12 +76,14 @@ type BattlePlayer struct {
 	MindStatus    int
 	IsUnderShirt  bool
 	ChipSelectMax int
+	BarrierHP     int
 
 	act             BattlePlayerAct
 	invincibleCount int
 	visible         bool
 	isShiftFrame    bool
 	isShowGauge     bool
+	count           int
 }
 
 var (
@@ -91,6 +94,7 @@ var (
 	imgCharge     [2][]int
 	imgMinds      []int
 	imgMindFrame  int
+	imgBarrier    []int
 )
 
 func New(plyr *player.Player) (*BattlePlayer, error) {
@@ -108,6 +112,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		visible:       true,
 		IsUnderShirt:  plyr.IsUnderShirt(),
 		ChipSelectMax: plyr.ChipSelectMax,
+		BarrierHP:     0,
 	}
 	res.act.Init(&res.Pos)
 
@@ -236,6 +241,12 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
+	fname = config.ImagePath + "battle/skill/バリア.png"
+	imgBarrier = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 144, 136, imgBarrier); res == -1 {
+		return nil, errors.Newf("failed to load image %s", fname)
+	}
+
 	logger.Info("Successfully initialized battle player data")
 	return &res, nil
 }
@@ -268,6 +279,10 @@ func (p *BattlePlayer) End() {
 		dxlib.DeleteGraph(img)
 	}
 	imgMinds = []int{}
+	for _, img := range imgBarrier {
+		dxlib.DeleteGraph(img)
+	}
+	imgBarrier = []int{}
 
 	logger.Info("Successfully cleanuped battle player data")
 }
@@ -319,6 +334,14 @@ func (p *BattlePlayer) Draw() {
 
 	if playerVisible {
 		view := battlecommon.ViewPos(p.Pos)
+
+		if p.BarrierHP > 0 {
+			n := math.MountainIndex((p.count/15)%(len(imgBarrier)*2), len(imgBarrier)*2)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 156)
+			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgBarrier[n], true)
+			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
+		}
+
 		img := p.act.GetImage()
 		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
 		if p.act.IsParalyzed() {
@@ -383,6 +406,8 @@ func (p *BattlePlayer) SetFrameInfo(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Update() (bool, error) {
+	p.count++
+
 	if !p.EnableAct {
 		return false, nil
 	}
