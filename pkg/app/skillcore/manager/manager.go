@@ -114,7 +114,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillPanelReturn:
 		return &processor.PanelReturn{Arg: arg}
-	case resources.SkillBarrier:
+	case resources.SkillBarrier, resources.SkillBarrier100, resources.SkillBarrier200:
 		res := &processor.Barrier{Arg: arg}
 		res.Init(id)
 		return res
