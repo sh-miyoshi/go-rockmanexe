@@ -33,10 +33,14 @@ func (p *Barrier) Update() (bool, error) {
 	showTm := 60
 	if p.count == 1 {
 		p.Arg.Cutin(p.name, showTm)
-		p.Arg.AddBarrier(p.Arg.OwnerID, p.power)
 	}
 
-	return p.count > showTm, nil
+	if p.count == showTm {
+		p.Arg.AddBarrier(p.Arg.OwnerID, p.power)
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (p *Barrier) GetCount() int {
