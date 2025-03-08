@@ -11,7 +11,12 @@ import (
 var (
 	unrecoverableError error
 	debugMessages      []string
+	count              uint
 )
+
+func Update() {
+	count++
+}
 
 func SetError(msg string) {
 	// この関数が呼ばれた場所の呼び出し元情報をセットする
@@ -33,4 +38,8 @@ func PopAllDebugMessages() []string {
 	res := append([]string{}, debugMessages...)
 	debugMessages = []string{}
 	return res
+}
+
+func GetGlobalCount() uint {
+	return count
 }

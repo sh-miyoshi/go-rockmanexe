@@ -82,7 +82,6 @@ type BattlePlayer struct {
 	visible         bool
 	isShiftFrame    bool
 	isShowGauge     bool
-	count           int
 	barrierHP       int
 }
 
@@ -336,7 +335,8 @@ func (p *BattlePlayer) Draw() {
 		view := battlecommon.ViewPos(p.Pos)
 
 		if p.barrierHP > 0 {
-			n := math.MountainIndex((p.count/15)%(len(imgBarrier)*2), len(imgBarrier)*2)
+			cnt := system.GetGlobalCount()
+			n := math.MountainIndex(int(cnt/15)%(len(imgBarrier)*2), len(imgBarrier)*2)
 			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 156)
 			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgBarrier[n], true)
 			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
@@ -406,8 +406,6 @@ func (p *BattlePlayer) SetFrameInfo(xShift bool, showGauge bool) {
 }
 
 func (p *BattlePlayer) Update() (bool, error) {
-	p.count++
-
 	if !p.EnableAct {
 		return false, nil
 	}
