@@ -363,6 +363,8 @@ func (e *enemyAquaman) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyAquaman) AddBarrier(hp int) {}
+
 func (e *enemyAquaman) getCurrentImagePointer() *int {
 	n := (e.count / aquamanDelays[e.state])
 	if n >= len(e.images[e.state]) {

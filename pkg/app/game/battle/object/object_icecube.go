@@ -178,3 +178,5 @@ func (o *IceCube) GetObjectType() int {
 }
 
 func (o *IceCube) MakeInvisible(count int) {}
+
+func (o *IceCube) AddBarrier(hp int) {}

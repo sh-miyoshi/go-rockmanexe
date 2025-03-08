@@ -222,6 +222,8 @@ func (e *enemyBoomer) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyBoomer) AddBarrier(hp int) {}
+
 func (e *enemyBoomer) getCurrentImagePointer() *int {
 	if e.state == boomerStateAtk {
 		n := (e.count / delayBoomerAtk)

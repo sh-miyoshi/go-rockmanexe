@@ -33,6 +33,7 @@ type Argument struct {
 	ChangePanelStatus func(pos point.Point, pnStatus int, endCount int)
 	ChangePanelType   func(pos point.Point, pnType int, endCount int)
 	MakeInvisible     func(objID string, count int)
+	AddBarrier        func(objID string, hp int)
 }
 
 type SkillCore interface {
@@ -124,6 +125,12 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillDeathMatch3
 	case chip.IDPanelReturn:
 		return resources.SkillPanelReturn
+	case chip.IDBarrier:
+		return resources.SkillBarrier
+	case chip.IDBarrier100:
+		return resources.SkillBarrier100
+	case chip.IDBarrier200:
+		return resources.SkillBarrier200
 	}
 
 	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

@@ -531,6 +531,8 @@ func (e *enemyBlues) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyBlues) AddBarrier(hp int) {}
+
 func (e *enemyBlues) getCurrentImagePointer() *int {
 	if e.count == 0 {
 		return &e.images[bluesActTypeStand][0]

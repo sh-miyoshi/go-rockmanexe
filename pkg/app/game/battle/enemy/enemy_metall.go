@@ -198,6 +198,8 @@ func (e *enemyMetall) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyMetall) AddBarrier(hp int) {}
+
 func (a *metallAtk) Draw() {
 	// Nothing to do
 }

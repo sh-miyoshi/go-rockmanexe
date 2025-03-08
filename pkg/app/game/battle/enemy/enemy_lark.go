@@ -218,6 +218,8 @@ func (e *enemyLark) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyLark) AddBarrier(hp int) {}
+
 func (a *larkAtk) SetAttack() {
 	a.count = 0
 	a.attacking = true

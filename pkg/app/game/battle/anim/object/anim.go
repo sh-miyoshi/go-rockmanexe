@@ -41,6 +41,7 @@ type Anim interface {
 	GetParam() Param
 	GetObjectType() int
 	MakeInvisible(count int)
+	AddBarrier(hp int)
 }
 
 type AnimManager struct {
@@ -193,6 +194,13 @@ func (am *AnimManager) MakeInvisible(id string, count int) {
 	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, am.anims)
 	if _, ok := am.anims[id]; ok {
 		am.anims[id].MakeInvisible(count)
+	}
+}
+
+func (am *AnimManager) AddBarrier(id string, hp int) {
+	logger.Debug("Set %d barrier to ID: %s, anims: %+v", hp, id, am.anims)
+	if _, ok := am.anims[id]; ok {
+		am.anims[id].AddBarrier(hp)
 	}
 }
 

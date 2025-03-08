@@ -219,6 +219,8 @@ func (p *Player) MakeInvisible(count int) {
 	p.invincibleCount = count
 }
 
+func (p *Player) AddBarrier(hp int) {}
+
 func (p *Player) HandleAction(act *pb.Request_Action) {
 	queue.Push(p.actQueueID, act)
 }

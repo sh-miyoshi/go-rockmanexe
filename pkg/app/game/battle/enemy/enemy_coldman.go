@@ -348,6 +348,8 @@ func (e *enemyColdman) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyColdman) AddBarrier(hp int) {}
+
 func (e *enemyColdman) getCurrentImagePointer() *int {
 	n := (e.count / coldmanDelays[e.state])
 	if n >= len(e.images[e.state]) {

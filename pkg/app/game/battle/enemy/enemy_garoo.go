@@ -220,6 +220,8 @@ func (e *enemyGaroo) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyGaroo) AddBarrier(hp int) {}
+
 func (e *enemyGaroo) getCurrentImagePointer() *int {
 	if e.atkID != "" {
 		n := (e.atk.count / delayGarooAtk)

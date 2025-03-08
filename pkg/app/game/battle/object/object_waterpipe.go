@@ -145,6 +145,8 @@ func (o *WaterPipe) GetObjectType() int {
 
 func (o *WaterPipe) MakeInvisible(count int) {}
 
+func (o *WaterPipe) AddBarrier(hp int) {}
+
 func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.count = 0
 	a.isAttacking = false

@@ -223,6 +223,8 @@ func (e *enemyShrimpy) MakeInvisible(count int) {
 	e.pm.InvincibleCount = count
 }
 
+func (e *enemyShrimpy) AddBarrier(hp int) {}
+
 func (e *enemyShrimpy) getCurrentImagePointer() *int {
 	if e.state == shrimpyStateAtk {
 		n := (e.atk.count / delayShrimpyAttack)

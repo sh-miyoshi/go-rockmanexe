@@ -111,6 +111,10 @@ func (m *Manager) ObjAnimMakeInvisible(id string, count int) {
 	m.objAnimMgr.MakeInvisible(id, count)
 }
 
+func (m *Manager) ObjAnimAddBarrier(id string, hp int) {
+	m.objAnimMgr.AddBarrier(id, hp)
+}
+
 func (m *Manager) SkillGet(id int, arg skillcore.Argument) skillcore.SkillCore {
 	return m.skillMgr.Get(id, arg)
 }
