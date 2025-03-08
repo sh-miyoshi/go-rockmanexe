@@ -522,6 +522,15 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
+	if p.BarrierHP > 0 && dm.Power > 0 {
+		logger.Debug("Barrier HP: %d, Damage: %d", p.BarrierHP, dm.Power)
+		p.BarrierHP -= int(dm.Power)
+		if p.BarrierHP < 0 {
+			p.BarrierHP = 0
+		}
+		return true
+	}
+
 	if dm.TargetObjType&damage.TargetPlayer != 0 {
 		prevHP := p.HP
 		hp := int(p.HP) - dm.Power
