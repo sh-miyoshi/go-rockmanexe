@@ -76,7 +76,6 @@ type BattlePlayer struct {
 	MindStatus    int
 	IsUnderShirt  bool
 	ChipSelectMax int
-	BarrierHP     int
 
 	act             BattlePlayerAct
 	invincibleCount int
@@ -84,6 +83,7 @@ type BattlePlayer struct {
 	isShiftFrame    bool
 	isShowGauge     bool
 	count           int
+	barrierHP       int
 }
 
 var (
@@ -112,7 +112,7 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		visible:       true,
 		IsUnderShirt:  plyr.IsUnderShirt(),
 		ChipSelectMax: plyr.ChipSelectMax,
-		BarrierHP:     0,
+		barrierHP:     0,
 	}
 	res.act.Init(&res.Pos)
 
@@ -335,7 +335,7 @@ func (p *BattlePlayer) Draw() {
 	if playerVisible {
 		view := battlecommon.ViewPos(p.Pos)
 
-		if p.BarrierHP > 0 {
+		if p.barrierHP > 0 {
 			n := math.MountainIndex((p.count/15)%(len(imgBarrier)*2), len(imgBarrier)*2)
 			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 156)
 			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgBarrier[n], true)
@@ -522,11 +522,11 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
-	if p.BarrierHP > 0 && dm.Power > 0 {
-		logger.Debug("Barrier HP: %d, Damage: %d", p.BarrierHP, dm.Power)
-		p.BarrierHP -= int(dm.Power)
-		if p.BarrierHP < 0 {
-			p.BarrierHP = 0
+	if p.barrierHP > 0 && dm.Power > 0 {
+		logger.Debug("Barrier HP: %d, Damage: %d", p.barrierHP, dm.Power)
+		p.barrierHP -= int(dm.Power)
+		if p.barrierHP < 0 {
+			p.barrierHP = 0
 		}
 		return true
 	}
@@ -613,7 +613,7 @@ func (p *BattlePlayer) MakeInvisible(count int) {
 }
 
 func (p *BattlePlayer) AddBarrier(hp int) {
-	p.BarrierHP = hp
+	p.barrierHP = hp
 }
 
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
