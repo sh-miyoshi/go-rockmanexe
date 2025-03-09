@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
@@ -15,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
@@ -49,6 +51,7 @@ var (
 	loseInst       *titlemsg.TitleMsg
 	openingInst    opening.Opening
 	basePlayerInst *player.Player
+	animManager    *manager.Manager
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -63,6 +66,8 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	b4mainInst = nil
 	loseInst = nil
 	basePlayerInst = plyr
+
+	animManager = manager.New()
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -150,12 +155,12 @@ func End() {
 	enemy.End()
 	effect.End()
 	win.End()
+	animManager.End()
 	logger.Info("End battle data")
 }
 
 func Update() error {
 	battlecommon.SystemProcess()
-	isRunAnim := false
 
 	switch battleState {
 	case stateOpening:
@@ -209,7 +214,6 @@ func Update() error {
 			return nil
 		}
 	case stateMain:
-		isRunAnim = true
 		gameCount++
 
 		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
@@ -223,22 +227,27 @@ func Update() error {
 				playerInst.NextAction = battleplayer.NextActNone
 				return nil
 			case battleplayer.NextActLose:
+				cleanupBattleAnims()
 				stateChange(stateResultLose)
 				return nil
 			}
 			if err := enemy.MgrProcess(); err != nil {
 				if errors.Is(err, enemy.ErrGameEnd) {
+					cleanupBattleAnims()
 					playerInst.EnableAct = false
 					stateChange(stateResultWin)
 					return nil
 				}
 				return errors.Wrap(err, "failed to process enemy")
 			}
+
+			if err := localanim.AnimMgrProcess(); err != nil {
+				return errors.Wrap(err, "failed to handle animation")
+			}
 		}
 
 		field.Update()
 	case stateResultWin:
-		isRunAnim = true
 		if battleCount == 0 {
 			enemies := []reward.EnemyParam{}
 			for _, e := range enemyList {
@@ -266,7 +275,6 @@ func Update() error {
 			return ErrWin
 		}
 	case stateResultLose:
-		isRunAnim = true
 		if battleCount == 0 {
 			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
@@ -281,12 +289,6 @@ func Update() error {
 			sound.SEClear()
 			loseInst.End()
 			return ErrLose
-		}
-	}
-
-	if isRunAnim {
-		if err := localanim.AnimMgrProcess(); err != nil {
-			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
 
@@ -340,5 +342,13 @@ func drawEnemyNames() {
 		name := enemy.GetName(e.CharID)
 		ofs := dxlib.GetDrawStringWidth(name, len(name))
 		draw.String(config.ScreenSize.X-ofs-5, i*20+10, 0xffffff, "%s", name)
+	}
+}
+
+func cleanupBattleAnims() {
+	for _, a := range localanim.AnimGetAll() {
+		if a.DrawType != anim.DrawTypeEffect {
+			localanim.AnimDelete(a.ObjID)
+		}
 	}
 }
