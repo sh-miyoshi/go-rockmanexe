@@ -41,15 +41,19 @@ const (
 	stateMax
 )
 
+type State interface {
+	End()
+	Update() bool
+	Draw()
+}
+
 var (
 	battleCount    int
 	battleState    int
 	playerInst     *battleplayer.BattlePlayer
 	enemyList      []enemy.EnemyParam
 	gameCount      int
-	b4mainInst     *b4main.BeforeMain
-	loseInst       *titlemsg.TitleMsg
-	openingInst    opening.Opening
+	stateInst      State
 	basePlayerInst *player.Player
 	animManager    *manager.Manager
 
@@ -63,9 +67,8 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	gameCount = 0
 	battleCount = 0
 	battleState = stateOpening
-	b4mainInst = nil
-	loseInst = nil
 	basePlayerInst = plyr
+	stateInst = nil
 
 	animManager = manager.New()
 
@@ -167,17 +170,18 @@ func Update() error {
 		if battleCount == 0 {
 			var err error
 			if enemy.IsBoss(enemyList[0].CharID) {
-				openingInst, err = opening.NewWithBoss(enemyList)
+				stateInst, err = opening.NewWithBoss(enemyList)
 			} else {
-				openingInst, err = opening.NewWithNormal(enemyList)
+				stateInst, err = opening.NewWithNormal(enemyList)
 			}
 			if err != nil {
 				return errors.Wrap(err, "opening init failed")
 			}
 		}
 
-		if openingInst.Update() {
-			openingInst.End()
+		if stateInst.Update() {
+			stateInst.End()
+			stateInst = nil
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return errors.Wrap(err, "enemy init failed")
 			}
@@ -200,7 +204,7 @@ func Update() error {
 	case stateBeforeMain:
 		if battleCount == 0 {
 			var err error
-			b4mainInst, err = b4main.New(playerInst.SelectedChips)
+			stateInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize before main")
 			}
@@ -208,8 +212,9 @@ func Update() error {
 			playerInst.SetFrameInfo(false, true)
 		}
 
-		if b4mainInst.Update() {
-			b4mainInst.End()
+		if stateInst.Update() {
+			stateInst.End()
+			stateInst = nil
 			stateChange(stateMain)
 			return nil
 		}
@@ -278,16 +283,17 @@ func Update() error {
 		if battleCount == 0 {
 			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
-			loseInst, err = titlemsg.New(fname, 0)
+			stateInst, err = titlemsg.New(fname, 0)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize lose")
 			}
 			playerInst.SetFrameInfo(false, false)
 		}
 
-		if loseInst.Update() {
+		if stateInst.Update() {
 			sound.SEClear()
-			loseInst.End()
+			stateInst.End()
+			stateInst = nil
 			return ErrLose
 		}
 	}
@@ -305,23 +311,15 @@ func Draw() {
 	field.DrawBlackout()
 
 	switch battleState {
-	case stateOpening:
-		if openingInst != nil {
-			openingInst.Draw()
+	case stateOpening, stateBeforeMain, stateResultLose:
+		if stateInst != nil {
+			stateInst.Draw()
 		}
 	case stateChipSelect:
 		chipsel.Draw()
-	case stateBeforeMain:
-		if b4mainInst != nil {
-			b4mainInst.Draw()
-		}
 	case stateMain:
 	case stateResultWin:
 		win.Draw()
-	case stateResultLose:
-		if loseInst != nil {
-			loseInst.Draw()
-		}
 	}
 
 	battlecommon.SystemDraw()
