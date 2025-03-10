@@ -180,8 +180,6 @@ func Update() error {
 		}
 
 		if stateInst.Update() {
-			stateInst.End()
-			stateInst = nil
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return errors.Wrap(err, "enemy init failed")
 			}
@@ -213,8 +211,6 @@ func Update() error {
 		}
 
 		if stateInst.Update() {
-			stateInst.End()
-			stateInst = nil
 			stateChange(stateMain)
 			return nil
 		}
@@ -292,8 +288,6 @@ func Update() error {
 
 		if stateInst.Update() {
 			sound.SEClear()
-			stateInst.End()
-			stateInst = nil
 			return ErrLose
 		}
 	}
@@ -310,14 +304,13 @@ func Draw() {
 	drawEnemyNames()
 	field.DrawBlackout()
 
+	if stateInst != nil {
+		stateInst.Draw()
+	}
+
 	switch battleState {
-	case stateOpening, stateBeforeMain, stateResultLose:
-		if stateInst != nil {
-			stateInst.Draw()
-		}
 	case stateChipSelect:
 		chipsel.Draw()
-	case stateMain:
 	case stateResultWin:
 		win.Draw()
 	}
@@ -333,6 +326,10 @@ func stateChange(nextState int) {
 	}
 	battleState = nextState
 	battleCount = 0
+	if stateInst != nil {
+		stateInst.End()
+		stateInst = nil
+	}
 }
 
 func drawEnemyNames() {
