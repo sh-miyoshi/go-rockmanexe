@@ -286,19 +286,6 @@ func goBattleNew() (*menuGoBattle, error) {
 				},
 			},
 		},
-		{
-			Name: "練習",
-			Enemies: []selectEnemyData{
-				{
-					BattleParam: enemy.EnemyParam{
-						CharID: enemy.IDTarget,
-						Pos:    point.Point{X: 4, Y: 1},
-						HP:     1000,
-					},
-					View: point.Point{X: viewCenter.X, Y: viewCenter.Y + 10},
-				},
-			},
-		},
 	}
 
 	names := []string{}
