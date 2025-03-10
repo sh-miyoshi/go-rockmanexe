@@ -57,8 +57,12 @@ func AnimCleanup() {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
 	animInst.Cleanup()
+	objanimInst.Cleanup()
 }
 
 func AnimDelete(animID string) {
@@ -99,14 +103,6 @@ func ObjAnimNew(anim objanim.Anim) string {
 	}
 
 	return objanimInst.New(anim)
-}
-
-func ObjAnimCleanup() {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Cleanup()
 }
 
 func ObjAnimDelete(animID string) {

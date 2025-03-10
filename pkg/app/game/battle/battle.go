@@ -147,7 +147,6 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 func End() {
 	field.ResetSet4x4Area()
 	localanim.AnimCleanup()
-	localanim.ObjAnimCleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
