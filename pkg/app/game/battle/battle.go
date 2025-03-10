@@ -295,7 +295,6 @@ func Update() error {
 
 func Draw() {
 	field.Draw()
-	localanim.ObjAnimMgrDraw()
 	localanim.AnimMgrDraw()
 
 	drawEnemyNames()

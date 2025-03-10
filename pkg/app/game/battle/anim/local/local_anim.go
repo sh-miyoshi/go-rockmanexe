@@ -26,7 +26,11 @@ func AnimMgrDraw() {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
+	objanimInst.Draw()
 	animInst.MgrDraw()
 }
 
@@ -95,14 +99,6 @@ func ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
 	}
 
 	return objanimInst.Process(enableDamage, blackout)
-}
-
-func ObjAnimMgrDraw() {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Draw()
 }
 
 func ObjAnimNew(anim objanim.Anim) string {
