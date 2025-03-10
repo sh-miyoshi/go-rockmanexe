@@ -34,7 +34,15 @@ func AnimMgrDraw() {
 	animInst.MgrDraw()
 }
 
-func AnimNew(a anim.Anim) string {
+func SkillAnimNew(a anim.Anim) string {
+	if animInst == nil {
+		animInst = anim.NewManager()
+	}
+
+	return animInst.New(a)
+}
+
+func EffectAnimNew(a anim.Anim) string {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}

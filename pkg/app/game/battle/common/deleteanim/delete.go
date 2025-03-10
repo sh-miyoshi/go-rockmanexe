@@ -25,7 +25,7 @@ func New(image int, pos point.Point, isPlayer bool) {
 		sound.On(resources.SEEnemyDeleted)
 	}
 
-	localanim.AnimNew(&deleteAction{
+	localanim.EffectAnimNew(&deleteAction{
 		id:    uuid.New().String(),
 		image: image,
 		pos:   pos,

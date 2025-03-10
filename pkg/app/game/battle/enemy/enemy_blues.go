@@ -155,7 +155,7 @@ func (e *enemyBlues) Update() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -271,7 +271,7 @@ func (e *enemyBlues) Update() (bool, error) {
 
 		if e.count == 1*bluesDelays[bluesActTypeWideSword] {
 			logger.Debug("Blues Wide Sword Attack")
-			localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+			localanim.SkillAnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -309,7 +309,7 @@ func (e *enemyBlues) Update() (bool, error) {
 
 		if e.count == 1*bluesDelays[bluesActTypeFighterSword] {
 			logger.Debug("Blues Fighter Sword Attack")
-			localanim.AnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
+			localanim.SkillAnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -343,7 +343,7 @@ func (e *enemyBlues) Update() (bool, error) {
 			e.edgeEndPos = objs[0].Pos
 
 			e.isEdgeEffectOn = true
-			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
+			localanim.EffectAnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
 			e.nextState = bluesActTypeDeltaRayEdge
 			e.waitCount = 10
 			return e.stateChange(bluesActTypeStand)
@@ -371,7 +371,7 @@ func (e *enemyBlues) Update() (bool, error) {
 				skillID = resources.SkillWideSword
 			}
 
-			e.atkID = localanim.AnimNew(skill.Get(skillID, skillcore.Argument{
+			e.atkID = localanim.SkillAnimNew(skill.Get(skillID, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -396,7 +396,7 @@ func (e *enemyBlues) Update() (bool, error) {
 		}
 	case bluesActTypeDeltaRayEdgeEnd:
 		if e.count == 0 {
-			e.atkID = localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
+			e.atkID = localanim.EffectAnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
 			sound.On(resources.SEDeltaRayEdgeEnd)
 		}
 
@@ -491,7 +491,7 @@ func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 			e.stateChange(bluesActTypeMove)
 			return true
 		} else {
-			localanim.AnimNew(effect.Get(resources.EffectTypeBlock, e.pm.Pos, 5))
+			localanim.EffectAnimNew(effect.Get(resources.EffectTypeBlock, e.pm.Pos, 5))
 			return true
 		}
 	}

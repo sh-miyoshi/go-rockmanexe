@@ -359,7 +359,7 @@ func stateChange(nextState int) {
 func handleEffect() {
 	g := net.GetInst().GetGameInfo()
 	for _, e := range g.Effects {
-		localanim.AnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
+		localanim.EffectAnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
 	}
 }
 

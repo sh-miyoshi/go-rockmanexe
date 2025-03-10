@@ -80,7 +80,7 @@ func (e *enemyMetall) Update() (bool, error) {
 			img = &e.atk.images[e.atk.GetImageNo()]
 		}
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
@@ -132,7 +132,7 @@ func (e *enemyMetall) Update() (bool, error) {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = localanim.AnimNew(&e.atk)
+			e.atkID = localanim.SkillAnimNew(&e.atk)
 			e.moveFailedCount = 0
 		} else {
 			// Move
@@ -208,7 +208,7 @@ func (a *metallAtk) Update() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		localanim.AnimNew(skill.Get(resources.SkillEnemyShockWave, skillcore.Argument{
+		localanim.SkillAnimNew(skill.Get(resources.SkillEnemyShockWave, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,

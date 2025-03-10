@@ -131,7 +131,7 @@ func (e *enemyForte) Update() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -233,7 +233,7 @@ func (e *enemyForte) Update() (bool, error) {
 			if e.count%40 == initWait {
 				logger.Debug("Forte Shooting Buster Attack at %d", e.count)
 				for i := 0; i < 3; i++ {
-					e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
+					e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
 						OwnerID:    e.pm.ObjectID,
 						Power:      forteAtkPower[e.state],
 						TargetType: damage.TargetPlayer,
@@ -268,7 +268,7 @@ func (e *enemyForte) Update() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
 			logger.Debug("Forte Hells Rolling Attack 1st")
-			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -277,7 +277,7 @@ func (e *enemyForte) Update() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling]+30 {
 			logger.Debug("Forte Hells Rolling Attack 2st")
-			e.atkIDs = append(e.atkIDs, localanim.AnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -316,7 +316,7 @@ func (e *enemyForte) Update() (bool, error) {
 		}
 		if e.count == 2*forteDelays[forteActTypeDarkArmBlade1] {
 			logger.Debug("Forte Dark Arm Blade 1st Attack")
-			localanim.AnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
+			localanim.SkillAnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
@@ -362,7 +362,7 @@ func (e *enemyForte) Update() (bool, error) {
 				skillType = resources.SkillForteDarkArmBladeType2
 			}
 			e.atkIDs = []string{
-				localanim.AnimNew(
+				localanim.SkillAnimNew(
 					skill.Get(
 						skillType,
 						skillcore.Argument{
@@ -407,7 +407,7 @@ func (e *enemyForte) Update() (bool, error) {
 		if e.count == 7*forteDelays[forteActTypeDarknessOverload] {
 			logger.Debug("Forte Darkness Overload Attack")
 			e.atkIDs = []string{
-				localanim.AnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
+				localanim.SkillAnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
 					OwnerID:    e.pm.ObjectID,
 					Power:      forteAtkPower[e.state],
 					TargetType: damage.TargetPlayer,

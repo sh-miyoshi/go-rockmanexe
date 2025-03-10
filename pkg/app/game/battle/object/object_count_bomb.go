@@ -114,7 +114,7 @@ func (o *CountBomb) DamageProc(dm *damage.Damage) bool {
 	}
 
 	o.pm.HP -= dm.Power
-	localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
+	localanim.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 	return true
 }
 

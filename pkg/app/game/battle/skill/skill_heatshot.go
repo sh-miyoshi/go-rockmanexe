@@ -39,7 +39,7 @@ func (p *heatShot) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopHitTargets() {
-		localanim.AnimNew(effect.Get(resources.EffectTypeHeatHit, hit, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeHeatHit, hit, 0))
 	}
 	return res, nil
 }

@@ -39,7 +39,7 @@ func (p *vulcan) Update() (bool, error) {
 		return false, err
 	}
 	for _, eff := range p.Core.PopEffects() {
-		localanim.AnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
+		localanim.EffectAnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
 	}
 
 	return res, nil

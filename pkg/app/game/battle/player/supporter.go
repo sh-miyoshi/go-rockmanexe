@@ -150,7 +150,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		} else {
 			s.HP = uint(hp)
 		}
-		localanim.AnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
+		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&s.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {

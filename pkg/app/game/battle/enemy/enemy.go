@@ -199,7 +199,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			localanim.AnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
+			localanim.EffectAnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power
@@ -215,7 +215,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 			}
 		}
 
-		localanim.AnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
 
 		if dm.IsParalyzed {
 			pm.ParalyzedCount = battlecommon.DefaultParalyzedTime

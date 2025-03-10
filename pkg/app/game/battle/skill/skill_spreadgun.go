@@ -47,7 +47,7 @@ func (p *spreadGun) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopSpreadHits() {
-		localanim.AnimNew(&spreadHit{ID: uuid.New().String(), Core: hit})
+		localanim.SkillAnimNew(&spreadHit{ID: uuid.New().String(), Core: hit})
 	}
 
 	return res, nil
@@ -71,7 +71,7 @@ func (p *spreadHit) Draw() {
 
 func (p *spreadHit) Update() (bool, error) {
 	if p.Core.GetCount() == 1 {
-		localanim.AnimNew(effect.Get(resources.EffectTypeSpreadHit, p.Core.Pos, 5))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeSpreadHit, p.Core.Pos, 5))
 	}
 	return p.Core.Update()
 }

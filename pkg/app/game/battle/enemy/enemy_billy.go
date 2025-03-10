@@ -90,7 +90,7 @@ func (e *enemyBilly) Update() (bool, error) {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
 		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -216,7 +216,7 @@ func (a *billyAct) Update() bool {
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			localanim.AnimNew(skill.Get(resources.SkillThunderBall, skillcore.Argument{
+			localanim.SkillAnimNew(skill.Get(resources.SkillThunderBall, skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
