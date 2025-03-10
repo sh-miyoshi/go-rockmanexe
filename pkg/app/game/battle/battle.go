@@ -157,7 +157,6 @@ func End() {
 	skill.End()
 	enemy.End()
 	effect.End()
-	win.End()
 	animManager.End()
 	logger.Info("End battle data")
 }
@@ -258,12 +257,14 @@ func Update() error {
 				})
 			}
 
-			if err := win.Init(reward.WinArg{
+			var err error
+			stateInst, err = win.New(reward.WinArg{
 				GameTime:        gameCount,
 				DeletedEnemies:  enemies,
 				PlayerMoveNum:   playerInst.MoveNum,
 				PlayerDamageNum: playerInst.DamageNum,
-			}, basePlayerInst); err != nil {
+			}, basePlayerInst)
+			if err != nil {
 				return errors.Wrap(err, "failed to initialize result win")
 			}
 		}
@@ -272,7 +273,9 @@ func Update() error {
 			return errors.Wrap(err, "failed to handle object animation")
 		}
 
-		if win.Update() {
+		if stateInst.Update() {
+			stateInst.End()
+			stateInst = nil
 			return ErrWin
 		}
 	case stateResultLose:
@@ -311,8 +314,6 @@ func Draw() {
 	switch battleState {
 	case stateChipSelect:
 		chipsel.Draw()
-	case stateResultWin:
-		win.Draw()
 	}
 
 	battlecommon.SystemDraw()
