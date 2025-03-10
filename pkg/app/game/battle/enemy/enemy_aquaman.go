@@ -375,7 +375,7 @@ func (e *enemyAquaman) getCurrentImagePointer() *int {
 
 func (e *enemyAquaman) pipeExists() bool {
 	for _, id := range e.waterPipeObjIDs {
-		if localanim.ObjAnimIsProcessing(id) {
+		if localanim.AnimIsProcessing(id) {
 			return true
 		}
 	}

@@ -94,7 +94,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !localanim.ObjAnimIsProcessing(id) {
+		if !localanim.AnimIsProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}

@@ -38,12 +38,19 @@ func AnimNew(a anim.Anim) string {
 	return animInst.New(a)
 }
 
-func AnimIsProcessing(animID string) bool {
+func AnimIsProcessing(id string) bool {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
-	return animInst.IsProcessing(animID)
+	if animInst.IsProcessing(id) {
+		return true
+	}
+
+	return objanimInst.IsProcessing(id)
 }
 
 func AnimCleanup() {
@@ -92,14 +99,6 @@ func ObjAnimNew(anim objanim.Anim) string {
 	}
 
 	return objanimInst.New(anim)
-}
-
-func ObjAnimIsProcessing(animID string) bool {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	return objanimInst.IsProcessing(animID)
 }
 
 func ObjAnimCleanup() {
