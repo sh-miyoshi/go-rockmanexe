@@ -26,7 +26,7 @@ func (p *failed) Draw() {
 
 func (p *failed) Update() (bool, error) {
 	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
-	localanim.AnimNew(effect.Get(resources.EffectTypeFailed, pos, 0))
+	localanim.EffectAnimNew(effect.Get(resources.EffectTypeFailed, pos, 0))
 	sound.On(resources.SEFailed)
 	return true, nil
 }

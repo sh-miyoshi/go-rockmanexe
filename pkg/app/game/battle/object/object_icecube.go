@@ -50,7 +50,7 @@ func (o *IceCube) End() {
 
 func (o *IceCube) Update() (bool, error) {
 	if o.pm.HP <= 0 {
-		localanim.AnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
 		return true, nil
 	}
 
@@ -155,7 +155,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 			}
 		}
 
-		localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
+		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 		return true
 	}
 

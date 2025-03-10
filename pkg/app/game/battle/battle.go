@@ -8,6 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
@@ -39,15 +40,19 @@ const (
 	stateMax
 )
 
+type State interface {
+	End()
+	Update() bool
+	Draw()
+}
+
 var (
 	battleCount    int
 	battleState    int
 	playerInst     *battleplayer.BattlePlayer
 	enemyList      []enemy.EnemyParam
 	gameCount      int
-	b4mainInst     *b4main.BeforeMain
-	loseInst       *titlemsg.TitleMsg
-	openingInst    opening.Opening
+	stateInst      State
 	basePlayerInst *player.Player
 
 	ErrWin  = errors.New("player win")
@@ -60,9 +65,8 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	gameCount = 0
 	battleCount = 0
 	battleState = stateOpening
-	b4mainInst = nil
-	loseInst = nil
 	basePlayerInst = plyr
+	stateInst = nil
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -143,36 +147,32 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 func End() {
 	field.ResetSet4x4Area()
 	localanim.AnimCleanup()
-	localanim.ObjAnimCleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
 	enemy.End()
 	effect.End()
-	win.End()
 	logger.Info("End battle data")
 }
 
 func Update() error {
 	battlecommon.SystemProcess()
-	isRunAnim := false
 
 	switch battleState {
 	case stateOpening:
 		if battleCount == 0 {
 			var err error
 			if enemy.IsBoss(enemyList[0].CharID) {
-				openingInst, err = opening.NewWithBoss(enemyList)
+				stateInst, err = opening.NewWithBoss(enemyList)
 			} else {
-				openingInst, err = opening.NewWithNormal(enemyList)
+				stateInst, err = opening.NewWithNormal(enemyList)
 			}
 			if err != nil {
 				return errors.Wrap(err, "opening init failed")
 			}
 		}
 
-		if openingInst.Update() {
-			openingInst.End()
+		if stateInst.Update() {
 			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
 				return errors.Wrap(err, "enemy init failed")
 			}
@@ -195,7 +195,7 @@ func Update() error {
 	case stateBeforeMain:
 		if battleCount == 0 {
 			var err error
-			b4mainInst, err = b4main.New(playerInst.SelectedChips)
+			stateInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize before main")
 			}
@@ -203,13 +203,11 @@ func Update() error {
 			playerInst.SetFrameInfo(false, true)
 		}
 
-		if b4mainInst.Update() {
-			b4mainInst.End()
+		if stateInst.Update() {
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
-		isRunAnim = true
 		gameCount++
 
 		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
@@ -223,22 +221,27 @@ func Update() error {
 				playerInst.NextAction = battleplayer.NextActNone
 				return nil
 			case battleplayer.NextActLose:
+				cleanupBattleAnims()
 				stateChange(stateResultLose)
 				return nil
 			}
 			if err := enemy.MgrProcess(); err != nil {
 				if errors.Is(err, enemy.ErrGameEnd) {
+					cleanupBattleAnims()
 					playerInst.EnableAct = false
 					stateChange(stateResultWin)
 					return nil
 				}
 				return errors.Wrap(err, "failed to process enemy")
 			}
+
+			if err := localanim.AnimMgrProcess(); err != nil {
+				return errors.Wrap(err, "failed to handle animation")
+			}
 		}
 
 		field.Update()
 	case stateResultWin:
-		isRunAnim = true
 		if battleCount == 0 {
 			enemies := []reward.EnemyParam{}
 			for _, e := range enemyList {
@@ -248,12 +251,14 @@ func Update() error {
 				})
 			}
 
-			if err := win.Init(reward.WinArg{
+			var err error
+			stateInst, err = win.New(reward.WinArg{
 				GameTime:        gameCount,
 				DeletedEnemies:  enemies,
 				PlayerMoveNum:   playerInst.MoveNum,
 				PlayerDamageNum: playerInst.DamageNum,
-			}, basePlayerInst); err != nil {
+			}, basePlayerInst)
+			if err != nil {
 				return errors.Wrap(err, "failed to initialize result win")
 			}
 		}
@@ -262,31 +267,25 @@ func Update() error {
 			return errors.Wrap(err, "failed to handle object animation")
 		}
 
-		if win.Update() {
+		if stateInst.Update() {
+			stateInst.End()
+			stateInst = nil
 			return ErrWin
 		}
 	case stateResultLose:
-		isRunAnim = true
 		if battleCount == 0 {
 			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
-			loseInst, err = titlemsg.New(fname, 0)
+			stateInst, err = titlemsg.New(fname, 0)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize lose")
 			}
 			playerInst.SetFrameInfo(false, false)
 		}
 
-		if loseInst.Update() {
+		if stateInst.Update() {
 			sound.SEClear()
-			loseInst.End()
 			return ErrLose
-		}
-	}
-
-	if isRunAnim {
-		if err := localanim.AnimMgrProcess(); err != nil {
-			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
 
@@ -296,30 +295,18 @@ func Update() error {
 
 func Draw() {
 	field.Draw()
-	localanim.ObjAnimMgrDraw()
 	localanim.AnimMgrDraw()
 
 	drawEnemyNames()
 	field.DrawBlackout()
 
+	if stateInst != nil {
+		stateInst.Draw()
+	}
+
 	switch battleState {
-	case stateOpening:
-		if openingInst != nil {
-			openingInst.Draw()
-		}
 	case stateChipSelect:
 		chipsel.Draw()
-	case stateBeforeMain:
-		if b4mainInst != nil {
-			b4mainInst.Draw()
-		}
-	case stateMain:
-	case stateResultWin:
-		win.Draw()
-	case stateResultLose:
-		if loseInst != nil {
-			loseInst.Draw()
-		}
 	}
 
 	battlecommon.SystemDraw()
@@ -333,6 +320,10 @@ func stateChange(nextState int) {
 	}
 	battleState = nextState
 	battleCount = 0
+	if stateInst != nil {
+		stateInst.End()
+		stateInst = nil
+	}
 }
 
 func drawEnemyNames() {
@@ -340,5 +331,13 @@ func drawEnemyNames() {
 		name := enemy.GetName(e.CharID)
 		ofs := dxlib.GetDrawStringWidth(name, len(name))
 		draw.String(config.ScreenSize.X-ofs-5, i*20+10, 0xffffff, "%s", name)
+	}
+}
+
+func cleanupBattleAnims() {
+	for _, a := range localanim.AnimGetAll() {
+		if a.DrawType != anim.DrawTypeEffect {
+			localanim.AnimDelete(a.ObjID)
+		}
 	}
 }

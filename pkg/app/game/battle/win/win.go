@@ -28,65 +28,68 @@ const (
 	stateMax
 )
 
-var (
+type WinManager struct {
 	imgFrame   int
 	imgZenny   int
 	count      int
 	state      int
 	winMsgInst *titlemsg.TitleMsg
-)
+}
 
-func Init(args reward.WinArg, plyr *player.Player) error {
-	state = stateMsg
-	count = 0
+func New(args reward.WinArg, plyr *player.Player) (*WinManager, error) {
+	res := &WinManager{
+		state: stateMsg,
+		count: 0,
+	}
 
 	fname := config.ImagePath + "battle/result_frame.png"
-	imgFrame = dxlib.LoadGraph(fname)
-	if imgFrame == -1 {
-		return errors.Newf("failed to load image %s", fname)
+	res.imgFrame = dxlib.LoadGraph(fname)
+	if res.imgFrame == -1 {
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/zenny.png"
-	imgZenny = dxlib.LoadGraph(fname)
-	if imgZenny == -1 {
-		return errors.Newf("failed to load image %s", fname)
+	res.imgZenny = dxlib.LoadGraph(fname)
+	if res.imgZenny == -1 {
+		return nil, errors.Newf("failed to load image %s", fname)
 	}
 
 	fname = config.ImagePath + "battle/msg_win.png"
 	var err error
-	winMsgInst, err = titlemsg.New(fname, 0)
+	res.winMsgInst, err = titlemsg.New(fname, 0)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create title msg")
+	}
 
 	if err := sound.BGMPlay(sound.BGMWin); err != nil {
-		return errors.Wrap(err, "failed to play bgm")
+		return nil, errors.Wrap(err, "failed to play bgm")
 	}
 
 	reward.SetToPlayer(args, plyr)
-	return err
+	return res, nil
 }
 
-func End() {
+func (m *WinManager) End() {
 	sound.SEClear()
-	dxlib.DeleteGraph(imgFrame)
-	dxlib.DeleteGraph(imgZenny)
-	if winMsgInst != nil {
-		winMsgInst.End()
-		winMsgInst = nil
+	dxlib.DeleteGraph(m.imgFrame)
+	dxlib.DeleteGraph(m.imgZenny)
+	if m.winMsgInst != nil {
+		m.winMsgInst.End()
 	}
-	state = stateMsg
 }
 
-func Update() bool {
-	count++
+func (m *WinManager) Update() bool {
+	m.count++
 
-	switch state {
+	switch m.state {
 	case stateMsg:
-		if winMsgInst != nil && winMsgInst.Update() {
-			stateChange(stateFrameIn)
+		if m.winMsgInst != nil && m.winMsgInst.Update() {
+			m.stateChange(stateFrameIn)
 			return false
 		}
 	case stateFrameIn:
-		if count > 60 {
-			stateChange(stateResult)
+		if m.count > 60 {
+			m.stateChange(stateResult)
 			sound.On(resources.SEGotItem)
 			return false
 		}
@@ -100,27 +103,27 @@ func Update() bool {
 	return false
 }
 
-func Draw() {
+func (m *WinManager) Draw() {
 	baseX := config.ScreenSize.X/2 - 195
 	baseY := config.ScreenSize.Y/2 - 130
 
-	switch state {
+	switch m.state {
 	case stateMsg:
-		if winMsgInst != nil {
-			winMsgInst.Draw()
+		if m.winMsgInst != nil {
+			m.winMsgInst.Draw()
 		}
 	case stateFrameIn:
-		x := count * baseX / 60
+		x := m.count * baseX / 60
 		if x > baseX {
 			x = baseX
 		}
-		dxlib.DrawGraph(x, baseY, imgFrame, true)
+		dxlib.DrawGraph(x, baseY, m.imgFrame, true)
 	case stateResult:
-		dxlib.DrawGraph(baseX, baseY, imgFrame, true)
+		dxlib.DrawGraph(baseX, baseY, m.imgFrame, true)
 		pm := reward.GetParam()
 		switch pm.Type {
 		case reward.TypeMoney:
-			dxlib.DrawGraph(baseX+227, baseY+144, imgZenny, true)
+			dxlib.DrawGraph(baseX+227, baseY+144, m.imgZenny, true)
 		case reward.TypeChip:
 			chipInfo := chip.GetByName(pm.Name)
 			img := chipimage.GetDetail(chipInfo.ID)
@@ -134,13 +137,13 @@ func Draw() {
 	}
 }
 
-func stateChange(nextState int) {
-	logger.Info("Change battle result win state from %d to %d", state, nextState)
+func (m *WinManager) stateChange(nextState int) {
+	logger.Info("Change battle result win state from %d to %d", m.state, nextState)
 	if nextState < 0 || nextState >= stateMax {
 		system.SetError(fmt.Sprintf("Invalid next battle result win state: %d", nextState))
 	}
-	state = nextState
-	count = 0
+	m.state = nextState
+	m.count = 0
 }
 
 func showDeleteTime(deleteTimeSec int, baseX, baseY int) {

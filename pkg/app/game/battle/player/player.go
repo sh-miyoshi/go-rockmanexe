@@ -12,10 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -544,7 +544,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		} else {
 			p.HP = uint(hp)
 		}
-		localanim.AnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
+		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&p.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
@@ -757,5 +757,5 @@ func (a *BattlePlayerAct) IsParalyzed() bool {
 
 func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
 	a.skillInst = skill.Get(id, arg)
-	a.skillID = localanim.AnimNew(a.skillInst)
+	a.skillID = localanim.EffectAnimNew(a.skillInst)
 }

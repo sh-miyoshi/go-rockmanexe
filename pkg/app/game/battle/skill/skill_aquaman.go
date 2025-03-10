@@ -60,7 +60,7 @@ func (p *aquaman) Update() (bool, error) {
 	}
 
 	if p.atkID != "" {
-		if !localanim.ObjAnimIsProcessing(p.atkID) {
+		if !localanim.AnimIsProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
 			return true, nil
 		}

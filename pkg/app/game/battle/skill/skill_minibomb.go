@@ -37,7 +37,7 @@ func (p *miniBomb) Update() (bool, error) {
 	}
 
 	if eff := p.Core.PopEffect(); eff != nil {
-		localanim.AnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
+		localanim.EffectAnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
 	}
 	return end, nil
 }

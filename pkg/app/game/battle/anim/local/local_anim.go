@@ -26,11 +26,15 @@ func AnimMgrDraw() {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
+	objanimInst.Draw()
 	animInst.MgrDraw()
 }
 
-func AnimNew(a anim.Anim) string {
+func SkillAnimNew(a anim.Anim) string {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
@@ -38,28 +42,55 @@ func AnimNew(a anim.Anim) string {
 	return animInst.New(a)
 }
 
-func AnimIsProcessing(animID string) bool {
+func EffectAnimNew(a anim.Anim) string {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
 
-	return animInst.IsProcessing(animID)
+	return animInst.New(a)
+}
+
+func AnimIsProcessing(id string) bool {
+	if animInst == nil {
+		animInst = anim.NewManager()
+	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+
+	if animInst.IsProcessing(id) {
+		return true
+	}
+
+	return objanimInst.IsProcessing(id)
 }
 
 func AnimCleanup() {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
 	animInst.Cleanup()
+	objanimInst.Cleanup()
 }
 
 func AnimDelete(animID string) {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
-	animInst.Delete(animID)
+	if animInst.IsProcessing(animID) {
+		animInst.Delete(animID)
+	}
+	if objanimInst.IsProcessing(animID) {
+		objanimInst.Delete(animID)
+	}
 }
 
 func AnimGetAll() []anim.Param {
@@ -78,44 +109,12 @@ func ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
 	return objanimInst.Process(enableDamage, blackout)
 }
 
-func ObjAnimMgrDraw() {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Draw()
-}
-
 func ObjAnimNew(anim objanim.Anim) string {
 	if objanimInst == nil {
 		objanimInst = objanim.NewManager()
 	}
 
 	return objanimInst.New(anim)
-}
-
-func ObjAnimIsProcessing(animID string) bool {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	return objanimInst.IsProcessing(animID)
-}
-
-func ObjAnimCleanup() {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Cleanup()
-}
-
-func ObjAnimDelete(animID string) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Delete(animID)
 }
 
 func ObjAnimGetObjPos(objID string) point.Point {

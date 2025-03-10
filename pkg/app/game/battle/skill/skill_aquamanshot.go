@@ -59,7 +59,7 @@ func (p *aquamanShot) Update() (bool, error) {
 		}
 
 		sound.On(resources.SEWaterLanding)
-		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           p.target,
@@ -71,7 +71,7 @@ func (p *aquamanShot) Update() (bool, error) {
 			Element:       damage.ElementWater,
 		})
 		target := point.Point{X: p.target.X - 1, Y: p.target.Y}
-		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
+		localanim.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
 		localanim.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           target,
