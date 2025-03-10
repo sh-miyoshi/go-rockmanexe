@@ -1130,9 +1130,9 @@
   name: フルカスタム
   power: 0
   type: 0
-  player_act: 0
-  description: ''
-  is_implemented: false
+  player_act: -1
+  description: 'カスタムゲージを即満タンにする'
+  is_implemented: true
 - id: 160
   name: ドリームオーラ
   power: 0

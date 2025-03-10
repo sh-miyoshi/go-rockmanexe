@@ -117,6 +117,8 @@ func Get(skillID int, arg skillcore.Argument) SkillAnim {
 		return newChipForteAnother(objID, arg, core)
 	case resources.SkillDeathMatch1, resources.SkillDeathMatch2, resources.SkillDeathMatch3:
 		return newDeathMatch(objID, arg, core)
+	case resources.SkillFullCustom:
+		return newFullCustom(objID, arg, core)
 	case resources.SkillPanelReturn:
 		return newPanelReturn(objID, arg, core)
 	case resources.SkillBarrier, resources.SkillBarrier100, resources.SkillBarrier200:

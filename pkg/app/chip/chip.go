@@ -86,6 +86,7 @@ const (
 	IDBarrier100   = 136
 	IDBarrier200   = 137
 	IDAttack10     = 148
+	IDFullCustom   = 159
 	IDAquaman      = 181
 	IDForteAnother = 236
 	IDShockWave    = 247
