@@ -382,7 +382,7 @@ func (e *enemyColdman) createCube() error {
 	// 前のアイスキューブがあるなら削除する
 	if len(e.cubeIDs) > 0 {
 		for _, id := range e.cubeIDs {
-			localanim.ObjAnimDelete(id)
+			localanim.AnimDelete(id)
 		}
 		e.cubeIDs = []string{}
 	}
@@ -443,7 +443,7 @@ func (e *enemyColdman) createBress() error {
 	// 前のブレスがあるなら削除する
 	if len(e.bressIDs) > 0 {
 		for _, id := range e.bressIDs {
-			localanim.ObjAnimDelete(id)
+			localanim.AnimDelete(id)
 		}
 		e.bressIDs = []string{}
 	}

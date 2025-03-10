@@ -69,8 +69,16 @@ func AnimDelete(animID string) {
 	if animInst == nil {
 		animInst = anim.NewManager()
 	}
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
 
-	animInst.Delete(animID)
+	if animInst.IsProcessing(animID) {
+		animInst.Delete(animID)
+	}
+	if objanimInst.IsProcessing(animID) {
+		objanimInst.Delete(animID)
+	}
 }
 
 func AnimGetAll() []anim.Param {
@@ -103,14 +111,6 @@ func ObjAnimNew(anim objanim.Anim) string {
 	}
 
 	return objanimInst.New(anim)
-}
-
-func ObjAnimDelete(animID string) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
-
-	objanimInst.Delete(animID)
 }
 
 func ObjAnimGetObjPos(objID string) point.Point {
