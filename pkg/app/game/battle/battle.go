@@ -16,7 +16,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/enemy"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/opening"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
@@ -55,7 +54,6 @@ var (
 	gameCount      int
 	stateInst      State
 	basePlayerInst *player.Player
-	animManager    *manager.Manager
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -69,8 +67,6 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	battleState = stateOpening
 	basePlayerInst = plyr
 	stateInst = nil
-
-	animManager = manager.New()
 
 	var err error
 	playerInst, err = battleplayer.New(plyr)
@@ -157,7 +153,6 @@ func End() {
 	skill.End()
 	enemy.End()
 	effect.End()
-	animManager.End()
 	logger.Info("End battle data")
 }
 
