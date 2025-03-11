@@ -175,9 +175,8 @@ func (e *enemyVolgear) DamageProc(dm *damage.Damage) bool {
 func (e *enemyVolgear) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -258,7 +257,6 @@ func (a *volgearAtk) Update() (bool, error) {
 
 func (a *volgearAtk) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    a.objID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: a.objID,
 	}
 }

@@ -61,7 +61,6 @@ func (e *iceBreakEffect) Draw() {
 
 func (e *iceBreakEffect) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    e.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: e.ID,
 	}
 }

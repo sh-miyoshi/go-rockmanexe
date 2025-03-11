@@ -36,8 +36,8 @@ func (p *crack) GetParam() anim.Param {
 	}
 
 	return anim.Param{
-		ObjID:     p.ID,
-		DrawType:  anim.DrawTypeSkill,
+		ObjID: p.ID,
+
 		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}

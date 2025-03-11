@@ -34,8 +34,7 @@ func (p *skillAreaSteal) Update() (bool, error) {
 
 func (p *skillAreaSteal) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

@@ -71,8 +71,7 @@ func (p *aquaman) Update() (bool, error) {
 
 func (p *aquaman) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

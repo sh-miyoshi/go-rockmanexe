@@ -37,8 +37,7 @@ func (p *wideShot) Update() (bool, error) {
 
 func (p *wideShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

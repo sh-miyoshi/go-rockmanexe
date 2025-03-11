@@ -39,8 +39,7 @@ func (p *deathMatch) Update() (bool, error) {
 
 func (p *deathMatch) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

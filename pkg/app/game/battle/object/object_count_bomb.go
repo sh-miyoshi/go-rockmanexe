@@ -121,9 +121,8 @@ func (o *CountBomb) DamageProc(dm *damage.Damage) bool {
 func (o *CountBomb) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    o.pm.objectID,
-			Pos:      o.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: o.pm.objectID,
+			Pos:   o.pm.Pos,
 		},
 		HP: o.pm.HP,
 	}

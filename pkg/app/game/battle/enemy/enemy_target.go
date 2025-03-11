@@ -82,9 +82,8 @@ func (e *enemyTarget) DamageProc(dm *damage.Damage) bool {
 func (e *enemyTarget) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}

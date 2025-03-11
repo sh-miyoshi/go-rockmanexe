@@ -204,9 +204,8 @@ func (e *enemyGaroo) DamageProc(dm *damage.Damage) bool {
 func (e *enemyGaroo) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -255,7 +254,6 @@ func (a *garooAtk) Update() (bool, error) {
 
 func (a *garooAtk) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    a.id,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: a.id,
 	}
 }

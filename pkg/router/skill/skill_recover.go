@@ -38,7 +38,6 @@ func (p *recover) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
-		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}
 }

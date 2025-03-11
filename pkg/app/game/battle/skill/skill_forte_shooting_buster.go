@@ -34,8 +34,7 @@ func (p *skillForteShootingBuster) Update() (bool, error) {
 
 func (p *skillForteShootingBuster) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

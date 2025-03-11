@@ -3,7 +3,7 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
@@ -23,7 +23,7 @@ type Argument struct {
 }
 
 type SkillAnim interface {
-	anim.Anim
+	skillanim.Anim
 
 	StopByOwner()
 }

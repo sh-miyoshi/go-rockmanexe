@@ -197,9 +197,8 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 func (s *Supporter) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    s.ID,
-			Pos:      s.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: s.ID,
+			Pos:   s.Pos,
 		},
 		HP: int(s.HP),
 	}

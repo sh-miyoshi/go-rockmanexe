@@ -5,8 +5,8 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -16,7 +16,7 @@ import (
 )
 
 type SkillAnim interface {
-	anim.Anim
+	skillanim.Anim
 
 	StopByOwner()
 }
@@ -163,7 +163,7 @@ func (p *tmpskill) Update() (bool, error) {
 func (p *tmpskill) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+
 	}
 }
 

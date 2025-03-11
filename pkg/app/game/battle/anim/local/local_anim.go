@@ -2,181 +2,165 @@ package localanim
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	effectanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/effect"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 var (
-	animInst    *anim.AnimManager
-	objanimInst *objanim.AnimManager
-	skillMgr    *skillmanager.Manager
+	objanimInst    *objanim.AnimManager
+	skillAnimInst  *skillanim.AnimManager
+	effectAnimInst *effectanim.AnimManager
+	skillMgr       *skillmanager.Manager
 )
 
+func newInst() {
+	if objanimInst == nil {
+		objanimInst = objanim.NewManager()
+	}
+	if skillAnimInst == nil {
+		skillAnimInst = skillanim.NewManager()
+	}
+	if effectAnimInst == nil {
+		effectAnimInst = effectanim.NewManager()
+	}
+}
+
 func AnimMgrProcess() error {
-	if animInst == nil {
-		animInst = anim.NewManager()
+	newInst()
+
+	if err := skillAnimInst.Update(); err != nil {
+		return err
 	}
 
-	return animInst.Update()
+	return effectAnimInst.Update()
 }
 
 func AnimMgrDraw() {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	objanimInst.Draw()
-	animInst.MgrDraw()
+	skillAnimInst.Draw()
+	effectAnimInst.Draw()
 }
 
-func SkillAnimNew(a anim.Anim) string {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
+func SkillAnimNew(a skillanim.Anim) string {
+	newInst()
 
-	return animInst.New(a)
+	return skillAnimInst.New(a)
 }
 
-func EffectAnimNew(a anim.Anim) string {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
+func EffectAnimNew(a effectanim.Anim) string {
+	newInst()
 
-	return animInst.New(a)
+	return effectAnimInst.New(a)
 }
 
 func AnimIsProcessing(id string) bool {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
-	if animInst.IsProcessing(id) {
+	if objanimInst.IsProcessing(id) {
 		return true
 	}
 
-	return objanimInst.IsProcessing(id)
+	if skillAnimInst.IsProcessing(id) {
+		return true
+	}
+
+	if effectAnimInst.IsProcessing(id) {
+		return true
+	}
+
+	return false
 }
 
 func AnimCleanup() {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
-	animInst.Cleanup()
+	skillAnimInst.Cleanup()
+	effectAnimInst.Cleanup()
 	objanimInst.Cleanup()
 }
 
 func AnimDelete(animID string) {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
-	if animInst.IsProcessing(animID) {
-		animInst.Delete(animID)
+	if skillAnimInst.IsProcessing(animID) {
+		skillAnimInst.Delete(animID)
+	}
+	if effectAnimInst.IsProcessing(animID) {
+		effectAnimInst.Delete(animID)
 	}
 	if objanimInst.IsProcessing(animID) {
 		objanimInst.Delete(animID)
 	}
 }
 
-func AnimGetAll() []anim.Param {
-	if animInst == nil {
-		animInst = anim.NewManager()
-	}
+func AnimGetEffects() []anim.Param {
+	newInst()
 
-	return animInst.GetAll()
+	return effectAnimInst.GetAll()
 }
 
 func ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.Process(enableDamage, blackout)
 }
 
 func ObjAnimNew(anim objanim.Anim) string {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.New(anim)
 }
 
 func ObjAnimGetObjPos(objID string) point.Point {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.GetObjPos(objID)
 }
 
 func ObjAnimGetObjs(filter objanim.Filter) []objanim.Param {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.GetObjs(filter)
 }
 
 func ObjAnimAddActiveAnim(id string) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	objanimInst.AddActiveAnim(id)
 }
 
 func ObjAnimDeactivateAnim(id string) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	objanimInst.DeactivateAnim(id)
 }
 
 func ObjAnimMakeInvisible(id string, count int) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	objanimInst.MakeInvisible(id, count)
 }
 
 func ObjAnimAddBarrier(id string, hp int) {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	objanimInst.AddBarrier(id, hp)
 }
 
 func ObjAnimExistsObject(pos point.Point) string {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.ExistsObject(pos)
 }
 
 func DamageManager() *damage.DamageManager {
-	if objanimInst == nil {
-		objanimInst = objanim.NewManager()
-	}
+	newInst()
 
 	return objanimInst.DamageManager()
 }

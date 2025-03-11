@@ -44,8 +44,7 @@ func (p *miniBomb) Update() (bool, error) {
 
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

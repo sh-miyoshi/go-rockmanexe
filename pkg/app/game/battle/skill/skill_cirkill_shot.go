@@ -89,8 +89,7 @@ func (p *cirkillShot) Update() (bool, error) {
 
 func (p *cirkillShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

@@ -39,8 +39,7 @@ func (p *cannon) Update() (bool, error) {
 
 func (p *cannon) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

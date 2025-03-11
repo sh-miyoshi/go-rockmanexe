@@ -46,8 +46,7 @@ func (p *heatShot) Update() (bool, error) {
 
 func (p *heatShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.ID,
 	}
 }
 

@@ -36,8 +36,7 @@ func (p *skillForteDarknessOverload) Update() (bool, error) {
 
 func (p *skillForteDarknessOverload) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

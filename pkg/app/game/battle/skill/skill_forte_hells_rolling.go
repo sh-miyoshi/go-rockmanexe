@@ -35,8 +35,7 @@ func (p *skillHellsRolling) Update() (bool, error) {
 
 func (p *skillHellsRolling) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

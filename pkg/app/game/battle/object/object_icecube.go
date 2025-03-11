@@ -165,9 +165,8 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 func (o *IceCube) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    o.pm.objectID,
-			Pos:      o.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: o.pm.objectID,
+			Pos:   o.pm.Pos,
 		},
 		HP: o.pm.HP,
 	}

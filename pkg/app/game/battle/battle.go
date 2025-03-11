@@ -8,7 +8,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
@@ -335,9 +334,7 @@ func drawEnemyNames() {
 }
 
 func cleanupBattleAnims() {
-	for _, a := range localanim.AnimGetAll() {
-		if a.DrawType != anim.DrawTypeEffect {
-			localanim.AnimDelete(a.ObjID)
-		}
+	for _, a := range localanim.AnimGetEffects() {
+		localanim.AnimDelete(a.ObjID)
 	}
 }

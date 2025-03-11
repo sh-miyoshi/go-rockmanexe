@@ -47,8 +47,7 @@ func (p *waterBomb) Update() (bool, error) {
 
 func (p *waterBomb) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

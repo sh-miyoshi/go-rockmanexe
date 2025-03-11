@@ -36,8 +36,7 @@ func (p *skillForteDarkArmBlade) Update() (bool, error) {
 
 func (p *skillForteDarkArmBlade) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

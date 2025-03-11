@@ -38,8 +38,7 @@ func (p *tornado) Update() (bool, error) {
 
 func (p *tornado) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

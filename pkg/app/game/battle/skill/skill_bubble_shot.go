@@ -46,8 +46,7 @@ func (p *bubbleShot) Update() (bool, error) {
 
 func (p *bubbleShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.ID,
 	}
 }
 

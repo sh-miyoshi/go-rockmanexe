@@ -58,8 +58,7 @@ func (p *chipForteAnother) Update() (bool, error) {
 
 func (p *chipForteAnother) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

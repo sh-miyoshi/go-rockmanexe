@@ -50,8 +50,7 @@ func (p *shockWave) Update() (bool, error) {
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

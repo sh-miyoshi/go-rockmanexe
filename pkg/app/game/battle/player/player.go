@@ -594,9 +594,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 func (p *BattlePlayer) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    p.ID,
-			Pos:      p.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: p.ID,
+			Pos:   p.Pos,
 		},
 		HP: int(p.HP),
 	}

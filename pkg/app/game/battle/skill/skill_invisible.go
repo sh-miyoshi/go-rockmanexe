@@ -29,8 +29,7 @@ func (p *invisible) Update() (bool, error) {
 
 func (p *invisible) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

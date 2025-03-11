@@ -182,9 +182,8 @@ func (e *enemyMetall) DamageProc(dm *damage.Damage) bool {
 func (e *enemyMetall) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -220,8 +219,7 @@ func (a *metallAtk) Update() (bool, error) {
 
 func (a *metallAtk) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    a.id,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: a.id,
 	}
 }
 

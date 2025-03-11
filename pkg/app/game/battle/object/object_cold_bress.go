@@ -156,9 +156,8 @@ func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
 func (o *ColdBress) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    o.pm.objectID,
-			Pos:      o.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: o.pm.objectID,
+			Pos:   o.pm.Pos,
 		},
 		HP: o.pm.HP,
 	}

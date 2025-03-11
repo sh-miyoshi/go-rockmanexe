@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	effectanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/effect"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -144,7 +145,7 @@ func End() {
 	}
 }
 
-func Get(typ int, pos point.Point, randRange int) anim.Anim {
+func Get(typ int, pos point.Point, randRange int) effectanim.Anim {
 	ofs := point.Point{}
 	if randRange > 0 {
 		ofs.X = rand.Intn(2*randRange) - randRange
@@ -226,9 +227,8 @@ func (e *effect) Draw() {
 
 func (e *effect) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    e.ID,
-		Pos:      e.Pos,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: e.ID,
+		Pos:   e.Pos,
 	}
 }
 
@@ -242,7 +242,6 @@ func (e *noEffect) Draw() {
 
 func (e *noEffect) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    uuid.New().String(), // set dummy param
-		DrawType: anim.DrawTypeEffect,
+		ObjID: uuid.New().String(), // set dummy param
 	}
 }

@@ -55,8 +55,7 @@ func (p *spreadGun) Update() (bool, error) {
 
 func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.ID,
 	}
 }
 
@@ -78,8 +77,7 @@ func (p *spreadHit) Update() (bool, error) {
 
 func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.ID,
 	}
 }
 

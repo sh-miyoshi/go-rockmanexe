@@ -4,7 +4,9 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	effectanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/effect"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
@@ -17,19 +19,21 @@ import (
 )
 
 type Manager struct {
-	animMgr     *anim.AnimManager
-	objAnimMgr  *objanim.AnimManager
-	skillMgr    *skillmanager.Manager
-	queueIDs    [gameinfo.QueueTypeMax]string
-	sysReceiver chan sysinfo.SysInfo
-	cutinCount  int
+	skillAnimMgr  *skillanim.AnimManager
+	effectAnimMgr *effectanim.AnimManager
+	objAnimMgr    *objanim.AnimManager
+	skillMgr      *skillmanager.Manager
+	queueIDs      [gameinfo.QueueTypeMax]string
+	sysReceiver   chan sysinfo.SysInfo
+	cutinCount    int
 }
 
 func New(sysReceiver chan sysinfo.SysInfo) *Manager {
 	res := &Manager{
-		animMgr:     anim.NewManager(),
-		objAnimMgr:  objanim.NewManager(),
-		sysReceiver: sysReceiver,
+		skillAnimMgr:  skillanim.NewManager(),
+		effectAnimMgr: effectanim.NewManager(),
+		objAnimMgr:    objanim.NewManager(),
+		sysReceiver:   sysReceiver,
 	}
 	res.skillMgr = skillmanager.NewManager()
 	for i := 0; i < gameinfo.QueueTypeMax; i++ {
@@ -40,11 +44,14 @@ func New(sysReceiver chan sysinfo.SysInfo) *Manager {
 }
 
 func (m *Manager) Cleanup() {
-	if m.animMgr != nil {
-		m.animMgr.Cleanup()
-	}
 	if m.objAnimMgr != nil {
 		m.objAnimMgr.Cleanup()
+	}
+	if m.skillAnimMgr != nil {
+		m.skillAnimMgr.Cleanup()
+	}
+	if m.effectAnimMgr != nil {
+		m.effectAnimMgr.Cleanup()
 	}
 	for _, id := range m.queueIDs {
 		queue.Delete(id)
@@ -52,12 +59,14 @@ func (m *Manager) Cleanup() {
 }
 
 func (m *Manager) Update() error {
-	if err := m.animMgr.Update(); err != nil {
-		return errors.Wrap(err, "anim manage process failed")
-	}
-
 	if err := m.objAnimMgr.Process(true, false); err != nil {
 		return errors.Wrap(err, "objanim manage process failed")
+	}
+	if err := m.skillAnimMgr.Update(); err != nil {
+		return errors.Wrap(err, "skillanim manage process failed")
+	}
+	if err := m.effectAnimMgr.Update(); err != nil {
+		return errors.Wrap(err, "effectanim manage process failed")
 	}
 
 	if m.cutinCount > 0 {
@@ -79,20 +88,41 @@ func (m *Manager) QueuePopAll(typ int) []interface{} {
 	return queue.PopAll(m.queueIDs[typ])
 }
 
-func (m *Manager) AnimNew(a anim.Anim) string {
-	return m.animMgr.New(a)
+func (m *Manager) SkillAnimNew(a skillanim.Anim) string {
+	return m.skillAnimMgr.New(a)
+}
+
+func (m *Manager) EffectAnimNew(a effectanim.Anim) string {
+	return m.effectAnimMgr.New(a)
 }
 
 func (m *Manager) AnimDelete(animID string) {
-	m.animMgr.Delete(animID)
+	if m.skillAnimMgr.IsProcessing(animID) {
+		m.skillAnimMgr.Delete(animID)
+	}
+	if m.effectAnimMgr.IsProcessing(animID) {
+		m.effectAnimMgr.Delete(animID)
+	}
+	if m.objAnimMgr.IsProcessing(animID) {
+		m.objAnimMgr.Delete(animID)
+	}
 }
 
 func (m *Manager) AnimGetAll() []anim.Param {
-	return m.animMgr.GetAll()
+	return append(m.skillAnimMgr.GetAll(), m.effectAnimMgr.GetAll()...)
 }
 
 func (m *Manager) AnimIsProcessing(animID string) bool {
-	return m.animMgr.IsProcessing(animID)
+	if m.skillAnimMgr.IsProcessing(animID) {
+		return true
+	}
+	if m.effectAnimMgr.IsProcessing(animID) {
+		return true
+	}
+	if m.objAnimMgr.IsProcessing(animID) {
+		return true
+	}
+	return false
 }
 
 func (m *Manager) ObjAnimNew(anim objanim.Anim) string {
