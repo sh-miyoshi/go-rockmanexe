@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -11,18 +11,19 @@ import (
 )
 
 type wideShot struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.WideShot
-
-	drawer skilldraw.DrawWideShot
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.WideShot
+	drawer  skilldraw.DrawWideShot
+	animMgr *manager.Manager
 }
 
-func newWideShot(objID string, arg skillcore.Argument, core skillcore.SkillCore) *wideShot {
+func newWideShot(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *wideShot {
 	return &wideShot{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.WideShot),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.WideShot),
+		animMgr: animMgr,
 	}
 }
 
@@ -43,6 +44,6 @@ func (p *wideShot) GetParam() anim.Param {
 
 func (p *wideShot) StopByOwner() {
 	if p.Core.GetParam().State != resources.SkillWideShotStateMove {
-		localanim.AnimDelete(p.ID)
+		p.animMgr.AnimDelete(p.ID)
 	}
 }

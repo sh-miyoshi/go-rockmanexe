@@ -6,7 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
@@ -32,6 +32,7 @@ type metallAtk struct {
 	ownerID string
 	count   int
 	images  []int
+	animMgr *manager.Manager
 }
 
 type enemyMetall struct {
@@ -41,12 +42,15 @@ type enemyMetall struct {
 	moveFailedCount int
 	atkID           string
 	atk             metallAtk
+	animMgr         *manager.Manager
 }
 
-func (e *enemyMetall) Init(objID string) error {
+func (e *enemyMetall) Init(objID string, animMgr *manager.Manager) error {
 	name, ext := GetStandImageFile(IDMetall)
 
 	e.pm.ObjectID = objID
+	e.animMgr = animMgr
+	e.atk.animMgr = animMgr
 	e.atk.id = uuid.New().String()
 	e.imgMove = make([]int, 1)
 	fname := name + "_move" + ext
@@ -79,8 +83,8 @@ func (e *enemyMetall) Update() (bool, error) {
 		if e.atkID != "" {
 			img = &e.atk.images[e.atk.GetImageNo()]
 		}
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 
 		// Delete from act queue
@@ -104,7 +108,7 @@ func (e *enemyMetall) Update() (bool, error) {
 
 	if e.atkID != "" {
 		// Anim end
-		if !localanim.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.AnimIsProcessing(e.atkID) {
 			metallActQueue = metallActQueue[1:]
 			metallActQueue = append(metallActQueue, e.pm.ObjectID)
 
@@ -127,12 +131,12 @@ func (e *enemyMetall) Update() (bool, error) {
 	}
 
 	if e.count%actionInterval == 0 {
-		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+		pos := e.animMgr.ObjAnimGetObjPos(e.pm.PlayerID)
 		if pos.Y == e.pm.Pos.Y || e.moveFailedCount >= forceAttackCount {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = localanim.SkillAnimNew(&e.atk)
+			e.atkID = e.animMgr.SkillAnimNew(&e.atk)
 			e.moveFailedCount = 0
 		} else {
 			// Move
@@ -207,11 +211,11 @@ func (a *metallAtk) Update() (bool, error) {
 	a.count++
 
 	if a.count == delayMetallAtk*10 {
-		localanim.SkillAnimNew(skill.Get(resources.SkillEnemyShockWave, skillcore.Argument{
+		a.animMgr.SkillAnimNew(skill.Get(resources.SkillEnemyShockWave, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
-		}))
+		}, a.animMgr))
 	}
 
 	return a.count >= (len(a.images) * delayMetallAtk), nil

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -25,12 +25,14 @@ type CountBomb struct {
 	imgBody   int
 	imgNumber []int
 	count     int
+	animMgr   *manager.Manager
 }
 
-func (o *CountBomb) Init(ownerID string, initParam ObjectParam) error {
+func (o *CountBomb) Init(ownerID string, initParam ObjectParam, animMgr *manager.Manager) error {
 	o.pm = initParam
 	o.pm.objectID = uuid.New().String()
 	o.count = 0
+	o.animMgr = animMgr
 
 	fname := config.ImagePath + "battle/skill/カウントボム.png"
 	o.imgBody = dxlib.LoadGraph(fname)
@@ -77,7 +79,7 @@ func (o *CountBomb) Update() (bool, error) {
 		}
 
 		targetObjType := objanim.ObjTypeAll ^ o.pm.OnwerCharType ^ objanim.ObjTypeNone
-		objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: targetObjType})
+		objs := o.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: targetObjType})
 
 		for _, obj := range objs {
 			dm := damage.Damage{
@@ -88,7 +90,7 @@ func (o *CountBomb) Update() (bool, error) {
 				StrengthType:  damage.StrengthHigh,
 				TargetObjID:   obj.ObjID,
 			}
-			localanim.DamageManager().New(dm)
+			o.animMgr.DamageManager().New(dm)
 		}
 
 		logger.Info("explode count bomb with %+v", o.pm)
@@ -114,7 +116,7 @@ func (o *CountBomb) DamageProc(dm *damage.Damage) bool {
 	}
 
 	o.pm.HP -= dm.Power
-	localanim.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
+	o.animMgr.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 	return true
 }
 

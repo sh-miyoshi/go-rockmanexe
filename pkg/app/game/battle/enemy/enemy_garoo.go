@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
@@ -34,6 +34,7 @@ type garooAtk struct {
 	ownerID string
 	count   int
 	images  []int
+	animMgr *manager.Manager
 }
 
 type enemyGaroo struct {
@@ -45,18 +46,21 @@ type enemyGaroo struct {
 	moveNum   int
 	targetPos point.Point
 	waitCount int
+	animMgr   *manager.Manager
 }
 
-func (e *enemyGaroo) Init(objID string) error {
+func (e *enemyGaroo) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementFire
 	e.moveNum = 3
 	e.targetPos = point.Point{X: -1, Y: -1}
 	e.waitCount = garooInitWait
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDGaroo)
 	e.atk.id = uuid.New().String()
+	e.atk.animMgr = animMgr
 	e.imgMove = make([]int, 4)
 	fname := name + "_move" + ext
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 168, 132, e.imgMove); res == -1 {
@@ -85,8 +89,8 @@ func (e *enemyGaroo) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -104,11 +108,11 @@ func (e *enemyGaroo) Update() (bool, error) {
 	if e.atkID != "" {
 		if e.atkID == garooAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = localanim.SkillAnimNew(&e.atk)
+			e.atkID = e.animMgr.SkillAnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !localanim.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.AnimIsProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = garooInitWait
 		}
@@ -156,7 +160,7 @@ func (e *enemyGaroo) Update() (bool, error) {
 		}
 		e.moveNum--
 		if e.moveNum <= 0 {
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			pos := point.Point{X: 1, Y: 1}
 			if len(objs) > 0 {
 				pos = objs[0].Pos
@@ -242,11 +246,11 @@ func (a *garooAtk) Update() (bool, error) {
 	a.count++
 
 	if a.count == delayGarooAtk*4 {
-		localanim.SkillAnimNew(skill.Get(resources.SkillGarooBreath, skillcore.Argument{
+		a.animMgr.SkillAnimNew(skill.Get(resources.SkillGarooBreath, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
-		}))
+		}, a.animMgr))
 	}
 
 	return a.count >= (len(a.images) * delayGarooAtk), nil

@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
@@ -34,29 +34,31 @@ type larkAtk struct {
 	count     int
 	attacking bool
 	images    []int
+	animMgr   *manager.Manager
 }
 
 type enemyLark struct {
-	pm      EnemyParam
-	imgMove []int
-	count   int
-	atk     larkAtk
-
+	pm          EnemyParam
+	imgMove     []int
+	count       int
+	atk         larkAtk
 	movePoint   [6][2]int
 	movePointer int
 	moveCount   int
-
-	next point.Point
-	prev point.Point
+	next        point.Point
+	prev        point.Point
+	animMgr     *manager.Manager
 }
 
-func (e *enemyLark) Init(objID string) error {
+func (e *enemyLark) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementWater
 	e.atk.ownerID = objID
 	e.next = e.pm.Pos
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
+	e.animMgr = animMgr
+	e.atk.animMgr = animMgr
 
 	for i := 0; i < 6; i++ {
 		// x座標
@@ -111,8 +113,8 @@ func (e *enemyLark) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -226,13 +228,14 @@ func (a *larkAtk) SetAttack() {
 
 func (a *larkAtk) Update() {
 	if a.count == 1*delayLarkAtk {
-		localanim.SkillAnimNew(skill.Get(
+		a.animMgr.SkillAnimNew(skill.Get(
 			resources.SkillEnemyWideShot,
 			skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
 			},
+			a.animMgr,
 		))
 	}
 

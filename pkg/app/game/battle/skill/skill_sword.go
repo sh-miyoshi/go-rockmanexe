@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -10,23 +10,24 @@ import (
 )
 
 type sword struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.Sword
-
-	drawer skilldraw.DrawSword
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.Sword
+	drawer  skilldraw.DrawSword
+	animMgr *manager.Manager
 }
 
-func newSword(objID string, arg skillcore.Argument, core skillcore.SkillCore) *sword {
+func newSword(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *sword {
 	return &sword{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.Sword),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.Sword),
+		animMgr: animMgr,
 	}
 }
 
 func (p *sword) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	p.drawer.Draw(p.Core.GetID(), view, p.Core.GetCount(), p.Core.GetDelay(), p.Arg.IsReverse)
@@ -43,5 +44,5 @@ func (p *sword) GetParam() anim.Param {
 }
 
 func (p *sword) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

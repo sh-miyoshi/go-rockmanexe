@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -15,20 +15,22 @@ type cannon struct {
 	Core    *processor.Cannon
 	SkillID int
 
-	drawer skilldraw.DrawCannon
+	drawer  skilldraw.DrawCannon
+	animMgr *manager.Manager
 }
 
-func newCannon(objID string, arg skillcore.Argument, core skillcore.SkillCore, skillID int) *cannon {
+func newCannon(objID string, arg skillcore.Argument, core skillcore.SkillCore, skillID int, animMgr *manager.Manager) *cannon {
 	return &cannon{
 		ID:      objID,
 		Arg:     arg,
 		Core:    core.(*processor.Cannon),
 		SkillID: skillID,
+		animMgr: animMgr,
 	}
 }
 
 func (p *cannon) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 	p.drawer.Draw(p.SkillID, view, p.Core.GetCount(), true)
 }
@@ -44,5 +46,5 @@ func (p *cannon) GetParam() anim.Param {
 }
 
 func (p *cannon) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
@@ -17,14 +17,16 @@ type chipForteAnother struct {
 	Arg  skillcore.Argument
 	Core *processor.ChipForteAnother
 
-	drawer skilldraw.DrawChipForteAnother
+	drawer  skilldraw.DrawChipForteAnother
+	animMgr *manager.Manager
 }
 
-func newChipForteAnother(objID string, arg skillcore.Argument, core skillcore.SkillCore) *chipForteAnother {
+func newChipForteAnother(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *chipForteAnother {
 	return &chipForteAnother{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.ChipForteAnother),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.ChipForteAnother),
+		animMgr: animMgr,
 	}
 }
 
@@ -63,5 +65,5 @@ func (p *chipForteAnother) GetParam() anim.Param {
 }
 
 func (p *chipForteAnother) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

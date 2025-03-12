@@ -6,7 +6,7 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -53,32 +53,34 @@ type EnemyParam struct {
 
 type enemyObject interface {
 	objanim.Anim
-	Init(ID string) error
+	Init(ID string, animMgr *manager.Manager) error
 	End()
 }
 
 var (
-	ErrGameEnd = errors.New("game end")
-	enemies    = make(map[string]enemyObject)
-	debugFlag  = false
+	ErrGameEnd  = errors.New("game end")
+	enemies     = make(map[string]enemyObject)
+	animManager *manager.Manager
+	debugFlag   = false
 
 	// 設定されてない場所であることがわかるような絶対にあり得ない座標
 	emptyPos = point.Point{X: -100, Y: -100}
 )
 
-func Init(playerID string, enemyList []EnemyParam) error {
+func Init(playerID string, enemyList []EnemyParam, animMgr *manager.Manager) error {
+	animManager = animMgr
 	for i, e := range enemyList {
 		e.PlayerID = playerID
 		e.ActNo = i
 		e.HPMax = e.HP
 		obj := getObject(e.CharID, e)
-		objID := localanim.ObjAnimNew(obj)
+		objID := animManager.ObjAnimNew(obj)
 		enemies[objID] = obj
 	}
 
 	// Init enemy data
 	for id, e := range enemies {
-		if err := e.Init(id); err != nil {
+		if err := e.Init(id, animManager); err != nil {
 			return errors.Wrapf(err, "enemy %s init failed", id)
 		}
 	}
@@ -94,7 +96,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !localanim.AnimIsProcessing(id) {
+		if !animManager.AnimIsProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}
@@ -199,7 +201,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 
 		if damage.IsWeakness(0, *dm) {
 			dm.Power *= 2
-			localanim.EffectAnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
+			animManager.EffectAnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
 		}
 
 		pm.HP -= dm.Power
@@ -215,7 +217,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 			}
 		}
 
-		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
+		animManager.EffectAnimNew(effect.Get(dm.HitEffectType, pm.Pos, 5))
 
 		if dm.IsParalyzed {
 			pm.ParalyzedCount = battlecommon.DefaultParalyzedTime
@@ -269,16 +271,19 @@ package enemy
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 )
 
 type enemy struct {
 	pm EnemyParam
+	animMgr *manager.Manager
 }
 
-func (e *enemy) Init(objID string) error {
+func (e *enemy) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
+	e.animMgr = animMgr
 
 	// Load Images
 	return nil

@@ -8,7 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -53,6 +53,7 @@ var (
 	gameCount      int
 	stateInst      State
 	basePlayerInst *player.Player
+	animMgr        *manager.Manager
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -66,13 +67,14 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	battleState = stateOpening
 	basePlayerInst = plyr
 	stateInst = nil
+	animMgr = manager.NewManager()
 
 	var err error
-	playerInst, err = battleplayer.New(plyr)
+	playerInst, err = battleplayer.New(plyr, animMgr)
 	if err != nil {
 		return errors.Wrap(err, "battle player init failed")
 	}
-	localanim.ObjAnimNew(playerInst)
+	animMgr.ObjAnimNew(playerInst)
 
 	enemyList = []enemy.EnemyParam{}
 	for _, e := range enemies {
@@ -81,11 +83,11 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 			supporter, err := battleplayer.NewSupporter(battleplayer.SupporterParam{
 				HP:      uint(e.HP),
 				InitPos: e.Pos,
-			})
+			}, animMgr)
 			if err != nil {
 				return errors.Wrap(err, "battle supporter init failed")
 			}
-			localanim.ObjAnimNew(supporter)
+			animMgr.ObjAnimNew(supporter)
 			logger.Info("add supporter %+v", supporter)
 		} else {
 			enemyList = append(enemyList, e)
@@ -93,7 +95,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	}
 	logger.Info("enemy list: %+v", enemyList)
 
-	if err := field.Init(); err != nil {
+	if err := field.Init(animMgr); err != nil {
 		return errors.Wrap(err, "battle field init failed")
 	}
 
@@ -145,7 +147,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 
 func End() {
 	field.ResetSet4x4Area()
-	localanim.AnimCleanup()
+	animMgr.AnimCleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
@@ -172,7 +174,7 @@ func Update() error {
 		}
 
 		if stateInst.Update() {
-			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
+			if err := enemy.Init(playerInst.ID, enemyList, animMgr); err != nil {
 				return errors.Wrap(err, "enemy init failed")
 			}
 			stateChange(stateChipSelect)
@@ -209,7 +211,7 @@ func Update() error {
 	case stateMain:
 		gameCount++
 
-		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
+		if err := animMgr.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
 			return errors.Wrap(err, "failed to handle object animation")
 		}
 
@@ -234,7 +236,7 @@ func Update() error {
 				return errors.Wrap(err, "failed to process enemy")
 			}
 
-			if err := localanim.AnimMgrProcess(); err != nil {
+			if err := animMgr.AnimMgrProcess(); err != nil {
 				return errors.Wrap(err, "failed to handle animation")
 			}
 		}
@@ -262,7 +264,7 @@ func Update() error {
 			}
 		}
 
-		if err := localanim.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
+		if err := animMgr.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
 			return errors.Wrap(err, "failed to handle object animation")
 		}
 
@@ -294,7 +296,7 @@ func Update() error {
 
 func Draw() {
 	field.Draw()
-	localanim.AnimMgrDraw()
+	animMgr.AnimMgrDraw()
 
 	drawEnemyNames()
 	field.DrawBlackout()
@@ -334,7 +336,7 @@ func drawEnemyNames() {
 }
 
 func cleanupBattleAnims() {
-	for _, a := range localanim.AnimGetEffects() {
-		localanim.AnimDelete(a.ObjID)
+	for _, a := range animMgr.AnimGetEffects() {
+		animMgr.AnimDelete(a.ObjID)
 	}
 }

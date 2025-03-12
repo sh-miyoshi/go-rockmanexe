@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -13,18 +13,19 @@ import (
 )
 
 type waterBomb struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.WaterBomb
-
-	drawer skilldraw.DrawWaterBomb
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.WaterBomb
+	drawer  skilldraw.DrawWaterBomb
+	animMgr *manager.Manager
 }
 
-func newWaterBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *waterBomb {
+func newWaterBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *waterBomb {
 	return &waterBomb{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.WaterBomb),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.WaterBomb),
+		animMgr: animMgr,
 	}
 }
 
@@ -39,7 +40,7 @@ func (p *waterBomb) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopHits() {
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
+		p.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
 		field.ChangePanelStatus(hit, battlecommon.PanelStatusCrack, 0)
 	}
 	return res, nil
@@ -53,6 +54,6 @@ func (p *waterBomb) GetParam() anim.Param {
 
 func (p *waterBomb) StopByOwner() {
 	if p.Core.GetCount() < 5 {
-		localanim.AnimDelete(p.ID)
+		p.animMgr.AnimDelete(p.ID)
 	}
 }

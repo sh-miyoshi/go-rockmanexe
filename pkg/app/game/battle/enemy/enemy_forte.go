@@ -6,7 +6,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
@@ -57,9 +57,10 @@ type enemyForte struct {
 	bladeAtkCount    int
 	atkIDs           []string
 	isCharReverse    bool
+	animMgr          *manager.Manager
 }
 
-func (e *enemyForte) Init(objID string) error {
+func (e *enemyForte) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.state = forteActTypeStand
 	e.waitCount = 20
@@ -69,6 +70,7 @@ func (e *enemyForte) Init(objID string) error {
 	e.isTargetPosMoved = false
 	e.bladeAtkCount = 0
 	e.isCharReverse = false
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDForte)
@@ -130,8 +132,8 @@ func (e *enemyForte) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -233,18 +235,18 @@ func (e *enemyForte) Update() (bool, error) {
 			if e.count%40 == initWait {
 				logger.Debug("Forte Shooting Buster Attack at %d", e.count)
 				for i := 0; i < 3; i++ {
-					e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
+					e.atkIDs = append(e.atkIDs, e.animMgr.SkillAnimNew(skill.Get(resources.SkillForteShootingBuster, skillcore.Argument{
 						OwnerID:    e.pm.ObjectID,
 						Power:      forteAtkPower[e.state],
 						TargetType: damage.TargetPlayer,
-					})))
+					}, e.animMgr)))
 				}
 			}
 		} else {
 			// 終了チェックフェーズ
 			end := true
 			for _, id := range e.atkIDs {
-				if localanim.AnimIsProcessing(id) {
+				if e.animMgr.AnimIsProcessing(id) {
 					end = false
 					break
 				}
@@ -268,26 +270,26 @@ func (e *enemyForte) Update() (bool, error) {
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling] {
 			logger.Debug("Forte Hells Rolling Attack 1st")
-			e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, e.animMgr.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingUp, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
-			})))
+			}, e.animMgr)))
 		}
 
 		if e.count == 7*forteDelays[forteActTypeHellsRolling]+30 {
 			logger.Debug("Forte Hells Rolling Attack 2st")
-			e.atkIDs = append(e.atkIDs, localanim.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
+			e.atkIDs = append(e.atkIDs, e.animMgr.SkillAnimNew(skill.Get(resources.SkillForteHellsRollingDown, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
-			})))
+			}, e.animMgr)))
 		}
 
 		if len(e.atkIDs) > 0 {
 			end := true
 			for _, id := range e.atkIDs {
-				if localanim.AnimIsProcessing(id) {
+				if e.animMgr.AnimIsProcessing(id) {
 					end = false
 					break
 				}
@@ -301,7 +303,7 @@ func (e *enemyForte) Update() (bool, error) {
 			e.isTargetPosMoved = true
 
 			// Move to attack position
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -316,11 +318,11 @@ func (e *enemyForte) Update() (bool, error) {
 		}
 		if e.count == 2*forteDelays[forteActTypeDarkArmBlade1] {
 			logger.Debug("Forte Dark Arm Blade 1st Attack")
-			localanim.SkillAnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
+			e.animMgr.SkillAnimNew(skill.Get(resources.SkillForteDarkArmBladeType1, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      forteAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
-			}))
+			}, e.animMgr))
 		}
 
 		if e.count == 5*forteDelays[forteActTypeDarkArmBlade1] {
@@ -331,7 +333,7 @@ func (e *enemyForte) Update() (bool, error) {
 			e.isTargetPosMoved = true
 
 			// Move to attack position
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -362,7 +364,7 @@ func (e *enemyForte) Update() (bool, error) {
 				skillType = resources.SkillForteDarkArmBladeType2
 			}
 			e.atkIDs = []string{
-				localanim.SkillAnimNew(
+				e.animMgr.SkillAnimNew(
 					skill.Get(
 						skillType,
 						skillcore.Argument{
@@ -370,13 +372,14 @@ func (e *enemyForte) Update() (bool, error) {
 							Power:      forteAtkPower[e.state],
 							TargetType: damage.TargetPlayer,
 						},
+						e.animMgr,
 					),
 				),
 			}
 		}
 
 		if len(e.atkIDs) > 0 {
-			if !localanim.AnimIsProcessing(e.atkIDs[0]) {
+			if !e.animMgr.AnimIsProcessing(e.atkIDs[0]) {
 				e.bladeAtkCount++
 				if e.bladeAtkCount == 3 {
 					// 終了
@@ -407,16 +410,16 @@ func (e *enemyForte) Update() (bool, error) {
 		if e.count == 7*forteDelays[forteActTypeDarknessOverload] {
 			logger.Debug("Forte Darkness Overload Attack")
 			e.atkIDs = []string{
-				localanim.SkillAnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
+				e.animMgr.SkillAnimNew(skill.Get(resources.SkillForteDarknessOverload, skillcore.Argument{
 					OwnerID:    e.pm.ObjectID,
 					Power:      forteAtkPower[e.state],
 					TargetType: damage.TargetPlayer,
-				})),
+				}, e.animMgr)),
 			}
 		}
 
 		if len(e.atkIDs) > 0 {
-			if !localanim.AnimIsProcessing(e.atkIDs[0]) {
+			if !e.animMgr.AnimIsProcessing(e.atkIDs[0]) {
 				return e.clearState()
 			}
 		}

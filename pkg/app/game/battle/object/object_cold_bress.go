@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -27,12 +27,14 @@ type ColdBress struct {
 	damageID string
 	next     point.Point
 	prev     point.Point
+	animMgr  *manager.Manager
 }
 
-func (o *ColdBress) Init(ownerID string, initParam ObjectParam) error {
+func (o *ColdBress) Init(ownerID string, initParam ObjectParam, animMgr *manager.Manager) error {
 	o.pm = initParam
 	o.pm.objectID = uuid.New().String()
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
+	o.animMgr = animMgr
 
 	o.next = o.pm.Pos
 	o.prev = point.Point{X: o.pm.Pos.X + 1, Y: o.pm.Pos.Y}
@@ -62,7 +64,7 @@ func (o *ColdBress) Update() (bool, error) {
 	// キャラにヒット時はダメージを与えて消える
 	if o.count%coldBressNextStepCount == 1 {
 		if o.damageID != "" {
-			if !localanim.DamageManager().Exists(o.damageID) {
+			if !o.animMgr.DamageManager().Exists(o.damageID) {
 				// attack hit to target
 				return true, nil
 			}
@@ -86,7 +88,7 @@ func (o *ColdBress) Update() (bool, error) {
 			target = damage.TargetEnemy
 		}
 
-		o.damageID = localanim.DamageManager().New(damage.Damage{
+		o.damageID = o.animMgr.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           o.pm.Pos,
 			Power:         10,
@@ -146,7 +148,7 @@ func (o *ColdBress) DamageProc(dm *damage.Damage) bool {
 	if dm.TargetObjType&target != 0 {
 		o.pm.HP -= dm.Power
 
-		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
+		o.animMgr.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 		return true
 	}
 
@@ -172,7 +174,7 @@ func (o *ColdBress) MakeInvisible(count int) {}
 func (o *ColdBress) AddBarrier(hp int) {}
 
 func (o *ColdBress) checkMove(next point.Point) bool {
-	objID := localanim.ObjAnimExistsObject(next)
+	objID := o.animMgr.ObjAnimExistsObject(next)
 	if objID == "" {
 		return true
 	}
@@ -181,7 +183,7 @@ func (o *ColdBress) checkMove(next point.Point) bool {
 	if o.pm.OnwerCharType == objanim.ObjTypePlayer {
 		target = objanim.ObjTypeEnemy
 	}
-	objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: target})
+	objs := o.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: target})
 	for _, obj := range objs {
 		if obj.ObjID == objID {
 			return true

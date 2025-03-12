@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -13,14 +13,16 @@ type skillHellsRolling struct {
 	Arg  skillcore.Argument
 	Core *processor.ForteHellsRolling
 
-	drawer skilldraw.DrawForteHellsRolling
+	drawer  skilldraw.DrawForteHellsRolling
+	animMgr *manager.Manager
 }
 
-func newForteHellsRolling(objID string, arg skillcore.Argument, core skillcore.SkillCore) *skillHellsRolling {
+func newForteHellsRolling(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *skillHellsRolling {
 	return &skillHellsRolling{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.ForteHellsRolling),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.ForteHellsRolling),
+		animMgr: animMgr,
 	}
 }
 
@@ -40,5 +42,5 @@ func (p *skillHellsRolling) GetParam() anim.Param {
 }
 
 func (p *skillHellsRolling) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

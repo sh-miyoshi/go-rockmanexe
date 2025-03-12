@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -36,10 +36,13 @@ var (
 	blackoutCount  = 0
 	animCount      = 0
 	panels         [][]extendPanelInfo
+	animManager    *manager.Manager
 )
 
-func Init() error {
+func Init(animMgr *manager.Manager) error {
 	logger.Info("Initialize battle field data")
+
+	animManager = animMgr
 
 	panels = make([][]extendPanelInfo, battlecommon.FieldNum.X)
 	for i := 0; i < battlecommon.FieldNum.X; i++ {
@@ -152,7 +155,7 @@ func Draw() {
 				dxlib.DrawGraph(vx, vy, img, true)
 			}
 
-			damages := localanim.DamageManager().GetHitDamages(point.Point{X: x, Y: y}, "")
+			damages := animManager.DamageManager().GetHitDamages(point.Point{X: x, Y: y}, "")
 			for _, dm := range damages {
 				if dm != nil && dm.ShowHitArea {
 					x1 := vx
@@ -190,7 +193,7 @@ func Update() {
 		}
 	}
 
-	objs := localanim.ObjAnimGetObjs(objanim.FilterAll)
+	objs := animManager.ObjAnimGetObjs(objanim.FilterAll)
 	for _, obj := range objs {
 		panels[obj.Pos.X][obj.Pos.Y].info.ObjectID = obj.ObjID
 		if panels[obj.Pos.X][obj.Pos.Y].info.Status == battlecommon.PanelStatusCrack {
@@ -223,7 +226,7 @@ func Update() {
 				// 上に載っているオブジェクトのHPを減らす
 				if animCount%30 == 0 {
 					if panels[x][y].info.ObjectID != "" {
-						localanim.DamageManager().New(damage.Damage{
+						animManager.DamageManager().New(damage.Damage{
 							ID:            uuid.New().String(),
 							Power:         1,
 							DamageType:    damage.TypeObject,
@@ -255,7 +258,7 @@ func GetPanelInfo(pos point.Point) battlecommon.PanelInfo {
 	}
 
 	// Update objectID to latest
-	panels[pos.X][pos.Y].info.ObjectID = localanim.ObjAnimExistsObject(pos)
+	panels[pos.X][pos.Y].info.ObjectID = animManager.ObjAnimExistsObject(pos)
 
 	return panels[pos.X][pos.Y].info
 }

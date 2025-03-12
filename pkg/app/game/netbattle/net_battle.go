@@ -8,7 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -56,6 +56,7 @@ type NetBattle struct {
 	playerInst   *battleplayer.BattlePlayer
 	fieldInst    *field.Field
 	playerInitHP int
+	animMgr      *manager.Manager
 }
 
 var (
@@ -108,6 +109,7 @@ func Init(plyr *player.Player) error {
 		state:        stateWaiting,
 		stateCount:   0,
 		playerInitHP: int(plyr.HP),
+		animMgr:      manager.NewManager(),
 	}
 	var err error
 	inst.stateInst, err = opening.NewWithBoss([]enemy.EnemyParam{
@@ -147,7 +149,7 @@ func End() {
 		inst.fieldInst.End()
 	}
 	draw.End()
-	localanim.AnimCleanup()
+	inst.animMgr.AnimCleanup()
 }
 
 func Update() error {
@@ -294,7 +296,7 @@ func Update() error {
 	}
 
 	if isRunAnim {
-		if err := localanim.AnimMgrProcess(); err != nil {
+		if err := inst.animMgr.AnimMgrProcess(); err != nil {
 			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
@@ -307,7 +309,7 @@ func Draw() {
 	inst.fieldInst.Draw()
 	draw.Draw()
 
-	localanim.AnimMgrDraw()
+	inst.animMgr.AnimMgrDraw()
 	inst.playerInst.LocalDraw()
 
 	battlefield.DrawBlackout()
@@ -359,7 +361,7 @@ func stateChange(nextState int) {
 func handleEffect() {
 	g := net.GetInst().GetGameInfo()
 	for _, e := range g.Effects {
-		localanim.EffectAnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
+		inst.animMgr.EffectAnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
 	}
 }
 

@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
@@ -11,23 +11,24 @@ import (
 )
 
 type vulcan struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core (*processor.Vulcan)
-
-	drawer skilldraw.DrawVulcan
+	ID      string
+	Arg     skillcore.Argument
+	Core    (*processor.Vulcan)
+	drawer  skilldraw.DrawVulcan
+	animMgr *manager.Manager
 }
 
-func newVulcan(objID string, arg skillcore.Argument, core skillcore.SkillCore) *vulcan {
+func newVulcan(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *vulcan {
 	return &vulcan{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.Vulcan),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.Vulcan),
+		animMgr: animMgr,
 	}
 }
 
 func (p *vulcan) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	p.drawer.Draw(view, p.Core.GetCount(), p.Core.GetDelay(), true)
@@ -39,7 +40,7 @@ func (p *vulcan) Update() (bool, error) {
 		return false, err
 	}
 	for _, eff := range p.Core.PopEffects() {
-		localanim.EffectAnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
+		p.animMgr.EffectAnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
 	}
 
 	return res, nil
@@ -52,5 +53,5 @@ func (p *vulcan) GetParam() anim.Param {
 }
 
 func (p *vulcan) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

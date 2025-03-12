@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
@@ -16,19 +16,21 @@ type bubbleShot struct {
 	Arg  skillcore.Argument
 	Core *processor.BubbleShot
 
-	drawer skilldraw.DrawBubbleShot
+	drawer  skilldraw.DrawBubbleShot
+	animMgr *manager.Manager
 }
 
-func newBubbleShot(objID string, arg skillcore.Argument, core skillcore.SkillCore) *bubbleShot {
+func newBubbleShot(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *bubbleShot {
 	return &bubbleShot{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.BubbleShot),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.BubbleShot),
+		animMgr: animMgr,
 	}
 }
 
 func (p *bubbleShot) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 	p.drawer.Draw(view, p.Core.GetCount(), true)
 }
@@ -39,7 +41,7 @@ func (p *bubbleShot) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopHitTargets() {
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
+		p.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, hit, 0))
 	}
 	return res, nil
 }
@@ -52,6 +54,6 @@ func (p *bubbleShot) GetParam() anim.Param {
 
 func (p *bubbleShot) StopByOwner() {
 	if p.Core.GetCount() < p.Core.GetDelay() {
-		localanim.AnimDelete(p.ID)
+		p.animMgr.AnimDelete(p.ID)
 	}
 }

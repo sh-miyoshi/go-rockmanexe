@@ -7,7 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -44,9 +44,10 @@ type Supporter struct {
 	status          int
 	waitCount       int
 	nextStatus      int
+	animMgr         *manager.Manager
 }
 
-func NewSupporter(param SupporterParam) (*Supporter, error) {
+func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, error) {
 	logger.Info("Initialize battle supporter")
 
 	res := &Supporter{
@@ -55,8 +56,9 @@ func NewSupporter(param SupporterParam) (*Supporter, error) {
 		HP:        param.HP,
 		HPMax:     param.HP,
 		ShotPower: 5,
+		animMgr:   animMgr,
 	}
-	res.act.Init(&res.Pos)
+	res.act.Init(&res.Pos, animMgr)
 
 	res.setAction(120, supporterStatusMove)
 
@@ -150,7 +152,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		} else {
 			s.HP = uint(hp)
 		}
-		localanim.EffectAnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
+		s.animMgr.EffectAnimNew(effect.Get(dm.HitEffectType, s.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&s.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
@@ -175,7 +177,7 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if localanim.AnimIsProcessing(s.act.skillID) {
+		if s.animMgr.AnimIsProcessing(s.act.skillID) {
 			s.act.skillInst.StopByOwner()
 		}
 		s.act.skillID = ""

@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -14,14 +14,16 @@ type skillForteDarknessOverload struct {
 	Arg  skillcore.Argument
 	Core *processor.ForteDarknessOverload
 
-	drawer skilldraw.DrawForteDarknessOverload
+	drawer  skilldraw.DrawForteDarknessOverload
+	animMgr *manager.Manager
 }
 
-func newForteDarknessOverload(objID string, arg skillcore.Argument, core skillcore.SkillCore) *skillForteDarknessOverload {
+func newForteDarknessOverload(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *skillForteDarknessOverload {
 	return &skillForteDarknessOverload{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.ForteDarknessOverload),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.ForteDarknessOverload),
+		animMgr: animMgr,
 	}
 }
 
@@ -41,5 +43,5 @@ func (p *skillForteDarknessOverload) GetParam() anim.Param {
 }
 
 func (p *skillForteDarknessOverload) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

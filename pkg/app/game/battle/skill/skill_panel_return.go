@@ -2,23 +2,25 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type panelReturn struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.PanelReturn
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.PanelReturn
+	animMgr *manager.Manager
 }
 
-func newPanelReturn(objID string, arg skillcore.Argument, core skillcore.SkillCore) *panelReturn {
+func newPanelReturn(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *panelReturn {
 	return &panelReturn{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.PanelReturn),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.PanelReturn),
+		animMgr: animMgr,
 	}
 }
 
@@ -44,5 +46,5 @@ func (p *panelReturn) GetParam() anim.Param {
 }
 
 func (p *panelReturn) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

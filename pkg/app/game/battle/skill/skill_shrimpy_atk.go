@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -15,23 +15,24 @@ const (
 )
 
 type shrimpyAtk struct {
-	ID  string
-	Arg skillcore.Argument
-
-	drawer skilldraw.DrawShrimpyAtk
-	pos    point.Point
-	count  int
-	state  int
+	ID      string
+	Arg     skillcore.Argument
+	drawer  skilldraw.DrawShrimpyAtk
+	pos     point.Point
+	count   int
+	state   int
+	animMgr *manager.Manager
 }
 
-func newShrimpyAtk(objID string, arg skillcore.Argument) *shrimpyAtk {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
+func newShrimpyAtk(objID string, arg skillcore.Argument, animMgr *manager.Manager) *shrimpyAtk {
+	pos := animMgr.ObjAnimGetObjPos(arg.OwnerID)
 	pos.X--
 	return &shrimpyAtk{
-		ID:    objID,
-		Arg:   arg,
-		pos:   pos,
-		state: resources.SkillShrimpyAttackStateBegin,
+		ID:      objID,
+		Arg:     arg,
+		pos:     pos,
+		state:   resources.SkillShrimpyAttackStateBegin,
+		animMgr: animMgr,
 	}
 }
 
@@ -49,7 +50,7 @@ func (p *shrimpyAtk) Update() (bool, error) {
 		}
 	case resources.SkillShrimpyAttackStateMove:
 		if p.count%shrimpyAtkNextStepCount == 0 {
-			localanim.DamageManager().New(damage.Damage{
+			p.animMgr.DamageManager().New(damage.Damage{
 				DamageType:    damage.TypePosition,
 				Pos:           p.pos,
 				Power:         int(p.Arg.Power),
@@ -78,5 +79,5 @@ func (p *shrimpyAtk) GetParam() anim.Param {
 }
 
 func (p *shrimpyAtk) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

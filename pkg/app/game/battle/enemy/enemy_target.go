@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
@@ -16,11 +16,12 @@ import (
 )
 
 type enemyTarget struct {
-	pm    EnemyParam
-	image int
+	pm      EnemyParam
+	image   int
+	animMgr *manager.Manager
 }
 
-func (e *enemyTarget) Init(objID string) error {
+func (e *enemyTarget) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	name, ext := GetStandImageFile(IDTarget)
 	fname := name + ext
@@ -28,6 +29,7 @@ func (e *enemyTarget) Init(objID string) error {
 	if e.image == -1 {
 		return errors.Newf("failed to load enemy image %s", fname)
 	}
+	e.animMgr = animMgr
 
 	return nil
 }
@@ -38,8 +40,8 @@ func (e *enemyTarget) End() {
 
 func (e *enemyTarget) Update() (bool, error) {
 	if e.pm.HP <= 0 {
-		deleteanim.New(e.image, e.pm.Pos, false)
-		localanim.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(e.image, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		e.image = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
