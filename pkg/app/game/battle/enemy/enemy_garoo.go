@@ -108,7 +108,7 @@ func (e *enemyGaroo) Update() (bool, error) {
 	if e.atkID != "" {
 		if e.atkID == garooAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = e.animMgr.SkillAnimNew(&e.atk)
+			e.atkID = e.animMgr.EffectAnimNew(&e.atk)
 		}
 
 		// Anim end

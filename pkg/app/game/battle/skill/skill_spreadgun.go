@@ -47,7 +47,7 @@ func (p *spreadGun) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopSpreadHits() {
-		p.animMgr.SkillAnimNew(&spreadHit{
+		p.animMgr.EffectAnimNew(&spreadHit{
 			ID:      uuid.New().String(),
 			Core:    hit,
 			animMgr: p.animMgr,

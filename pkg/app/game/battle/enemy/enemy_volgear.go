@@ -108,7 +108,7 @@ func (e *enemyVolgear) Update() (bool, error) {
 			e.atk.ownerID = e.pm.ObjectID
 			e.atk.animMgr = e.animMgr
 			e.atk.Init()
-			e.atkID = e.animMgr.SkillAnimNew(&e.atk)
+			e.atkID = e.animMgr.EffectAnimNew(&e.atk)
 		}
 
 		// Anim end

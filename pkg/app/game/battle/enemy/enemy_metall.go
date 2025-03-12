@@ -136,7 +136,7 @@ func (e *enemyMetall) Update() (bool, error) {
 			// Attack
 			e.atk.count = 0
 			e.atk.ownerID = e.pm.ObjectID
-			e.atkID = e.animMgr.SkillAnimNew(&e.atk)
+			e.atkID = e.animMgr.EffectAnimNew(&e.atk)
 			e.moveFailedCount = 0
 		} else {
 			// Move
