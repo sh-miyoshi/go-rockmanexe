@@ -112,7 +112,7 @@ func (e *enemyGaroo) Update() (bool, error) {
 		}
 
 		// Anim end
-		if !e.animMgr.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = garooInitWait
 		}

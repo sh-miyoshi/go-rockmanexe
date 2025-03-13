@@ -572,7 +572,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if p.animMgr.AnimIsProcessing(p.act.skillID) {
+		if p.animMgr.IsAnimProcessing(p.act.skillID) {
 			p.act.skillInst.StopByOwner()
 		}
 		p.act.skillID = ""

@@ -96,9 +96,9 @@ MAIN:
 		field.Draw()
 		animMgr.ObjAnimMgrProcess(false, field.IsBlackout())
 		playerDraw(pos, act)
-		animMgr.AnimMgrProcess()
+		animMgr.Update()
 		// animMgr.ObjAnimMgrDraw()
-		animMgr.AnimMgrDraw()
+		animMgr.Draw()
 
 		if !act.Update() && inputs.CheckKey(inputs.KeyEnter) == 1 {
 			cfg := loadConfig()

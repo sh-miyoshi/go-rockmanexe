@@ -215,7 +215,7 @@ func (e *enemyAquaman) Update() (bool, error) {
 			}, e.animMgr))
 		}
 
-		if !e.animMgr.AnimIsProcessing(e.actID) {
+		if !e.animMgr.IsAnimProcessing(e.actID) {
 			e.waitCount = 60
 			e.state = aquamanActTypeStand
 			e.nextState = aquamanActTypeMove
@@ -376,7 +376,7 @@ func (e *enemyAquaman) getCurrentImagePointer() *int {
 
 func (e *enemyAquaman) pipeExists() bool {
 	for _, id := range e.waterPipeObjIDs {
-		if e.animMgr.AnimIsProcessing(id) {
+		if e.animMgr.IsAnimProcessing(id) {
 			return true
 		}
 	}

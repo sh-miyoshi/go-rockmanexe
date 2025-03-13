@@ -246,7 +246,7 @@ func (e *enemyForte) Update() (bool, error) {
 			// 終了チェックフェーズ
 			end := true
 			for _, id := range e.atkIDs {
-				if e.animMgr.AnimIsProcessing(id) {
+				if e.animMgr.IsAnimProcessing(id) {
 					end = false
 					break
 				}
@@ -289,7 +289,7 @@ func (e *enemyForte) Update() (bool, error) {
 		if len(e.atkIDs) > 0 {
 			end := true
 			for _, id := range e.atkIDs {
-				if e.animMgr.AnimIsProcessing(id) {
+				if e.animMgr.IsAnimProcessing(id) {
 					end = false
 					break
 				}
@@ -379,7 +379,7 @@ func (e *enemyForte) Update() (bool, error) {
 		}
 
 		if len(e.atkIDs) > 0 {
-			if !e.animMgr.AnimIsProcessing(e.atkIDs[0]) {
+			if !e.animMgr.IsAnimProcessing(e.atkIDs[0]) {
 				e.bladeAtkCount++
 				if e.bladeAtkCount == 3 {
 					// 終了
@@ -419,7 +419,7 @@ func (e *enemyForte) Update() (bool, error) {
 		}
 
 		if len(e.atkIDs) > 0 {
-			if !e.animMgr.AnimIsProcessing(e.atkIDs[0]) {
+			if !e.animMgr.IsAnimProcessing(e.atkIDs[0]) {
 				return e.clearState()
 			}
 		}

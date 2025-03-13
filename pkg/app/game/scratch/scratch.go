@@ -76,7 +76,7 @@ func Init() {
 
 func Draw() {
 	field.Draw()
-	animMgr.AnimMgrDraw()
+	animMgr.Draw()
 
 	view := battlecommon.ViewPos(point.Point{X: 1, Y: 1})
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgPlayers[battlecommon.PlayerActMove][0], true)
@@ -87,5 +87,5 @@ func Draw() {
 
 func Update() {
 	field.Update()
-	animMgr.AnimMgrProcess()
+	animMgr.Update()
 }

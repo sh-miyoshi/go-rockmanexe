@@ -96,7 +96,7 @@ func End() {
 
 func MgrProcess() error {
 	for id, e := range enemies {
-		if !animManager.AnimIsProcessing(id) {
+		if !animManager.IsAnimProcessing(id) {
 			e.End()
 			delete(enemies, id)
 		}

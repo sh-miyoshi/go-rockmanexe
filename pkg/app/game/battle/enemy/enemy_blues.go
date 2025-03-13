@@ -382,7 +382,7 @@ func (e *enemyBlues) Update() (bool, error) {
 		}
 
 		if e.atkID != "" {
-			if !e.animMgr.AnimIsProcessing(e.atkID) {
+			if !e.animMgr.IsAnimProcessing(e.atkID) {
 				e.atkCount++
 				if e.atkCount == 3 {
 					e.waitCount = 1
@@ -402,7 +402,7 @@ func (e *enemyBlues) Update() (bool, error) {
 			sound.On(resources.SEDeltaRayEdgeEnd)
 		}
 
-		if !e.animMgr.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			return e.clearState()
 		}
 	case bluesActTypeSonicBoom:

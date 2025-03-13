@@ -223,7 +223,7 @@ func (a *cirKillAttack) Set() {
 }
 
 func (a *cirKillAttack) Update(animMgr *manager.Manager) {
-	if a.animID != "" && !animMgr.AnimIsProcessing(a.animID) {
+	if a.animID != "" && !animMgr.IsAnimProcessing(a.animID) {
 		a.animID = ""
 	}
 

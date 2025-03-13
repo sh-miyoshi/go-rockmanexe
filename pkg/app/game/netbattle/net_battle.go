@@ -149,7 +149,7 @@ func End() {
 		inst.fieldInst.End()
 	}
 	draw.End()
-	inst.animMgr.AnimCleanup()
+	inst.animMgr.Cleanup()
 }
 
 func Update() error {
@@ -296,7 +296,7 @@ func Update() error {
 	}
 
 	if isRunAnim {
-		if err := inst.animMgr.AnimMgrProcess(); err != nil {
+		if err := inst.animMgr.Update(); err != nil {
 			return errors.Wrap(err, "failed to handle animation")
 		}
 	}
@@ -309,7 +309,7 @@ func Draw() {
 	inst.fieldInst.Draw()
 	draw.Draw()
 
-	inst.animMgr.AnimMgrDraw()
+	inst.animMgr.Draw()
 	inst.playerInst.LocalDraw()
 
 	battlefield.DrawBlackout()

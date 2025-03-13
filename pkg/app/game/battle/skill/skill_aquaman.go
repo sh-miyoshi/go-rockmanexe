@@ -62,7 +62,7 @@ func (p *aquaman) Update() (bool, error) {
 	}
 
 	if p.atkID != "" {
-		if !p.animMgr.AnimIsProcessing(p.atkID) {
+		if !p.animMgr.IsAnimProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
 			return true, nil
 		}

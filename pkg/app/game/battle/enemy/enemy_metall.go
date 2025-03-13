@@ -108,7 +108,7 @@ func (e *enemyMetall) Update() (bool, error) {
 
 	if e.atkID != "" {
 		// Anim end
-		if !e.animMgr.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			metallActQueue = metallActQueue[1:]
 			metallActQueue = append(metallActQueue, e.pm.ObjectID)
 

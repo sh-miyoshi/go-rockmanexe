@@ -112,7 +112,7 @@ func (e *enemyVolgear) Update() (bool, error) {
 		}
 
 		// Anim end
-		if !e.animMgr.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = volgearInitWait
 		}
@@ -242,7 +242,7 @@ func (a *volgearAtk) Update() (bool, error) {
 	}
 
 	if a.atkID != "" {
-		if !a.animMgr.AnimIsProcessing(a.atkID) {
+		if !a.animMgr.IsAnimProcessing(a.atkID) {
 			a.endCount = delayVolgearAtk * 3
 			return false, nil
 		}

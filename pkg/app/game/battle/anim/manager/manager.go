@@ -26,15 +26,21 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) AnimMgrProcess() error {
+func (m *Manager) Update() error {
 	if err := m.skillAnimInst.Update(); err != nil {
 		return err
 	}
 
-	return m.effectAnimInst.Update()
+	if err := m.effectAnimInst.Update(); err != nil {
+		return err
+	}
+
+	// WIP: object update
+
+	return nil
 }
 
-func (m *Manager) AnimMgrDraw() {
+func (m *Manager) Draw() {
 	m.objanimInst.Draw()
 	m.skillAnimInst.Draw()
 	m.effectAnimInst.Draw()
@@ -48,7 +54,11 @@ func (m *Manager) EffectAnimNew(a effectanim.Anim) string {
 	return m.effectAnimInst.New(a)
 }
 
-func (m *Manager) AnimIsProcessing(id string) bool {
+func (m *Manager) ObjAnimNew(anim objanim.Anim) string {
+	return m.objanimInst.New(anim)
+}
+
+func (m *Manager) IsAnimProcessing(id string) bool {
 	if m.objanimInst.IsProcessing(id) {
 		return true
 	}
@@ -64,7 +74,7 @@ func (m *Manager) AnimIsProcessing(id string) bool {
 	return false
 }
 
-func (m *Manager) AnimCleanup() {
+func (m *Manager) Cleanup() {
 	m.skillAnimInst.Cleanup()
 	m.effectAnimInst.Cleanup()
 	m.objanimInst.Cleanup()
@@ -82,16 +92,12 @@ func (m *Manager) AnimDelete(animID string) {
 	}
 }
 
-func (m *Manager) AnimGetEffects() []anim.Param {
-	return m.effectAnimInst.GetAll()
+func (m *Manager) AnimGetSkills() []anim.Param {
+	return m.skillAnimInst.GetAll()
 }
 
 func (m *Manager) ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
 	return m.objanimInst.Process(enableDamage, blackout)
-}
-
-func (m *Manager) ObjAnimNew(anim objanim.Anim) string {
-	return m.objanimInst.New(anim)
 }
 
 func (m *Manager) ObjAnimGetObjPos(objID string) point.Point {
@@ -122,10 +128,12 @@ func (m *Manager) ObjAnimExistsObject(pos point.Point) string {
 	return m.objanimInst.ExistsObject(pos)
 }
 
+// WIP: managerを直接見せなくてもいいようにしたい
 func (m *Manager) DamageManager() *damage.DamageManager {
 	return m.objanimInst.DamageManager()
 }
 
+// WIP: managerを直接見せなくてもいいようにしたい
 func (m *Manager) SkillManager() *skillmanager.Manager {
 	return m.skillMgr
 }

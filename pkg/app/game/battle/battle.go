@@ -147,7 +147,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 
 func End() {
 	field.ResetSet4x4Area()
-	animMgr.AnimCleanup()
+	animMgr.Cleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
@@ -239,7 +239,7 @@ func Update() error {
 				return errors.Wrap(err, "failed to process enemy")
 			}
 
-			if err := animMgr.AnimMgrProcess(); err != nil {
+			if err := animMgr.Update(); err != nil {
 				return errors.Wrap(err, "failed to handle animation")
 			}
 		}
@@ -300,7 +300,7 @@ func Update() error {
 
 func Draw() {
 	field.Draw()
-	animMgr.AnimMgrDraw()
+	animMgr.Draw()
 
 	drawEnemyNames()
 	field.DrawBlackout()
@@ -340,7 +340,7 @@ func drawEnemyNames() {
 }
 
 func cleanupBattleAnims() {
-	for _, a := range animMgr.AnimGetEffects() {
+	for _, a := range animMgr.AnimGetSkills() {
 		animMgr.AnimDelete(a.ObjID)
 	}
 }

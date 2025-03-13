@@ -263,5 +263,5 @@ func (a *boomerAtk) Update(animMgr *manager.Manager) bool {
 
 	a.count++
 
-	return !animMgr.AnimIsProcessing(a.atkID)
+	return !animMgr.IsAnimProcessing(a.atkID)
 }
