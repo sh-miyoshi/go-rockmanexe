@@ -46,7 +46,7 @@ type State interface {
 }
 
 var (
-	battleCount    int
+	isStateInit    bool
 	battleState    int
 	playerInst     *battleplayer.BattlePlayer
 	enemyList      []enemy.EnemyParam
@@ -63,7 +63,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("Init battle data ...")
 
 	gameCount = 0
-	battleCount = 0
+	isStateInit = false
 	battleState = stateOpening
 	basePlayerInst = plyr
 	stateInst = nil
@@ -161,7 +161,8 @@ func Update() error {
 
 	switch battleState {
 	case stateOpening:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			var err error
 			if enemy.IsBoss(enemyList[0].CharID) {
 				stateInst, err = opening.NewWithBoss(enemyList)
@@ -181,7 +182,8 @@ func Update() error {
 			return nil
 		}
 	case stateChipSelect:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			if err := chipsel.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}
@@ -194,7 +196,8 @@ func Update() error {
 			return nil
 		}
 	case stateBeforeMain:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			var err error
 			stateInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
@@ -243,7 +246,8 @@ func Update() error {
 
 		field.Update()
 	case stateResultWin:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			enemies := []reward.EnemyParam{}
 			for _, e := range enemyList {
 				enemies = append(enemies, reward.EnemyParam{
@@ -274,7 +278,8 @@ func Update() error {
 			return ErrWin
 		}
 	case stateResultLose:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
 			stateInst, err = titlemsg.New(fname, 0)
@@ -290,7 +295,6 @@ func Update() error {
 		}
 	}
 
-	battleCount++
 	return nil
 }
 
@@ -320,7 +324,7 @@ func stateChange(nextState int) {
 		return
 	}
 	battleState = nextState
-	battleCount = 0
+	isStateInit = false
 	if stateInst != nil {
 		stateInst.End()
 		stateInst = nil
