@@ -295,10 +295,8 @@ func Update() error {
 		}
 	}
 
-	if isRunAnim {
-		if err := inst.animMgr.Update(); err != nil {
-			return errors.Wrap(err, "failed to handle animation")
-		}
+	if err := inst.animMgr.Update(isRunAnim); err != nil {
+		return errors.Wrap(err, "failed to handle animation")
 	}
 
 	inst.stateCount++

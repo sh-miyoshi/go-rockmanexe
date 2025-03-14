@@ -26,7 +26,7 @@ func NewManager() *Manager {
 	}
 }
 
-func (m *Manager) Update() error {
+func (m *Manager) Update(isActive bool) error {
 	if err := m.skillAnimInst.Update(); err != nil {
 		return err
 	}
@@ -36,8 +36,7 @@ func (m *Manager) Update() error {
 	}
 
 	// WIP: object update
-
-	return nil
+	return m.objanimInst.Update(isActive)
 }
 
 func (m *Manager) Draw() {
@@ -74,6 +73,40 @@ func (m *Manager) IsAnimProcessing(id string) bool {
 	return false
 }
 
+func (m *Manager) SetActiveAnim(id string) {
+	if m.objanimInst.IsProcessing(id) {
+		m.objanimInst.SetActiveAnim(id)
+		return
+	}
+
+	if m.skillAnimInst.IsProcessing(id) {
+		// WIP
+		return
+	}
+
+	if m.effectAnimInst.IsProcessing(id) {
+		// WIP
+		return
+	}
+}
+
+func (m *Manager) DeactivateAnim(id string) {
+	if m.objanimInst.IsProcessing(id) {
+		m.objanimInst.DeactivateAnim(id)
+		return
+	}
+
+	if m.skillAnimInst.IsProcessing(id) {
+		// WIP
+		return
+	}
+
+	if m.effectAnimInst.IsProcessing(id) {
+		// WIP
+		return
+	}
+}
+
 func (m *Manager) Cleanup() {
 	m.skillAnimInst.Cleanup()
 	m.effectAnimInst.Cleanup()
@@ -96,24 +129,12 @@ func (m *Manager) AnimGetSkills() []anim.Param {
 	return m.skillAnimInst.GetAll()
 }
 
-func (m *Manager) ObjAnimMgrProcess(enableDamage bool, blackout bool) error {
-	return m.objanimInst.Process(enableDamage, blackout)
-}
-
 func (m *Manager) ObjAnimGetObjPos(objID string) point.Point {
 	return m.objanimInst.GetObjPos(objID)
 }
 
 func (m *Manager) ObjAnimGetObjs(filter objanim.Filter) []objanim.Param {
 	return m.objanimInst.GetObjs(filter)
-}
-
-func (m *Manager) ObjAnimAddActiveAnim(id string) {
-	m.objanimInst.AddActiveAnim(id)
-}
-
-func (m *Manager) ObjAnimDeactivateAnim(id string) {
-	m.objanimInst.DeactivateAnim(id)
 }
 
 func (m *Manager) ObjAnimMakeInvisible(id string, count int) {

@@ -62,9 +62,9 @@ func NewManager() *AnimManager {
 	}
 }
 
-func (am *AnimManager) Process(enableDamage, blackout bool) error {
+func (am *AnimManager) Update(isActive bool) error {
 	for id, anim := range am.anims {
-		if blackout && !slice.Contains(am.activeAnimIDs, id) {
+		if !isActive && !slice.Contains(am.activeAnimIDs, id) {
 			continue
 		}
 
@@ -79,28 +79,25 @@ func (am *AnimManager) Process(enableDamage, blackout bool) error {
 	}
 
 	// Damage Process
-	if enableDamage {
-		hit := []string{}
-		for _, anim := range am.anims {
-			pm := anim.GetParam()
-			damages := am.dmMgr.GetHitDamages(pm.Pos, pm.ObjID)
-			for _, dm := range damages {
-				if anim.DamageProc(dm) {
-					hit = append(hit, dm.ID)
-				}
+	hit := []string{}
+	for _, anim := range am.anims {
+		pm := anim.GetParam()
+		damages := am.dmMgr.GetHitDamages(pm.Pos, pm.ObjID)
+		for _, dm := range damages {
+			if anim.DamageProc(dm) {
+				hit = append(hit, dm.ID)
 			}
 		}
-
-		if len(hit) > 0 {
-			logger.Debug("Hit damages: %+v", hit)
-			for _, h := range hit {
-				am.dmMgr.Remove(h)
-			}
-		}
-
-		am.dmMgr.Update()
 	}
 
+	if len(hit) > 0 {
+		logger.Debug("Hit damages: %+v", hit)
+		for _, h := range hit {
+			am.dmMgr.Remove(h)
+		}
+	}
+
+	am.dmMgr.Update()
 	am.sortAnim()
 
 	return nil
@@ -176,7 +173,7 @@ func (am *AnimManager) GetObjs(filter Filter) []Param {
 	return res
 }
 
-func (am *AnimManager) AddActiveAnim(id string) {
+func (am *AnimManager) SetActiveAnim(id string) {
 	am.activeAnimIDs = append(am.activeAnimIDs, id)
 }
 

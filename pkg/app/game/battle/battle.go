@@ -159,6 +159,8 @@ func End() {
 func Update() error {
 	battlecommon.SystemProcess()
 
+	isActive := false
+
 	switch battleState {
 	case stateOpening:
 		if !isStateInit {
@@ -214,34 +216,26 @@ func Update() error {
 	case stateMain:
 		gameCount++
 
-		if err := animMgr.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
-			return errors.Wrap(err, "failed to handle object animation")
+		isActive = !field.IsBlackout()
+
+		switch playerInst.NextAction {
+		case battleplayer.NextActChipSelect:
+			stateChange(stateChipSelect)
+			playerInst.NextAction = battleplayer.NextActNone
+			return nil
+		case battleplayer.NextActLose:
+			cleanupBattleAnims()
+			stateChange(stateResultLose)
+			return nil
 		}
-
-		if !field.IsBlackout() {
-			switch playerInst.NextAction {
-			case battleplayer.NextActChipSelect:
-				stateChange(stateChipSelect)
-				playerInst.NextAction = battleplayer.NextActNone
-				return nil
-			case battleplayer.NextActLose:
+		if err := enemy.MgrProcess(); err != nil {
+			if errors.Is(err, enemy.ErrGameEnd) {
 				cleanupBattleAnims()
-				stateChange(stateResultLose)
+				playerInst.EnableAct = false
+				stateChange(stateResultWin)
 				return nil
 			}
-			if err := enemy.MgrProcess(); err != nil {
-				if errors.Is(err, enemy.ErrGameEnd) {
-					cleanupBattleAnims()
-					playerInst.EnableAct = false
-					stateChange(stateResultWin)
-					return nil
-				}
-				return errors.Wrap(err, "failed to process enemy")
-			}
-
-			if err := animMgr.Update(); err != nil {
-				return errors.Wrap(err, "failed to handle animation")
-			}
+			return errors.Wrap(err, "failed to process enemy")
 		}
 
 		field.Update()
@@ -268,10 +262,6 @@ func Update() error {
 			}
 		}
 
-		if err := animMgr.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
-			return errors.Wrap(err, "failed to handle object animation")
-		}
-
 		if stateInst.Update() {
 			stateInst.End()
 			stateInst = nil
@@ -293,6 +283,10 @@ func Update() error {
 			sound.SEClear()
 			return ErrLose
 		}
+	}
+
+	if err := animMgr.Update(isActive); err != nil {
+		return errors.Wrap(err, "failed to handle animation")
 	}
 
 	return nil
@@ -343,4 +337,5 @@ func cleanupBattleAnims() {
 	for _, a := range animMgr.AnimGetSkills() {
 		animMgr.AnimDelete(a.ObjID)
 	}
+	animMgr.DamageManager().RemoveAll()
 }

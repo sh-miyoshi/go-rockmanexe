@@ -58,7 +58,7 @@ func (p *aquaman) Update() (bool, error) {
 			return false, errors.Wrap(err, "water pipe create failed")
 		}
 		p.atkID = p.animMgr.ObjAnimNew(obj)
-		p.animMgr.ObjAnimAddActiveAnim(p.atkID)
+		p.animMgr.SetActiveAnim(p.atkID)
 	}
 
 	if p.atkID != "" {

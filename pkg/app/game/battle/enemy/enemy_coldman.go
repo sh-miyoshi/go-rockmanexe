@@ -201,7 +201,7 @@ func (e *enemyColdman) Update() (bool, error) {
 		}
 		if e.count == 60 {
 			for _, id := range e.cubeIDs {
-				e.animMgr.ObjAnimDeactivateAnim(id)
+				e.animMgr.DeactivateAnim(id)
 			}
 			e.moveNum = rand.Intn(2) + 2
 			e.nextState = coldmanActTypeMove
@@ -433,7 +433,7 @@ func (e *enemyColdman) createCube() error {
 			return errors.Wrap(err, "failed to init ice cube")
 		}
 		id := e.animMgr.ObjAnimNew(obj)
-		e.animMgr.ObjAnimAddActiveAnim(id)
+		e.animMgr.SetActiveAnim(id)
 		e.cubeIDs = append(e.cubeIDs, id)
 	}
 

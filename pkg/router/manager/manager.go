@@ -59,7 +59,7 @@ func (m *Manager) Cleanup() {
 }
 
 func (m *Manager) Update() error {
-	if err := m.objAnimMgr.Process(true, false); err != nil {
+	if err := m.objAnimMgr.Update(true); err != nil {
 		return errors.Wrap(err, "objanim manage process failed")
 	}
 	if err := m.skillAnimMgr.Update(); err != nil {

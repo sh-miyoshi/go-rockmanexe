@@ -87,5 +87,5 @@ func Draw() {
 
 func Update() {
 	field.Update()
-	animMgr.Update()
+	animMgr.Update(true)
 }
