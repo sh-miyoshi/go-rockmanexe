@@ -760,5 +760,5 @@ func (a *BattlePlayerAct) IsParalyzed() bool {
 
 func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
 	a.skillInst = skill.Get(id, arg, a.animMgr)
-	a.skillID = a.animMgr.EffectAnimNew(a.skillInst)
+	a.skillID = a.animMgr.SkillAnimNew(a.skillInst)
 }
