@@ -48,7 +48,7 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 	arg.MakeInvisible = animMgr.ObjAnimMakeInvisible
 	arg.AddBarrier = animMgr.ObjAnimAddBarrier
 	arg.ChangePanelType = field.ChangePanelType
-	core := animMgr.SkillManager().Get(skillID, arg)
+	core := animMgr.SkillGet(skillID, arg)
 
 	switch skillID {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:

@@ -6,6 +6,7 @@ import (
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	skillmanager "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -27,16 +28,20 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Update(isActive bool) error {
+	if err := m.objanimInst.Update(isActive); err != nil {
+		return err
+	}
+
 	if err := m.skillAnimInst.Update(); err != nil {
 		return err
 	}
 
+	// Effectは常にactive
 	if err := m.effectAnimInst.Update(); err != nil {
 		return err
 	}
 
-	// WIP: object update
-	return m.objanimInst.Update(isActive)
+	return nil
 }
 
 func (m *Manager) Draw() {
@@ -84,10 +89,7 @@ func (m *Manager) SetActiveAnim(id string) {
 		return
 	}
 
-	if m.effectAnimInst.IsProcessing(id) {
-		// WIP
-		return
-	}
+	// Effectは常にactive
 }
 
 func (m *Manager) DeactivateAnim(id string) {
@@ -101,10 +103,7 @@ func (m *Manager) DeactivateAnim(id string) {
 		return
 	}
 
-	if m.effectAnimInst.IsProcessing(id) {
-		// WIP
-		return
-	}
+	// Effectは常にactive
 }
 
 func (m *Manager) Cleanup() {
@@ -154,7 +153,6 @@ func (m *Manager) DamageManager() *damage.DamageManager {
 	return m.objanimInst.DamageManager()
 }
 
-// WIP: managerを直接見せなくてもいいようにしたい
-func (m *Manager) SkillManager() *skillmanager.Manager {
-	return m.skillMgr
+func (m *Manager) SkillGet(id int, arg skillcore.Argument) skillcore.SkillCore {
+	return m.skillMgr.Get(id, arg)
 }
