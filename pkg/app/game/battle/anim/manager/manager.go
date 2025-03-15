@@ -32,7 +32,7 @@ func (m *Manager) Update(isActive bool) error {
 		return err
 	}
 
-	if err := m.skillAnimInst.Update(); err != nil {
+	if err := m.skillAnimInst.Update(isActive); err != nil {
 		return err
 	}
 
@@ -85,7 +85,7 @@ func (m *Manager) SetActiveAnim(id string) {
 	}
 
 	if m.skillAnimInst.IsProcessing(id) {
-		// WIP
+		m.skillAnimInst.SetActiveAnim(id)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (m *Manager) DeactivateAnim(id string) {
 	}
 
 	if m.skillAnimInst.IsProcessing(id) {
-		// WIP
+		m.skillAnimInst.DeactivateAnim(id)
 		return
 	}
 

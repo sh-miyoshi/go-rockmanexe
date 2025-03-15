@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/stretchr/stew/slice"
 )
 
 type Anim interface {
@@ -17,6 +18,7 @@ type Anim interface {
 type AnimManager struct {
 	anims         map[string]Anim
 	sortedAnimIDs []string
+	activeAnimIDs []string
 }
 
 func NewManager() *AnimManager {
@@ -25,8 +27,12 @@ func NewManager() *AnimManager {
 	}
 }
 
-func (am *AnimManager) Update() error {
+func (am *AnimManager) Update(isActive bool) error {
 	for id, anim := range am.anims {
+		if !isActive && !slice.Contains(am.activeAnimIDs, id) {
+			continue
+		}
+
 		end, err := anim.Update()
 		if err != nil {
 			return errors.Wrap(err, "Anim process failed")
@@ -63,6 +69,7 @@ func (am *AnimManager) IsProcessing(animID string) bool {
 func (am *AnimManager) Cleanup() {
 	am.anims = map[string]Anim{}
 	am.sortedAnimIDs = []string{}
+	am.activeAnimIDs = []string{}
 }
 
 func (am *AnimManager) Delete(animID string) {
@@ -88,6 +95,20 @@ func (am *AnimManager) GetAll() []anim.Param {
 	return res
 }
 
+func (am *AnimManager) SetActiveAnim(id string) {
+	am.activeAnimIDs = append(am.activeAnimIDs, id)
+}
+
+func (am *AnimManager) DeactivateAnim(id string) {
+	animIDs := []string{}
+	for _, animID := range am.activeAnimIDs {
+		if id != animID {
+			animIDs = append(animIDs, animID)
+		}
+	}
+	am.activeAnimIDs = animIDs
+}
+
 func (am *AnimManager) sortAnim() {
 	type sortParam struct {
 		Index int
@@ -96,9 +117,14 @@ func (am *AnimManager) sortAnim() {
 	sortAnims := []sortParam{}
 	for id, anim := range am.anims {
 		pm := anim.GetParam()
+		index := pm.Pos.Y*6 + pm.Pos.X
+		if slice.Contains(am.activeAnimIDs, id) {
+			index += 100
+		}
+
 		sortAnims = append(sortAnims, sortParam{
 			ID:    id,
-			Index: pm.Pos.Y*6 + pm.Pos.X,
+			Index: index,
 		})
 	}
 
