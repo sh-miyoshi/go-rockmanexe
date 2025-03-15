@@ -177,10 +177,10 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if s.animMgr.IsAnimProcessing(s.act.skillID) {
+		if s.animMgr.IsAnimProcessing(s.act.skillObjID) {
 			s.act.skillInst.StopByOwner()
 		}
-		s.act.skillID = ""
+		s.act.skillObjID = ""
 
 		if dm.IsParalyzed {
 			s.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
