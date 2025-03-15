@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -21,15 +21,17 @@ const (
 )
 
 type IceCube struct {
-	pm     ObjectParam
-	images []int
-	count  int
+	pm      ObjectParam
+	images  []int
+	count   int
+	animMgr *manager.Manager
 }
 
-func (o *IceCube) Init(ownerID string, initParam ObjectParam) error {
+func (o *IceCube) Init(ownerID string, initParam ObjectParam, animMgr *manager.Manager) error {
 	o.pm = initParam
 	o.pm.objectID = uuid.New().String()
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
+	o.animMgr = animMgr
 
 	// Load Images
 	o.images = make([]int, 6)
@@ -50,7 +52,7 @@ func (o *IceCube) End() {
 
 func (o *IceCube) Update() (bool, error) {
 	if o.pm.HP <= 0 {
-		localanim.AnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
+		o.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeIceBreak, o.pm.Pos, 0))
 		return true, nil
 	}
 
@@ -105,10 +107,10 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 					objType = objanim.ObjTypeEnemy
 				}
 
-				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
+				objs := o.animMgr.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
 					// Add damage
-					localanim.DamageManager().New(damage.Damage{
+					o.animMgr.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						Power:         10,
 						HitEffectType: resources.EffectTypeNone,
@@ -136,10 +138,10 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 					objType = objanim.ObjTypeEnemy
 				}
 
-				objs := localanim.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
+				objs := o.animMgr.ObjAnimGetObjs(objanim.Filter{Pos: &pos, ObjType: objType})
 				if len(objs) > 0 {
 					// Add damage
-					localanim.DamageManager().New(damage.Damage{
+					o.animMgr.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						Power:         10,
 						HitEffectType: resources.EffectTypeNone,
@@ -155,7 +157,7 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 			}
 		}
 
-		localanim.AnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
+		o.animMgr.EffectAnimNew(effect.Get(dm.HitEffectType, o.pm.Pos, 5))
 		return true
 	}
 
@@ -165,9 +167,8 @@ func (o *IceCube) DamageProc(dm *damage.Damage) bool {
 func (o *IceCube) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    o.pm.objectID,
-			Pos:      o.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: o.pm.objectID,
+			Pos:   o.pm.Pos,
 		},
 		HP: o.pm.HP,
 	}

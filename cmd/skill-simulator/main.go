@@ -9,7 +9,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/background"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
@@ -71,7 +71,8 @@ func main() {
 
 	count := 0
 
-	if err := appInit(); err != nil {
+	animMgr := manager.NewManager()
+	if err := appInit(animMgr); err != nil {
 		logger.Error("Failed to init application: %+v", err)
 		system.SetError("ゲーム初期化時")
 	}
@@ -80,7 +81,7 @@ func main() {
 
 	pos := point.Point{X: 1, Y: 1}
 	var act battleplayer.BattlePlayerAct
-	act.Init(&pos)
+	act.Init(&pos, animMgr)
 
 	chipID := chip.IDCannon
 
@@ -93,11 +94,9 @@ MAIN:
 		field.Update()
 		background.Draw()
 		field.Draw()
-		localanim.ObjAnimMgrProcess(false, field.IsBlackout())
 		playerDraw(pos, act)
-		localanim.AnimMgrProcess()
-		// localanim.ObjAnimMgrDraw()
-		localanim.AnimMgrDraw()
+		animMgr.Update(field.IsBlackout())
+		animMgr.Draw()
 
 		if !act.Update() && inputs.CheckKey(inputs.KeyEnter) == 1 {
 			cfg := loadConfig()
@@ -136,7 +135,7 @@ MAIN:
 	dxlib.DxLib_End()
 }
 
-func appInit() error {
+func appInit(animMgr *manager.Manager) error {
 	config.ImagePath = baseDir + config.ImagePath
 
 	if err := inputs.Init(config.Get().Input.Type); err != nil {
@@ -149,7 +148,7 @@ func appInit() error {
 		return errors.Wrap(err, "drawing data init failed")
 	}
 
-	if err := field.Init(); err != nil {
+	if err := field.Init(animMgr); err != nil {
 		return errors.Wrap(err, "battle field init failed")
 	}
 
@@ -161,9 +160,9 @@ func appInit() error {
 		HP:         100,
 		ShotPower:  1,
 		ChargeTime: 120,
-	})
+	}, animMgr)
 	playerID = playerInst.ID
-	localanim.ObjAnimNew(playerInst)
+	animMgr.ObjAnimNew(playerInst)
 
 	return nil
 }

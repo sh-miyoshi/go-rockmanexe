@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -10,18 +10,19 @@ import (
 )
 
 type miniBomb struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.MiniBomb
-
-	drawer skilldraw.DrawMiniBomb
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.MiniBomb
+	drawer  skilldraw.DrawMiniBomb
+	animMgr *manager.Manager
 }
 
-func newMiniBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *miniBomb {
+func newMiniBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *miniBomb {
 	return &miniBomb{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.MiniBomb),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.MiniBomb),
+		animMgr: animMgr,
 	}
 }
 
@@ -37,20 +38,19 @@ func (p *miniBomb) Update() (bool, error) {
 	}
 
 	if eff := p.Core.PopEffect(); eff != nil {
-		localanim.AnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
+		p.animMgr.EffectAnimNew(effect.Get(eff.Type, eff.Pos, eff.RandRange))
 	}
 	return end, nil
 }
 
 func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *miniBomb) StopByOwner() {
 	if p.Core.GetCount() < 5 {
-		localanim.AnimDelete(p.ID)
+		p.animMgr.AnimDelete(p.ID)
 	}
 }

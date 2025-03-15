@@ -5,10 +5,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
@@ -49,9 +49,10 @@ type enemyBoomer struct {
 	nextState int
 	waitCount int
 	prevOfsY  int
+	animMgr   *manager.Manager
 }
 
-func (e *enemyBoomer) Init(objID string) error {
+func (e *enemyBoomer) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementWood
 	e.atk.ownerID = objID
@@ -61,6 +62,7 @@ func (e *enemyBoomer) Init(objID string) error {
 	e.waitCount = 20
 	e.state = boomerStateWait
 	e.nextState = boomerStateMove
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDBoomer)
@@ -96,8 +98,8 @@ func (e *enemyBoomer) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -155,7 +157,7 @@ func (e *enemyBoomer) Update() (bool, error) {
 			}
 		}
 	case boomerStateAtk:
-		if e.atk.Update() {
+		if e.atk.Update(e.animMgr) {
 			e.waitCount = 60
 			e.nextState = boomerStateMove
 			e.setState(boomerStateWait)
@@ -206,9 +208,8 @@ func (e *enemyBoomer) DamageProc(dm *damage.Damage) bool {
 func (e *enemyBoomer) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -247,19 +248,20 @@ func (a *boomerAtk) Init() {
 	a.count = 0
 }
 
-func (a *boomerAtk) Update() bool {
+func (a *boomerAtk) Update(animMgr *manager.Manager) bool {
 	if a.count == 0 {
-		a.atkID = localanim.AnimNew(skill.Get(
+		a.atkID = animMgr.SkillAnimNew(skill.Get(
 			resources.SkillBoomerang,
 			skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
 			},
+			animMgr,
 		))
 	}
 
 	a.count++
 
-	return !localanim.AnimIsProcessing(a.atkID)
+	return !animMgr.IsAnimProcessing(a.atkID)
 }

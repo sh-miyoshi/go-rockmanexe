@@ -2,21 +2,23 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
 type invisible struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core skillcore.SkillCore
+	ID      string
+	Arg     skillcore.Argument
+	Core    skillcore.SkillCore
+	animMgr *manager.Manager
 }
 
-func newInvisible(objID string, arg skillcore.Argument, core skillcore.SkillCore) *invisible {
+func newInvisible(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *invisible {
 	return &invisible{
-		ID:   objID,
-		Arg:  arg,
-		Core: core,
+		ID:      objID,
+		Arg:     arg,
+		Core:    core,
+		animMgr: animMgr,
 	}
 }
 
@@ -29,11 +31,10 @@ func (p *invisible) Update() (bool, error) {
 
 func (p *invisible) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *invisible) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

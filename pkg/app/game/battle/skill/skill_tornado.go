@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -10,18 +10,19 @@ import (
 )
 
 type tornado struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.Tornado
-
-	drawer skilldraw.DrawTornado
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.Tornado
+	drawer  skilldraw.DrawTornado
+	animMgr *manager.Manager
 }
 
-func newTornado(objID string, arg skillcore.Argument, core skillcore.SkillCore) *tornado {
+func newTornado(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *tornado {
 	return &tornado{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.Tornado),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.Tornado),
+		animMgr: animMgr,
 	}
 }
 
@@ -38,11 +39,10 @@ func (p *tornado) Update() (bool, error) {
 
 func (p *tornado) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *tornado) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

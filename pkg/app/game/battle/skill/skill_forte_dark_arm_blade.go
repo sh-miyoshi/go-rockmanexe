@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -14,15 +14,17 @@ type skillForteDarkArmBlade struct {
 	Core    *processor.ForteDarkArmBlade
 	SkillID int
 
-	drawer skilldraw.DrawForteDarkArmBlade
+	drawer  skilldraw.DrawForteDarkArmBlade
+	animMgr *manager.Manager
 }
 
-func newForteDarkArmBlade(objID string, arg skillcore.Argument, core skillcore.SkillCore, skillID int) *skillForteDarkArmBlade {
+func newForteDarkArmBlade(objID string, arg skillcore.Argument, core skillcore.SkillCore, skillID int, animMgr *manager.Manager) *skillForteDarkArmBlade {
 	return &skillForteDarkArmBlade{
 		ID:      objID,
 		Arg:     arg,
 		Core:    core.(*processor.ForteDarkArmBlade),
 		SkillID: skillID,
+		animMgr: animMgr,
 	}
 }
 
@@ -36,11 +38,10 @@ func (p *skillForteDarkArmBlade) Update() (bool, error) {
 
 func (p *skillForteDarkArmBlade) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *skillForteDarkArmBlade) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

@@ -3,7 +3,7 @@ package skill
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/object"
@@ -19,14 +19,16 @@ type countBomb struct {
 
 	drawer     skilldraw.DrawCountBomb
 	objCreated bool
+	animMgr    *manager.Manager
 }
 
-func newCountBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore) *countBomb {
+func newCountBomb(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *countBomb {
 	return &countBomb{
 		ID:         objID,
 		Arg:        arg,
 		Core:       core.(*processor.CountBomb),
 		objCreated: false,
+		animMgr:    animMgr,
 	}
 }
 
@@ -52,10 +54,10 @@ func (p *countBomb) Update() (bool, error) {
 			OnwerCharType: objanim.ObjTypePlayer,
 			Power:         int(p.Arg.Power),
 		}
-		if err := obj.Init(p.ID, pm); err != nil {
+		if err := obj.Init(p.ID, pm, p.animMgr); err != nil {
 			return false, errors.Wrap(err, "count bomb create failed")
 		}
-		localanim.ObjAnimNew(obj)
+		p.animMgr.ObjAnimNew(obj)
 		return true, nil
 	}
 
@@ -64,8 +66,7 @@ func (p *countBomb) Update() (bool, error) {
 
 func (p *countBomb) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

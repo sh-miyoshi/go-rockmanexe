@@ -1,64 +1,29 @@
-package objanim
+package skill
 
 import (
 	"sort"
 
-	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 	"github.com/stretchr/stew/slice"
 )
-
-const (
-	ObjTypePlayer int = 1 << iota
-	ObjTypeEnemy
-	ObjTypeNone
-)
-
-const (
-	ObjTypeAll = ObjTypePlayer | ObjTypeEnemy | ObjTypeNone
-)
-
-type Filter struct {
-	ObjID   string
-	ObjType int
-	Pos     *point.Point
-}
-
-type Param struct {
-	anim.Param
-
-	HP int
-}
 
 type Anim interface {
 	Update() (bool, error)
 	Draw()
-	DamageProc(dm *damage.Damage) bool
-	GetParam() Param
-	GetObjectType() int
-	MakeInvisible(count int)
-	AddBarrier(hp int)
+	GetParam() anim.Param
 }
 
 type AnimManager struct {
 	anims         map[string]Anim
 	sortedAnimIDs []string
 	activeAnimIDs []string
-	dmMgr         *damage.DamageManager
 }
-
-var (
-	FilterAll = Filter{ObjType: ObjTypeAll}
-)
 
 func NewManager() *AnimManager {
 	return &AnimManager{
 		anims: make(map[string]Anim),
-		dmMgr: damage.NewManager(),
 	}
 }
 
@@ -78,26 +43,6 @@ func (am *AnimManager) Update(isActive bool) error {
 		}
 	}
 
-	// Damage Process
-	hit := []string{}
-	for _, anim := range am.anims {
-		pm := anim.GetParam()
-		damages := am.dmMgr.GetHitDamages(pm.Pos, pm.ObjID)
-		for _, dm := range damages {
-			if anim.DamageProc(dm) {
-				hit = append(hit, dm.ID)
-			}
-		}
-	}
-
-	if len(hit) > 0 {
-		logger.Debug("Hit damages: %+v", hit)
-		for _, h := range hit {
-			am.dmMgr.Remove(h)
-		}
-	}
-
-	am.dmMgr.Update()
 	am.sortAnim()
 
 	return nil
@@ -114,7 +59,6 @@ func (am *AnimManager) New(anim Anim) string {
 	if id == "" {
 		id = uuid.New().String()
 	}
-
 	am.anims[id] = anim
 	am.sortAnim()
 	return id
@@ -129,10 +73,13 @@ func (am *AnimManager) Cleanup() {
 	am.anims = map[string]Anim{}
 	am.sortedAnimIDs = []string{}
 	am.activeAnimIDs = []string{}
-	am.dmMgr.RemoveAll()
 }
 
 func (am *AnimManager) Delete(animID string) {
+	if _, ok := am.anims[animID]; !ok {
+		return
+	}
+
 	delete(am.anims, animID)
 	for i, sid := range am.sortedAnimIDs {
 		if sid == animID {
@@ -142,32 +89,10 @@ func (am *AnimManager) Delete(animID string) {
 	}
 }
 
-func (am *AnimManager) GetObjPos(objID string) point.Point {
+func (am *AnimManager) GetAll() []anim.Param {
+	res := []anim.Param{}
 	for _, anim := range am.anims {
-		pm := anim.GetParam()
-		if pm.ObjID == objID {
-			return pm.Pos
-		}
-	}
-
-	return point.Point{X: -1, Y: -1}
-}
-
-func (am *AnimManager) GetObjs(filter Filter) []Param {
-	res := []Param{}
-
-	for _, anim := range am.anims {
-		pm := anim.GetParam()
-		if filter.ObjID != "" && pm.ObjID != filter.ObjID {
-			continue
-		}
-		if filter.Pos != nil && (pm.Pos.X != filter.Pos.X || pm.Pos.Y != filter.Pos.Y) {
-			continue
-		}
-		if filter.ObjType&anim.GetObjectType() == 0 {
-			continue
-		}
-		res = append(res, pm)
+		res = append(res, anim.GetParam())
 	}
 
 	return res
@@ -185,33 +110,6 @@ func (am *AnimManager) DeactivateAnim(id string) {
 		}
 	}
 	am.activeAnimIDs = animIDs
-}
-
-func (am *AnimManager) MakeInvisible(id string, count int) {
-	logger.Debug("ID: %s, count: %d, anims: %+v", id, count, am.anims)
-	if _, ok := am.anims[id]; ok {
-		am.anims[id].MakeInvisible(count)
-	}
-}
-
-func (am *AnimManager) AddBarrier(id string, hp int) {
-	logger.Debug("Set %d barrier to ID: %s, anims: %+v", hp, id, am.anims)
-	if _, ok := am.anims[id]; ok {
-		am.anims[id].AddBarrier(hp)
-	}
-}
-
-func (am *AnimManager) ExistsObject(pos point.Point) string {
-	objs := am.GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
-	if len(objs) > 0 {
-		return objs[0].ObjID
-	}
-
-	return ""
-}
-
-func (am *AnimManager) DamageManager() *damage.DamageManager {
-	return am.dmMgr
 }
 
 func (am *AnimManager) sortAnim() {

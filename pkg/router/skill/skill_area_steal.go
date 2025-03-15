@@ -51,9 +51,9 @@ func (p *areaSteal) GetParam() anim.Param {
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
-		ObjID:     p.ID,
-		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
-		DrawType:  anim.DrawTypeSkill,
+		ObjID: p.ID,
+		Pos:   p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
+
 		ExtraInfo: info.Marshal(),
 	}
 }

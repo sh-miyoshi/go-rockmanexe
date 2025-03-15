@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -10,23 +10,22 @@ import (
 )
 
 type shockWave struct {
-	ID       string
-	Arg      skillcore.Argument
-	ShowPick bool
-	Core     (*processor.ShockWave)
-
+	ID         string
+	Arg        skillcore.Argument
+	ShowPick   bool
+	Core       (*processor.ShockWave)
 	drawer     skilldraw.DrawShockWave
 	pickDrawer skilldraw.DrawPick
+	animMgr    *manager.Manager
 }
 
-func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore) *shockWave {
-	res := &shockWave{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.ShockWave),
+func newShockWave(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *shockWave {
+	return &shockWave{
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.ShockWave),
+		animMgr: animMgr,
 	}
-
-	return res
 }
 
 func (p *shockWave) Draw() {
@@ -38,7 +37,7 @@ func (p *shockWave) Draw() {
 	}
 
 	if p.ShowPick {
-		pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+		pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 		view := battlecommon.ViewPos(pos)
 		p.pickDrawer.Draw(view, p.Core.GetCount())
 	}
@@ -50,13 +49,12 @@ func (p *shockWave) Update() (bool, error) {
 
 func (p *shockWave) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *shockWave) StopByOwner() {
 	if p.Core.GetCount() <= p.Core.GetParam().InitWait {
-		localanim.AnimDelete(p.ID)
+		p.animMgr.AnimDelete(p.ID)
 	}
 }

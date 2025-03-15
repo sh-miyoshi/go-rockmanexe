@@ -1,12 +1,12 @@
 log:
-  file: "application.log"
+  file: 'application.log'
   debug_enabled: true
 input:
   type: 0
 debug:
   show_debug_data: true
   skip_title: true
-  skip_menu: false
+  skip_menu: true
   skip_battle_opening: true
   start_continue: false
   init_sleep_sec: 0
@@ -22,9 +22,9 @@ sound:
     disabled: true
 net:
   insecure: true
-  client_id: "tester1"
-  client_key: "testtest"
-  addr: "localhost:16283"
+  client_id: 'tester1'
+  client_key: 'testtest'
+  addr: 'localhost:16283'
 ai:
-  url: "http://localhost:3000/chat/completions"
-  api_key: ""
+  url: 'http://localhost:3000/chat/completions'
+  api_key: ''

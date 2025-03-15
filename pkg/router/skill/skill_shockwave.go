@@ -53,9 +53,9 @@ func (p *shockWave) GetParam() anim.Param {
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
-		ObjID:     p.ID,
-		Pos:       p.Core.GetPos(),
-		DrawType:  anim.DrawTypeSkill,
+		ObjID: p.ID,
+		Pos:   p.Core.GetPos(),
+
 		ExtraInfo: info.Marshal(),
 	}
 }

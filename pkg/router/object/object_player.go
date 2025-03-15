@@ -204,7 +204,6 @@ func (p *Player) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:     p.objectInfo.ID,
 			Pos:       p.objectInfo.Pos,
-			DrawType:  anim.DrawTypeObject,
 			ExtraInfo: info.Marshal(),
 		},
 		HP: p.objectInfo.HP,
@@ -247,7 +246,7 @@ func (p *Player) useChip(chipInfo action.UseChip) {
 		Manager:       p.mgr,
 		FieldFuncs:    p.fieldFuncs,
 	})
-	p.skillID = p.mgr.AnimNew(s)
+	p.skillID = p.mgr.SkillAnimNew(s)
 	p.skillInst = s
 
 	if c.PlayerAct != -1 {

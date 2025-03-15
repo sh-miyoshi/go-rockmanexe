@@ -66,8 +66,7 @@ func (p *specialStartEffect) Draw() {
 
 func (p *specialStartEffect) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.ID,
 	}
 }
 

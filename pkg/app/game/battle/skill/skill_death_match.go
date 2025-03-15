@@ -2,23 +2,25 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type deathMatch struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.DeathMatch
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.DeathMatch
+	animMgr *manager.Manager
 }
 
-func newDeathMatch(objID string, arg skillcore.Argument, core skillcore.SkillCore) *deathMatch {
+func newDeathMatch(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *deathMatch {
 	return &deathMatch{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.DeathMatch),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.DeathMatch),
+		animMgr: animMgr,
 	}
 }
 
@@ -39,11 +41,10 @@ func (p *deathMatch) Update() (bool, error) {
 
 func (p *deathMatch) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *deathMatch) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

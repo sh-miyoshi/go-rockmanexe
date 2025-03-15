@@ -2,23 +2,26 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type thunderBall struct {
-	ID     string
-	Arg    skillcore.Argument
-	Core   *processor.ThunderBall
-	drawer skilldraw.DrawThunderBall
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.ThunderBall
+	drawer  skilldraw.DrawThunderBall
+	animMgr *manager.Manager
 }
 
-func newThunderBall(objID string, arg skillcore.Argument, core skillcore.SkillCore) *thunderBall {
+func newThunderBall(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *thunderBall {
 	return &thunderBall{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.ThunderBall),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.ThunderBall),
+		animMgr: animMgr,
 	}
 }
 
@@ -33,8 +36,7 @@ func (p *thunderBall) Update() (bool, error) {
 
 func (p *thunderBall) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

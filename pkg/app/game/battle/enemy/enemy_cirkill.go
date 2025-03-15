@@ -4,10 +4,10 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -39,17 +39,18 @@ type enemyCirKill struct {
 	atk     cirKillAttack
 	imgMove []int
 	count   int
-
-	next point.Point
-	prev point.Point
+	next    point.Point
+	prev    point.Point
+	animMgr *manager.Manager
 }
 
-func (e *enemyCirKill) Init(objID string) error {
+func (e *enemyCirKill) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.next = e.getNextPos()
 	e.prev = e.pm.Pos
 	e.count = e.pm.ActNo
 	e.atk.ownerID = objID
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDCirKill)
@@ -84,8 +85,8 @@ func (e *enemyCirKill) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -97,7 +98,7 @@ func (e *enemyCirKill) Update() (bool, error) {
 
 	e.count++
 
-	e.atk.Update()
+	e.atk.Update(e.animMgr)
 
 	if e.count < initialWaitCount {
 		return false, nil
@@ -111,7 +112,7 @@ func (e *enemyCirKill) Update() (bool, error) {
 			e.next = e.getNextPos()
 		}
 	} else if cnt == cirkillMoveNextStepCount/2 {
-		pos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+		pos := e.animMgr.ObjAnimGetObjPos(e.pm.PlayerID)
 		if e.pm.Pos.Y == pos.Y {
 			e.atk.Set()
 		}
@@ -162,9 +163,8 @@ func (e *enemyCirKill) DamageProc(dm *damage.Damage) bool {
 func (e *enemyCirKill) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -222,18 +222,18 @@ func (a *cirKillAttack) Set() {
 	}
 }
 
-func (a *cirKillAttack) Update() {
-	if a.animID != "" && !localanim.AnimIsProcessing(a.animID) {
+func (a *cirKillAttack) Update(animMgr *manager.Manager) {
+	if a.animID != "" && !animMgr.IsAnimProcessing(a.animID) {
 		a.animID = ""
 	}
 
 	if a.attacking {
 		if a.count == 0 {
-			a.animID = localanim.AnimNew(skill.Get(resources.SkillCirkillShot, skillcore.Argument{
+			a.animID = animMgr.SkillAnimNew(skill.Get(resources.SkillCirkillShot, skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      10,
 				TargetType: damage.TargetPlayer,
-			}))
+			}, animMgr))
 		}
 
 		a.count++
