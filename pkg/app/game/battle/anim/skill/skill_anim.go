@@ -55,7 +55,10 @@ func (am *AnimManager) Draw() {
 }
 
 func (am *AnimManager) New(anim Anim) string {
-	id := uuid.New().String()
+	id := anim.GetParam().ObjID
+	if id == "" {
+		id = uuid.New().String()
+	}
 	am.anims[id] = anim
 	am.sortAnim()
 	return id

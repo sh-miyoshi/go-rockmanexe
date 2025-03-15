@@ -43,6 +43,7 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 	arg.SoundOn = sound.On
 	arg.Cutin = func(skillName string, count int) {
 		field.SetBlackoutCount(count)
+		animMgr.SetActiveAnim(objID)
 		SetChipNameDraw(skillName, true)
 	}
 	arg.MakeInvisible = animMgr.ObjAnimMakeInvisible
