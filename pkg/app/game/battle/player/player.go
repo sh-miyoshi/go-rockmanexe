@@ -50,13 +50,13 @@ type BattlePlayerAct struct {
 	Charged    bool
 	ShotPower  uint
 
-	typ       int
-	count     int
-	endCount  int
-	pPos      *point.Point
-	skillID   string
-	skillInst skill.SkillAnim
-	animMgr   *manager.Manager
+	typ        int
+	count      int
+	endCount   int
+	pPos       *point.Point
+	skillObjID string
+	skillInst  skill.SkillAnim
+	animMgr    *manager.Manager
 }
 
 type BattlePlayer struct {
@@ -572,10 +572,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if p.animMgr.IsAnimProcessing(p.act.skillID) {
+		if p.animMgr.IsAnimProcessing(p.act.skillObjID) {
 			p.act.skillInst.StopByOwner()
 		}
-		p.act.skillID = ""
+		p.act.skillObjID = ""
 		p.ChargeCount = 0
 
 		if dm.IsParalyzed {
@@ -760,5 +760,5 @@ func (a *BattlePlayerAct) IsParalyzed() bool {
 
 func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
 	a.skillInst = skill.Get(id, arg, a.animMgr)
-	a.skillID = a.animMgr.SkillAnimNew(a.skillInst)
+	a.skillObjID = a.animMgr.SkillAnimNew(a.skillInst)
 }
