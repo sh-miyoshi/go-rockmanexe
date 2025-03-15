@@ -94,10 +94,8 @@ MAIN:
 		field.Update()
 		background.Draw()
 		field.Draw()
-		animMgr.ObjAnimMgrProcess(false, field.IsBlackout())
 		playerDraw(pos, act)
-		animMgr.Update()
-		// animMgr.ObjAnimMgrDraw()
+		animMgr.Update(field.IsBlackout())
 		animMgr.Draw()
 
 		if !act.Update() && inputs.CheckKey(inputs.KeyEnter) == 1 {
