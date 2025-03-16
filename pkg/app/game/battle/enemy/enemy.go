@@ -312,7 +312,6 @@ func (e *enemy) GetParam() objanim.Param {
 		Param: anim.Param{
 			ObjID:    e.pm.ObjectID,
 			Pos:      e.pm.Pos,
-
 		},
 		HP: e.pm.HP,
 	}
