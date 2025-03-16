@@ -11,6 +11,7 @@ type FullCustom struct {
 }
 
 func (p *FullCustom) Update() (bool, error) {
+	// WIP: カスタムゲージをマックスにする
 	p.count++
 	return true, nil
 }

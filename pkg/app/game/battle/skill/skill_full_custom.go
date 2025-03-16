@@ -24,7 +24,6 @@ func newFullCustom(objID string, arg skillcore.Argument, core skillcore.SkillCor
 }
 
 func (p *FullCustom) Draw() {
-	// TODO: implement draw method
 }
 
 func (p *FullCustom) Update() (bool, error) {
