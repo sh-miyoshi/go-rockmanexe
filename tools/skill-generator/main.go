@@ -291,6 +291,10 @@ func updateChipGoFile(skill Chip) error {
 	if err != nil {
 		return fmt.Errorf("failed to write to chip.go: %v", err)
 	}
+	// Format the generated file
+	if err := exec.Command("go", "fmt", chipGoPath).Run(); err != nil {
+		return fmt.Errorf("failed to format skill file: %v", err)
+	}
 
 	return nil
 }
