@@ -61,6 +61,7 @@ const (
 	SkillBarrier
 	SkillBarrier100
 	SkillBarrier200
+	SkillFullCustom
 
 	SkillFailed
 )

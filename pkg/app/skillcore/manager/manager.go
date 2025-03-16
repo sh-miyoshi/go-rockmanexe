@@ -118,6 +118,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.Barrier{Arg: arg}
 		res.Init(id)
 		return res
+	case resources.SkillFullCustom:
+		return &processor.FullCustom{Arg: arg}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
