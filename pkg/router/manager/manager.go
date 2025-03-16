@@ -59,10 +59,12 @@ func (m *Manager) Cleanup() {
 }
 
 func (m *Manager) Update() error {
-	if err := m.objAnimMgr.Update(true); err != nil {
+	isActive := m.cutinCount == 0
+
+	if err := m.objAnimMgr.Update(isActive); err != nil {
 		return errors.Wrap(err, "objanim manage process failed")
 	}
-	if err := m.skillAnimMgr.Update(true); err != nil {
+	if err := m.skillAnimMgr.Update(isActive); err != nil {
 		return errors.Wrap(err, "skillanim manage process failed")
 	}
 	if err := m.effectAnimMgr.Update(); err != nil {
@@ -160,7 +162,7 @@ func (m *Manager) SoundOn(typ resources.SEType) {
 	})
 }
 
-func (m *Manager) Cutin(skillName string, count int, clientID string) {
+func (m *Manager) Cutin(skillName string, count int, clientID string, objID string) {
 	logger.Info("cutin with %d count", count)
 	cutin := sysinfo.Cutin{
 		SkillName:     skillName,
@@ -171,4 +173,10 @@ func (m *Manager) Cutin(skillName string, count int, clientID string) {
 		Data: cutin.Marshal(),
 	}
 	m.cutinCount = count
+	if m.objAnimMgr.IsProcessing(objID) {
+		m.objAnimMgr.SetActiveAnim(objID)
+	}
+	if m.skillAnimMgr.IsProcessing(objID) {
+		m.skillAnimMgr.SetActiveAnim(objID)
+	}
 }

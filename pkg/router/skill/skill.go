@@ -49,7 +49,7 @@ func Get(id int, arg Argument) SkillAnim {
 		GetPanelInfo:      arg.FieldFuncs.GetPanelInfo,
 		ChangePanelStatus: changePanelStatus,
 		Cutin: func(skillName string, count int) {
-			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
+			arg.Manager.Cutin(skillName, count, arg.OwnerClientID, arg.AnimObjID)
 		},
 		ChangePanelType: changePanelType,
 		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,
