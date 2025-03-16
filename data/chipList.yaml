@@ -1,6 +1,3 @@
-# type: 0(無), 1(風), 2(ブレイク), 3(剣), 4(クラック), 5(置物), 6(リカバー), 7(インビンシブル), 8(数値), 9(火), 10(水), 11(電気), 12(木)
-# player_act.type: -1(none), 2(shot), 3(cannon), 4(sword), 5(bomb), 6(buster), 7(pick), 8(throw)
-# スタンダードチップ(1 ~ 150)
 - id: 1
   name: キャノン
   power: 40
@@ -34,25 +31,25 @@
   power: 10
   type: 0
   player_act: 2
-  keep_cnt: 5
   description: ３連射バルカン　ヒットすると１マス奥にも貫通！
   is_implemented: true
+  keep_cnt: 5
 - id: 6
   name: バルカン2
   power: 10
   type: 0
   player_act: 2
-  keep_cnt: 12
   description: ５連射バルカン　ヒットすると１マス奥にも貫通！
   is_implemented: true
+  keep_cnt: 12
 - id: 7
   name: バルカン3
   power: 10
   type: 0
   player_act: 2
-  keep_cnt: 24
   description: ７連射バルカン　ヒットすると１マス奥にも貫通！
   is_implemented: true
+  keep_cnt: 24
 - id: 8
   name: スプレッドガン
   power: 30
@@ -65,25 +62,25 @@
   power: 40
   type: 9
   player_act: 2
-  keep_cnt: 2
   description: ヒットすると奥の１マスにも誘爆
   is_implemented: true
+  keep_cnt: 2
 - id: 10
   name: ヒートブイ
   power: 70
   type: 9
   player_act: 2
-  keep_cnt: 2
   description: ヒットするとななめ奥にも誘爆
   is_implemented: true
+  keep_cnt: 2
 - id: 11
   name: ヒートサイド
   power: 100
   type: 9
   player_act: 2
-  keep_cnt: 2
   description: ヒットすると上下１マスにも誘爆
   is_implemented: true
+  keep_cnt: 2
 - id: 12
   name: バブルショット
   power: 50
@@ -152,25 +149,25 @@
   power: 70
   type: 9
   player_act: 2
-  keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
   is_implemented: true
+  keep_cnt: 12
 - id: 22
   name: フレイムライン2
   power: 120
   type: 9
   player_act: 2
-  keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
   is_implemented: true
+  keep_cnt: 12
 - id: 23
   name: フレイムライン3
   power: 170
   type: 9
   player_act: 2
-  keep_cnt: 12
   description: ２マス前の縦３マスに火柱攻撃
   is_implemented: true
+  keep_cnt: 12
 - id: 24
   name: ガンデルソル1
   power: 0
@@ -303,8 +300,8 @@
   type: 1
   player_act: 2
   description: ２マス前方に最大８ヒットの竜巻を発生させる
-  keep_cnt: 10
   is_implemented: true
+  keep_cnt: 10
 - id: 43
   name: ノイズストーム
   power: 0
@@ -772,65 +769,65 @@
   power: 10
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを１０回復
   is_implemented: true
+  for_me: true
 - id: 110
   name: リカバリー30
   power: 30
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを３０回復
   is_implemented: true
+  for_me: true
 - id: 111
   name: リカバリー50
   power: 50
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを５０回復
   is_implemented: true
+  for_me: true
 - id: 112
   name: リカバリー80
   power: 80
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを８０回復
   is_implemented: true
+  for_me: true
 - id: 113
   name: リカバリー120
   power: 120
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを１２０回復
   is_implemented: true
+  for_me: true
 - id: 114
   name: リカバリー150
   power: 150
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを１５０回復
   is_implemented: true
+  for_me: true
 - id: 115
   name: リカバリー200
   power: 200
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを２００回復
   is_implemented: true
+  for_me: true
 - id: 116
   name: リカバリー300
   power: 300
   type: 6
   player_act: -1
-  for_me: true
   description: ＨＰを３００回復
   is_implemented: true
+  for_me: true
 - id: 117
   name: リペアー
   power: 0
@@ -878,28 +875,28 @@
   power: 0
   type: 0
   player_act: -1
-  description: '自エリアのパネルを元に戻す'
+  description: 自エリアのパネルを元に戻す
   is_implemented: true
 - id: 124
   name: デスマッチ1
   power: 0
   type: 0
   player_act: -1
-  description: 'エリア全てのパネルをヒビ割れにする'
+  description: エリア全てのパネルをヒビ割れにする
   is_implemented: true
 - id: 125
   name: デスマッチ2
   power: 0
   type: 0
   player_act: -1
-  description: 'エリア全てのパネルを穴パネルにする'
+  description: エリア全てのパネルを穴パネルにする
   is_implemented: true
 - id: 126
   name: デスマッチ3
   power: 0
   type: 0
   player_act: -1
-  description: 'エリア全てのパネルを毒沼パネルにする'
+  description: エリア全てのパネルを毒沼パネルにする
   is_implemented: true
 - id: 127
   name: ヘビーゲージ
@@ -962,21 +959,21 @@
   power: 0
   type: 0
   player_act: -1
-  description: '１０ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  description: １０ＨＰぶんの攻撃を吸収できるバリアを装備する
   is_implemented: true
 - id: 136
   name: バリア100
   power: 0
   type: 0
   player_act: -1
-  description: '１００ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  description: １００ＨＰぶんの攻撃を吸収できるバリアを装備する
   is_implemented: true
 - id: 137
   name: バリア200
   power: 0
   type: 0
   player_act: -1
-  description: '２００ＨＰぶんの攻撃を吸収できるバリアを装備する'
+  description: ２００ＨＰぶんの攻撃を吸収できるバリアを装備する
   is_implemented: true
 - id: 138
   name: カキゲンキン
@@ -1069,7 +1066,6 @@
   player_act: 0
   description: ''
   is_implemented: false
-# メガチップ(151 ~ 210)
 - id: 151
   name: スーパーバルカン
   power: 0
@@ -1676,7 +1672,6 @@
   description: ''
   is_implemented: false
   icon_index: 168
-# ギガチップ(229 ~ 237)
 - id: 229
   name: メテオレッドサン
   power: 0
@@ -1738,7 +1733,7 @@
   power: 160
   type: 0
   player_act: -1
-  description: '４つの地を這う暗黒の輪で敵を攻撃'
+  description: ４つの地を這う暗黒の輪で敵を攻撃
   is_implemented: true
   icon_index: 176
 - id: 237
@@ -1757,7 +1752,6 @@
   description: ''
   is_implemented: false
   icon_index: 178
-# ダークチップ(239 ~ 246)
 - id: 239
   name: ダークキャノン
   power: 0
@@ -1822,7 +1816,6 @@
   description: ''
   is_implemented: false
   icon_index: 226
-# その他のチップ(246 ~)
 - id: 247
   name: ショックウェーブ
   power: 40

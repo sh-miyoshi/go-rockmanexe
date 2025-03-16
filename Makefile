@@ -41,3 +41,5 @@ skill-mac:
 	cd cmd/skill-simulator && \
 	GOOS=windows go build -o app.out && \
 	wine64 app.out
+skill-gen:
+	go run tools/skill-generator/main.go
