@@ -7,10 +7,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -28,6 +28,7 @@ type volgearAtk struct {
 	images   []int
 	atkID    string
 	endCount int
+	animMgr  *manager.Manager
 }
 
 type enemyVolgear struct {
@@ -38,6 +39,7 @@ type enemyVolgear struct {
 	atk       volgearAtk
 	moveNum   int
 	waitCount int
+	animMgr   *manager.Manager
 }
 
 const (
@@ -47,11 +49,12 @@ const (
 	volgearAtkStr    = "set_attack"
 )
 
-func (e *enemyVolgear) Init(objID string) error {
+func (e *enemyVolgear) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementFire
 	e.moveNum = 5
 	e.waitCount = volgearInitWait
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDVolgear)
@@ -84,8 +87,8 @@ func (e *enemyVolgear) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -103,12 +106,13 @@ func (e *enemyVolgear) Update() (bool, error) {
 	if e.atkID != "" {
 		if e.atkID == volgearAtkStr {
 			e.atk.ownerID = e.pm.ObjectID
+			e.atk.animMgr = e.animMgr
 			e.atk.Init()
-			e.atkID = localanim.AnimNew(&e.atk)
+			e.atkID = e.animMgr.EffectAnimNew(&e.atk)
 		}
 
 		// Anim end
-		if !localanim.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			e.atkID = ""
 			e.waitCount = volgearInitWait
 		}
@@ -175,9 +179,8 @@ func (e *enemyVolgear) DamageProc(dm *damage.Damage) bool {
 func (e *enemyVolgear) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -239,18 +242,18 @@ func (a *volgearAtk) Update() (bool, error) {
 	}
 
 	if a.atkID != "" {
-		if !localanim.AnimIsProcessing(a.atkID) {
+		if !a.animMgr.IsAnimProcessing(a.atkID) {
 			a.endCount = delayVolgearAtk * 3
 			return false, nil
 		}
 	}
 
 	if a.count == delayVolgearAtk*6 {
-		a.atkID = localanim.AnimNew(skill.Get(resources.SkillFlamePillarTracking, skillcore.Argument{
+		a.atkID = a.animMgr.SkillAnimNew(skill.Get(resources.SkillFlamePillarTracking, skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      10,
 			TargetType: damage.TargetPlayer,
-		}))
+		}, a.animMgr))
 	}
 
 	return false, nil
@@ -258,7 +261,6 @@ func (a *volgearAtk) Update() (bool, error) {
 
 func (a *volgearAtk) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    a.objID,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: a.objID,
 	}
 }

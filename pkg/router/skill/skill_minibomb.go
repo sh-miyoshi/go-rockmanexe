@@ -70,7 +70,6 @@ func (p *miniBomb) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		Pos:       current,
-		DrawType:  anim.DrawTypeSkill,
 		ExtraInfo: info.Marshal(),
 	}
 }

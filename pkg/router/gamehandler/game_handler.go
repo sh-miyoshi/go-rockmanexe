@@ -169,7 +169,6 @@ func (g *GameHandler) updateGameInfo() {
 				ObjectID:      a.ObjID,
 				OwnerClientID: info.OwnerClientID,
 				Pos:           pos,
-				DrawType:      a.DrawType,
 				AnimType:      info.AnimType,
 				ActCount:      info.ActCount,
 				DrawParam:     info.DrawParam[:],

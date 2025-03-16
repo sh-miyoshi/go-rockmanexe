@@ -8,10 +8,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -66,10 +66,12 @@ type enemyBlues struct {
 	edgeEndPos     point.Point
 	imgShields     []int
 	shieldCount    int
+	animMgr        *manager.Manager
 }
 
-func (e *enemyBlues) Init(objID string) error {
+func (e *enemyBlues) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
+	e.animMgr = animMgr
 	e.state = bluesActTypeStand
 	e.count = 0
 	e.waitCount = 20
@@ -154,8 +156,8 @@ func (e *enemyBlues) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -250,7 +252,7 @@ func (e *enemyBlues) Update() (bool, error) {
 	case bluesActTypeWideSword:
 		if e.count == 0 && !e.isTargetMoved {
 			// Move to attack position
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -271,12 +273,12 @@ func (e *enemyBlues) Update() (bool, error) {
 
 		if e.count == 1*bluesDelays[bluesActTypeWideSword] {
 			logger.Debug("Blues Wide Sword Attack")
-			localanim.AnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
+			e.animMgr.SkillAnimNew(skill.Get(resources.SkillWideSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 				IsReverse:  !e.isCharReverse,
-			}))
+			}, e.animMgr))
 		}
 
 		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
@@ -285,7 +287,7 @@ func (e *enemyBlues) Update() (bool, error) {
 	case bluesActTypeFighterSword:
 		if e.count == 0 && !e.isTargetMoved {
 			// Move to attack position
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -309,12 +311,12 @@ func (e *enemyBlues) Update() (bool, error) {
 
 		if e.count == 1*bluesDelays[bluesActTypeFighterSword] {
 			logger.Debug("Blues Fighter Sword Attack")
-			localanim.AnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
+			e.animMgr.SkillAnimNew(skill.Get(resources.SkillFighterSword, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 				IsReverse:  true,
-			}))
+			}, e.animMgr))
 		}
 
 		if e.count == 6*bluesDelays[bluesActTypeWideSword] {
@@ -323,7 +325,7 @@ func (e *enemyBlues) Update() (bool, error) {
 	case bluesActTypeDeltaRayEdge:
 		if e.count == 0 && !e.isEdgeEffectOn {
 			// 移動先を決める
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -343,7 +345,7 @@ func (e *enemyBlues) Update() (bool, error) {
 			e.edgeEndPos = objs[0].Pos
 
 			e.isEdgeEffectOn = true
-			localanim.AnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
+			e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeSpecialStart, e.pm.Pos, 0))
 			e.nextState = bluesActTypeDeltaRayEdge
 			e.waitCount = 10
 			return e.stateChange(bluesActTypeStand)
@@ -371,16 +373,16 @@ func (e *enemyBlues) Update() (bool, error) {
 				skillID = resources.SkillWideSword
 			}
 
-			e.atkID = localanim.AnimNew(skill.Get(skillID, skillcore.Argument{
+			e.atkID = e.animMgr.SkillAnimNew(skill.Get(skillID, skillcore.Argument{
 				OwnerID:    e.pm.ObjectID,
 				Power:      bluesAtkPower[e.state],
 				TargetType: damage.TargetPlayer,
 				IsReverse:  isReverse,
-			}))
+			}, e.animMgr))
 		}
 
 		if e.atkID != "" {
-			if !localanim.AnimIsProcessing(e.atkID) {
+			if !e.animMgr.IsAnimProcessing(e.atkID) {
 				e.atkCount++
 				if e.atkCount == 3 {
 					e.waitCount = 1
@@ -396,11 +398,11 @@ func (e *enemyBlues) Update() (bool, error) {
 		}
 	case bluesActTypeDeltaRayEdgeEnd:
 		if e.count == 0 {
-			e.atkID = localanim.AnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
+			e.atkID = e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeDeltaRayEdge, e.edgeEndPos, 0))
 			sound.On(resources.SEDeltaRayEdgeEnd)
 		}
 
-		if !localanim.AnimIsProcessing(e.atkID) {
+		if !e.animMgr.IsAnimProcessing(e.atkID) {
 			return e.clearState()
 		}
 	case bluesActTypeSonicBoom:
@@ -476,7 +478,7 @@ func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 		// シールド中は反撃する
 		if dm.StrengthType != damage.StrengthNone {
 			// 背後に回ってワイドソード
-			objs := localanim.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
+			objs := e.animMgr.ObjAnimGetObjs(objanim.Filter{ObjType: objanim.ObjTypePlayer})
 			if len(objs) == 0 {
 				// エラー処理
 				logger.Info("Failed to get player position")
@@ -491,7 +493,7 @@ func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 			e.stateChange(bluesActTypeMove)
 			return true
 		} else {
-			localanim.AnimNew(effect.Get(resources.EffectTypeBlock, e.pm.Pos, 5))
+			e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeBlock, e.pm.Pos, 5))
 			return true
 		}
 	}
@@ -515,9 +517,8 @@ func (e *enemyBlues) DamageProc(dm *damage.Damage) bool {
 func (e *enemyBlues) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}

@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
@@ -18,22 +18,24 @@ type aquamanShot struct {
 	ID  string
 	Arg skillcore.Argument
 
-	pos    point.Point
-	ofs    point.Point
-	target point.Point
-	count  int
-	drawer skilldraw.DrawAquamanShot
+	pos     point.Point
+	ofs     point.Point
+	target  point.Point
+	count   int
+	drawer  skilldraw.DrawAquamanShot
+	animMgr *manager.Manager
 }
 
-func newAquamanShot(objID string, arg skillcore.Argument) *aquamanShot {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
+func newAquamanShot(objID string, arg skillcore.Argument, animMgr *manager.Manager) *aquamanShot {
+	pos := animMgr.ObjAnimGetObjPos(arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 
 	return &aquamanShot{
-		ID:     objID,
-		Arg:    arg,
-		pos:    point.Point{X: view.X - 40, Y: view.Y + 10},
-		target: point.Point{X: pos.X - 2, Y: pos.Y},
+		ID:      objID,
+		Arg:     arg,
+		pos:     point.Point{X: view.X - 40, Y: view.Y + 10},
+		target:  point.Point{X: pos.X - 2, Y: pos.Y},
+		animMgr: animMgr,
 	}
 }
 
@@ -59,8 +61,8 @@ func (p *aquamanShot) Update() (bool, error) {
 		}
 
 		sound.On(resources.SEWaterLanding)
-		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
-		localanim.DamageManager().New(damage.Damage{
+		p.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, p.target, 0))
+		p.animMgr.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           p.target,
 			Power:         int(p.Arg.Power),
@@ -71,8 +73,8 @@ func (p *aquamanShot) Update() (bool, error) {
 			Element:       damage.ElementWater,
 		})
 		target := point.Point{X: p.target.X - 1, Y: p.target.Y}
-		localanim.AnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
-		localanim.DamageManager().New(damage.Damage{
+		p.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeWaterBomb, target, 0))
+		p.animMgr.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           target,
 			Power:         int(p.Arg.Power),
@@ -90,8 +92,7 @@ func (p *aquamanShot) Update() (bool, error) {
 
 func (p *aquamanShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

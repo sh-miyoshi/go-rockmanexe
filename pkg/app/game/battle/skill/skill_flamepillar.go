@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -10,23 +10,24 @@ import (
 )
 
 type flamePillarManager struct {
-	ID   string
-	Arg  skillcore.Argument
-	Core *processor.FlamePillarManager
-
-	drawer skilldraw.DrawFlamePillerManager
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.FlamePillarManager
+	drawer  skilldraw.DrawFlamePillerManager
+	animMgr *manager.Manager
 }
 
-func newFlamePillar(objID string, arg skillcore.Argument, core skillcore.SkillCore) *flamePillarManager {
+func newFlamePillar(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *flamePillarManager {
 	return &flamePillarManager{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.FlamePillarManager),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.FlamePillarManager),
+		animMgr: animMgr,
 	}
 }
 
 func (p *flamePillarManager) Draw() {
-	pos := localanim.ObjAnimGetObjPos(p.Arg.OwnerID)
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 	p.drawer.Draw(view, p.Core.GetCount(), p.Core.IsShowBody(), p.Core.GetPillars(), p.Core.GetDelay(), true)
 }
@@ -37,11 +38,10 @@ func (p *flamePillarManager) Update() (bool, error) {
 
 func (p *flamePillarManager) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *flamePillarManager) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

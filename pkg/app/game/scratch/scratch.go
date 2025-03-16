@@ -2,6 +2,7 @@ package scratch
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
@@ -12,10 +13,14 @@ var (
 	imgPlayers [battlecommon.PlayerActMax][]int
 	imgMetall  int
 	imgAquaman int
+	animMgr    *manager.Manager
 )
 
 func Init() {
-	field.Init()
+	if animMgr == nil {
+		animMgr = manager.NewManager()
+	}
+	field.Init(animMgr)
 
 	fname := config.ImagePath + "battle/character/player_move.png"
 	imgPlayers[battlecommon.PlayerActMove] = make([]int, 4)
@@ -71,6 +76,7 @@ func Init() {
 
 func Draw() {
 	field.Draw()
+	animMgr.Draw()
 
 	view := battlecommon.ViewPos(point.Point{X: 1, Y: 1})
 	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, imgPlayers[battlecommon.PlayerActMove][0], true)
@@ -81,4 +87,5 @@ func Draw() {
 
 func Update() {
 	field.Update()
+	animMgr.Update(true)
 }

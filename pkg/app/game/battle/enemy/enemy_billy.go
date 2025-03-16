@@ -6,10 +6,10 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -47,11 +47,13 @@ type enemyBilly struct {
 	count     int
 	moveCount int
 	act       billyAct
+	animMgr   *manager.Manager
 }
 
-func (e *enemyBilly) Init(objID string) error {
+func (e *enemyBilly) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.pm.DamageElement = damage.ElementElec
+	e.animMgr = animMgr
 	e.act.pPos = &e.pm.Pos
 	e.act.typ = -1
 	e.act.ownerID = objID
@@ -89,8 +91,8 @@ func (e *enemyBilly) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -100,7 +102,7 @@ func (e *enemyBilly) Update() (bool, error) {
 		return false, nil
 	}
 
-	if e.act.Update() {
+	if e.act.Update(e.animMgr) {
 		return false, nil
 	}
 
@@ -166,9 +168,8 @@ func (e *enemyBilly) DamageProc(dm *damage.Damage) bool {
 func (e *enemyBilly) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -210,17 +211,17 @@ func (a *billyAct) SetAnim(animType int, endCount int) {
 	a.endCount = endCount
 }
 
-func (a *billyAct) Update() bool {
+func (a *billyAct) Update(animMgr *manager.Manager) bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
 	case billyActAttack:
 		if a.count == 5*delayBillyAtk {
-			localanim.AnimNew(skill.Get(resources.SkillThunderBall, skillcore.Argument{
+			animMgr.SkillAnimNew(skill.Get(resources.SkillThunderBall, skillcore.Argument{
 				OwnerID:    a.ownerID,
 				Power:      20,
 				TargetType: damage.TargetPlayer,
-			}))
+			}, animMgr))
 		}
 	case billyActMove:
 		if a.count == 4*delayBillyMove {

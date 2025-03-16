@@ -3,7 +3,7 @@ package skill
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -18,15 +18,17 @@ type aquaman struct {
 	Arg  skillcore.Argument
 	Core *processor.Aquaman
 
-	atkID  string
-	drawer skilldraw.DrawAquaman
+	atkID   string
+	drawer  skilldraw.DrawAquaman
+	animMgr *manager.Manager
 }
 
-func newAquaman(objID string, arg skillcore.Argument, core skillcore.SkillCore) *aquaman {
+func newAquaman(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *aquaman {
 	return &aquaman{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.Aquaman),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.Aquaman),
+		animMgr: animMgr,
 	}
 }
 
@@ -52,15 +54,15 @@ func (p *aquaman) Update() (bool, error) {
 			Interval:      50,
 			Power:         int(p.Arg.Power),
 		}
-		if err := obj.Init(p.ID, pm); err != nil {
+		if err := obj.Init(p.ID, pm, p.animMgr); err != nil {
 			return false, errors.Wrap(err, "water pipe create failed")
 		}
-		p.atkID = localanim.ObjAnimNew(obj)
-		localanim.ObjAnimAddActiveAnim(p.atkID)
+		p.atkID = p.animMgr.ObjAnimNew(obj)
+		p.animMgr.SetActiveAnim(p.atkID)
 	}
 
 	if p.atkID != "" {
-		if !localanim.ObjAnimIsProcessing(p.atkID) {
+		if !p.animMgr.IsAnimProcessing(p.atkID) {
 			field.SetBlackoutCount(0)
 			return true, nil
 		}
@@ -71,8 +73,7 @@ func (p *aquaman) Update() (bool, error) {
 
 func (p *aquaman) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

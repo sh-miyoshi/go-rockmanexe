@@ -49,7 +49,6 @@ type Anim struct {
 	ObjectID      string
 	OwnerClientID string
 	Pos           point.Point
-	DrawType      int
 	AnimType      int
 	ActCount      int
 	DrawParam     []byte

@@ -51,7 +51,6 @@ func (p *flameLine) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		DrawType:  anim.DrawTypeSkill,
 		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}

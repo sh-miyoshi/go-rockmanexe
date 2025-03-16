@@ -8,7 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -39,16 +39,21 @@ const (
 	stateMax
 )
 
+type State interface {
+	End()
+	Update() bool
+	Draw()
+}
+
 var (
-	battleCount    int
+	isStateInit    bool
 	battleState    int
 	playerInst     *battleplayer.BattlePlayer
 	enemyList      []enemy.EnemyParam
 	gameCount      int
-	b4mainInst     *b4main.BeforeMain
-	loseInst       *titlemsg.TitleMsg
-	openingInst    opening.Opening
+	stateInst      State
 	basePlayerInst *player.Player
+	animMgr        *manager.Manager
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -58,18 +63,18 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	logger.Info("Init battle data ...")
 
 	gameCount = 0
-	battleCount = 0
+	isStateInit = false
 	battleState = stateOpening
-	b4mainInst = nil
-	loseInst = nil
 	basePlayerInst = plyr
+	stateInst = nil
+	animMgr = manager.NewManager()
 
 	var err error
-	playerInst, err = battleplayer.New(plyr)
+	playerInst, err = battleplayer.New(plyr, animMgr)
 	if err != nil {
 		return errors.Wrap(err, "battle player init failed")
 	}
-	localanim.ObjAnimNew(playerInst)
+	animMgr.ObjAnimNew(playerInst)
 
 	enemyList = []enemy.EnemyParam{}
 	for _, e := range enemies {
@@ -78,11 +83,11 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 			supporter, err := battleplayer.NewSupporter(battleplayer.SupporterParam{
 				HP:      uint(e.HP),
 				InitPos: e.Pos,
-			})
+			}, animMgr)
 			if err != nil {
 				return errors.Wrap(err, "battle supporter init failed")
 			}
-			localanim.ObjAnimNew(supporter)
+			animMgr.ObjAnimNew(supporter)
 			logger.Info("add supporter %+v", supporter)
 		} else {
 			enemyList = append(enemyList, e)
@@ -90,7 +95,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	}
 	logger.Info("enemy list: %+v", enemyList)
 
-	if err := field.Init(); err != nil {
+	if err := field.Init(animMgr); err != nil {
 		return errors.Wrap(err, "battle field init failed")
 	}
 
@@ -142,45 +147,45 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 
 func End() {
 	field.ResetSet4x4Area()
-	localanim.AnimCleanup()
-	localanim.ObjAnimCleanup()
+	animMgr.Cleanup()
 	field.End()
 	playerInst.End()
 	skill.End()
 	enemy.End()
 	effect.End()
-	win.End()
 	logger.Info("End battle data")
 }
 
 func Update() error {
 	battlecommon.SystemProcess()
-	isRunAnim := false
+
+	isActive := false
 
 	switch battleState {
 	case stateOpening:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			var err error
 			if enemy.IsBoss(enemyList[0].CharID) {
-				openingInst, err = opening.NewWithBoss(enemyList)
+				stateInst, err = opening.NewWithBoss(enemyList)
 			} else {
-				openingInst, err = opening.NewWithNormal(enemyList)
+				stateInst, err = opening.NewWithNormal(enemyList)
 			}
 			if err != nil {
 				return errors.Wrap(err, "opening init failed")
 			}
 		}
 
-		if openingInst.Update() {
-			openingInst.End()
-			if err := enemy.Init(playerInst.ID, enemyList); err != nil {
+		if stateInst.Update() {
+			if err := enemy.Init(playerInst.ID, enemyList, animMgr); err != nil {
 				return errors.Wrap(err, "enemy init failed")
 			}
 			stateChange(stateChipSelect)
 			return nil
 		}
 	case stateChipSelect:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			if err := chipsel.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}
@@ -193,9 +198,10 @@ func Update() error {
 			return nil
 		}
 	case stateBeforeMain:
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			var err error
-			b4mainInst, err = b4main.New(playerInst.SelectedChips)
+			stateInst, err = b4main.New(playerInst.SelectedChips)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize before main")
 			}
@@ -203,43 +209,39 @@ func Update() error {
 			playerInst.SetFrameInfo(false, true)
 		}
 
-		if b4mainInst.Update() {
-			b4mainInst.End()
+		if stateInst.Update() {
 			stateChange(stateMain)
 			return nil
 		}
 	case stateMain:
-		isRunAnim = true
 		gameCount++
 
-		if err := localanim.ObjAnimMgrProcess(true, field.IsBlackout()); err != nil {
-			return errors.Wrap(err, "failed to handle object animation")
-		}
+		isActive = !field.IsBlackout()
 
-		if !field.IsBlackout() {
-			switch playerInst.NextAction {
-			case battleplayer.NextActChipSelect:
-				stateChange(stateChipSelect)
-				playerInst.NextAction = battleplayer.NextActNone
-				return nil
-			case battleplayer.NextActLose:
-				stateChange(stateResultLose)
+		switch playerInst.NextAction {
+		case battleplayer.NextActChipSelect:
+			stateChange(stateChipSelect)
+			playerInst.NextAction = battleplayer.NextActNone
+			return nil
+		case battleplayer.NextActLose:
+			cleanupBattleAnims()
+			stateChange(stateResultLose)
+			return nil
+		}
+		if err := enemy.MgrProcess(); err != nil {
+			if errors.Is(err, enemy.ErrGameEnd) {
+				cleanupBattleAnims()
+				playerInst.EnableAct = false
+				stateChange(stateResultWin)
 				return nil
 			}
-			if err := enemy.MgrProcess(); err != nil {
-				if errors.Is(err, enemy.ErrGameEnd) {
-					playerInst.EnableAct = false
-					stateChange(stateResultWin)
-					return nil
-				}
-				return errors.Wrap(err, "failed to process enemy")
-			}
+			return errors.Wrap(err, "failed to process enemy")
 		}
 
 		field.Update()
 	case stateResultWin:
-		isRunAnim = true
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			enemies := []reward.EnemyParam{}
 			for _, e := range enemyList {
 				enemies = append(enemies, reward.EnemyParam{
@@ -248,78 +250,62 @@ func Update() error {
 				})
 			}
 
-			if err := win.Init(reward.WinArg{
+			var err error
+			stateInst, err = win.New(reward.WinArg{
 				GameTime:        gameCount,
 				DeletedEnemies:  enemies,
 				PlayerMoveNum:   playerInst.MoveNum,
 				PlayerDamageNum: playerInst.DamageNum,
-			}, basePlayerInst); err != nil {
+			}, basePlayerInst)
+			if err != nil {
 				return errors.Wrap(err, "failed to initialize result win")
 			}
 		}
 
-		if err := localanim.ObjAnimMgrProcess(false, field.IsBlackout()); err != nil {
-			return errors.Wrap(err, "failed to handle object animation")
-		}
-
-		if win.Update() {
+		if stateInst.Update() {
+			stateInst.End()
+			stateInst = nil
 			return ErrWin
 		}
 	case stateResultLose:
-		isRunAnim = true
-		if battleCount == 0 {
+		if !isStateInit {
+			isStateInit = true
 			fname := config.ImagePath + "battle/msg_lose.png"
 			var err error
-			loseInst, err = titlemsg.New(fname, 0)
+			stateInst, err = titlemsg.New(fname, 0)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize lose")
 			}
 			playerInst.SetFrameInfo(false, false)
 		}
 
-		if loseInst.Update() {
+		if stateInst.Update() {
 			sound.SEClear()
-			loseInst.End()
 			return ErrLose
 		}
 	}
 
-	if isRunAnim {
-		if err := localanim.AnimMgrProcess(); err != nil {
-			return errors.Wrap(err, "failed to handle animation")
-		}
+	if err := animMgr.Update(isActive); err != nil {
+		return errors.Wrap(err, "failed to handle animation")
 	}
 
-	battleCount++
 	return nil
 }
 
 func Draw() {
 	field.Draw()
-	localanim.ObjAnimMgrDraw()
-	localanim.AnimMgrDraw()
+	animMgr.Draw()
 
 	drawEnemyNames()
 	field.DrawBlackout()
 
+	if stateInst != nil {
+		stateInst.Draw()
+	}
+
 	switch battleState {
-	case stateOpening:
-		if openingInst != nil {
-			openingInst.Draw()
-		}
 	case stateChipSelect:
 		chipsel.Draw()
-	case stateBeforeMain:
-		if b4mainInst != nil {
-			b4mainInst.Draw()
-		}
-	case stateMain:
-	case stateResultWin:
-		win.Draw()
-	case stateResultLose:
-		if loseInst != nil {
-			loseInst.Draw()
-		}
 	}
 
 	battlecommon.SystemDraw()
@@ -332,7 +318,11 @@ func stateChange(nextState int) {
 		return
 	}
 	battleState = nextState
-	battleCount = 0
+	isStateInit = false
+	if stateInst != nil {
+		stateInst.End()
+		stateInst = nil
+	}
 }
 
 func drawEnemyNames() {
@@ -341,4 +331,11 @@ func drawEnemyNames() {
 		ofs := dxlib.GetDrawStringWidth(name, len(name))
 		draw.String(config.ScreenSize.X-ofs-5, i*20+10, 0xffffff, "%s", name)
 	}
+}
+
+func cleanupBattleAnims() {
+	for _, a := range animMgr.AnimGetSkills() {
+		animMgr.AnimDelete(a.ObjID)
+	}
+	animMgr.DamageManager().RemoveAll()
 }

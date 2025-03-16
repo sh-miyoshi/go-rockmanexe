@@ -5,8 +5,8 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -16,7 +16,7 @@ import (
 )
 
 type SkillAnim interface {
-	anim.Anim
+	skillanim.Anim
 
 	StopByOwner()
 }
@@ -33,92 +33,93 @@ func End() {
 	skilldraw.ClearImages()
 }
 
-func Get(skillID int, arg skillcore.Argument) SkillAnim {
+func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAnim {
 	objID := uuid.New().String()
 	arg.GetPanelInfo = field.GetPanelInfo
 	arg.ChangePanelStatus = field.ChangePanelStatus
-	arg.DamageMgr = localanim.DamageManager()
-	arg.GetObjectPos = localanim.ObjAnimGetObjPos
-	arg.GetObjects = localanim.ObjAnimGetObjs
+	arg.DamageMgr = animMgr.DamageManager()
+	arg.GetObjectPos = animMgr.ObjAnimGetObjPos
+	arg.GetObjects = animMgr.ObjAnimGetObjs
 	arg.SoundOn = sound.On
 	arg.Cutin = func(skillName string, count int) {
 		field.SetBlackoutCount(count)
+		animMgr.SetActiveAnim(objID)
 		SetChipNameDraw(skillName, true)
 	}
-	arg.MakeInvisible = localanim.ObjAnimMakeInvisible
-	arg.AddBarrier = localanim.ObjAnimAddBarrier
+	arg.MakeInvisible = animMgr.ObjAnimMakeInvisible
+	arg.AddBarrier = animMgr.ObjAnimAddBarrier
 	arg.ChangePanelType = field.ChangePanelType
-	core := localanim.SkillManager().Get(skillID, arg)
+	core := animMgr.SkillGet(skillID, arg)
 
 	switch skillID {
 	case resources.SkillCannon, resources.SkillHighCannon, resources.SkillMegaCannon:
-		return newCannon(objID, arg, core, skillID)
+		return newCannon(objID, arg, core, skillID, animMgr)
 	case resources.SkillMiniBomb:
-		return newMiniBomb(objID, arg, core)
+		return newMiniBomb(objID, arg, core, animMgr)
 	case resources.SkillSword, resources.SkillWideSword, resources.SkillLongSword, resources.SkillDreamSword, resources.SkillFighterSword, resources.SkillNonEffectWideSword:
-		return newSword(objID, arg, core)
+		return newSword(objID, arg, core, animMgr)
 	case resources.SkillPlayerShockWave, resources.SkillEnemyShockWave:
-		return newShockWave(objID, arg, core)
+		return newShockWave(objID, arg, core, animMgr)
 	case resources.SkillRecover:
-		return newRecover(objID, arg, core)
+		return newRecover(objID, arg, core, animMgr)
 	case resources.SkillSpreadGun:
-		return newSpreadGun(objID, arg, core)
+		return newSpreadGun(objID, arg, core, animMgr)
 	case resources.SkillVulcan1, resources.SkillVulcan2, resources.SkillVulcan3:
-		return newVulcan(objID, arg, core)
+		return newVulcan(objID, arg, core, animMgr)
 	case resources.SkillThunderBall:
-		return newThunderBall(objID, arg, core)
+		return newThunderBall(objID, arg, core, animMgr)
 	case resources.SkillPlayerWideShot, resources.SkillEnemyWideShot:
-		return newWideShot(objID, arg, core)
+		return newWideShot(objID, arg, core, animMgr)
 	case resources.SkillBoomerang:
-		return newBoomerang(objID, arg, core)
+		return newBoomerang(objID, arg, core, animMgr)
 	case resources.SkillWaterBomb:
-		return newWaterBomb(objID, arg, core)
+		return newWaterBomb(objID, arg, core, animMgr)
 	case resources.SkillAquamanShot:
-		return newAquamanShot(objID, arg)
+		return newAquamanShot(objID, arg, animMgr)
 	case resources.SkillAquaman:
-		return newAquaman(objID, arg, core)
+		return newAquaman(objID, arg, core, animMgr)
 	case resources.SkillCrackout, resources.SkillDoubleCrack, resources.SkillTripleCrack:
-		return newCrack(objID, arg, core)
+		return newCrack(objID, arg, core, animMgr)
 	case resources.SkillBambooLance:
-		return newBambooLance(objID, arg, core)
+		return newBambooLance(objID, arg, core, animMgr)
 	case resources.SkillInvisible:
-		return newInvisible(objID, arg, core)
+		return newInvisible(objID, arg, core, animMgr)
 	case resources.SkillGarooBreath:
-		return newGarooBreath(objID, arg)
+		return newGarooBreath(objID, arg, animMgr)
 	case resources.SkillFlamePillarTracking, resources.SkillFlamePillarRandom, resources.SkillFlamePillarLine:
-		return newFlamePillar(objID, arg, core)
+		return newFlamePillar(objID, arg, core, animMgr)
 	case resources.SkillHeatShot, resources.SkillHeatV, resources.SkillHeatSide:
-		return newHeatShot(objID, arg, core)
+		return newHeatShot(objID, arg, core, animMgr)
 	case resources.SkillAreaSteal, resources.SkillPanelSteal:
-		return newAreaSteal(objID, arg, core)
+		return newAreaSteal(objID, arg, core, animMgr)
 	case resources.SkillCountBomb:
-		return newCountBomb(objID, arg, core)
+		return newCountBomb(objID, arg, core, animMgr)
 	case resources.SkillTornado:
-		return newTornado(objID, arg, core)
+		return newTornado(objID, arg, core, animMgr)
 	case resources.SkillFailed:
-		return newFailed(objID, arg)
+		return newFailed(objID, arg, animMgr)
 	case resources.SkillQuickGauge:
-		return newQuickGauge(objID, arg, core)
+		return newQuickGauge(objID, arg, core, animMgr)
 	case resources.SkillCirkillShot:
-		return newCirkillShot(objID, arg)
+		return newCirkillShot(objID, arg, animMgr)
 	case resources.SkillShrimpyAttack:
-		return newShrimpyAtk(objID, arg)
+		return newShrimpyAtk(objID, arg, animMgr)
 	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
-		return newBubbleShot(objID, arg, core)
+		return newBubbleShot(objID, arg, core, animMgr)
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
-		return newForteHellsRolling(objID, arg, core)
+		return newForteHellsRolling(objID, arg, core, animMgr)
 	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
-		return newForteDarkArmBlade(objID, arg, core, skillID)
+		return newForteDarkArmBlade(objID, arg, core, skillID, animMgr)
 	case resources.SkillForteShootingBuster:
-		return newForteShootingBuster(objID, arg, core)
+		return newForteShootingBuster(objID, arg, core, animMgr)
 	case resources.SkillForteDarknessOverload:
-		return newForteDarknessOverload(objID, arg, core)
+		return newForteDarknessOverload(objID, arg, core, animMgr)
 	case resources.SkillChipForteAnother:
-		return newChipForteAnother(objID, arg, core)
+		return newChipForteAnother(objID, arg, core, animMgr)
 	case resources.SkillDeathMatch1, resources.SkillDeathMatch2, resources.SkillDeathMatch3:
-		return newDeathMatch(objID, arg, core)
+		return newDeathMatch(objID, arg, core, animMgr)
 	case resources.SkillPanelReturn:
-		return newPanelReturn(objID, arg, core)
+		return newPanelReturn(objID, arg, core, animMgr)
 	case resources.SkillBarrier, resources.SkillBarrier100, resources.SkillBarrier200:
 		return newBarrier(objID, arg, core)
 	}
@@ -133,7 +134,6 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -163,11 +163,10 @@ func (p *tmpskill) Update() (bool, error) {
 func (p *tmpskill) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
 	}
 }
 
 func (p *tmpskill) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }
 */

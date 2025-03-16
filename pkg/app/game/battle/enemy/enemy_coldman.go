@@ -7,10 +7,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -52,9 +52,10 @@ type enemyColdman struct {
 	targetPos    point.Point
 	targetCubeID string
 	actCount     int
+	animMgr      *manager.Manager
 }
 
-func (e *enemyColdman) Init(objID string) error {
+func (e *enemyColdman) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.state = coldmanActTypeStand
 	e.waitCount = 60
@@ -64,6 +65,7 @@ func (e *enemyColdman) Init(objID string) error {
 	e.bressIDs = []string{}
 	e.targetPos = point.Point{X: -1, Y: -1}
 	e.actCount = 0
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDColdman)
@@ -123,8 +125,8 @@ func (e *enemyColdman) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -199,7 +201,7 @@ func (e *enemyColdman) Update() (bool, error) {
 		}
 		if e.count == 60 {
 			for _, id := range e.cubeIDs {
-				localanim.ObjAnimDeactivateAnim(id)
+				e.animMgr.DeactivateAnim(id)
 			}
 			e.moveNum = rand.Intn(2) + 2
 			e.nextState = coldmanActTypeMove
@@ -240,7 +242,7 @@ func (e *enemyColdman) Update() (bool, error) {
 				PushLeft:      battlecommon.FieldNum.X,
 				Element:       damage.ElementNone,
 			}
-			localanim.DamageManager().New(dm)
+			e.animMgr.DamageManager().New(dm)
 		}
 
 		if e.count == 6*coldmanDelays[coldmanActTypeIceShoot] {
@@ -332,9 +334,8 @@ func (e *enemyColdman) DamageProc(dm *damage.Damage) bool {
 func (e *enemyColdman) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -382,7 +383,7 @@ func (e *enemyColdman) createCube() error {
 	// 前のアイスキューブがあるなら削除する
 	if len(e.cubeIDs) > 0 {
 		for _, id := range e.cubeIDs {
-			localanim.ObjAnimDelete(id)
+			e.animMgr.AnimDelete(id)
 		}
 		e.cubeIDs = []string{}
 	}
@@ -428,11 +429,11 @@ func (e *enemyColdman) createCube() error {
 			OnwerCharType: objanim.ObjTypeEnemy,
 		}
 		obj := &object.IceCube{}
-		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
+		if err := obj.Init(e.pm.ObjectID, pm, e.animMgr); err != nil {
 			return errors.Wrap(err, "failed to init ice cube")
 		}
-		id := localanim.ObjAnimNew(obj)
-		localanim.ObjAnimAddActiveAnim(id)
+		id := e.animMgr.ObjAnimNew(obj)
+		e.animMgr.SetActiveAnim(id)
 		e.cubeIDs = append(e.cubeIDs, id)
 	}
 
@@ -443,7 +444,7 @@ func (e *enemyColdman) createBress() error {
 	// 前のブレスがあるなら削除する
 	if len(e.bressIDs) > 0 {
 		for _, id := range e.bressIDs {
-			localanim.ObjAnimDelete(id)
+			e.animMgr.AnimDelete(id)
 		}
 		e.bressIDs = []string{}
 	}
@@ -451,7 +452,7 @@ func (e *enemyColdman) createBress() error {
 	for y := 0; y < battlecommon.FieldNum.Y; y++ {
 		pos := point.Point{X: 4, Y: y}
 		// もしObjectがあれば生成しない
-		if localanim.ObjAnimExistsObject(pos) != "" {
+		if e.animMgr.ObjAnimExistsObject(pos) != "" {
 			continue
 		}
 
@@ -462,10 +463,10 @@ func (e *enemyColdman) createBress() error {
 		}
 
 		obj := &object.ColdBress{}
-		if err := obj.Init(e.pm.ObjectID, pm); err != nil {
+		if err := obj.Init(e.pm.ObjectID, pm, e.animMgr); err != nil {
 			return errors.Wrap(err, "failed to init cold bress")
 		}
-		id := localanim.ObjAnimNew(obj)
+		id := e.animMgr.ObjAnimNew(obj)
 		e.bressIDs = append(e.bressIDs, id)
 	}
 
@@ -481,9 +482,9 @@ func (e *enemyColdman) stateChange(next int) (bool, error) {
 }
 
 func (e *enemyColdman) findShootCube() (point.Point, string, bool) {
-	playerPos := localanim.ObjAnimGetObjPos(e.pm.PlayerID)
+	playerPos := e.animMgr.ObjAnimGetObjPos(e.pm.PlayerID)
 	for _, id := range e.cubeIDs {
-		pos := localanim.ObjAnimGetObjPos(id)
+		pos := e.animMgr.ObjAnimGetObjPos(id)
 		if pos.Y == playerPos.Y {
 			targetPos := point.Point{X: pos.X + 1, Y: pos.Y}
 			return targetPos, id, true

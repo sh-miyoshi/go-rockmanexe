@@ -40,7 +40,6 @@ func (p *tornado) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		DrawType:  anim.DrawTypeSkill,
 		Pos:       obj,
 		ExtraInfo: info.Marshal(),
 	}

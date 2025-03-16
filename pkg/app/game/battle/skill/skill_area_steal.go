@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
@@ -13,14 +13,16 @@ type skillAreaSteal struct {
 	Arg  skillcore.Argument
 	Core *processor.AreaSteal
 
-	drawer skilldraw.DrawAreaSteal
+	drawer  skilldraw.DrawAreaSteal
+	animMgr *manager.Manager
 }
 
-func newAreaSteal(objID string, arg skillcore.Argument, core skillcore.SkillCore) *skillAreaSteal {
+func newAreaSteal(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *skillAreaSteal {
 	return &skillAreaSteal{
-		ID:   objID,
-		Arg:  arg,
-		Core: core.(*processor.AreaSteal),
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.AreaSteal),
+		animMgr: animMgr,
 	}
 }
 
@@ -34,11 +36,10 @@ func (p *skillAreaSteal) Update() (bool, error) {
 
 func (p *skillAreaSteal) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 
 func (p *skillAreaSteal) StopByOwner() {
-	localanim.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }

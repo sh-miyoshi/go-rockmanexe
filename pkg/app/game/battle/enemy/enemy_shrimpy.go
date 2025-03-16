@@ -7,10 +7,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -52,9 +52,10 @@ type enemyShrimpy struct {
 	direct    int
 	moveCount int
 	prevOfsY  int
+	animMgr   *manager.Manager
 }
 
-func (e *enemyShrimpy) Init(objID string) error {
+func (e *enemyShrimpy) Init(objID string, animMgr *manager.Manager) error {
 	e.pm.ObjectID = objID
 	e.waitCount = 20
 	e.state = shrimpyStateWait
@@ -64,6 +65,7 @@ func (e *enemyShrimpy) Init(objID string) error {
 	e.direct = config.DirectUp
 	e.atk.ownerID = objID
 	e.setMoveCount()
+	e.animMgr = animMgr
 
 	// Load Images
 	name, ext := GetStandImageFile(IDShrimpy)
@@ -94,8 +96,8 @@ func (e *enemyShrimpy) Update() (bool, error) {
 	if e.pm.HP <= 0 {
 		// Delete Animation
 		img := e.getCurrentImagePointer()
-		deleteanim.New(*img, e.pm.Pos, false)
-		localanim.AnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
+		deleteanim.New(*img, e.pm.Pos, false, e.animMgr)
+		e.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExplode, e.pm.Pos, 0))
 		*img = -1 // DeleteGraph at delete animation
 		return true, nil
 	}
@@ -155,7 +157,7 @@ func (e *enemyShrimpy) Update() (bool, error) {
 		}
 	case shrimpyStateAtk:
 		if e.count == 0 {
-			e.atk.Set()
+			e.atk.Set(e.animMgr)
 		}
 
 		if e.atk.Update() {
@@ -207,9 +209,8 @@ func (e *enemyShrimpy) DamageProc(dm *damage.Damage) bool {
 func (e *enemyShrimpy) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    e.pm.ObjectID,
-			Pos:      e.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: e.pm.ObjectID,
+			Pos:   e.pm.Pos,
 		},
 		HP: e.pm.HP,
 	}
@@ -247,15 +248,16 @@ func (e *enemyShrimpy) setState(state int) {
 	e.count = 0
 }
 
-func (a *shrimpyAttack) Set() {
+func (a *shrimpyAttack) Set(animMgr *manager.Manager) {
 	a.count = 0
-	localanim.AnimNew(skill.Get(
+	animMgr.SkillAnimNew(skill.Get(
 		resources.SkillShrimpyAttack,
 		skillcore.Argument{
 			OwnerID:    a.ownerID,
 			Power:      20,
 			TargetType: damage.TargetPlayer,
 		},
+		animMgr,
 	))
 }
 

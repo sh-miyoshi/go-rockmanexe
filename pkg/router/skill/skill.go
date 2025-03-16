@@ -3,7 +3,7 @@ package skill
 import (
 	"fmt"
 
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	skillanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
@@ -23,7 +23,7 @@ type Argument struct {
 }
 
 type SkillAnim interface {
-	anim.Anim
+	skillanim.Anim
 
 	StopByOwner()
 }
@@ -49,7 +49,7 @@ func Get(id int, arg Argument) SkillAnim {
 		GetPanelInfo:      arg.FieldFuncs.GetPanelInfo,
 		ChangePanelStatus: changePanelStatus,
 		Cutin: func(skillName string, count int) {
-			arg.Manager.Cutin(skillName, count, arg.OwnerClientID)
+			arg.Manager.Cutin(skillName, count, arg.OwnerClientID, arg.AnimObjID)
 		},
 		ChangePanelType: changePanelType,
 		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,

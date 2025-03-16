@@ -38,7 +38,7 @@ func (p *spreadGun) Update() (bool, error) {
 		return false, err
 	}
 	for _, hit := range p.Core.PopSpreadHits() {
-		p.Arg.Manager.AnimNew(&spreadHit{
+		p.Arg.Manager.EffectAnimNew(&spreadHit{
 			ID:   uuid.New().String(),
 			Arg:  p.Arg,
 			Core: hit,
@@ -58,7 +58,6 @@ func (p *spreadGun) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
-		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}
 }
@@ -87,7 +86,6 @@ func (p *spreadHit) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:     p.ID,
 		Pos:       p.Core.Pos,
-		DrawType:  anim.DrawTypeEffect,
 		ExtraInfo: info.Marshal(),
 	}
 }

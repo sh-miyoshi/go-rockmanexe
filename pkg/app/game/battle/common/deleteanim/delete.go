@@ -3,7 +3,7 @@ package deleteanim
 import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -18,14 +18,14 @@ type deleteAction struct {
 	count int
 }
 
-func New(image int, pos point.Point, isPlayer bool) {
+func New(image int, pos point.Point, isPlayer bool, animMgr *manager.Manager) {
 	if isPlayer {
 		sound.On(resources.SEPlayerDeleted)
 	} else {
 		sound.On(resources.SEEnemyDeleted)
 	}
 
-	localanim.AnimNew(&deleteAction{
+	animMgr.EffectAnimNew(&deleteAction{
 		id:    uuid.New().String(),
 		image: image,
 		pos:   pos,
@@ -53,8 +53,7 @@ func (p *deleteAction) Draw() {
 
 func (p *deleteAction) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.id,
-		Pos:      p.pos,
-		DrawType: anim.DrawTypeEffect,
+		ObjID: p.id,
+		Pos:   p.pos,
 	}
 }

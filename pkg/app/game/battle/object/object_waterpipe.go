@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
@@ -36,12 +36,14 @@ type WaterPipe struct {
 	imgSet   []int
 	count    int
 	atkCount int
+	animMgr  *manager.Manager
 }
 
-func (o *WaterPipe) Init(ownerID string, initParam ObjectParam) error {
+func (o *WaterPipe) Init(ownerID string, initParam ObjectParam, animMgr *manager.Manager) error {
 	o.pm = initParam
 	o.pm.objectID = uuid.New().String()
 	o.pm.xFlip = o.pm.OnwerCharType == objanim.ObjTypePlayer
+	o.animMgr = animMgr
 
 	// Load Images
 	o.imgSet = make([]int, 4)
@@ -68,7 +70,7 @@ func (o *WaterPipe) End() {
 
 func (o *WaterPipe) Update() (bool, error) {
 	if o.atk.IsAttacking() {
-		o.atk.Update()
+		o.atk.Update(o.animMgr)
 		return false, nil
 	}
 
@@ -122,7 +124,7 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 
 	if dm.TargetObjType&target != 0 {
 		o.pm.HP--
-		localanim.AnimNew(effect.Get(resources.EffectTypeBlock, o.pm.Pos, 5))
+		o.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeBlock, o.pm.Pos, 5))
 	}
 
 	return false
@@ -131,9 +133,8 @@ func (o *WaterPipe) DamageProc(dm *damage.Damage) bool {
 func (o *WaterPipe) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    o.pm.objectID,
-			Pos:      o.pm.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: o.pm.objectID,
+			Pos:   o.pm.Pos,
 		},
 		HP: o.pm.HP,
 	}
@@ -184,7 +185,7 @@ func (a *WaterPipeAtk) Draw(pos point.Point) {
 	dxlib.DrawRotaGraph(pos.X+math.ReverseIf(-81, a.pm.xFlip), pos.Y+13, 1, 0, a.images[n], true, dxlib.OptXReverse(a.pm.xFlip))
 }
 
-func (a *WaterPipeAtk) Update() {
+func (a *WaterPipeAtk) Update(animMgr *manager.Manager) {
 	a.count++
 
 	if a.count == 1 {
@@ -210,14 +211,14 @@ func (a *WaterPipeAtk) Update() {
 
 		if a.pm.xFlip {
 			dm.Pos.X = a.pm.Pos.X + 1
-			localanim.DamageManager().New(dm)
+			animMgr.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X + 2
-			localanim.DamageManager().New(dm)
+			animMgr.DamageManager().New(dm)
 		} else {
 			dm.Pos.X = a.pm.Pos.X - 1
-			localanim.DamageManager().New(dm)
+			animMgr.DamageManager().New(dm)
 			dm.Pos.X = a.pm.Pos.X - 2
-			localanim.DamageManager().New(dm)
+			animMgr.DamageManager().New(dm)
 		}
 	}
 

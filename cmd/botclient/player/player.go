@@ -6,6 +6,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/netconn"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	pb "github.com/sh-miyoshi/go-rockmanexe/pkg/net/netconnpb"
@@ -93,7 +94,7 @@ func (p *Player) initActTable() {
 		// NewActSkill(chip.IDWideSword, p.clientID, p.conn),
 		// NewActSkill(chip.IDLongSword, p.clientID, p.conn),
 		// NewActSkill(chip.IDVulcan1, p.clientID, p.conn),
-		// NewActSkill(chip.IDWideShot, p.clientID, p.conn),
+		NewActSkill(chip.IDWideShot1, p.clientID, p.conn),
 		// NewActSkill(chip.IDHeatShot, p.clientID, p.conn),
 		// NewActSkill(chip.IDHeatV, p.clientID, p.conn),
 		// NewActSkill(chip.IDHeatSide, p.clientID, p.conn),

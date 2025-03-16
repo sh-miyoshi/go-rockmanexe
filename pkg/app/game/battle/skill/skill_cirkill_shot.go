@@ -2,7 +2,7 @@ package skill
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
@@ -26,10 +26,11 @@ type cirkillShot struct {
 	moveVecX int
 	damageID string
 	drawer   skilldraw.DrawCirkillShot
+	animMgr  *manager.Manager
 }
 
-func newCirkillShot(objID string, arg skillcore.Argument) *cirkillShot {
-	pos := localanim.ObjAnimGetObjPos(arg.OwnerID)
+func newCirkillShot(objID string, arg skillcore.Argument, animMgr *manager.Manager) *cirkillShot {
+	pos := animMgr.ObjAnimGetObjPos(arg.OwnerID)
 	vx := 1
 	if arg.TargetType == damage.TargetPlayer {
 		vx = -1
@@ -43,6 +44,7 @@ func newCirkillShot(objID string, arg skillcore.Argument) *cirkillShot {
 		prev:     pos,
 		next:     first,
 		moveVecX: vx,
+		animMgr:  animMgr,
 	}
 }
 
@@ -53,7 +55,7 @@ func (p *cirkillShot) Draw() {
 func (p *cirkillShot) Update() (bool, error) {
 	if p.count%cirkillShotNextStepCount/2 == 0 {
 		// Finish if hit
-		if p.damageID != "" && !localanim.DamageManager().Exists(p.damageID) {
+		if p.damageID != "" && !p.animMgr.DamageManager().Exists(p.damageID) {
 			return true, nil
 		}
 	}
@@ -63,7 +65,7 @@ func (p *cirkillShot) Update() (bool, error) {
 		p.prev = p.pos
 		p.pos = p.next
 
-		p.damageID = localanim.DamageManager().New(damage.Damage{
+		p.damageID = p.animMgr.DamageManager().New(damage.Damage{
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
@@ -89,8 +91,7 @@ func (p *cirkillShot) Update() (bool, error) {
 
 func (p *cirkillShot) GetParam() anim.Param {
 	return anim.Param{
-		ObjID:    p.ID,
-		DrawType: anim.DrawTypeSkill,
+		ObjID: p.ID,
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	appdraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/b4main"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/chipsel"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
@@ -52,12 +52,11 @@ type NetBattle struct {
 	gameCount    int
 	state        int
 	stateCount   int
-	openingInst  opening.Opening
+	stateInst    battle.State
 	playerInst   *battleplayer.BattlePlayer
 	fieldInst    *field.Field
-	b4mainInst   *b4main.BeforeMain
-	resultInst   *titlemsg.TitleMsg
 	playerInitHP int
+	animMgr      *manager.Manager
 }
 
 var (
@@ -110,9 +109,10 @@ func Init(plyr *player.Player) error {
 		state:        stateWaiting,
 		stateCount:   0,
 		playerInitHP: int(plyr.HP),
+		animMgr:      manager.NewManager(),
 	}
 	var err error
-	inst.openingInst, err = opening.NewWithBoss([]enemy.EnemyParam{
+	inst.stateInst, err = opening.NewWithBoss([]enemy.EnemyParam{
 		{CharID: enemy.IDRockman, Pos: point.Point{X: 4, Y: 1}},
 	})
 	if err != nil {
@@ -141,14 +141,15 @@ func Init(plyr *player.Player) error {
 
 func End() {
 	inst.conn.Disconnect()
-	if inst.openingInst != nil {
-		inst.openingInst.End()
+	if inst.stateInst != nil {
+		inst.stateInst.End()
+		inst.stateInst = nil
 	}
 	if inst.fieldInst != nil {
 		inst.fieldInst.End()
 	}
 	draw.End()
-	localanim.AnimCleanup()
+	inst.animMgr.Cleanup()
 }
 
 func Update() error {
@@ -180,7 +181,9 @@ func Update() error {
 			return nil
 		}
 	case stateOpening:
-		if inst.openingInst.Update() {
+		if inst.stateInst.Update() {
+			inst.stateInst.End()
+			inst.stateInst = nil
 			stateChange(stateChipSelect)
 			return nil
 		}
@@ -207,15 +210,16 @@ func Update() error {
 	case stateBeforeMain:
 		if inst.stateCount == 0 {
 			var err error
-			inst.b4mainInst, err = b4main.New(inst.playerInst.GetSelectedChips())
+			inst.stateInst, err = b4main.New(inst.playerInst.GetSelectedChips())
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize before main")
 			}
 			inst.playerInst.UpdatePA()
 		}
 
-		if inst.b4mainInst.Update() {
-			inst.b4mainInst.End()
+		if inst.stateInst.Update() {
+			inst.stateInst.End()
+			inst.stateInst = nil
 			stateChange(stateMain)
 			return nil
 		}
@@ -255,14 +259,15 @@ func Update() error {
 			}
 
 			var err error
-			inst.resultInst, err = titlemsg.New(fname, 60)
+			inst.stateInst, err = titlemsg.New(fname, 60)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize result")
 			}
 		}
 
-		if inst.resultInst.Update() {
-			inst.resultInst.End()
+		if inst.stateInst.Update() {
+			inst.stateInst.End()
+			inst.stateInst = nil
 			if inst.playerInst.IsDead() {
 				return battle.ErrLose
 			}
@@ -290,10 +295,8 @@ func Update() error {
 		}
 	}
 
-	if isRunAnim {
-		if err := localanim.AnimMgrProcess(); err != nil {
-			return errors.Wrap(err, "failed to handle animation")
-		}
+	if err := inst.animMgr.Update(isRunAnim); err != nil {
+		return errors.Wrap(err, "failed to handle animation")
 	}
 
 	inst.stateCount++
@@ -304,7 +307,7 @@ func Draw() {
 	inst.fieldInst.Draw()
 	draw.Draw()
 
-	localanim.AnimMgrDraw()
+	inst.animMgr.Draw()
 	inst.playerInst.LocalDraw()
 
 	battlefield.DrawBlackout()
@@ -316,7 +319,6 @@ func Draw() {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
-		inst.openingInst.Draw()
 	case stateChipSelect:
 		inst.playerInst.DrawFrame(true, false)
 		chipsel.Draw()
@@ -327,16 +329,14 @@ func Draw() {
 		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:
 		inst.playerInst.DrawFrame(false, true)
-		if inst.b4mainInst != nil {
-			inst.b4mainInst.Draw()
-		}
 	case stateMain:
 		inst.playerInst.DrawFrame(false, true)
 	case stateResult:
 		inst.playerInst.DrawFrame(false, true)
-		if inst.resultInst != nil {
-			inst.resultInst.Draw()
-		}
+	}
+
+	if inst.stateInst != nil {
+		inst.stateInst.Draw()
 	}
 
 	battlecommon.SystemDraw()
@@ -354,7 +354,7 @@ func stateChange(nextState int) {
 func handleEffect() {
 	g := net.GetInst().GetGameInfo()
 	for _, e := range g.Effects {
-		localanim.AnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
+		inst.animMgr.EffectAnimNew(effect.Get(e.Type, e.Pos, e.RandRange))
 	}
 }
 

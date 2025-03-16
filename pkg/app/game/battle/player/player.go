@@ -12,10 +12,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-	deleteanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/delete"
-	localanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/local"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common/deleteanim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
@@ -50,12 +50,13 @@ type BattlePlayerAct struct {
 	Charged    bool
 	ShotPower  uint
 
-	typ       int
-	count     int
-	endCount  int
-	pPos      *point.Point
-	skillID   string
-	skillInst skill.SkillAnim
+	typ        int
+	count      int
+	endCount   int
+	pPos       *point.Point
+	skillObjID string
+	skillInst  skill.SkillAnim
+	animMgr    *manager.Manager
 }
 
 type BattlePlayer struct {
@@ -83,6 +84,7 @@ type BattlePlayer struct {
 	isShiftFrame    bool
 	isShowGauge     bool
 	barrierHP       int
+	animMgr         *manager.Manager
 }
 
 var (
@@ -96,7 +98,7 @@ var (
 	imgBarrier    []int
 )
 
-func New(plyr *player.Player) (*BattlePlayer, error) {
+func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
@@ -112,8 +114,9 @@ func New(plyr *player.Player) (*BattlePlayer, error) {
 		IsUnderShirt:  plyr.IsUnderShirt(),
 		ChipSelectMax: plyr.ChipSelectMax,
 		barrierHP:     0,
+		animMgr:       animMgr,
 	}
-	res.act.Init(&res.Pos)
+	res.act.Init(&res.Pos, animMgr)
 
 	if config.Get().Debug.AlwaysInvisible {
 		logger.Debug("enable inbisible mode")
@@ -413,7 +416,7 @@ func (p *BattlePlayer) Update() (bool, error) {
 	if p.HP <= 0 {
 		// Player deleted
 		img := &imgPlayers[battlecommon.PlayerActDamage][1]
-		deleteanim.New(*img, p.Pos, true)
+		deleteanim.New(*img, p.Pos, true, p.animMgr)
 		*img = -1 // DeleteGraph at delete animation
 		p.NextAction = NextActLose
 		p.EnableAct = false
@@ -544,7 +547,7 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		} else {
 			p.HP = uint(hp)
 		}
-		localanim.AnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
+		p.animMgr.EffectAnimNew(effect.Get(dm.HitEffectType, p.Pos, 5))
 
 		for i := 0; i < dm.PushLeft; i++ {
 			if !battlecommon.MoveObject(&p.Pos, config.DirectLeft, battlecommon.PanelTypePlayer, true, field.GetPanelInfo) {
@@ -569,10 +572,10 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		sound.On(resources.SEDamaged)
 
 		// Stop current animation
-		if localanim.AnimIsProcessing(p.act.skillID) {
+		if p.animMgr.IsAnimProcessing(p.act.skillObjID) {
 			p.act.skillInst.StopByOwner()
 		}
-		p.act.skillID = ""
+		p.act.skillObjID = ""
 		p.ChargeCount = 0
 
 		if dm.IsParalyzed {
@@ -594,9 +597,8 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 func (p *BattlePlayer) GetParam() objanim.Param {
 	return objanim.Param{
 		Param: anim.Param{
-			ObjID:    p.ID,
-			Pos:      p.Pos,
-			DrawType: anim.DrawTypeObject,
+			ObjID: p.ID,
+			Pos:   p.Pos,
 		},
 		HP: int(p.HP),
 	}
@@ -672,7 +674,8 @@ func (p *BattlePlayer) UpdateChipInfo() {
 	logger.Info("selected player chips: %+v", p.SelectedChips)
 }
 
-func (a *BattlePlayerAct) Init(pPos *point.Point) {
+func (a *BattlePlayerAct) Init(pPos *point.Point, animMgr *manager.Manager) {
+	a.animMgr = animMgr
 	a.typ = -1
 	a.pPos = pPos
 }
@@ -695,7 +698,7 @@ func (a *BattlePlayerAct) Update() bool {
 			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
 				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
 				if objID := field.GetPanelInfo(point.Point{X: x, Y: y}).ObjectID; objID != "" {
-					localanim.DamageManager().New(damage.Damage{
+					a.animMgr.DamageManager().New(damage.Damage{
 						DamageType:    damage.TypeObject,
 						TargetObjID:   objID,
 						TargetObjType: damage.TargetEnemy,
@@ -756,6 +759,6 @@ func (a *BattlePlayerAct) IsParalyzed() bool {
 }
 
 func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
-	a.skillInst = skill.Get(id, arg)
-	a.skillID = localanim.AnimNew(a.skillInst)
+	a.skillInst = skill.Get(id, arg, a.animMgr)
+	a.skillObjID = a.animMgr.SkillAnimNew(a.skillInst)
 }

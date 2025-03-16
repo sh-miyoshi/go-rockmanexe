@@ -58,7 +58,6 @@ func (p *boomerang) GetParam() anim.Param {
 
 	return anim.Param{
 		ObjID:     p.ID,
-		DrawType:  anim.DrawTypeSkill,
 		Pos:       current,
 		ExtraInfo: info.Marshal(),
 	}
