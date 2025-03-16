@@ -53,8 +53,7 @@ func (p *wideShot) GetParam() anim.Param {
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
-		ObjID: p.ID,
-
+		ObjID:     p.ID,
 		Pos:       pm.Pos,
 		ExtraInfo: info.Marshal(),
 	}

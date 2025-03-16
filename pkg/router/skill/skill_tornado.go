@@ -39,8 +39,7 @@ func (p *tornado) GetParam() anim.Param {
 	obj, _ := p.Core.GetPos()
 
 	return anim.Param{
-		ObjID: p.ID,
-
+		ObjID:     p.ID,
 		Pos:       obj,
 		ExtraInfo: info.Marshal(),
 	}

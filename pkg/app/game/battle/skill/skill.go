@@ -163,7 +163,6 @@ func (p *tmpskill) Update() (bool, error) {
 func (p *tmpskill) GetParam() anim.Param {
 	return anim.Param{
 		ObjID:    p.ID,
-
 	}
 }
 

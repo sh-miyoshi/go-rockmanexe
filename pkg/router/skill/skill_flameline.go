@@ -50,8 +50,7 @@ func (p *flameLine) GetParam() anim.Param {
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
-		ObjID: p.ID,
-
+		ObjID:     p.ID,
 		Pos:       p.Arg.Manager.ObjAnimGetObjPos(p.Arg.OwnerObjectID),
 		ExtraInfo: info.Marshal(),
 	}

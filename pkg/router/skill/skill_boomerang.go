@@ -57,8 +57,7 @@ func (p *boomerang) GetParam() anim.Param {
 	info.DrawParam = drawPm.Marshal()
 
 	return anim.Param{
-		ObjID: p.ID,
-
+		ObjID:     p.ID,
 		Pos:       current,
 		ExtraInfo: info.Marshal(),
 	}
