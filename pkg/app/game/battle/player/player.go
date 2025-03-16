@@ -616,6 +616,10 @@ func (p *BattlePlayer) AddBarrier(hp int) {
 	p.barrierHP = hp
 }
 
+func (p *BattlePlayer) SetCustomGaugeMax() {
+	// WIP
+}
+
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	p.SelectedChips = []SelectChip{}
 	for _, s := range selected {

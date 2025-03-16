@@ -221,6 +221,8 @@ func (e *enemyLark) MakeInvisible(count int) {
 
 func (e *enemyLark) AddBarrier(hp int) {}
 
+func (e *enemyLark) SetCustomGaugeMax() {}
+
 func (a *larkAtk) SetAttack() {
 	a.count = 0
 	a.attacking = true

@@ -180,6 +180,8 @@ func (e *enemyCirKill) MakeInvisible(count int) {
 
 func (e *enemyCirKill) AddBarrier(hp int) {}
 
+func (e *enemyCirKill) SetCustomGaugeMax() {}
+
 func (e *enemyCirKill) getCurrentImagePointer() *int {
 	if e.atk.attacking {
 		n := (e.count / delayCirkillAttack)

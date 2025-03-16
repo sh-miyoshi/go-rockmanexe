@@ -100,3 +100,5 @@ func (e *enemyTarget) MakeInvisible(count int) {
 }
 
 func (e *enemyTarget) AddBarrier(hp int) {}
+
+func (e *enemyTarget) SetCustomGaugeMax() {}

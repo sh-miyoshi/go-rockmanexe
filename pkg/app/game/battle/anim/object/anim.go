@@ -42,6 +42,7 @@ type Anim interface {
 	GetObjectType() int
 	MakeInvisible(count int)
 	AddBarrier(hp int)
+	SetCustomGaugeMax()
 }
 
 type AnimManager struct {

@@ -534,6 +534,8 @@ func (e *enemyBlues) MakeInvisible(count int) {
 
 func (e *enemyBlues) AddBarrier(hp int) {}
 
+func (e *enemyBlues) SetCustomGaugeMax() {}
+
 func (e *enemyBlues) getCurrentImagePointer() *int {
 	if e.count == 0 {
 		return &e.images[bluesActTypeStand][0]

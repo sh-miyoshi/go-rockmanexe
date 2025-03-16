@@ -216,6 +216,8 @@ func (s *Supporter) MakeInvisible(count int) {
 
 func (s *Supporter) AddBarrier(hp int) {}
 
+func (s *Supporter) SetCustomGaugeMax() {}
+
 func (s *Supporter) setAction(interval int, next int) {
 	s.status = supporterStatusWait
 	s.waitCount = interval

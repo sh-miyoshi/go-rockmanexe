@@ -203,6 +203,8 @@ func (e *enemyMetall) MakeInvisible(count int) {
 
 func (e *enemyMetall) AddBarrier(hp int) {}
 
+func (e *enemyMetall) SetCustomGaugeMax() {}
+
 func (a *metallAtk) Draw() {
 	// Nothing to do
 }
