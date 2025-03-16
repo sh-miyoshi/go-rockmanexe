@@ -319,9 +319,6 @@ func Draw() {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		appdraw.String(140, 110, 0xffffff, "相手の接続を待っています")
 	case stateOpening:
-		if inst.stateInst != nil {
-			inst.stateInst.Draw()
-		}
 	case stateChipSelect:
 		inst.playerInst.DrawFrame(true, false)
 		chipsel.Draw()
@@ -332,16 +329,14 @@ func Draw() {
 		appdraw.String(140, 110, 0xffffff, "相手の選択を待っています")
 	case stateBeforeMain:
 		inst.playerInst.DrawFrame(false, true)
-		if inst.stateInst != nil {
-			inst.stateInst.Draw()
-		}
 	case stateMain:
 		inst.playerInst.DrawFrame(false, true)
 	case stateResult:
 		inst.playerInst.DrawFrame(false, true)
-		if inst.stateInst != nil {
-			inst.stateInst.Draw()
-		}
+	}
+
+	if inst.stateInst != nil {
+		inst.stateInst.Draw()
 	}
 
 	battlecommon.SystemDraw()
