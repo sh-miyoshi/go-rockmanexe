@@ -220,6 +220,8 @@ func (p *Player) MakeInvisible(count int) {
 
 func (p *Player) AddBarrier(hp int) {}
 
+func (p *Player) SetCustomGaugeMax() {}
+
 func (p *Player) HandleAction(act *pb.Request_Action) {
 	queue.Push(p.actQueueID, act)
 }

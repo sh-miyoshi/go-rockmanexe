@@ -185,6 +185,8 @@ func (e *enemyBilly) MakeInvisible(count int) {
 
 func (e *enemyBilly) AddBarrier(hp int) {}
 
+func (e *enemyBilly) SetCustomGaugeMax() {}
+
 func (e *enemyBilly) getCurrentImagePointer() *int {
 	img := &e.imgMove[0]
 	if e.act.typ != -1 {

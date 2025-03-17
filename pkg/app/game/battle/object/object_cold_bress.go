@@ -173,6 +173,8 @@ func (o *ColdBress) MakeInvisible(count int) {}
 
 func (o *ColdBress) AddBarrier(hp int) {}
 
+func (o *ColdBress) SetCustomGaugeMax() {}
+
 func (o *ColdBress) checkMove(next point.Point) bool {
 	objID := o.animMgr.ObjAnimExistsObject(next)
 	if objID == "" {

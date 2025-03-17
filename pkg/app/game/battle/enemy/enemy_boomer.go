@@ -225,6 +225,8 @@ func (e *enemyBoomer) MakeInvisible(count int) {
 
 func (e *enemyBoomer) AddBarrier(hp int) {}
 
+func (e *enemyBoomer) SetCustomGaugeMax() {}
+
 func (e *enemyBoomer) getCurrentImagePointer() *int {
 	if e.state == boomerStateAtk {
 		n := (e.count / delayBoomerAtk)

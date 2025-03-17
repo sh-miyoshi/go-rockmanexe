@@ -42,6 +42,7 @@ type Anim interface {
 	GetObjectType() int
 	MakeInvisible(count int)
 	AddBarrier(hp int)
+	SetCustomGaugeMax()
 }
 
 type AnimManager struct {
@@ -198,6 +199,12 @@ func (am *AnimManager) AddBarrier(id string, hp int) {
 	logger.Debug("Set %d barrier to ID: %s, anims: %+v", hp, id, am.anims)
 	if _, ok := am.anims[id]; ok {
 		am.anims[id].AddBarrier(hp)
+	}
+}
+
+func (am *AnimManager) SetCustomGaugeMax(id string) {
+	if _, ok := am.anims[id]; ok {
+		am.anims[id].SetCustomGaugeMax()
 	}
 }
 

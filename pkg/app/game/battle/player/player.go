@@ -616,6 +616,14 @@ func (p *BattlePlayer) AddBarrier(hp int) {
 	p.barrierHP = hp
 }
 
+func (p *BattlePlayer) SetCustomGaugeMax() {
+	if p.GaugeCount < battlecommon.GaugeMaxCount {
+		// 通常のゲージアップでSEがならないようにする
+		p.GaugeCount = battlecommon.GaugeMaxCount + uint(battlecommon.CustomGaugeSpeed)
+		sound.On(resources.SEGaugeMax)
+	}
+}
+
 func (p *BattlePlayer) SetChipSelectResult(selected []int) {
 	p.SelectedChips = []SelectChip{}
 	for _, s := range selected {

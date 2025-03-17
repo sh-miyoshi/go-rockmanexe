@@ -34,6 +34,7 @@ type Argument struct {
 	ChangePanelType   func(pos point.Point, pnType int, endCount int)
 	MakeInvisible     func(objID string, count int)
 	AddBarrier        func(objID string, hp int)
+	SetCustomGaugeMax func(objID string)
 }
 
 type SkillCore interface {
@@ -131,6 +132,8 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillBarrier100
 	case chip.IDBarrier200:
 		return resources.SkillBarrier200
+	case chip.IDFullCustom:
+		return resources.SkillFullCustom
 	}
 
 	system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))

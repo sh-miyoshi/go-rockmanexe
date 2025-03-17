@@ -366,6 +366,8 @@ func (e *enemyAquaman) MakeInvisible(count int) {
 
 func (e *enemyAquaman) AddBarrier(hp int) {}
 
+func (e *enemyAquaman) SetCustomGaugeMax() {}
+
 func (e *enemyAquaman) getCurrentImagePointer() *int {
 	n := (e.count / aquamanDelays[e.state])
 	if n >= len(e.images[e.state]) {

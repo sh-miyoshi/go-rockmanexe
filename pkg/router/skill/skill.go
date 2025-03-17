@@ -54,6 +54,9 @@ func Get(id int, arg Argument) SkillAnim {
 		ChangePanelType: changePanelType,
 		MakeInvisible:   arg.Manager.ObjAnimMakeInvisible,
 		AddBarrier:      arg.Manager.ObjAnimAddBarrier,
+		SetCustomGaugeMax: func(objID string) {
+			// WIP
+		},
 	}
 	core := arg.Manager.SkillGet(id, coreArg)
 

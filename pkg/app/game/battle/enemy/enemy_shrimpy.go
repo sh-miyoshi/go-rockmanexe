@@ -226,6 +226,8 @@ func (e *enemyShrimpy) MakeInvisible(count int) {
 
 func (e *enemyShrimpy) AddBarrier(hp int) {}
 
+func (e *enemyShrimpy) SetCustomGaugeMax() {}
+
 func (e *enemyShrimpy) getCurrentImagePointer() *int {
 	if e.state == shrimpyStateAtk {
 		n := (e.atk.count / delayShrimpyAttack)

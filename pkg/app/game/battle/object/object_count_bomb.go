@@ -138,3 +138,5 @@ func (o *CountBomb) MakeInvisible(count int) {
 }
 
 func (o *CountBomb) AddBarrier(hp int) {}
+
+func (o *CountBomb) SetCustomGaugeMax() {}

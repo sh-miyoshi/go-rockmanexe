@@ -148,6 +148,8 @@ func (o *WaterPipe) MakeInvisible(count int) {}
 
 func (o *WaterPipe) AddBarrier(hp int) {}
 
+func (o *WaterPipe) SetCustomGaugeMax() {}
+
 func (a *WaterPipeAtk) Init(pm ObjectParam) error {
 	a.count = 0
 	a.isAttacking = false

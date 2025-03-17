@@ -225,6 +225,8 @@ func (e *enemyGaroo) MakeInvisible(count int) {
 
 func (e *enemyGaroo) AddBarrier(hp int) {}
 
+func (e *enemyGaroo) SetCustomGaugeMax() {}
+
 func (e *enemyGaroo) getCurrentImagePointer() *int {
 	if e.atkID != "" {
 		n := (e.atk.count / delayGarooAtk)
