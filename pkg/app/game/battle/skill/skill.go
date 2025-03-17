@@ -49,6 +49,7 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 	arg.MakeInvisible = animMgr.ObjAnimMakeInvisible
 	arg.AddBarrier = animMgr.ObjAnimAddBarrier
 	arg.ChangePanelType = field.ChangePanelType
+	arg.SetCustomGaugeMax = animMgr.ObjAnimSetCustomGaugeMax
 	core := animMgr.SkillGet(skillID, arg)
 
 	switch skillID {

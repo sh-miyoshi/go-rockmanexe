@@ -6,16 +6,13 @@ import (
 
 type FullCustom struct {
 	Arg skillcore.Argument
-
-	count int
 }
 
 func (p *FullCustom) Update() (bool, error) {
-	// WIP: カスタムゲージをマックスにする
-	p.count++
+	p.Arg.SetCustomGaugeMax(p.Arg.OwnerID)
 	return true, nil
 }
 
 func (p *FullCustom) GetCount() int {
-	return p.count
+	return 0
 }

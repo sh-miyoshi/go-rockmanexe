@@ -144,6 +144,10 @@ func (m *Manager) ObjAnimAddBarrier(id string, hp int) {
 	m.objanimInst.AddBarrier(id, hp)
 }
 
+func (m *Manager) ObjAnimSetCustomGaugeMax(id string) {
+	m.objanimInst.SetCustomGaugeMax(id)
+}
+
 func (m *Manager) ObjAnimExistsObject(pos point.Point) string {
 	return m.objanimInst.ExistsObject(pos)
 }

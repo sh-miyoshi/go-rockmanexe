@@ -202,6 +202,12 @@ func (am *AnimManager) AddBarrier(id string, hp int) {
 	}
 }
 
+func (am *AnimManager) SetCustomGaugeMax(id string) {
+	if _, ok := am.anims[id]; ok {
+		am.anims[id].SetCustomGaugeMax()
+	}
+}
+
 func (am *AnimManager) ExistsObject(pos point.Point) string {
 	objs := am.GetObjs(Filter{Pos: &pos, ObjType: ObjTypeAll})
 	if len(objs) > 0 {

@@ -34,6 +34,7 @@ type Argument struct {
 	ChangePanelType   func(pos point.Point, pnType int, endCount int)
 	MakeInvisible     func(objID string, count int)
 	AddBarrier        func(objID string, hp int)
+	SetCustomGaugeMax func(objID string)
 }
 
 type SkillCore interface {
