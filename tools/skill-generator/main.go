@@ -395,4 +395,7 @@ func main() {
 	} else {
 		fmt.Printf("Successfully updated manager.go\n")
 	}
+
+	// WIP: Update pkg\app\skillcore\skill.go with new GetIDByChipID case
+	// WIP: Update pkg\app\game\battle\skill\skill.go Get method
 }
