@@ -27,6 +27,7 @@ const (
 	TypeCrack
 	TypeAreaSteal
 	TypeBubbleShot
+	TypeInvisible
 
 	TypeMax
 )

@@ -96,6 +96,7 @@ var (
 		chip.IDBubbleShot,
 		chip.IDBubbleSide,
 		chip.IDBubbleV,
+		chip.IDInvisible,
 	}
 
 	inst NetBattle

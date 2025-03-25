@@ -139,6 +139,8 @@ func (d *animDraw) Draw() {
 			// no animation
 		case anim.TypeBubbleShot:
 			d.drawBubbleShot.Draw(pos, a.ActCount, isPlayer)
+		case anim.TypeInvisible:
+			// no animation
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return
