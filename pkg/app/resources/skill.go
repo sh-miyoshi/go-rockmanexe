@@ -62,6 +62,7 @@ const (
 	SkillBarrier100
 	SkillBarrier200
 	SkillFullCustom
+	SkillAirHockey1
 
 	SkillFailed
 )

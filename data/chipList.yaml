@@ -444,11 +444,11 @@
   is_implemented: false
 - id: 63
   name: エアホッケー1
-  power: 0
-  type: 0
-  player_act: 0
-  description: ""
-  is_implemented: false
+  power: 50
+  type: 2
+  player_act: 8
+  description: 壁に当たると反射するホッケーを投げる
+  is_implemented: true
 - id: 64
   name: エアホッケー2
   power: 0
