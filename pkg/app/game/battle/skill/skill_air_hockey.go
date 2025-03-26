@@ -7,36 +7,36 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
-type AirHockey1 struct {
+type AirHockey struct {
 	ID      string
 	Arg     skillcore.Argument
-	Core    *processor.AirHockey1
+	Core    *processor.AirHockey
 	animMgr *manager.Manager
 }
 
-func newAirHockey1(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *AirHockey1 {
-	return &AirHockey1{
+func newAirHockey(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *AirHockey {
+	return &AirHockey{
 		ID:      objID,
 		Arg:     arg,
-		Core:    core.(*processor.AirHockey1),
+		Core:    core.(*processor.AirHockey),
 		animMgr: animMgr,
 	}
 }
 
-func (p *AirHockey1) Draw() {
+func (p *AirHockey) Draw() {
 	// TODO: implement draw method
 }
 
-func (p *AirHockey1) Update() (bool, error) {
+func (p *AirHockey) Update() (bool, error) {
 	return p.Core.Update()
 }
 
-func (p *AirHockey1) GetParam() anim.Param {
+func (p *AirHockey) GetParam() anim.Param {
 	return anim.Param{
 		ObjID: p.ID,
 	}
 }
 
-func (p *AirHockey1) StopByOwner() {
+func (p *AirHockey) StopByOwner() {
 	p.animMgr.AnimDelete(p.ID)
 }

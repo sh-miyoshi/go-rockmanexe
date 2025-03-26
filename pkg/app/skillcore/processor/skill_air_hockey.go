@@ -4,17 +4,17 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
-type AirHockey1 struct {
+type AirHockey struct {
 	Arg skillcore.Argument
 
 	count int
 }
 
-func (p *AirHockey1) Update() (bool, error) {
+func (p *AirHockey) Update() (bool, error) {
 	p.count++
 	return true, nil
 }
 
-func (p *AirHockey1) GetCount() int {
+func (p *AirHockey) GetCount() int {
 	return p.count
 }
