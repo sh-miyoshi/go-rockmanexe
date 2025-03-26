@@ -33,7 +33,10 @@ type ChipList []Chip
 
 func generateConstName(name string) string {
 	table := map[string]string{
-		"フルカスタム": "FullCustom",
+		"フルカスタム":  "FullCustom",
+		"エアホッケー1": "AirHockey1",
+		"エアホッケー2": "AirHockey2",
+		"エアホッケー3": "AirHockey3",
 	}
 
 	return table[name]
