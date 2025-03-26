@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -12,6 +13,7 @@ type AirHockey struct {
 	Arg     skillcore.Argument
 	Core    *processor.AirHockey
 	animMgr *manager.Manager
+	drawer  skilldraw.DrawAirHockey
 }
 
 func newAirHockey(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *AirHockey {
@@ -24,7 +26,8 @@ func newAirHockey(objID string, arg skillcore.Argument, core skillcore.SkillCore
 }
 
 func (p *AirHockey) Draw() {
-	// TODO: implement draw method
+	prev, current, next := p.Core.GetPos()
+	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
 }
 
 func (p *AirHockey) Update() (bool, error) {
