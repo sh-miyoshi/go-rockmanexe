@@ -42,4 +42,6 @@ skill-mac:
 	GOOS=windows go build -o app.out && \
 	wine64 app.out
 skill-gen:
-	go run tools/skill-generator/local/main.go
+	go run tools/skill-code-generator/local/main.go
+skill-gen-net:
+	go run tools/skill-code-generator/network/main.go
