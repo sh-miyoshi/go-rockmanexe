@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"text/template"
 	"unicode"
 
 	"gopkg.in/yaml.v3"
@@ -132,18 +133,18 @@ import (
 "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
-type %s struct {
+type {{.Name}} struct {
 Arg skillcore.Argument
 
 count int
 }
 
-func (p *%s) Update() (bool, error) {
+func (p *{{.Name}}) Update() (bool, error) {
 p.count++
 return true, nil
 }
 
-func (p *%s) GetCount() int {
+func (p *{{.Name}}) GetCount() int {
 return p.count
 }`
 
@@ -152,10 +153,23 @@ return p.count
 		return fmt.Errorf("failed to generate const name for %s", skillName)
 	}
 
-	filePath := filepath.Join("pkg", "app", "skillcore", "processor", "skill_"+toSnakeCase(constName)+".go")
-	err := os.WriteFile(filePath, []byte(fmt.Sprintf(processorTemplate, constName, constName, constName)), 0644)
+	t, err := template.New("processor_file").Parse(processorTemplate)
 	if err != nil {
-		return fmt.Errorf("failed to write processor file: %v", err)
+		return fmt.Errorf("failed to parse template: %v", err)
+	}
+
+	filePath := filepath.Join("pkg", "app", "skillcore", "processor", "skill_"+toSnakeCase(constName)+".go")
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
+	defer file.Close()
+
+	err = t.Execute(file, map[string]string{
+		"Name": constName,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to execute template: %v", err)
 	}
 
 	// Format the generated file
@@ -176,37 +190,37 @@ import (
 "github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
-type %s struct {
+type {{.Name}} struct {
 ID      string
 Arg     skillcore.Argument
-Core    *processor.%s
+Core    *processor.{{.Name}}
 animMgr *manager.Manager
 }
 
-func new%s(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *%s {
-return &%s{
+func new{{.Name}}(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *{{.Name}} {
+return &{{.Name}}{
 ID:      objID,
 Arg:     arg,
-Core:    core.(*processor.%s),
+Core:    core.(*processor.{{.Name}}),
 animMgr: animMgr,
 }
 }
 
-func (p *%s) Draw() {
+func (p *{{.Name}}) Draw() {
 // TODO: implement draw method
 }
 
-func (p *%s) Update() (bool, error) {
+func (p *{{.Name}}) Update() (bool, error) {
 return p.Core.Update()
 }
 
-func (p *%s) GetParam() anim.Param {
+func (p *{{.Name}}) GetParam() anim.Param {
 return anim.Param{
 ObjID: p.ID,
 }
 }
 
-func (p *%s) StopByOwner() {
+func (p *{{.Name}}) StopByOwner() {
 p.animMgr.AnimDelete(p.ID)
 }`
 
@@ -215,10 +229,23 @@ p.animMgr.AnimDelete(p.ID)
 		return fmt.Errorf("failed to generate const name for %s", skillName)
 	}
 
-	filePath := filepath.Join("pkg", "app", "game", "battle", "skill", "skill_"+toSnakeCase(constName)+".go")
-	err := os.WriteFile(filePath, []byte(fmt.Sprintf(templateContent, constName, constName, constName, constName, constName, constName, constName, constName, constName, constName)), 0644)
+	t, err := template.New("skill_file").Parse(templateContent)
 	if err != nil {
-		return fmt.Errorf("failed to write skill file: %v", err)
+		return fmt.Errorf("failed to parse template: %v", err)
+	}
+
+	filePath := filepath.Join("pkg", "app", "game", "battle", "skill", "skill_"+toSnakeCase(constName)+".go")
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
+	defer file.Close()
+
+	err = t.Execute(file, map[string]string{
+		"Name": constName,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to execute template: %v", err)
 	}
 
 	// Format the generated file
@@ -301,7 +328,7 @@ func updateChipGoFile(skill Chip) error {
 
 func main() {
 	// Read input skill file
-	yamlFile, err := os.ReadFile("tools/skill-generator/inputs.yaml")
+	yamlFile, err := os.ReadFile("tools/skill-code-generator/local/inputs.yaml")
 	if err != nil {
 		log.Fatalf("Failed to read input YAML file: %v", err)
 	}
@@ -311,6 +338,10 @@ func main() {
 	err = yaml.Unmarshal(yamlFile, &skill)
 	if err != nil {
 		log.Fatalf("Failed to parse input skill: %v", err)
+	}
+
+	if generateConstName(skill.Name) == "" {
+		log.Fatalf("Failed to generate const name for %s", skill.Name)
 	}
 
 	// Read chipList.yaml
