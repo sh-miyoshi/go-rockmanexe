@@ -328,7 +328,7 @@ func updateChipGoFile(skill Chip) error {
 
 func main() {
 	// Read input skill file
-	yamlFile, err := os.ReadFile("tools/skill-generator/inputs.yaml")
+	yamlFile, err := os.ReadFile("tools/skill-code-generator/local/inputs.yaml")
 	if err != nil {
 		log.Fatalf("Failed to read input YAML file: %v", err)
 	}
@@ -338,6 +338,10 @@ func main() {
 	err = yaml.Unmarshal(yamlFile, &skill)
 	if err != nil {
 		log.Fatalf("Failed to parse input skill: %v", err)
+	}
+
+	if generateConstName(skill.Name) == "" {
+		log.Fatalf("Failed to generate const name for %s", skill.Name)
 	}
 
 	// Read chipList.yaml
