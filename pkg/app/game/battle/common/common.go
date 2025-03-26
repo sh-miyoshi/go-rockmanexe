@@ -83,7 +83,7 @@ func ReverseDirect(direct int) int {
 
 var (
 	playerImageNums   = []int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4}
-	playerImageDelays = []int{1, 2, 2, 6, 3, 4, 1, 4, 3, 2}
+	playerImageDelays = []int{1, 2, 2, 6, 3, 4, 1, 4, 4, 2}
 )
 
 func GetPlayerActCount(actType int, keepCount int) int {
