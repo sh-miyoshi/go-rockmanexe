@@ -8,6 +8,7 @@ import (
 
 const (
 	airHockeyNextStepCount = 80
+	airHockeyMoveCountMax  = 8
 )
 
 type AirHockey struct {
