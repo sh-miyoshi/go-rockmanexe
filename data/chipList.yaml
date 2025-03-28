@@ -24,7 +24,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: ヒットした相手を1マス奥へ押す空気砲
   is_implemented: false
 - id: 5
   name: バルカン1
@@ -335,7 +335,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 3マス前に砲丸を投げる！パネル破壊攻撃！
   is_implemented: false
 - id: 48
   name: ブラックボム
@@ -419,21 +419,21 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: カスタムゲージが満タンに近いほど攻撃力アップ！
   is_implemented: false
 - id: 60
   name: バリアブルソード
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 変幻自在のテクニカルソード
   is_implemented: false
 - id: 61
   name: イアイフォーム
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: Aを推している間に入ってくる敵を切る！
   is_implemented: false
 - id: 62
   name: フウジンラケット
@@ -496,14 +496,14 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: バトルフィールドの端にそって飛ぶ貫通ブーメラン
   is_implemented: false
 - id: 71
   name: ブーメラン3
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: バトルフィールドの端にそって飛ぶ貫通ブーメラン
   is_implemented: false
 - id: 72
   name: サイドバンブー1
@@ -601,7 +601,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 自分のエリアの穴マスから子蛇が飛んでいく
   is_implemented: false
 - id: 86
   name: マグナム
@@ -671,28 +671,28 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 目の前のマスにストーンキューブを発生させる
   is_implemented: false
 - id: 96
   name: トップウ
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: ウィンドボックスを置き、敵エリアに風を吹かせる
   is_implemented: false
 - id: 97
   name: スイコミ
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: バキュームファンを置き、風で敵を吸い寄せる
   is_implemented: false
 - id: 98
   name: オウエンカ
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: ララパッパを置く。演奏中は無敵状態に
   is_implemented: false
 - id: 99
   name: ディスコード
@@ -727,21 +727,21 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: タイミングガードし攻撃を衝撃波にして跳ね返す！
   is_implemented: false
 - id: 104
   name: メットガード2
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: タイミングガードし攻撃を衝撃波にして跳ね返す！
   is_implemented: false
 - id: 105
   name: メットガード3
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: タイミングガードし攻撃を衝撃波にして跳ね返す！
   is_implemented: false
 - id: 106
   name: クラックアウト
@@ -854,14 +854,14 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 敵エリアの左端にパネルを塗り替えるゼリー攻撃！
   is_implemented: false
 - id: 121
   name: スチールパニシュ
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: 盗まれたパネルの数だけ相手に天罰が下る！
   is_implemented: false
 - id: 122
   name: スチールリベンジ
@@ -903,7 +903,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: バトル中ずっとカスタムゲージのスピードが落ちる
   is_implemented: false
 - id: 128
   name: クイックゲージ
@@ -1036,7 +1036,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ''
+  description: カーソルの相手にほかの敵が受けたダメージをコピー！
   is_implemented: false
 - id: 147
   name: ライフシンクロ
