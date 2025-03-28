@@ -6,7 +6,7 @@ dev:
 	rockman.exe --config data/config_debug.yaml
 dev-mac:
 	GOOS=windows go build -o rockman.exe
-	wine64 rockman.exe --config data/config_debug.yaml
+	wine rockman.exe --config data/config_debug.yaml
 res:
 	.\tmp\DXArchive\DxaEncode.exe .\data\private\images
 	move .\data\private\images.dxa ".\data\"
