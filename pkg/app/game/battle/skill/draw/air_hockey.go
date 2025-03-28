@@ -10,7 +10,15 @@ type DrawAirHockey struct {
 }
 
 func (p *DrawAirHockey) Draw(prevPos, currentPos, nextPos point.Point, count int, nextStepCount int) {
-	// WIP
 	view := battlecommon.ViewPos(currentPos)
-	dxlib.DrawRotaGraph(view.X, view.Y+25, 1, 0, images[imageTypeAirHockey][0], true)
+
+	cnt := count % nextStepCount
+	if cnt == 0 {
+		// Skip drawing because the position is updated in Process method and return unexpected value
+		return
+	}
+
+	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
+	ofsy := battlecommon.GetOffset(nextPos.Y, currentPos.Y, prevPos.Y, cnt, nextStepCount, battlecommon.PanelSize.Y)
+	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+30+ofsy, 1, 0, images[imageTypeAirHockey][0], true)
 }
