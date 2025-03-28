@@ -31,6 +31,7 @@ type animDraw struct {
 	drawBamboolance  skilldraw.DrawBamboolance
 	drawAreaSteal    skilldraw.DrawAreaSteal
 	drawBubbleShot   skilldraw.DrawBubbleShot
+	drawAirHockey    skilldraw.DrawAirHockey
 }
 
 func (d *animDraw) Init() error {
@@ -141,6 +142,14 @@ func (d *animDraw) Draw() {
 			d.drawBubbleShot.Draw(pos, a.ActCount, isPlayer)
 		case anim.TypeInvisible:
 			// no animation
+		case anim.TypeAirHockey:
+			var drawPm skill.AirHockeyDrawParam
+			drawPm.Unmarshal(a.DrawParam)
+			if !isPlayer {
+				drawPm.PrevPos.X = battlecommon.FieldNum.X - drawPm.PrevPos.X - 1
+				drawPm.NextPos.X = battlecommon.FieldNum.X - drawPm.NextPos.X - 1
+			}
+			d.drawAirHockey.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

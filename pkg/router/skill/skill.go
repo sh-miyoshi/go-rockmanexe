@@ -97,6 +97,8 @@ func Get(id int, arg Argument) SkillAnim {
 		return newBubbleShot(arg, core)
 	case resources.SkillInvisible:
 		return newInvisible(arg, core)
+	case resources.SkillAirHockey:
+		return newAirHockey(arg, core)
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 		return nil
