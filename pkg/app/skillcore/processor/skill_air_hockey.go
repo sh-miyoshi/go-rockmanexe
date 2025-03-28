@@ -76,7 +76,7 @@ func (p *AirHockey) Update() (bool, error) {
 			dm := damage.Damage{
 				OwnerClientID: p.Arg.OwnerClientID,
 				ID:            uuid.New().String(),
-				Power:         10,
+				Power:         int(p.Arg.Power),
 				HitEffectType: resources.EffectTypeNone,
 				StrengthType:  damage.StrengthBack,
 				Element:       damage.ElementNone, // WIP: ブレイク属性にする
