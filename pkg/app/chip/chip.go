@@ -60,6 +60,9 @@ const (
 	IDSword        = 54
 	IDWideSword    = 55
 	IDLongSword    = 56
+	IDAirHockey1   = 63
+	IDAirHockey2   = 64
+	IDAirHockey3   = 65
 	IDBoomerang1   = 69
 	IDBambooLance  = 75
 	IDCountBomb    = 93

@@ -125,6 +125,8 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 		return newBarrier(objID, arg, core)
 	case resources.SkillFullCustom:
 		return newFullCustom(objID, arg, core, animMgr)
+	case resources.SkillAirHockey:
+		return newAirHockey(objID, arg, core, animMgr)
 	}
 
 	system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))

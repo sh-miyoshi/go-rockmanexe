@@ -120,6 +120,10 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillFullCustom:
 		return &processor.FullCustom{Arg: arg}
+	case resources.SkillAirHockey:
+		res := &processor.AirHockey{Arg: arg, SkillID: id}
+		res.Init()
+		return res
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}
