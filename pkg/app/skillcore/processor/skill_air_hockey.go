@@ -38,7 +38,12 @@ func (p *AirHockey) Init() {
 	p.prev = pos
 	p.next = first
 
-	p.moveVec = point.Point{X: 1, Y: 1}
+	// プレイヤーの場合は右下、敵の場合は左下に移動
+	if p.Arg.TargetType == damage.TargetPlayer {
+		p.moveVec = point.Point{X: -1, Y: 1}
+	} else {
+		p.moveVec = point.Point{X: 1, Y: 1}
+	}
 }
 
 func (p *AirHockey) Update() (bool, error) {
@@ -59,6 +64,19 @@ func (p *AirHockey) Update() (bool, error) {
 		if nextY < 0 || nextY > battlecommon.FieldNum.Y-1 {
 			p.moveVec.Y = -p.moveVec.Y
 			nextY = p.pos.Y + p.moveVec.Y
+		}
+
+		// エリアの端での反射処理
+		currentPanel := p.Arg.GetPanelInfo(p.pos)
+		nextPanel := p.Arg.GetPanelInfo(point.Point{X: nextX, Y: nextY})
+		if p.Arg.TargetType == damage.TargetEnemy && currentPanel.Type == battlecommon.PanelTypeEnemy && nextPanel.Type == battlecommon.PanelTypePlayer {
+			// 敵エリアからプレイヤーエリアへの移動時は反射
+			p.moveVec.X = -p.moveVec.X
+			nextX = p.pos.X + p.moveVec.X
+		} else if p.Arg.TargetType == damage.TargetPlayer && currentPanel.Type == battlecommon.PanelTypePlayer && nextPanel.Type == battlecommon.PanelTypeEnemy {
+			// プレイヤーエリアから敵エリアへの移動時は反射
+			p.moveVec.X = -p.moveVec.X
+			nextX = p.pos.X + p.moveVec.X
 		}
 
 		// 移動前の位置を保存
