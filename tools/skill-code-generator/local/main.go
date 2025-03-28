@@ -34,9 +34,8 @@ type ChipList []Chip
 func generateConstName(name string) string {
 	table := map[string]string{
 		"フルカスタム":  "FullCustom",
-		"エアホッケー1": "AirHockey1",
-		"エアホッケー2": "AirHockey2",
-		"エアホッケー3": "AirHockey3",
+		"エアホッケー":  "AirHockey",
+		"カモンスネーク": "ComeOnSnake",
 	}
 
 	return table[name]
@@ -133,22 +132,22 @@ func generateProcessorTemplate(skillName string) error {
 	const processorTemplate = `package processor
 
 import (
-"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 )
 
 type {{.Name}} struct {
-Arg skillcore.Argument
+	Arg skillcore.Argument
 
-count int
+	count int
 }
 
 func (p *{{.Name}}) Update() (bool, error) {
-p.count++
-return true, nil
+	p.count++
+	return true, nil
 }
 
 func (p *{{.Name}}) GetCount() int {
-return p.count
+	return p.count
 }`
 
 	constName := generateConstName(skillName)
@@ -187,44 +186,44 @@ func generateSkillTemplate(skillName string) error {
 	const templateContent = `package skill
 
 import (
-"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
-"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
-"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
-"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
 
 type {{.Name}} struct {
-ID      string
-Arg     skillcore.Argument
-Core    *processor.{{.Name}}
-animMgr *manager.Manager
+	ID      string
+	Arg     skillcore.Argument
+	Core    *processor.{{.Name}}
+	animMgr *manager.Manager
 }
 
 func new{{.Name}}(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *{{.Name}} {
-return &{{.Name}}{
-ID:      objID,
-Arg:     arg,
-Core:    core.(*processor.{{.Name}}),
-animMgr: animMgr,
-}
+	return &{{.Name}}{
+		ID:      objID,
+		Arg:     arg,
+		Core:    core.(*processor.{{.Name}}),
+		animMgr: animMgr,
+	}
 }
 
 func (p *{{.Name}}) Draw() {
-// TODO: implement draw method
+	// TODO: implement draw method
 }
 
 func (p *{{.Name}}) Update() (bool, error) {
-return p.Core.Update()
+	return p.Core.Update()
 }
 
 func (p *{{.Name}}) GetParam() anim.Param {
-return anim.Param{
-ObjID: p.ID,
-}
+	return anim.Param{
+		ObjID: p.ID,
+	}
 }
 
 func (p *{{.Name}}) StopByOwner() {
-p.animMgr.AnimDelete(p.ID)
+	p.animMgr.AnimDelete(p.ID)
 }`
 
 	constName := generateConstName(skillName)
@@ -324,6 +323,82 @@ func updateChipGoFile(skill Chip) error {
 	// Format the generated file
 	if err := exec.Command("go", "fmt", chipGoPath).Run(); err != nil {
 		return fmt.Errorf("failed to format skill file: %v", err)
+	}
+
+	return nil
+}
+
+func updateSkillGoFile(skillName string) error {
+	constName := generateConstName(skillName)
+	if constName == "" {
+		return fmt.Errorf("failed to generate const name for %s", skillName)
+	}
+
+	skillGoPath := filepath.Join("pkg", "app", "game", "battle", "skill", "skill.go")
+	content, err := os.ReadFile(skillGoPath)
+	if err != nil {
+		return fmt.Errorf("failed to read skill.go: %v", err)
+	}
+
+	lines := strings.Split(string(content), "\n")
+	for i, line := range lines {
+		if strings.Contains(line, "default:") {
+			// Insert new case before default
+			newCase := fmt.Sprintf("case resources.Skill%s:\n\treturn new%s(objID, arg, core, animMgr)", constName, constName)
+			tmp := make([]string, len(lines[i:]))
+			copy(tmp, lines[i:])
+			lines = append(lines[:i], newCase)
+			lines = append(lines, tmp...)
+			break
+		}
+	}
+
+	err = os.WriteFile(skillGoPath, []byte(strings.Join(lines, "\n")), 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write to skill.go: %v", err)
+	}
+
+	// Format the file
+	if err := exec.Command("go", "fmt", skillGoPath).Run(); err != nil {
+		return fmt.Errorf("failed to format skill.go: %v", err)
+	}
+
+	return nil
+}
+
+func updateSkillcoreFile(skill Chip) error {
+	constName := generateConstName(skill.Name)
+	if constName == "" {
+		return fmt.Errorf("failed to generate const name for %s", skill.Name)
+	}
+
+	skillcorePath := filepath.Join("pkg", "app", "skillcore", "skill.go")
+	content, err := os.ReadFile(skillcorePath)
+	if err != nil {
+		return fmt.Errorf("failed to read skillcore/skill.go: %v", err)
+	}
+
+	lines := strings.Split(string(content), "\n")
+	for i, line := range lines {
+		if strings.Contains(line, "default:") {
+			// Insert new case before error handling
+			newCase := fmt.Sprintf("case chip.ID%s:\n\treturn resources.Skill%s", constName, constName)
+			tmp := make([]string, len(lines[i:]))
+			copy(tmp, lines[i:])
+			lines = append(lines[:i], newCase)
+			lines = append(lines, tmp...)
+			break
+		}
+	}
+
+	err = os.WriteFile(skillcorePath, []byte(strings.Join(lines, "\n")), 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write to skillcore/skill.go: %v", err)
+	}
+
+	// Format the file
+	if err := exec.Command("go", "fmt", skillcorePath).Run(); err != nil {
+		return fmt.Errorf("failed to format skillcore/skill.go: %v", err)
 	}
 
 	return nil
@@ -430,6 +505,19 @@ func main() {
 		fmt.Printf("Successfully updated manager.go\n")
 	}
 
-	// WIP: Update pkg\app\skillcore\skill.go with new GetIDByChipID case
-	// WIP: Update pkg\app\game\battle\skill\skill.go Get method
+	// Update pkg/app/game/battle/skill/skill.go Get method
+	err = updateSkillGoFile(skill.Name)
+	if err != nil {
+		log.Fatalf("Warning: Failed to update skill.go Get method: %v", err)
+	} else {
+		fmt.Printf("Successfully updated skill.go Get method\n")
+	}
+
+	// Update pkg/app/skillcore/skill.go with new GetIDByChipID case
+	err = updateSkillcoreFile(skill)
+	if err != nil {
+		log.Fatalf("Warning: Failed to update skillcore/skill.go GetIDByChipID method: %v", err)
+	} else {
+		fmt.Printf("Successfully updated skillcore/skill.go GetIDByChipID method\n")
+	}
 }

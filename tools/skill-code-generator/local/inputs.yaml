@@ -1,6 +1,6 @@
-id: 63
-name: エアホッケー1
-power: 50
-type: 2
-player_act: 8
-description: 壁に当たると反射するホッケーを投げる
+id: 85
+name: カモンスネーク
+power: 20
+type: 0
+player_act: -1
+description: 自分のエリアの穴マスから子蛇が飛んでいく
