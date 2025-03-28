@@ -97,6 +97,9 @@ var (
 		chip.IDBubbleSide,
 		chip.IDBubbleV,
 		chip.IDInvisible,
+		chip.IDAirHockey1,
+		chip.IDAirHockey2,
+		chip.IDAirHockey3,
 	}
 
 	inst NetBattle

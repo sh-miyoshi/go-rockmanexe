@@ -28,6 +28,7 @@ const (
 	TypeAreaSteal
 	TypeBubbleShot
 	TypeInvisible
+	TypeAirHockey
 
 	TypeMax
 )
