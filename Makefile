@@ -45,3 +45,5 @@ skill-gen:
 	go run tools/skill-code-generator/local/main.go
 skill-gen-net:
 	go run tools/skill-code-generator/network/main.go
+check-impl:
+	go run tools/chip-impl-checker/main.go
