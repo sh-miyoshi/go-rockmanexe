@@ -41,5 +41,5 @@ func (p *AirHockey) GetParam() anim.Param {
 }
 
 func (p *AirHockey) StopByOwner() {
-	p.animMgr.AnimDelete(p.ID)
+	// Nothing to do after throwing
 }
