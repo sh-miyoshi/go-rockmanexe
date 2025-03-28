@@ -14,8 +14,7 @@ func (p *DrawAirHockey) Draw(prevPos, currentPos, nextPos point.Point, count int
 
 	cnt := count % nextStepCount
 	if cnt == 0 {
-		// Skip drawing because the position is updated in Process method and return unexpected value
-		return
+		cnt = nextStepCount
 	}
 
 	drawHitArea(currentPos)
