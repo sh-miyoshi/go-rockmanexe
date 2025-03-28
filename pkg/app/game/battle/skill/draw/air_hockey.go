@@ -18,6 +18,8 @@ func (p *DrawAirHockey) Draw(prevPos, currentPos, nextPos point.Point, count int
 		return
 	}
 
+	drawHitArea(currentPos)
+
 	ofsx := battlecommon.GetOffset(nextPos.X, currentPos.X, prevPos.X, cnt, nextStepCount, battlecommon.PanelSize.X)
 	ofsy := battlecommon.GetOffset(nextPos.Y, currentPos.Y, prevPos.Y, cnt, nextStepCount, battlecommon.PanelSize.Y)
 	dxlib.DrawRotaGraph(view.X+ofsx, view.Y+30+ofsy, 1, 0, images[imageTypeAirHockey][0], true)
