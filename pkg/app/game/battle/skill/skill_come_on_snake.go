@@ -4,6 +4,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -13,6 +14,7 @@ type ComeOnSnake struct {
 	Arg     skillcore.Argument
 	Core    *processor.ComeOnSnake
 	animMgr *manager.Manager
+	drawer  skilldraw.DrawSnake
 }
 
 func newComeOnSnake(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *ComeOnSnake {
@@ -25,7 +27,9 @@ func newComeOnSnake(objID string, arg skillcore.Argument, core skillcore.SkillCo
 }
 
 func (p *ComeOnSnake) Draw() {
-	// TODO: implement draw method
+	for _, snake := range p.Core.GetSnakes() {
+		p.drawer.Draw(snake.ViewPos, snake.Count)
+	}
 }
 
 func (p *ComeOnSnake) Update() (bool, error) {
@@ -47,5 +51,5 @@ func (p *ComeOnSnake) GetParam() anim.Param {
 }
 
 func (p *ComeOnSnake) StopByOwner() {
-	p.animMgr.AnimDelete(p.ID)
+	// Nothing to do
 }
