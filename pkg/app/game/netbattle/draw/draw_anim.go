@@ -8,6 +8,7 @@ import (
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/net"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/router/skill"
@@ -149,7 +150,7 @@ func (d *animDraw) Draw() {
 				drawPm.PrevPos.X = battlecommon.FieldNum.X - drawPm.PrevPos.X - 1
 				drawPm.NextPos.X = battlecommon.FieldNum.X - drawPm.NextPos.X - 1
 			}
-			d.drawAirHockey.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
+			d.drawAirHockey.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, processor.AirHockeyNextStepCount)
 		default:
 			system.SetError(fmt.Sprintf("Anim %d is not implemented yet", a.AnimType))
 			return

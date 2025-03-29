@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	airHockeyNextStepCount = 3
+	AirHockeyNextStepCount = 3
 	airHockeyMoveCountMax  = 9
 )
 
@@ -51,8 +51,8 @@ func (p *AirHockey) Update() (bool, error) {
 		return true, nil
 	}
 
-	// airHockeyNextStepCountごとに移動
-	if p.count%airHockeyNextStepCount == 0 {
+	// AirHockeyNextStepCountごとに移動
+	if p.count%AirHockeyNextStepCount == 0 {
 		nextX := p.pos.X + p.moveVec.X
 		nextY := p.pos.Y + p.moveVec.Y
 
@@ -121,8 +121,4 @@ func (p *AirHockey) GetCount() int {
 
 func (p *AirHockey) GetPos() (prev, current, next point.Point) {
 	return p.prev, p.pos, p.next
-}
-
-func (p *AirHockey) GetNextStepCount() int {
-	return airHockeyNextStepCount
 }

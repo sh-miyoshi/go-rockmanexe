@@ -27,7 +27,7 @@ func newAirHockey(objID string, arg skillcore.Argument, core skillcore.SkillCore
 
 func (p *AirHockey) Draw() {
 	prev, current, next := p.Core.GetPos()
-	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
+	p.drawer.Draw(prev, current, next, p.Core.GetCount(), processor.AirHockeyNextStepCount)
 }
 
 func (p *AirHockey) Update() (bool, error) {

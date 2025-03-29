@@ -12,9 +12,8 @@ import (
 )
 
 type AirHockeyDrawParam struct {
-	PrevPos       point.Point
-	NextPos       point.Point
-	NextStepCount int
+	PrevPos point.Point
+	NextPos point.Point
 }
 
 type airhockey struct {
@@ -47,12 +46,9 @@ func (p *airhockey) GetParam() anim.Param {
 	}
 
 	prev, current, next := p.Core.GetPos()
-	nextStepCnt := p.Core.GetNextStepCount()
-
 	drawPm := AirHockeyDrawParam{
-		PrevPos:       prev,
-		NextPos:       next,
-		NextStepCount: nextStepCnt,
+		PrevPos: prev,
+		NextPos: next,
 	}
 	info.DrawParam = drawPm.Marshal()
 
