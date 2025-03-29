@@ -1,133 +1,100 @@
 package processor
 
 import (
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/cockroachdb/errors"
+
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
 const (
-	comeOnSnakePhaseInit int = iota
-	comeOnSnakePhaseCutin
-	comeOnSnakePhaseSnakeAppear
-	comeOnSnakePhaseSnakeMove
-	comeOnSnakePhaseEnd
+	SnakeWaitTime = 60
 )
 
-type snake struct {
-	x, y    int
-	active  bool
-	waiting int
+type Snake struct {
+	Count   int
+	ViewPos point.Point
 }
 
 type ComeOnSnake struct {
 	Arg skillcore.Argument
 
-	count     int
-	phase     int
-	curColumn int
-	snakes    []snake
-
-	// アニメーションと移動の制御用
-	waitTime     int
-	appearDelay  int
-	moveSpeed    int
-	snakeWaitMax int
+	count  int
+	snakes []Snake
 }
 
 func (p *ComeOnSnake) Update() (bool, error) {
-	if p.count == 0 {
-		// 初期化
-		p.phase = comeOnSnakePhaseInit
-		p.curColumn = 6 // 敵エリアに最も近い列から開始
-		p.waitTime = 0
-		p.appearDelay = 30  // 蛇の出現アニメーション待ち時間
-		p.moveSpeed = 5     // 蛇の移動速度
-		p.snakeWaitMax = 60 // 蛇の待機最大時間
-		p.snakes = make([]snake, 0)
+	p.count++
+	if p.count == 1 {
+		p.Arg.Cutin("カモンスネーク", 500)
+		if p.Arg.TargetType == damage.TargetEnemy {
+			for x := battlecommon.FieldNum.X - 1; x >= 0; x-- {
+				for y := 0; y < battlecommon.FieldNum.Y; y++ {
+					pos := point.Point{X: x, Y: y}
+					pn := p.Arg.GetPanelInfo(pos)
+					if pn.Type == battlecommon.PanelTypePlayer && pn.Status == battlecommon.PanelStatusHole {
+						p.snakes = append(p.snakes, newSnake(pos))
+					}
+				}
+			}
+		} else {
+			return true, errors.New("enemy cannot use ComeOnSnake")
+		}
+	}
+	// スキル名表示中は待つ
+	if p.count < 90 {
+		return false, nil
 	}
 
-	switch p.phase {
-	case comeOnSnakePhaseInit:
-		// CutIn開始
-		p.phase = comeOnSnakePhaseCutin
-		p.waitTime = 30 // CutInアニメーション時間
-		p.Arg.Cutin("カモンスネーク", 500)
-
-	case comeOnSnakePhaseCutin:
-		if p.waitTime > 0 {
-			p.waitTime--
-			break
-		}
-		p.phase = comeOnSnakePhaseSnakeAppear
-
-	case comeOnSnakePhaseSnakeAppear:
-		if p.curColumn < 1 {
-			// すべての列の処理が終了
-			p.phase = comeOnSnakePhaseSnakeMove
-			break
-		}
-
-		// 現在の列で穴パネルを探して蛇を生成
-		for y := 0; y < common.FieldNum.Y; y++ {
-			panelInfo := p.Arg.GetPanelInfo(point.Point{X: p.curColumn, Y: y})
-			if panelInfo.Status == common.PanelStatusHole {
-				s := snake{
-					x:       p.curColumn,
-					y:       y,
-					active:  true,
-					waiting: p.snakeWaitMax - (6-p.curColumn)*10, // 列に応じて待ち時間を調整
-				}
-				p.snakes = append(p.snakes, s)
-			}
-		}
-
-		p.curColumn-- // 次の列へ
-
-	case comeOnSnakePhaseSnakeMove:
-		allInactive := true
-		damage := false
-
-		// すべての蛇を更新
-		for i := range p.snakes {
-			if !p.snakes[i].active {
-				continue
-			}
-
-			allInactive = false
-
-			if p.snakes[i].waiting > 0 {
-				p.snakes[i].waiting--
-				continue
-			}
-
-			// 移動処理
-			p.snakes[i].x++
-			if p.snakes[i].x >= common.FieldNum.X+1 {
-				p.snakes[i].active = false
-				continue
-			}
-
-			// この列での最初の移動時にダメージを与える
-			if !damage {
-				damage = true
-				// 敵全体にダメージを与える
-				// p.Arg.GiveDamageToObject("", 10) // ダメージ値を10に固定
-			}
-		}
-
-		if allInactive {
-			p.phase = comeOnSnakePhaseEnd
-		}
-
-	case comeOnSnakePhaseEnd:
+	if len(p.snakes) == 0 {
 		return true, nil
 	}
 
-	p.count++
+	// スネークの更新と削除処理
+	newSnakes := make([]Snake, 0, len(p.snakes))
+	for i := range p.snakes {
+		finished, err := p.snakes[i].Update()
+		if err != nil {
+			return false, err
+		}
+		if !finished {
+			newSnakes = append(newSnakes, p.snakes[i])
+		}
+	}
+	p.snakes = newSnakes
+
 	return false, nil
 }
 
 func (p *ComeOnSnake) GetCount() int {
 	return p.count
+}
+
+func newSnake(initPos point.Point) Snake {
+	return Snake{
+		Count:   0,
+		ViewPos: battlecommon.ViewPos(initPos),
+	}
+}
+
+func (p *ComeOnSnake) GetSnakes() []Snake {
+	return p.snakes
+}
+
+func (p *Snake) Update() (bool, error) {
+	p.Count++
+	if p.Count < SnakeWaitTime {
+		return false, nil
+	}
+
+	const spd = 2
+	p.ViewPos.X += spd
+	if p.ViewPos.X > config.ScreenSize.X {
+		return true, nil
+	}
+
+	return false, nil
 }

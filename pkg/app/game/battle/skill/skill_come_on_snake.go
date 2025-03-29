@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -28,7 +29,15 @@ func (p *ComeOnSnake) Draw() {
 }
 
 func (p *ComeOnSnake) Update() (bool, error) {
-	return p.Core.Update()
+	end, err := p.Core.Update()
+	if err != nil {
+		return false, err
+	}
+	if end {
+		field.SetBlackoutCount(0)
+		return true, nil
+	}
+	return false, nil
 }
 
 func (p *ComeOnSnake) GetParam() anim.Param {
