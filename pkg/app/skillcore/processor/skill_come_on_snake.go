@@ -73,15 +73,15 @@ func (p *ComeOnSnake) GetCount() int {
 	return p.count
 }
 
+func (p *ComeOnSnake) GetSnakes() []Snake {
+	return p.snakes
+}
+
 func newSnake(initPos point.Point) Snake {
 	return Snake{
 		Count:   0,
 		ViewPos: battlecommon.ViewPos(initPos),
 	}
-}
-
-func (p *ComeOnSnake) GetSnakes() []Snake {
-	return p.snakes
 }
 
 func (p *Snake) Update() (bool, error) {
