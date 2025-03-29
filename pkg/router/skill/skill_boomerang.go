@@ -12,9 +12,8 @@ import (
 )
 
 type BoomerangDrawParam struct {
-	PrevPos       point.Point
-	NextPos       point.Point
-	NextStepCount int
+	PrevPos point.Point
+	NextPos point.Point
 }
 
 type boomerang struct {
@@ -47,12 +46,9 @@ func (p *boomerang) GetParam() anim.Param {
 	}
 
 	prev, current, next := p.Core.GetPos()
-	nextStepCnt := p.Core.GetNextStepCount()
-
 	drawPm := BoomerangDrawParam{
-		PrevPos:       prev,
-		NextPos:       next,
-		NextStepCount: nextStepCnt,
+		PrevPos: prev,
+		NextPos: next,
 	}
 	info.DrawParam = drawPm.Marshal()
 

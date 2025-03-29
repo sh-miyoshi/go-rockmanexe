@@ -124,7 +124,7 @@ func (d *animDraw) Draw() {
 				drawPm.PrevPos.X = battlecommon.FieldNum.X - drawPm.PrevPos.X - 1
 				drawPm.NextPos.X = battlecommon.FieldNum.X - drawPm.NextPos.X - 1
 			}
-			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, drawPm.NextStepCount)
+			d.drawBoomerang.Draw(drawPm.PrevPos, a.Pos, drawPm.NextPos, a.ActCount, processor.BoomerangNextStepCount)
 		case anim.TypeBambooLance:
 			d.drawBamboolance.Draw(a.ActCount, isPlayer)
 		case anim.TypeAreaSteal:

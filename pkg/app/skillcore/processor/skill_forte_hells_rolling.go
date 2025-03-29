@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	forteHellsRollingNextStepCount = 8
+	ForteHellsRollingNextStepCount = 8
 )
 
 type ForteHellsRolling struct {
@@ -52,7 +52,7 @@ func (p *ForteHellsRolling) Update() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.currentPos,
 			Power:         int(p.Arg.Power),
-			TTL:           forteHellsRollingNextStepCount,
+			TTL:           ForteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			StrengthType:  damage.StrengthHigh,
@@ -60,7 +60,7 @@ func (p *ForteHellsRolling) Update() (bool, error) {
 	}
 
 	p.count++
-	if p.count%forteHellsRollingNextStepCount == 0 {
+	if p.count%ForteHellsRollingNextStepCount == 0 {
 		p.prevPos = p.currentPos
 		p.currentPos = p.nextPos
 		if p.currentPos.X < 0 || p.currentPos.X >= battlecommon.FieldNum.X {
@@ -92,7 +92,7 @@ func (p *ForteHellsRolling) Update() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.currentPos,
 			Power:         int(p.Arg.Power),
-			TTL:           forteHellsRollingNextStepCount,
+			TTL:           ForteHellsRollingNextStepCount,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeNone,
 			StrengthType:  damage.StrengthHigh,
@@ -107,8 +107,4 @@ func (p *ForteHellsRolling) GetCount() int {
 
 func (p *ForteHellsRolling) GetPos() (prev point.Point, current point.Point, next point.Point) {
 	return p.prevPos, p.currentPos, p.nextPos
-}
-
-func (p *ForteHellsRolling) GetNextStepCount() int {
-	return forteHellsRollingNextStepCount
 }

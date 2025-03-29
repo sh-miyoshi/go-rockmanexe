@@ -86,10 +86,6 @@ func (p *ChipForteAnother) GetAttackPos() (prev point.Point, current point.Point
 	return p.attacks[p.attackNo].GetPos()
 }
 
-func (p *ChipForteAnother) GetAttackNextStepCount() int {
-	return forteHellsRollingNextStepCount
-}
-
 func (p *ChipForteAnother) setState(next int) {
 	logger.Debug("Set ChipForteAnother state from %d to %d", p.state, next)
 	p.count = 0

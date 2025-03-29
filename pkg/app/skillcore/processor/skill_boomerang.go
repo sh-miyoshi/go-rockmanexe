@@ -17,7 +17,7 @@ const (
 )
 
 const (
-	boomerangNextStepCount = 6
+	BoomerangNextStepCount = 6
 )
 
 type Boomerang struct {
@@ -59,7 +59,7 @@ func (p *Boomerang) Update() (bool, error) {
 		p.Arg.SoundOn(resources.SEBoomerangThrow)
 	}
 
-	if p.count%boomerangNextStepCount == 0 {
+	if p.count%BoomerangNextStepCount == 0 {
 		// Update current pos
 		p.prev = p.pos
 		p.pos = p.next
@@ -69,7 +69,7 @@ func (p *Boomerang) Update() (bool, error) {
 			DamageType:    damage.TypePosition,
 			Pos:           p.pos,
 			Power:         int(p.Arg.Power),
-			TTL:           boomerangNextStepCount + 1,
+			TTL:           BoomerangNextStepCount + 1,
 			TargetObjType: p.Arg.TargetType,
 			HitEffectType: resources.EffectTypeSpreadHit,
 			ShowHitArea:   false,
@@ -151,8 +151,4 @@ func (p *Boomerang) GetCount() int {
 
 func (p *Boomerang) GetPos() (prev, current, next point.Point) {
 	return p.prev, p.pos, p.next
-}
-
-func (p *Boomerang) GetNextStepCount() int {
-	return boomerangNextStepCount
 }

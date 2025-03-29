@@ -27,7 +27,7 @@ func newBoomerang(objID string, arg skillcore.Argument, core skillcore.SkillCore
 
 func (p *boomerang) Draw() {
 	prev, current, next := p.Core.GetPos()
-	p.drawer.Draw(prev, current, next, p.Core.GetCount(), p.Core.GetNextStepCount())
+	p.drawer.Draw(prev, current, next, p.Core.GetCount(), processor.BoomerangNextStepCount)
 }
 
 func (p *boomerang) Update() (bool, error) {

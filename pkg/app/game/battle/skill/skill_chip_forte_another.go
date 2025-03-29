@@ -39,7 +39,7 @@ func (p *chipForteAnother) Draw() {
 		pm.AttackCurrentPos = current
 		pm.AttackNextPos = next
 		pm.AttackCount = p.Core.GetAttackCount()
-		pm.AttackNextStepCount = p.Core.GetAttackNextStepCount()
+		pm.AttackNextStepCount = processor.ForteHellsRollingNextStepCount
 	}
 	view := battlecommon.ViewPos(p.Core.GetPos())
 	p.drawer.Draw(p.Core.GetCount(), state, view, pm)
