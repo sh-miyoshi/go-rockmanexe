@@ -22,8 +22,11 @@ type Snake struct {
 type ComeOnSnake struct {
 	Arg skillcore.Argument
 
-	count  int
-	snakes []Snake
+	count         int
+	snakes        []Snake
+	candidatePos  []point.Point
+	nextSnakeTime int
+	currentX      int
 }
 
 func (p *ComeOnSnake) Update() (bool, error) {
@@ -36,20 +39,30 @@ func (p *ComeOnSnake) Update() (bool, error) {
 					pos := point.Point{X: x, Y: y}
 					pn := p.Arg.GetPanelInfo(pos)
 					if pn.Type == battlecommon.PanelTypePlayer && pn.Status == battlecommon.PanelStatusHole {
-						p.snakes = append(p.snakes, newSnake(pos))
+						p.candidatePos = append(p.candidatePos, pos)
 					}
 				}
 			}
+			p.nextSnakeTime = 90 // スキル名表示後に最初の蛇を出現
+			p.currentX = p.candidatePos[0].X
 		} else {
 			return true, errors.New("enemy cannot use ComeOnSnake")
 		}
 	}
-	// スキル名表示中は待つ
-	if p.count < 90 {
-		return false, nil
+
+	// 一定間隔で新しい蛇を生成
+	if len(p.candidatePos) > 0 && p.count >= p.nextSnakeTime {
+		if p.currentX != p.candidatePos[0].X {
+			p.nextSnakeTime = p.count + 30 // 次の蛇は30フレーム後
+			p.currentX = p.candidatePos[0].X
+		} else {
+			p.nextSnakeTime = p.count + 10 // 次の蛇は10フレーム後
+		}
+		p.snakes = append(p.snakes, newSnake(p.candidatePos[0]))
+		p.candidatePos = p.candidatePos[1:]
 	}
 
-	if len(p.snakes) == 0 {
+	if len(p.snakes) == 0 && len(p.candidatePos) == 0 {
 		return true, nil
 	}
 
@@ -90,7 +103,7 @@ func (p *Snake) Update() (bool, error) {
 		return false, nil
 	}
 
-	const spd = 2
+	const spd = 8
 	p.ViewPos.X += spd
 	if p.ViewPos.X > config.ScreenSize.X {
 		return true, nil
