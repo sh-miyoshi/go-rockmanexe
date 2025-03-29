@@ -5,7 +5,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -43,7 +42,7 @@ func (p *wideShot) GetParam() anim.Param {
 }
 
 func (p *wideShot) StopByOwner() {
-	if p.Core.GetParam().State != resources.SkillWideShotStateMove {
+	if p.Core.GetParam().State != processor.WideShotStateMove {
 		p.animMgr.AnimDelete(p.ID)
 	}
 }
