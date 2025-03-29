@@ -10,6 +10,11 @@ import (
 )
 
 const (
+	WideShotStateBegin int = iota
+	WideShotStateMove
+)
+
+const (
 	wideShotEndCount = 16
 )
 
@@ -38,7 +43,7 @@ func (p *WideShot) Init(isPlayer bool) {
 		p.pm.NextStepCount = 16
 	}
 	p.pm.Pos = p.Arg.GetObjectPos(p.Arg.OwnerID)
-	p.pm.State = resources.SkillWideShotStateBegin
+	p.pm.State = WideShotStateBegin
 }
 
 func (p *WideShot) Update() (bool, error) {
@@ -52,17 +57,17 @@ func (p *WideShot) Update() (bool, error) {
 	}
 
 	switch p.pm.State {
-	case resources.SkillWideShotStateBegin:
+	case WideShotStateBegin:
 		if p.count == 0 {
 			p.Arg.SoundOn(resources.SEWideShot)
 		}
 
 		if p.count > wideShotEndCount {
-			p.pm.State = resources.SkillWideShotStateMove
+			p.pm.State = WideShotStateMove
 			p.count = 0
 			return false, nil
 		}
-	case resources.SkillWideShotStateMove:
+	case WideShotStateMove:
 		if p.count%p.pm.NextStepCount == 0 {
 			if p.pm.Direct == config.DirectRight {
 				p.pm.Pos.X++

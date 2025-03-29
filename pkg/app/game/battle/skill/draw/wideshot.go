@@ -3,7 +3,7 @@ package skilldraw
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/math"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
@@ -21,7 +21,7 @@ func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody boo
 	view := battlecommon.ViewPos(pos)
 
 	switch state {
-	case resources.SkillWideShotStateBegin:
+	case processor.WideShotStateBegin:
 		n := (count / delayWideShot)
 
 		if n < len(images[imageTypeWideShotBody]) && showBody {
@@ -31,7 +31,7 @@ func (p *DrawWideShot) Draw(pos point.Point, count int, direct int, showBody boo
 			n = len(images[imageTypeWideShotBegin]) - 1
 		}
 		dxlib.DrawRotaGraph(view.X+math.ReverseIf(62, direct == config.DirectLeft), view.Y+20, 1, 0, images[imageTypeWideShotBegin][n], true, opt)
-	case resources.SkillWideShotStateMove:
+	case processor.WideShotStateMove:
 		n := (count / delayWideShot) % len(images[imageTypeWideShotMove])
 		next := pos.X + 1
 		prev := pos.X - 1
