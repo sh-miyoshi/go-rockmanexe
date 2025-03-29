@@ -63,6 +63,7 @@ const (
 	SkillBarrier200
 	SkillFullCustom
 	SkillAirHockey
+	SkillComeOnSnake
 
 	SkillFailed
 )

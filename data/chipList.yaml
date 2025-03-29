@@ -598,11 +598,11 @@
   is_implemented: false
 - id: 85
   name: カモンスネーク
-  power: 0
+  power: 20
   type: 0
-  player_act: 0
+  player_act: -1
   description: 自分のエリアの穴マスから子蛇が飛んでいく
-  is_implemented: false
+  is_implemented: true
 - id: 86
   name: マグナム
   power: 0

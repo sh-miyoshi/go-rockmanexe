@@ -65,6 +65,7 @@ const (
 	IDAirHockey3   = 65
 	IDBoomerang1   = 69
 	IDBambooLance  = 75
+	IDComeOnSnake  = 85
 	IDCountBomb    = 93
 	IDCrackout     = 106
 	IDDoubleCrack  = 107
