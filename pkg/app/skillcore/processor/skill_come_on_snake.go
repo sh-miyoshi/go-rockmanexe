@@ -48,7 +48,11 @@ func (p *ComeOnSnake) Update() (bool, error) {
 				}
 			}
 			p.nextSnakeTime = 90 // スキル名表示後に最初の蛇を出現
-			p.currentX = p.candidatePos[0].X
+			if len(p.candidatePos) > 0 {
+				p.currentX = p.candidatePos[0].X
+			} else {
+				return true, errors.New("no candidate positions available")
+			}
 		} else {
 			return true, errors.New("enemy cannot use ComeOnSnake")
 		}
