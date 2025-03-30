@@ -55,6 +55,7 @@ const (
 	imageTypeForteAtatckHellsRolling
 	imageTypeFighterSword
 	imageTypeAirHockey
+	imageTypeComeOnSnake
 
 	imageTypeMax
 )
@@ -309,10 +310,17 @@ func LoadImages() error {
 	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 256, 128, images[imageTypeFighterSword]); res == -1 {
 		return errors.Newf("failed to load image: %s", fname)
 	}
+
 	fname = path + "エアホッケー.png"
 	images[imageTypeAirHockey] = make([]int, 1)
 	if images[imageTypeAirHockey][0] = dxlib.LoadGraph(fname); images[imageTypeAirHockey][0] == -1 {
 		return errors.Newf("failed to load image: %s", fname)
+	}
+
+	fname = path + "カモンスネーク.png"
+	images[imageTypeComeOnSnake] = make([]int, 3)
+	if res := dxlib.LoadDivGraph(fname, 3, 3, 1, 106, 82, images[imageTypeComeOnSnake]); res == -1 {
+		return errors.Newf("failed to load image %s", fname)
 	}
 
 	tmp := make([]int, 45)

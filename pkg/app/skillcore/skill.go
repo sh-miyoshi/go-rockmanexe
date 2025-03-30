@@ -136,6 +136,8 @@ func GetIDByChipID(chipID int) int {
 		return resources.SkillFullCustom
 	case chip.IDAirHockey1, chip.IDAirHockey2, chip.IDAirHockey3:
 		return resources.SkillAirHockey
+	case chip.IDComeOnSnake:
+		return resources.SkillComeOnSnake
 	default:
 		system.SetError(fmt.Sprintf("Skill for Chip %d is not implemented yet", chipID))
 	}
