@@ -103,7 +103,7 @@ func (p *Snake) Update() (bool, error) {
 		return false, nil
 	}
 
-	const spd = 8
+	const spd = 16
 	p.ViewPos.X += spd
 	if p.ViewPos.X > config.ScreenSize.X {
 		return true, nil
