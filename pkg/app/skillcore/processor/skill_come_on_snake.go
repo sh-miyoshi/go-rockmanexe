@@ -6,6 +6,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -17,6 +18,7 @@ const (
 type Snake struct {
 	Count   int
 	ViewPos point.Point
+	Arg     skillcore.Argument
 }
 
 type ComeOnSnake struct {
@@ -58,7 +60,7 @@ func (p *ComeOnSnake) Update() (bool, error) {
 		} else {
 			p.nextSnakeTime = p.count + 10 // 次の蛇は10フレーム後
 		}
-		p.snakes = append(p.snakes, newSnake(p.candidatePos[0]))
+		p.snakes = append(p.snakes, newSnake(p.candidatePos[0], p.Arg))
 		p.candidatePos = p.candidatePos[1:]
 	}
 
@@ -90,15 +92,22 @@ func (p *ComeOnSnake) GetSnakes() []Snake {
 	return p.snakes
 }
 
-func newSnake(initPos point.Point) Snake {
+func newSnake(initPos point.Point, arg skillcore.Argument) Snake {
 	return Snake{
 		Count:   0,
 		ViewPos: battlecommon.ViewPos(initPos),
+		Arg:     arg,
 	}
 }
 
 func (p *Snake) Update() (bool, error) {
 	p.Count++
+	if p.Count == 1 {
+		p.Arg.SoundOn(resources.SEEnemyAppear)
+	} else if p.Count == SnakeWaitTime {
+		p.Arg.SoundOn(resources.SEBoomerangThrow)
+	}
+
 	if p.Count < SnakeWaitTime {
 		return false, nil
 	}
