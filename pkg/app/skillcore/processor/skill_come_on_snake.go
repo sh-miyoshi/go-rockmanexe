@@ -2,8 +2,10 @@ package processor
 
 import (
 	"github.com/cockroachdb/errors"
+	"github.com/google/uuid"
 
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	objanim "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/object"
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -115,6 +117,17 @@ func (p *Snake) Update() (bool, error) {
 	const spd = 16
 	p.ViewPos.X += spd
 	if p.ViewPos.X > config.ScreenSize.X {
+		for _, obj := range p.Arg.GetObjects(objanim.Filter{ObjType: objanim.ObjTypeEnemy}) {
+			p.Arg.DamageMgr.New(damage.Damage{
+				OwnerClientID: p.Arg.OwnerClientID,
+				ID:            uuid.New().String(),
+				Power:         int(p.Arg.Power),
+				StrengthType:  damage.StrengthNone,
+				DamageType:    damage.TypeObject,
+				TargetObjType: p.Arg.TargetType,
+				TargetObjID:   obj.ObjID,
+			})
+		}
 		return true, nil
 	}
 
