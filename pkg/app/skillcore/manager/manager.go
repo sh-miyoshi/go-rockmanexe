@@ -126,6 +126,8 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		return res
 	case resources.SkillComeOnSnake:
 		return &processor.ComeOnSnake{Arg: arg}
+	case resources.SkillAirShoot:
+		return &processor.AirShoot{Arg: arg}
 	default:
 		system.SetError(fmt.Sprintf("skill %d is not implemented yet", id))
 	}

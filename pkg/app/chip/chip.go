@@ -36,6 +36,7 @@ const (
 	IDCannon       = 1
 	IDHighCannon   = 2
 	IDMegaCannon   = 3
+	IDAirShoot     = 4
 	IDVulcan1      = 5
 	IDVulcan2      = 6
 	IDVulcan3      = 7

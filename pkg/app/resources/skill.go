@@ -64,6 +64,7 @@ const (
 	SkillFullCustom
 	SkillAirHockey
 	SkillComeOnSnake
+	SkillAirShoot
 
 	SkillFailed
 )
