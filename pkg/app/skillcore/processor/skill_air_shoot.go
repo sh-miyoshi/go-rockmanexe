@@ -22,8 +22,11 @@ type AirShoot struct {
 func (p *AirShoot) Update() (bool, error) {
 	p.count++
 
+	if p.count == 1 {
+		p.Arg.SoundOn(resources.SEAirShoot)
+	}
+
 	if p.count == 6 {
-		p.Arg.SoundOn(resources.SECannon)
 		pos := p.Arg.GetObjectPos(p.Arg.OwnerID)
 		dm := damage.Damage{
 			OwnerClientID: p.Arg.OwnerClientID,
