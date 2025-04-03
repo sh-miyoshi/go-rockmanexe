@@ -59,6 +59,7 @@ const (
 	SEDeltaRayEdgeEnd
 	SEPanelReturn
 	SEMakePoison
+	SEAirShoot
 
 	SEMax
 )
