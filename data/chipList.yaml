@@ -21,11 +21,11 @@
   is_implemented: true
 - id: 4
   name: エアシュート
-  power: 0
+  power: 20
   type: 0
-  player_act: 0
-  description: ヒットした相手を1マス奥へ押す空気砲
-  is_implemented: false
+  player_act: 2
+  description: ヒットした相手を１マス奥へ押す空気砲
+  is_implemented: true
 - id: 5
   name: バルカン1
   power: 10

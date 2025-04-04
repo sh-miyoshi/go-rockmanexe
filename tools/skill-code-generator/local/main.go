@@ -36,6 +36,7 @@ func generateConstName(name string) string {
 		"フルカスタム":  "FullCustom",
 		"エアホッケー":  "AirHockey",
 		"カモンスネーク": "ComeOnSnake",
+		"エアシュート":  "AirShoot",
 	}
 
 	return table[name]

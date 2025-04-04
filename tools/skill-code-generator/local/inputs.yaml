@@ -1,6 +1,6 @@
-id: 85
-name: カモンスネーク
+id: 4
+name: エアシュート
 power: 20
 type: 0
-player_act: -1
-description: 自分のエリアの穴マスから子蛇が飛んでいく
+player_act: 2
+description: ヒットした相手を１マス奥へ押す空気砲
