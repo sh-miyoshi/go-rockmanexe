@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	airShootEndCount = 15
+	airShootEndCount = 12
 )
 
 type AirShoot struct {
