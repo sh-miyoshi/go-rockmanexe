@@ -173,126 +173,126 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 25
   name: ガンデルソル2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 26
   name: ガンデルソル3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 27
   name: ブリザード
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 28
   name: ヒートブレス
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 29
   name: エレキショック
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 30
   name: ウッディパウダー
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 31
   name: サンドリング
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 32
   name: ツインファング1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 33
   name: ツインファング2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 34
   name: ツインファング3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 35
   name: エレメントフレア
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 36
   name: エレメントアイス
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 37
   name: エレメントリーフ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 38
   name: エレメントサンド
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 39
   name: マグボルト1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 40
   name: マグボルト2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 41
   name: マグボルト3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 42
   name: トルネード
@@ -307,7 +307,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 44
   name: ミニボム
@@ -321,14 +321,14 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 46
   name: メガエナジーボム
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 47
   name: ホウガン
@@ -342,42 +342,42 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 49
   name: カンケツセン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 50
   name: バグボム
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 51
   name: バウンドノート1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 52
   name: バウンドノート2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 53
   name: バウンドノート3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 54
   name: ソード
@@ -405,14 +405,14 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 58
   name: ロングブレード
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 59
   name: カスタムソード
@@ -440,7 +440,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 63
   name: エアホッケー1
@@ -468,21 +468,21 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 67
   name: カウンター2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 68
   name: カウンター3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 69
   name: ブーメラン1
@@ -510,21 +510,21 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 73
   name: サイドバンブー2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 74
   name: サイドバンブー3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 75
   name: バンブーランス
@@ -538,63 +538,63 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 77
   name: ホワイトウェブ2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 78
   name: ホワイトウェブ3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 79
   name: モコラッシュ1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 80
   name: モコラッシュ2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 81
   name: モコラッシュ3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 82
   name: サークルガン1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 83
   name: サークルガン2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 84
   name: サークルガン3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 85
   name: カモンスネーク
@@ -608,49 +608,49 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 87
   name: ビッグハンマー1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 88
   name: ビッグハンマー2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 89
   name: ビッグハンマー3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 90
   name: ボーイズボム1
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 91
   name: ボーイズボム2
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 92
   name: ボーイズボム3
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 93
   name: カウントボム
@@ -664,7 +664,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 95
   name: ストーンキューブ
@@ -699,28 +699,28 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 100
   name: ティンパニー
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 101
   name: サイレンス
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 102
   name: ワラニンギョウ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 103
   name: メットガード1
@@ -833,7 +833,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 118
   name: パネルスチール
@@ -868,7 +868,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 123
   name: パネルリターン
@@ -917,28 +917,28 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 130
   name: スーパーキタカゼ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 131
   name: ホーリーパネル
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 132
   name: ダークホール
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 133
   name: インビジブル
@@ -952,7 +952,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 135
   name: バリア
@@ -980,56 +980,56 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 139
   name: ダイコウズイ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 140
   name: ヒライシン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 141
   name: マヨイノモリ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 142
   name: カワリミ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 143
   name: シラハドリ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 144
   name: ナビスカウト
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 145
   name: バッドメディスン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 146
   name: コピーダメージ
@@ -1043,7 +1043,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 148
   name: アタック＋１０
@@ -1057,70 +1057,70 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 150
   name: カラーポイント
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 151
   name: スーパーバルカン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 152
   name: ネオバリアブル
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 153
   name: リュウセイグン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 154
   name: ゴッドハンマー
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 155
   name: オジゾウサン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 156
   name: ジェラシー
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 157
   name: バグチェーン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 158
   name: バグシュウセイ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 159
   name: フルカスタム
@@ -1134,70 +1134,70 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 161
   name: サンクチュアリ
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 162
   name: アタック＋３０
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 163
   name: ダブルポイント
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 164
   name: ムラマサブレード
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 165
   name: ポイズンアヌビス
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 166
   name: エレメントダーク
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 167
   name: ブラックウイング
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 168
   name: ダークライン
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
 - id: 169
   name: ブルース
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 170
@@ -1205,7 +1205,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 171
@@ -1213,7 +1213,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 172
@@ -1221,7 +1221,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 173
@@ -1229,7 +1229,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 174
@@ -1237,7 +1237,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 175
@@ -1245,7 +1245,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 176
@@ -1253,7 +1253,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 177
@@ -1261,7 +1261,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 178
@@ -1269,7 +1269,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 179
@@ -1277,7 +1277,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 180
@@ -1285,7 +1285,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 181
@@ -1301,7 +1301,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 183
@@ -1309,7 +1309,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 184
@@ -1317,7 +1317,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 185
@@ -1325,7 +1325,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 186
@@ -1333,7 +1333,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 187
@@ -1341,7 +1341,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 188
@@ -1349,7 +1349,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 189
@@ -1357,7 +1357,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 190
@@ -1365,7 +1365,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 191
@@ -1373,7 +1373,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 192
@@ -1381,7 +1381,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 193
@@ -1389,7 +1389,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 194
@@ -1397,7 +1397,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 195
@@ -1405,7 +1405,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 196
@@ -1413,7 +1413,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 197
@@ -1421,7 +1421,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 198
@@ -1429,7 +1429,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 199
@@ -1437,7 +1437,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 200
@@ -1445,7 +1445,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 201
@@ -1453,7 +1453,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 202
@@ -1461,7 +1461,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 203
@@ -1469,7 +1469,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 204
@@ -1477,7 +1477,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 205
@@ -1485,7 +1485,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 206
@@ -1493,7 +1493,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 207
@@ -1501,7 +1501,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 208
@@ -1509,7 +1509,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 209
@@ -1517,7 +1517,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 210
@@ -1525,7 +1525,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 211
@@ -1533,7 +1533,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 212
@@ -1541,7 +1541,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 213
@@ -1549,7 +1549,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 214
@@ -1557,7 +1557,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 215
@@ -1565,7 +1565,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 216
@@ -1573,7 +1573,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 217
@@ -1581,7 +1581,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 218
@@ -1589,7 +1589,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 219
@@ -1597,7 +1597,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 220
@@ -1605,7 +1605,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 221
@@ -1613,7 +1613,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 222
@@ -1621,7 +1621,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 223
@@ -1629,7 +1629,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 224
@@ -1637,7 +1637,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 225
@@ -1645,7 +1645,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 226
@@ -1653,7 +1653,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 227
@@ -1661,7 +1661,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 228
@@ -1669,7 +1669,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 168
 - id: 229
@@ -1677,7 +1677,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 169
 - id: 230
@@ -1685,7 +1685,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 170
 - id: 231
@@ -1693,7 +1693,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 171
 - id: 232
@@ -1701,7 +1701,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 172
 - id: 233
@@ -1709,7 +1709,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 173
 - id: 234
@@ -1717,7 +1717,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 174
 - id: 235
@@ -1725,7 +1725,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 175
 - id: 236
@@ -1741,7 +1741,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 177
 - id: 238
@@ -1749,7 +1749,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 178
 - id: 239
@@ -1757,7 +1757,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 219
 - id: 240
@@ -1765,7 +1765,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 220
 - id: 241
@@ -1773,7 +1773,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 221
 - id: 242
@@ -1781,7 +1781,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 222
 - id: 243
@@ -1789,7 +1789,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 223
 - id: 244
@@ -1797,7 +1797,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 224
 - id: 245
@@ -1805,7 +1805,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 225
 - id: 246
@@ -1813,7 +1813,7 @@
   power: 0
   type: 0
   player_act: 0
-  description: ""
+  description: ''
   is_implemented: false
   icon_index: 226
 - id: 247
