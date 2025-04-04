@@ -3,6 +3,7 @@ package skill
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/anim/manager"
+	skilldraw "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore/processor"
 )
@@ -12,6 +13,7 @@ type AirShoot struct {
 	Arg     skillcore.Argument
 	Core    *processor.AirShoot
 	animMgr *manager.Manager
+	drawer  skilldraw.DrawAirShoot
 }
 
 func newAirShoot(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *AirShoot {
@@ -24,7 +26,8 @@ func newAirShoot(objID string, arg skillcore.Argument, core skillcore.SkillCore,
 }
 
 func (p *AirShoot) Draw() {
-	// TODO: implement draw method
+	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
+	p.drawer.Draw(pos, p.Core.GetCount())
 }
 
 func (p *AirShoot) Update() (bool, error) {

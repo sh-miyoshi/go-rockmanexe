@@ -36,6 +36,7 @@ func (p *AirShoot) Update() (bool, error) {
 			HitEffectType: resources.EffectTypeHitSmall,
 			StrengthType:  damage.StrengthHigh,
 			Element:       damage.ElementNone,
+			PushRight:     1,
 		}
 
 		if p.Arg.TargetType == damage.TargetEnemy {
