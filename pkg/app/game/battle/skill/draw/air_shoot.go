@@ -13,6 +13,10 @@ type DrawAirShoot struct {
 func (p *DrawAirShoot) Draw(objPos point.Point, count int) {
 	view := battlecommon.ViewPos(objPos)
 
-	// WIP imgNo
-	dxlib.DrawRotaGraph(view.X+40, view.Y-15, 1, 0, images[imageTypeAirShootBody][0], true)
+	imageNo := 0
+	if count >= 8 {
+		imageNo = 1
+	}
+
+	dxlib.DrawRotaGraph(view.X+40, view.Y-15, 1, 0, images[imageTypeAirShootBody][imageNo], true)
 }
