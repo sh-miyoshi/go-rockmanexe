@@ -21,11 +21,17 @@ const (
 	rowMax      = 5
 )
 
+const (
+	selectStateNormal = iota
+	selectStateUnison
+)
+
 var (
 	count = 0
 
 	selectList []player.ChipInfo
 	selected   []int
+	state      = selectStateNormal
 
 	imgFrame   int = -1
 	imgPointer     = []int{-1, -1}
@@ -50,6 +56,7 @@ func Init(folder []player.ChipInfo, chipSelectMax int) error {
 	count = 0
 	selectList = []player.ChipInfo{}
 	selected = []int{}
+	state = selectStateNormal
 
 	num := len(folder)
 	if num > chipSelectMax {
@@ -134,69 +141,74 @@ func Update() bool {
 	count++
 	max := len(selectList)
 
-	if inputs.CheckKey(inputs.KeyEnter) == 1 {
-		if pointer == sendBtnNo {
-			sound.On(resources.SEChipSelectEnd)
-			return true
-		}
-		if pointer == unisonBtnNo {
-			// WIP: ユニゾン選択画面を開く
-		} else if selectable(pointer) {
-			sound.On(resources.SESelect)
-			selected = append(selected, pointer)
-		} else {
-			sound.On(resources.SEDenied)
-		}
-	} else {
-		if max == 0 {
-			return false
-		}
+	switch state {
+	case selectStateNormal:
 
-		if inputs.CheckKey(inputs.KeyCancel) == 1 {
-			if len(selected) > 0 {
-				sound.On(resources.SECancel)
-				selected = selected[:len(selected)-1]
+		if inputs.CheckKey(inputs.KeyEnter) == 1 {
+			if pointer == sendBtnNo {
+				sound.On(resources.SEChipSelectEnd)
+				return true
 			}
-		} else if inputs.CheckKey(inputs.KeyRight) == 1 {
-			sound.On(resources.SECursorMove)
-			if pointer == rowMax-1 || pointer == max-1 {
-				pointer = sendBtnNo
-			} else if pointer == sendBtnNo || pointer == unisonBtnNo {
-				pointer = 0
-			} else {
-				pointer++
-			}
-		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
-			sound.On(resources.SECursorMove)
-			if pointer == sendBtnNo || pointer == unisonBtnNo {
-				pointer = max - 1
-			} else if pointer == 0 {
-				pointer = sendBtnNo
-			} else {
-				pointer--
-			}
-		} else if inputs.CheckKey(inputs.KeyUp) == 1 {
 			if pointer == unisonBtnNo {
-				sound.On(resources.SECursorMove)
-				pointer = sendBtnNo
-			} else if pointer >= rowMax {
-				sound.On(resources.SECursorMove)
-				pointer -= rowMax
+				// WIP: ユニゾン選択画面を開く
+			} else if selectable(pointer) {
+				sound.On(resources.SESelect)
+				selected = append(selected, pointer)
+			} else {
+				sound.On(resources.SEDenied)
 			}
-		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-			if max > rowMax && pointer >= 0 && pointer < rowMax {
-				sound.On(resources.SECursorMove)
-				pointer += rowMax
-				if pointer >= max {
-					pointer = max - 1
+		} else {
+			if max == 0 {
+				return false
+			}
+
+			if inputs.CheckKey(inputs.KeyCancel) == 1 {
+				if len(selected) > 0 {
+					sound.On(resources.SECancel)
+					selected = selected[:len(selected)-1]
 				}
-			} else if pointer == sendBtnNo {
+			} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 				sound.On(resources.SECursorMove)
-				pointer = unisonBtnNo
+				if pointer == rowMax-1 || pointer == max-1 {
+					pointer = sendBtnNo
+				} else if pointer == sendBtnNo || pointer == unisonBtnNo {
+					pointer = 0
+				} else {
+					pointer++
+				}
+			} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
+				sound.On(resources.SECursorMove)
+				if pointer == sendBtnNo || pointer == unisonBtnNo {
+					pointer = max - 1
+				} else if pointer == 0 {
+					pointer = sendBtnNo
+				} else {
+					pointer--
+				}
+			} else if inputs.CheckKey(inputs.KeyUp) == 1 {
+				if pointer == unisonBtnNo {
+					sound.On(resources.SECursorMove)
+					pointer = sendBtnNo
+				} else if pointer >= rowMax {
+					sound.On(resources.SECursorMove)
+					pointer -= rowMax
+				}
+			} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+				if max > rowMax && pointer >= 0 && pointer < rowMax {
+					sound.On(resources.SECursorMove)
+					pointer += rowMax
+					if pointer >= max {
+						pointer = max - 1
+					}
+				} else if pointer == sendBtnNo {
+					sound.On(resources.SECursorMove)
+					pointer = unisonBtnNo
+				}
 			}
 		}
+	case selectStateUnison:
+		// WIP
 	}
-
 	return false
 }
 
