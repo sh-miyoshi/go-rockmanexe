@@ -57,6 +57,7 @@ type NetBattle struct {
 	fieldInst    *field.Field
 	playerInitHP int
 	animMgr      *manager.Manager
+	chipSelect   *chipsel.ChipSelect
 }
 
 var (
@@ -114,6 +115,7 @@ func Init(plyr *player.Player) error {
 		stateCount:   0,
 		playerInitHP: int(plyr.HP),
 		animMgr:      manager.NewManager(),
+		chipSelect:   &chipsel.ChipSelect{},
 	}
 	var err error
 	inst.stateInst, err = opening.NewWithBoss([]enemy.EnemyParam{
@@ -193,13 +195,13 @@ func Update() error {
 		}
 	case stateChipSelect:
 		if inst.stateCount == 0 {
-			if err := chipsel.Init(inst.playerInst.GetChipFolder(), inst.playerInst.GetChipSelectMax()); err != nil {
+			if err := inst.chipSelect.Init(inst.playerInst.GetChipFolder(), inst.playerInst.GetChipSelectMax()); err != nil {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}
 		}
-		if chipsel.Update() {
+		if inst.chipSelect.Update() {
 			// set selected chips
-			inst.playerInst.SetChipSelectResult(chipsel.GetSelected())
+			inst.playerInst.SetChipSelectResult(inst.chipSelect.GetSelected())
 			// TODO: 選択したチップ一覧を送る
 			inst.conn.SendSignal(pb.Request_CHIPSELECT, nil)
 			stateChange(stateWaitSelect)
@@ -325,7 +327,7 @@ func Draw() {
 	case stateOpening:
 	case stateChipSelect:
 		inst.playerInst.DrawFrame(true, false)
-		chipsel.Draw()
+		inst.chipSelect.Draw()
 	case stateWaitSelect:
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ALPHA, 192)
 		dxlib.DrawBox(0, 0, config.ScreenSize.X, config.ScreenSize.Y, 0, true)

@@ -26,49 +26,58 @@ const (
 	selectStateUnison
 )
 
-var (
-	count = 0
-
+// ChipSelect holds chip selection state.
+type ChipSelect struct {
+	count      int
 	selectList []player.ChipInfo
 	selected   []int
-	state      = selectStateNormal
+	state      int
+	imgFrame   int
+	imgPointer []int
+	pointer    int
+}
 
-	imgFrame   int = -1
-	imgPointer     = []int{-1, -1}
-	pointer        = sendBtnNo
-)
+// NewChipSelect creates a new ChipSelect instance.
+func NewChipSelect() *ChipSelect {
+	return &ChipSelect{
+		count:      0,
+		state:      selectStateNormal,
+		imgFrame:   -1,
+		imgPointer: []int{-1, -1},
+		pointer:    sendBtnNo,
+	}
+}
 
-func Init(folder []player.ChipInfo, chipSelectMax int) error {
-	if imgFrame == -1 {
-		fname := config.ImagePath + "battle/chip_select_frame.png"
-		imgFrame = dxlib.LoadGraph(fname)
-		if imgFrame == -1 {
-			return errors.Newf("failed to read frame image: %s", fname)
-		}
-
-		fname = config.ImagePath + "battle/pointer.png"
-		res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, imgPointer)
-		if res == -1 {
-			return errors.Newf("failed to read pointer image: %s", fname)
-		}
+// Init initializes the chip selection.
+func (c *ChipSelect) Init(folder []player.ChipInfo, chipSelectMax int) error {
+	fname := config.ImagePath + "battle/chip_select_frame.png"
+	c.imgFrame = dxlib.LoadGraph(fname)
+	if c.imgFrame == -1 {
+		return errors.Newf("failed to read frame image: %s", fname)
 	}
 
-	count = 0
-	selectList = []player.ChipInfo{}
-	selected = []int{}
-	state = selectStateNormal
+	fname = config.ImagePath + "battle/pointer.png"
+	res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, c.imgPointer)
+	if res == -1 {
+		return errors.Newf("failed to read pointer image: %s", fname)
+	}
+
+	c.count = 0
+	c.selectList = []player.ChipInfo{}
+	c.selected = []int{}
+	c.state = selectStateNormal
 
 	num := len(folder)
 	if num > chipSelectMax {
 		num = chipSelectMax
 	}
 	for i := 0; i < num; i++ {
-		selectList = append(selectList, folder[i])
+		c.selectList = append(c.selectList, folder[i])
 	}
 
-	pointer = sendBtnNo
+	c.pointer = sendBtnNo
 	if num > 0 {
-		pointer = 0
+		c.pointer = 0
 	}
 
 	sound.On(resources.SEChipSelectOpen)
@@ -76,9 +85,10 @@ func Init(folder []player.ChipInfo, chipSelectMax int) error {
 	return nil
 }
 
-func Draw() {
-	if imgFrame == -1 {
-		// Waiting initialize
+// Draw renders the chip selection UI.
+func (c *ChipSelect) Draw() {
+	if c.imgFrame == -1 {
+		// Waiting for initialization.
 		return
 	}
 
@@ -87,27 +97,27 @@ func Draw() {
 		baseY = 20
 	}
 
-	dxlib.DrawGraph(0, baseY, imgFrame, true)
+	dxlib.DrawGraph(0, baseY, c.imgFrame, true)
 
-	// Show chip data
-	for i, s := range selectList {
+	// Show chip data.
+	for i, s := range c.selectList {
 		x := (i%rowMax)*32 + 17
 		y := (i / rowMax) * 48
 		draw.ChipCode(x+10, y+240+baseY, s.Code, 50)
-		if !slice.Contains(selected, i) {
-			// Show Icon
-			dxlib.DrawGraph(x, y+210+baseY, chipimage.GetIcon(s.ID, selectable(i)), true)
+		if !slice.Contains(c.selected, i) {
+			// Show Icon.
+			dxlib.DrawGraph(x, y+210+baseY, chipimage.GetIcon(s.ID, c.selectable(i)), true)
 		}
 
-		// Show Detail Data
-		if i == pointer {
-			c := chip.Get(s.ID)
-			dxlib.DrawGraph(31, 64+baseY, chipimage.GetDetail(c.ID), true)
-			dxlib.DrawGraph(52, 161+baseY, chipimage.GetType(c.Type), true)
-			draw.String(20, 25+baseY, 0x000000, "%s", c.Name)
+		// Show Detail Data.
+		if i == c.pointer {
+			ch := chip.Get(s.ID)
+			dxlib.DrawGraph(31, 64+baseY, chipimage.GetDetail(ch.ID), true)
+			dxlib.DrawGraph(52, 161+baseY, chipimage.GetType(ch.Type), true)
+			draw.String(20, 25+baseY, 0x000000, "%s", ch.Name)
 			draw.ChipCode(30, 163+baseY, s.Code, 100)
-			if c.Power != 0 {
-				draw.Number(95, 163+baseY, int(c.Power), draw.NumberOption{
+			if ch.Power != 0 {
+				draw.Number(95, 163+baseY, int(ch.Power), draw.NumberOption{
 					Color:        draw.NumberColorWhite,
 					Length:       3,
 					RightAligned: true,
@@ -116,44 +126,44 @@ func Draw() {
 		}
 	}
 
-	// Show pointer
-	n := count / 20
+	// Show pointer.
+	n := c.count / 20
 	if n%3 != 0 {
-		if pointer == unisonBtnNo {
-			dxlib.DrawGraph(180, 285+baseY, imgPointer[0], true)
-		} else if pointer == sendBtnNo {
-			dxlib.DrawGraph(180, 225+baseY, imgPointer[1], true)
+		if c.pointer == unisonBtnNo {
+			dxlib.DrawGraph(180, 285+baseY, c.imgPointer[0], true)
+		} else if c.pointer == sendBtnNo {
+			dxlib.DrawGraph(180, 225+baseY, c.imgPointer[1], true)
 		} else {
-			x := (pointer%rowMax)*32 + 8
-			y := (pointer/rowMax)*48 + 202 + baseY
-			dxlib.DrawGraph(x, y, imgPointer[0], true)
+			x := (c.pointer%rowMax)*32 + 8
+			y := (c.pointer/rowMax)*48 + 202 + baseY
+			dxlib.DrawGraph(x, y, c.imgPointer[0], true)
 		}
 	}
 
-	// Show Selected Chips
-	for i, s := range selected {
+	// Show Selected Chips.
+	for i, s := range c.selected {
 		y := i*32 + 50
-		dxlib.DrawGraph(193, y+baseY, chipimage.GetIcon(selectList[s].ID, true), true)
+		dxlib.DrawGraph(193, y+baseY, chipimage.GetIcon(c.selectList[s].ID, true), true)
 	}
 }
 
-func Update() bool {
-	count++
-	max := len(selectList)
+// Update handles input and updates the chip selection state.
+func (c *ChipSelect) Update() bool {
+	c.count++
+	max := len(c.selectList)
 
-	switch state {
+	switch c.state {
 	case selectStateNormal:
-
 		if inputs.CheckKey(inputs.KeyEnter) == 1 {
-			if pointer == sendBtnNo {
+			if c.pointer == sendBtnNo {
 				sound.On(resources.SEChipSelectEnd)
 				return true
 			}
-			if pointer == unisonBtnNo {
-				// WIP: ユニゾン選択画面を開く
-			} else if selectable(pointer) {
+			if c.pointer == unisonBtnNo {
+				// WIP: ユニゾン選択画面を開く.
+			} else if c.selectable(c.pointer) {
 				sound.On(resources.SESelect)
-				selected = append(selected, pointer)
+				c.selected = append(c.selected, c.pointer)
 			} else {
 				sound.On(resources.SEDenied)
 			}
@@ -163,71 +173,80 @@ func Update() bool {
 			}
 
 			if inputs.CheckKey(inputs.KeyCancel) == 1 {
-				if len(selected) > 0 {
+				if len(c.selected) > 0 {
 					sound.On(resources.SECancel)
-					selected = selected[:len(selected)-1]
+					c.selected = c.selected[:len(c.selected)-1]
 				}
 			} else if inputs.CheckKey(inputs.KeyRight) == 1 {
 				sound.On(resources.SECursorMove)
-				if pointer == rowMax-1 || pointer == max-1 {
-					pointer = sendBtnNo
-				} else if pointer == sendBtnNo || pointer == unisonBtnNo {
-					pointer = 0
+				if c.pointer == rowMax-1 || c.pointer == max-1 {
+					c.pointer = sendBtnNo
+				} else if c.pointer == sendBtnNo || c.pointer == unisonBtnNo {
+					c.pointer = 0
 				} else {
-					pointer++
+					c.pointer++
 				}
 			} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
 				sound.On(resources.SECursorMove)
-				if pointer == sendBtnNo || pointer == unisonBtnNo {
-					pointer = max - 1
-				} else if pointer == 0 {
-					pointer = sendBtnNo
+				if c.pointer == sendBtnNo || c.pointer == unisonBtnNo {
+					c.pointer = max - 1
+				} else if c.pointer == 0 {
+					c.pointer = sendBtnNo
 				} else {
-					pointer--
+					c.pointer--
 				}
 			} else if inputs.CheckKey(inputs.KeyUp) == 1 {
-				if pointer == unisonBtnNo {
+				if c.pointer == unisonBtnNo {
 					sound.On(resources.SECursorMove)
-					pointer = sendBtnNo
-				} else if pointer >= rowMax {
+					c.pointer = sendBtnNo
+				} else if c.pointer >= rowMax {
 					sound.On(resources.SECursorMove)
-					pointer -= rowMax
+					c.pointer -= rowMax
 				}
 			} else if inputs.CheckKey(inputs.KeyDown) == 1 {
-				if max > rowMax && pointer >= 0 && pointer < rowMax {
+				if max > rowMax && c.pointer >= 0 && c.pointer < rowMax {
 					sound.On(resources.SECursorMove)
-					pointer += rowMax
-					if pointer >= max {
-						pointer = max - 1
+					c.pointer += rowMax
+					if c.pointer >= max {
+						c.pointer = max - 1
 					}
-				} else if pointer == sendBtnNo {
+				} else if c.pointer == sendBtnNo {
 					sound.On(resources.SECursorMove)
-					pointer = unisonBtnNo
+					c.pointer = unisonBtnNo
 				}
 			}
 		}
 	case selectStateUnison:
 		// WIP
 	}
+
 	return false
 }
 
-func GetSelected() []int {
-	return selected
+// GetSelected returns the indices of the selected chips.
+func (c *ChipSelect) GetSelected() []int {
+	return c.selected
 }
 
-func selectable(no int) bool {
-	if slice.Contains(selected, no) {
+// selectable determines if a chip at the index can be selected.
+func (c *ChipSelect) selectable(no int) bool {
+	if slice.Contains(c.selected, no) {
 		// already selected
 		return false
 	}
 
-	c := chip.Get(selectList[no].ID)
-	target := chip.SelectParam{Name: c.Name, Code: selectList[no].Code}
+	ch := chip.Get(c.selectList[no].ID)
+	target := chip.SelectParam{
+		Name: ch.Name,
+		Code: c.selectList[no].Code,
+	}
 	list := []chip.SelectParam{}
-	for _, s := range selected {
-		c := chip.Get(selectList[s].ID)
-		list = append(list, chip.SelectParam{Name: c.Name, Code: selectList[s].Code})
+	for _, s := range c.selected {
+		ch2 := chip.Get(c.selectList[s].ID)
+		list = append(list, chip.SelectParam{
+			Name: ch2.Name,
+			Code: c.selectList[s].Code,
+		})
 	}
 	return chip.Selectable(target, list)
 }

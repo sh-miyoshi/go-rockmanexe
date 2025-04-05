@@ -54,6 +54,7 @@ var (
 	stateInst      State
 	basePlayerInst *player.Player
 	animMgr        *manager.Manager
+	chipSelect     *chipsel.ChipSelect
 
 	ErrWin  = errors.New("player win")
 	ErrLose = errors.New("playser lose")
@@ -68,6 +69,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	basePlayerInst = plyr
 	stateInst = nil
 	animMgr = manager.NewManager()
+	chipSelect = &chipsel.ChipSelect{}
 
 	var err error
 	playerInst, err = battleplayer.New(plyr, animMgr)
@@ -186,14 +188,15 @@ func Update() error {
 	case stateChipSelect:
 		if !isStateInit {
 			isStateInit = true
-			if err := chipsel.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
+			chipSelect = chipsel.NewChipSelect()
+			if err := chipSelect.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}
 			playerInst.SetFrameInfo(true, false)
 		}
-		if chipsel.Update() {
+		if chipSelect.Update() {
 			// set selected chips
-			playerInst.SetChipSelectResult(chipsel.GetSelected())
+			playerInst.SetChipSelectResult(chipSelect.GetSelected())
 			stateChange(stateBeforeMain)
 			return nil
 		}
@@ -305,7 +308,7 @@ func Draw() {
 
 	switch battleState {
 	case stateChipSelect:
-		chipsel.Draw()
+		chipSelect.Draw()
 	}
 
 	battlecommon.SystemDraw()
