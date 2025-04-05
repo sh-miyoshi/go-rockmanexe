@@ -156,6 +156,7 @@ func End() {
 	}
 	draw.End()
 	inst.animMgr.Cleanup()
+	inst.chipSelect.End()
 }
 
 func Update() error {

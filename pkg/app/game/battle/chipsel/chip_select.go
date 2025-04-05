@@ -28,38 +28,52 @@ const (
 
 // ChipSelect holds chip selection state.
 type ChipSelect struct {
-	count      int
-	selectList []player.ChipInfo
-	selected   []int
-	state      int
-	imgFrame   int
-	imgPointer []int
-	pointer    int
+	count       int
+	selectList  []player.ChipInfo
+	selected    []int
+	state       int
+	imgFrame    int
+	imgPointer  []int
+	imgSoulIcon int
+	pointer     int
 }
 
 // NewChipSelect creates a new ChipSelect instance.
 func NewChipSelect() *ChipSelect {
 	return &ChipSelect{
-		count:      0,
-		state:      selectStateNormal,
-		imgFrame:   -1,
-		imgPointer: []int{-1, -1},
-		pointer:    sendBtnNo,
+		count:       0,
+		state:       selectStateNormal,
+		imgFrame:    -1,
+		imgPointer:  []int{-1, -1},
+		imgSoulIcon: -1,
+		pointer:     sendBtnNo,
 	}
 }
 
 // Init initializes the chip selection.
 func (c *ChipSelect) Init(folder []player.ChipInfo, chipSelectMax int) error {
-	fname := config.ImagePath + "battle/chip_select_frame.png"
-	c.imgFrame = dxlib.LoadGraph(fname)
 	if c.imgFrame == -1 {
-		return errors.Newf("failed to read frame image: %s", fname)
+		fname := config.ImagePath + "battle/chip_select_frame.png"
+		c.imgFrame = dxlib.LoadGraph(fname)
+		if c.imgFrame == -1 {
+			return errors.Newf("failed to read frame image: %s", fname)
+		}
 	}
 
-	fname = config.ImagePath + "battle/pointer.png"
-	res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, c.imgPointer)
-	if res == -1 {
-		return errors.Newf("failed to read pointer image: %s", fname)
+	if c.imgPointer[0] == -1 && c.imgPointer[1] == -1 {
+		fname := config.ImagePath + "battle/pointer.png"
+		res := dxlib.LoadDivGraph(fname, 2, 2, 1, 44, 44, c.imgPointer)
+		if res == -1 {
+			return errors.Newf("failed to read pointer image: %s", fname)
+		}
+	}
+
+	if c.imgSoulIcon == -1 {
+		fname := config.ImagePath + "battle/soul_icon.png"
+		c.imgSoulIcon = dxlib.LoadGraph(fname)
+		if c.imgSoulIcon == -1 {
+			return errors.Newf("failed to read soul icon image: %s", fname)
+		}
 	}
 
 	c.count = 0
@@ -83,6 +97,25 @@ func (c *ChipSelect) Init(folder []player.ChipInfo, chipSelectMax int) error {
 	sound.On(resources.SEChipSelectOpen)
 
 	return nil
+}
+
+func (c *ChipSelect) End() {
+	if c.imgFrame != -1 {
+		dxlib.DeleteGraph(c.imgFrame)
+		c.imgFrame = -1
+	}
+	if c.imgPointer[0] != -1 {
+		dxlib.DeleteGraph(c.imgPointer[0])
+		c.imgPointer[0] = -1
+	}
+	if c.imgPointer[1] != -1 {
+		dxlib.DeleteGraph(c.imgPointer[1])
+		c.imgPointer[1] = -1
+	}
+	if c.imgSoulIcon != -1 {
+		dxlib.DeleteGraph(c.imgSoulIcon)
+		c.imgSoulIcon = -1
+	}
 }
 
 // Draw renders the chip selection UI.
@@ -110,7 +143,7 @@ func (c *ChipSelect) Draw() {
 		}
 
 		// Show Detail Data.
-		if i == c.pointer {
+		if i == c.pointer && c.state == selectStateNormal {
 			ch := chip.Get(s.ID)
 			dxlib.DrawGraph(31, 64+baseY, chipimage.GetDetail(ch.ID), true)
 			dxlib.DrawGraph(52, 161+baseY, chipimage.GetType(ch.Type), true)
@@ -127,17 +160,21 @@ func (c *ChipSelect) Draw() {
 	}
 
 	// Show pointer.
-	n := c.count / 20
-	if n%3 != 0 {
-		if c.pointer == unisonBtnNo {
-			dxlib.DrawGraph(180, 285+baseY, c.imgPointer[0], true)
-		} else if c.pointer == sendBtnNo {
-			dxlib.DrawGraph(180, 225+baseY, c.imgPointer[1], true)
-		} else {
-			x := (c.pointer%rowMax)*32 + 8
-			y := (c.pointer/rowMax)*48 + 202 + baseY
-			dxlib.DrawGraph(x, y, c.imgPointer[0], true)
+	if c.state == selectStateNormal {
+		n := c.count / 20
+		if n%3 != 0 {
+			if c.pointer == unisonBtnNo {
+				dxlib.DrawGraph(180, 285+baseY, c.imgPointer[0], true)
+			} else if c.pointer == sendBtnNo {
+				dxlib.DrawGraph(180, 225+baseY, c.imgPointer[1], true)
+			} else {
+				x := (c.pointer%rowMax)*32 + 8
+				y := (c.pointer/rowMax)*48 + 202 + baseY
+				dxlib.DrawGraph(x, y, c.imgPointer[0], true)
+			}
 		}
+	} else {
+		// WIP
 	}
 
 	// Show Selected Chips.
@@ -160,7 +197,9 @@ func (c *ChipSelect) Update() bool {
 				return true
 			}
 			if c.pointer == unisonBtnNo {
-				// WIP: ユニゾン選択画面を開く.
+				sound.On(resources.SEMenuEnter)
+				c.state = selectStateUnison
+				return false
 			} else if c.selectable(c.pointer) {
 				sound.On(resources.SESelect)
 				c.selected = append(c.selected, c.pointer)

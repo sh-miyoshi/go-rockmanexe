@@ -155,6 +155,7 @@ func End() {
 	skill.End()
 	enemy.End()
 	effect.End()
+	chipSelect.End()
 	logger.Info("End battle data")
 }
 
