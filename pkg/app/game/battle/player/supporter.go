@@ -13,10 +13,10 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player/drawer"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
-	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/logger"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
@@ -45,6 +45,7 @@ type Supporter struct {
 	waitCount       int
 	nextStatus      int
 	animMgr         *manager.Manager
+	playerDrawer    drawer.PlayerDrawer
 }
 
 func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, error) {
@@ -60,6 +61,10 @@ func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, e
 	}
 	res.act.Init(&res.Pos, animMgr)
 
+	if err := res.playerDrawer.Init(); err != nil {
+		return nil, err
+	}
+
 	res.setAction(120, supporterStatusMove)
 
 	return res, nil
@@ -67,21 +72,7 @@ func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, e
 
 func (s *Supporter) Draw() {
 	view := battlecommon.ViewPos(s.Pos)
-	img := s.act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-
-	if s.act.IsParalyzed() {
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-		// 黄色と白を点滅させる
-		pm := 0
-		if s.act.count/10%2 == 0 {
-			pm = 255
-		}
-		dxlib.SetDrawBright(255, 255, pm)
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-		dxlib.SetDrawBright(255, 255, 255)
-		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-	}
+	s.playerDrawer.Draw(s.act.count, view, s.act.typ, s.act.IsParalyzed())
 }
 
 func (s *Supporter) Update() (bool, error) {

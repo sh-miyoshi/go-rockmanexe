@@ -19,6 +19,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/damage"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/effect"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player/drawer"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -85,10 +86,10 @@ type BattlePlayer struct {
 	isShowGauge     bool
 	barrierHP       int
 	animMgr         *manager.Manager
+	playerDrawer    drawer.PlayerDrawer
 }
 
 var (
-	imgPlayers    [battlecommon.PlayerActMax][]int
 	imgHPFrame    int
 	imgGaugeFrame int
 	imgGaugeMax   []int
@@ -138,75 +139,11 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 
 	logger.Debug("Player info: %+v", res)
 
-	fname := config.ImagePath + "battle/character/player_move.png"
-	imgPlayers[battlecommon.PlayerActMove] = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 100, 100, imgPlayers[battlecommon.PlayerActMove]); res == -1 {
-		return nil, errors.Newf("failed to load player move image: %s", fname)
+	if err := res.playerDrawer.Init(); err != nil {
+		return nil, errors.Wrap(err, "failed to initialize player drawer")
 	}
 
-	fname = config.ImagePath + "battle/character/player_damaged.png"
-	imgPlayers[battlecommon.PlayerActDamage] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActDamage]); res == -1 {
-		return nil, errors.Newf("failed to load player damage image: %s", fname)
-	}
-	// 1 -> 2,3  2-4 3-5
-	imgPlayers[battlecommon.PlayerActDamage][4] = imgPlayers[battlecommon.PlayerActDamage][2]
-	imgPlayers[battlecommon.PlayerActDamage][5] = imgPlayers[battlecommon.PlayerActDamage][3]
-	imgPlayers[battlecommon.PlayerActDamage][2] = imgPlayers[battlecommon.PlayerActDamage][1]
-	imgPlayers[battlecommon.PlayerActDamage][3] = imgPlayers[battlecommon.PlayerActDamage][1]
-
-	fname = config.ImagePath + "battle/character/player_shot.png"
-	imgPlayers[battlecommon.PlayerActShot] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActShot]); res == -1 {
-		return nil, errors.Newf("failed to load player shot image: %s", fname)
-	}
-
-	fname = config.ImagePath + "battle/character/player_cannon.png"
-	imgPlayers[battlecommon.PlayerActCannon] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, imgPlayers[battlecommon.PlayerActCannon]); res == -1 {
-		return nil, errors.Newf("failed to load player cannon image: %s", fname)
-	}
-
-	fname = config.ImagePath + "battle/character/player_sword.png"
-	imgPlayers[battlecommon.PlayerActSword] = make([]int, 7)
-	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, imgPlayers[battlecommon.PlayerActSword]); res == -1 {
-		return nil, errors.Newf("failed to load player sword image: %s", fname)
-	}
-
-	fname = config.ImagePath + "battle/character/player_bomb.png"
-	imgPlayers[battlecommon.PlayerActBomb] = make([]int, 7)
-	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, imgPlayers[battlecommon.PlayerActBomb]); res == -1 {
-		return nil, errors.Newf("failed to load player bomb image: %s", fname)
-	}
-	imgPlayers[battlecommon.PlayerActBomb][5] = imgPlayers[battlecommon.PlayerActBomb][4]
-	imgPlayers[battlecommon.PlayerActBomb][6] = imgPlayers[battlecommon.PlayerActBomb][4]
-
-	fname = config.ImagePath + "battle/character/player_buster.png"
-	imgPlayers[battlecommon.PlayerActBuster] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, imgPlayers[battlecommon.PlayerActBuster]); res == -1 {
-		return nil, errors.Newf("failed to load player buster image: %s", fname)
-	}
-
-	fname = config.ImagePath + "battle/character/player_pick.png"
-	imgPlayers[battlecommon.PlayerActPick] = make([]int, 6)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, imgPlayers[battlecommon.PlayerActPick]); res == -1 {
-		return nil, errors.Newf("failed to load player pick image: %s", fname)
-	}
-	imgPlayers[battlecommon.PlayerActPick][4] = imgPlayers[battlecommon.PlayerActPick][3]
-	imgPlayers[battlecommon.PlayerActPick][5] = imgPlayers[battlecommon.PlayerActPick][3]
-
-	fname = config.ImagePath + "battle/character/player_throw.png"
-	imgPlayers[battlecommon.PlayerActThrow] = make([]int, 4)
-	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, imgPlayers[battlecommon.PlayerActThrow]); res == -1 {
-		return nil, errors.Newf("failed to load player throw image: %s", fname)
-	}
-
-	imgPlayers[battlecommon.PlayerActParalyzed] = make([]int, 4)
-	for i := 0; i < 4; i++ {
-		imgPlayers[battlecommon.PlayerActParalyzed][i] = imgPlayers[battlecommon.PlayerActDamage][i]
-	}
-
-	fname = config.ImagePath + "battle/hp_frame.png"
+	fname := config.ImagePath + "battle/hp_frame.png"
 	imgHPFrame = dxlib.LoadGraph(fname)
 	if imgHPFrame < 0 {
 		return nil, errors.Newf("failed to read hp frame image %s", fname)
@@ -256,12 +193,7 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 func (p *BattlePlayer) End() {
 	logger.Info("Cleanup battle player data")
 
-	for i := 0; i < battlecommon.PlayerActMax; i++ {
-		for j := 0; j < len(imgPlayers[i]); j++ {
-			dxlib.DeleteGraph(imgPlayers[i][j])
-			imgPlayers[i][j] = -1
-		}
-	}
+	p.playerDrawer.End()
 	dxlib.DeleteGraph(imgHPFrame)
 	imgHPFrame = -1
 	dxlib.DeleteGraph(imgGaugeFrame)
@@ -345,20 +277,7 @@ func (p *BattlePlayer) Draw() {
 			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		}
 
-		img := p.act.GetImage()
-		dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-		if p.act.IsParalyzed() {
-			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
-			// 黄色と白を点滅させる
-			pm := 0
-			if p.act.count/10%2 == 0 {
-				pm = 255
-			}
-			dxlib.SetDrawBright(255, 255, pm)
-			dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
-			dxlib.SetDrawBright(255, 255, 255)
-			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
-		}
+		p.playerDrawer.Draw(p.act.count, view, p.act.typ, p.act.IsParalyzed())
 
 		// Show charge image
 		if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -415,9 +334,8 @@ func (p *BattlePlayer) Update() (bool, error) {
 
 	if p.HP <= 0 {
 		// Player deleted
-		img := &imgPlayers[battlecommon.PlayerActDamage][1]
-		deleteanim.New(*img, p.Pos, true, p.animMgr)
-		*img = -1 // DeleteGraph at delete animation
+		img := p.playerDrawer.PopDeleteImage()
+		deleteanim.New(img, p.Pos, true, p.animMgr)
 		p.NextAction = NextActLose
 		p.EnableAct = false
 		p.visible = false
@@ -745,21 +663,6 @@ func (a *BattlePlayerAct) SetAnim(animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
 	a.endCount = battlecommon.GetPlayerActCount(animType, keepCount)
-}
-
-func (a *BattlePlayerAct) GetImage() int {
-	if a.typ == -1 {
-		// return stand image
-		return imgPlayers[battlecommon.PlayerActMove][0]
-	}
-
-	num, delay := battlecommon.GetPlayerImageInfo(a.typ)
-	imgNo := (a.count / delay)
-	if imgNo >= num {
-		imgNo = num - 1
-	}
-
-	return imgPlayers[a.typ][imgNo]
 }
 
 func (a *BattlePlayerAct) IsParalyzed() bool {
