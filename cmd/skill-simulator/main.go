@@ -13,6 +13,7 @@ import (
 	battlecommon "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/common"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
 	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player/drawer"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
@@ -82,6 +83,8 @@ func main() {
 	pos := point.Point{X: 1, Y: 1}
 	var act battleplayer.BattlePlayerAct
 	act.Init(&pos, animMgr)
+	var playerDrawer drawer.PlayerDrawer
+	playerDrawer.Init()
 
 	chipID := chip.IDCannon
 
@@ -94,7 +97,7 @@ MAIN:
 		field.Update()
 		background.Draw()
 		field.Draw()
-		playerDraw(pos, act)
+		playerDraw(pos, act, playerDrawer)
 		animMgr.Update(field.IsBlackout())
 		animMgr.Draw()
 
@@ -167,10 +170,10 @@ func appInit(animMgr *manager.Manager) error {
 	return nil
 }
 
-func playerDraw(pos point.Point, act battleplayer.BattlePlayerAct) {
+func playerDraw(pos point.Point, act battleplayer.BattlePlayerAct, playerDrawer drawer.PlayerDrawer) {
 	view := battlecommon.ViewPos(pos)
-	img := act.GetImage()
-	dxlib.DrawRotaGraph(view.X, view.Y, 1, 0, img, true)
+	cnt, typ := act.GetParams()
+	playerDrawer.Draw(cnt, view, typ, act.IsParalyzed())
 }
 
 func loadConfig() appConfig {

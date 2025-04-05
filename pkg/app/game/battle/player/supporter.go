@@ -72,7 +72,8 @@ func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, e
 
 func (s *Supporter) Draw() {
 	view := battlecommon.ViewPos(s.Pos)
-	s.playerDrawer.Draw(s.act.count, view, s.act.typ, s.act.IsParalyzed())
+	cnt, typ := s.act.GetParams()
+	s.playerDrawer.Draw(cnt, view, typ, s.act.IsParalyzed())
 }
 
 func (s *Supporter) Update() (bool, error) {

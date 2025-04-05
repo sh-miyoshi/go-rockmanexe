@@ -277,7 +277,8 @@ func (p *BattlePlayer) Draw() {
 			dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 		}
 
-		p.playerDrawer.Draw(p.act.count, view, p.act.typ, p.act.IsParalyzed())
+		cnt, typ := p.act.GetParams()
+		p.playerDrawer.Draw(cnt, view, typ, p.act.IsParalyzed())
 
 		// Show charge image
 		if p.ChargeCount > battlecommon.ChargeViewDelay {
@@ -672,4 +673,8 @@ func (a *BattlePlayerAct) IsParalyzed() bool {
 func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
 	a.skillInst = skill.Get(id, arg, a.animMgr)
 	a.skillObjID = a.animMgr.SkillAnimNew(a.skillInst)
+}
+
+func (a *BattlePlayerAct) GetParams() (count int, actType int) {
+	return a.count, a.typ
 }
