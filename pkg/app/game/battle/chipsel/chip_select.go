@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	sendBtnNo = -1
-	rowMax    = 5
+	sendBtnNo   = -1
+	unisonBtnNo = -2
+	rowMax      = 5
 )
 
 var (
@@ -111,7 +112,9 @@ func Draw() {
 	// Show pointer
 	n := count / 20
 	if n%3 != 0 {
-		if pointer == sendBtnNo {
+		if pointer == unisonBtnNo {
+			dxlib.DrawGraph(180, 285+baseY, imgPointer[0], true)
+		} else if pointer == sendBtnNo {
 			dxlib.DrawGraph(180, 225+baseY, imgPointer[1], true)
 		} else {
 			x := (pointer%rowMax)*32 + 8
@@ -136,7 +139,9 @@ func Update() bool {
 			sound.On(resources.SEChipSelectEnd)
 			return true
 		}
-		if selectable(pointer) {
+		if pointer == unisonBtnNo {
+			// WIP: ユニゾン選択画面を開く
+		} else if selectable(pointer) {
 			sound.On(resources.SESelect)
 			selected = append(selected, pointer)
 		} else {
@@ -156,28 +161,38 @@ func Update() bool {
 			sound.On(resources.SECursorMove)
 			if pointer == rowMax-1 || pointer == max-1 {
 				pointer = sendBtnNo
-			} else if pointer == sendBtnNo {
+			} else if pointer == sendBtnNo || pointer == unisonBtnNo {
 				pointer = 0
 			} else {
 				pointer++
 			}
 		} else if inputs.CheckKey(inputs.KeyLeft) == 1 {
 			sound.On(resources.SECursorMove)
-			if pointer == sendBtnNo {
+			if pointer == sendBtnNo || pointer == unisonBtnNo {
 				pointer = max - 1
 			} else if pointer == 0 {
 				pointer = sendBtnNo
 			} else {
 				pointer--
 			}
-		} else if inputs.CheckKey(inputs.KeyUp) == 1 && pointer >= rowMax {
-			sound.On(resources.SECursorMove)
-			pointer -= rowMax
-		} else if max > rowMax && inputs.CheckKey(inputs.KeyDown) == 1 && pointer >= 0 && pointer < rowMax {
-			sound.On(resources.SECursorMove)
-			pointer += rowMax
-			if pointer >= max {
-				pointer = max - 1
+		} else if inputs.CheckKey(inputs.KeyUp) == 1 {
+			if pointer == unisonBtnNo {
+				sound.On(resources.SECursorMove)
+				pointer = sendBtnNo
+			} else if pointer >= rowMax {
+				sound.On(resources.SECursorMove)
+				pointer -= rowMax
+			}
+		} else if inputs.CheckKey(inputs.KeyDown) == 1 {
+			if max > rowMax && pointer >= 0 && pointer < rowMax {
+				sound.On(resources.SECursorMove)
+				pointer += rowMax
+				if pointer >= max {
+					pointer = max - 1
+				}
+			} else if pointer == sendBtnNo {
+				sound.On(resources.SECursorMove)
+				pointer = unisonBtnNo
 			}
 		}
 	}
@@ -185,7 +200,6 @@ func Update() bool {
 	return false
 }
 
-// GetSelected ...
 func GetSelected() []int {
 	return selected
 }
