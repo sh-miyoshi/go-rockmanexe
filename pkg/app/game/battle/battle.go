@@ -212,6 +212,7 @@ func Update() error {
 			}
 			playerInst.UpdateChipInfo()
 			playerInst.SetFrameInfo(false, true)
+			playerInst.UpdateMindStatus()
 		}
 
 		if stateInst.Update() {

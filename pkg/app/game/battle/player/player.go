@@ -616,6 +616,13 @@ func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
 	}
 }
 
+func (p *BattlePlayer) UpdateMindStatus() {
+	if p.nextMindStatus != -1 {
+		p.MindStatus = p.nextMindStatus
+		p.nextMindStatus = -1
+	}
+}
+
 func (a *BattlePlayerAct) Init(pPos *point.Point, animMgr *manager.Manager) {
 	a.animMgr = animMgr
 	a.typ = -1
