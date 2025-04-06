@@ -79,15 +79,16 @@ type BattlePlayer struct {
 	IsUnderShirt  bool
 	ChipSelectMax int
 
-	act             BattlePlayerAct
-	invincibleCount int
-	visible         bool
-	isShiftFrame    bool
-	isShowGauge     bool
-	barrierHP       int
-	animMgr         *manager.Manager
-	playerDrawer    drawer.PlayerDrawer
-	nextMindStatus  int
+	act               BattlePlayerAct
+	invincibleCount   int
+	visible           bool
+	isShiftFrame      bool
+	isShowGauge       bool
+	barrierHP         int
+	animMgr           *manager.Manager
+	playerDrawer      drawer.PlayerDrawer
+	currentSoulUnison resources.SoulUnison
+	nextSoulUnison    *resources.SoulUnison
 }
 
 var (
@@ -104,20 +105,21 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:             uuid.New().String(),
-		HP:             plyr.HP,
-		HPMax:          plyr.HP, // TODO HPは引き継がない
-		Pos:            point.Point{X: 1, Y: 1},
-		ShotPower:      plyr.ShotPower,
-		ChargeTime:     plyr.ChargeTime,
-		EnableAct:      true,
-		MindStatus:     battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
-		visible:        true,
-		IsUnderShirt:   plyr.IsUnderShirt(),
-		ChipSelectMax:  plyr.ChipSelectMax,
-		barrierHP:      0,
-		animMgr:        animMgr,
-		nextMindStatus: -1,
+		ID:                uuid.New().String(),
+		HP:                plyr.HP,
+		HPMax:             plyr.HP, // TODO HPは引き継がない
+		Pos:               point.Point{X: 1, Y: 1},
+		ShotPower:         plyr.ShotPower,
+		ChargeTime:        plyr.ChargeTime,
+		EnableAct:         true,
+		MindStatus:        battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
+		visible:           true,
+		IsUnderShirt:      plyr.IsUnderShirt(),
+		ChipSelectMax:     plyr.ChipSelectMax,
+		barrierHP:         0,
+		animMgr:           animMgr,
+		nextSoulUnison:    nil,
+		currentSoulUnison: resources.SoulUnisonNone,
 	}
 	res.act.Init(&res.Pos, animMgr)
 
@@ -240,8 +242,8 @@ func (p *BattlePlayer) Draw() {
 	// Show Mind Status
 	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
 	st := p.MindStatus
-	if p.nextMindStatus != -1 {
-		st = p.nextMindStatus
+	if p.nextSoulUnison != nil {
+		st = p.getSoulMindStatus(*p.nextSoulUnison)
 	}
 	dxlib.DrawGraph(frameX, frameY+35, imgMinds[st], true)
 
@@ -608,19 +610,26 @@ func (p *BattlePlayer) UpdateChipInfo() {
 }
 
 func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
-	switch sid {
-	case resources.SoulUnisonAqua:
-		p.nextMindStatus = battlecommon.PlayerMindStatusAquaSoul
-	case resources.SoulUnisonBlues:
-		p.nextMindStatus = battlecommon.PlayerMindStatusBluesSoul
+	p.nextSoulUnison = &sid
+}
+
+func (p *BattlePlayer) UpdateStatus() {
+	if p.nextSoulUnison != nil {
+		p.MindStatus = p.getSoulMindStatus(*p.nextSoulUnison)
+		p.currentSoulUnison = *p.nextSoulUnison
+		p.nextSoulUnison = nil
 	}
 }
 
-func (p *BattlePlayer) UpdateMindStatus() {
-	if p.nextMindStatus != -1 {
-		p.MindStatus = p.nextMindStatus
-		p.nextMindStatus = -1
+func (p *BattlePlayer) getSoulMindStatus(sid resources.SoulUnison) int {
+	switch sid {
+	case resources.SoulUnisonAqua:
+		return battlecommon.PlayerMindStatusAquaSoul
+	case resources.SoulUnisonBlues:
+		return battlecommon.PlayerMindStatusBluesSoul
 	}
+	system.SetError(fmt.Sprintf("Invalid soul unison %v was specified.", sid))
+	return 0
 }
 
 func (a *BattlePlayerAct) Init(pPos *point.Point, animMgr *manager.Manager) {
