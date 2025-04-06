@@ -19,15 +19,16 @@ import (
 
 // ChipSelect holds chip selection state.
 type ChipSelect struct {
-	count       int
-	selectList  []player.ChipInfo
-	selected    []int
-	state       int
-	imgFrame    int
-	imgPointer  []int
-	imgSoulIcon int
-	pointer     int
-	soulList    list.ItemList
+	count        int
+	selectList   []player.ChipInfo
+	selected     []int
+	state        int
+	imgFrame     int
+	imgPointer   []int
+	imgSoulIcon  int
+	pointer      int
+	soulList     list.ItemList
+	selectedSoul *resources.SoulUnison
 }
 
 const (
@@ -44,16 +45,17 @@ const (
 // NewChipSelect creates a new ChipSelect instance.
 func NewChipSelect() *ChipSelect {
 	res := &ChipSelect{
-		count:       0,
-		state:       selectStateNormal,
-		imgFrame:    -1,
-		imgPointer:  []int{-1, -1},
-		imgSoulIcon: -1,
-		pointer:     sendBtnNo,
+		count:        0,
+		state:        selectStateNormal,
+		imgFrame:     -1,
+		imgPointer:   []int{-1, -1},
+		imgSoulIcon:  -1,
+		pointer:      sendBtnNo,
+		selectedSoul: nil,
 	}
 	res.soulList.SetList([]string{
-		"アクアソウル",
-		"ブルースソウル",
+		string(resources.SoulUnisonAqua),
+		string(resources.SoulUnisonBlues),
 	}, -1)
 
 	return res
@@ -89,6 +91,7 @@ func (c *ChipSelect) Init(folder []player.ChipInfo, chipSelectMax int) error {
 	c.selectList = []player.ChipInfo{}
 	c.selected = []int{}
 	c.state = selectStateNormal
+	c.selectedSoul = nil
 
 	num := len(folder)
 	if num > chipSelectMax {
@@ -293,7 +296,13 @@ func (c *ChipSelect) Update() bool {
 			c.count = 0
 			return false
 		}
-		// WIP
+		sel := c.soulList.Update()
+		if sel != -1 {
+			// WIP: すでに使ったチップは使えない
+			sound.On(resources.SESoulUnisonSelected)
+			s := resources.SoulUnison(c.soulList.GetList()[sel])
+			c.selectedSoul = &s
+		}
 	}
 
 	return false
