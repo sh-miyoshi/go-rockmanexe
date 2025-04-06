@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/list"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
@@ -14,17 +15,6 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 	"github.com/stretchr/stew/slice"
-)
-
-const (
-	sendBtnNo   = -1
-	unisonBtnNo = -2
-	rowMax      = 5
-)
-
-const (
-	selectStateNormal = iota
-	selectStateUnison
 )
 
 // ChipSelect holds chip selection state.
@@ -37,11 +27,23 @@ type ChipSelect struct {
 	imgPointer  []int
 	imgSoulIcon int
 	pointer     int
+	soulList    list.ItemList
 }
+
+const (
+	selectStateNormal = iota
+	selectStateUnison
+)
+
+const (
+	sendBtnNo   = -1
+	unisonBtnNo = -2
+	rowMax      = 5
+)
 
 // NewChipSelect creates a new ChipSelect instance.
 func NewChipSelect() *ChipSelect {
-	return &ChipSelect{
+	res := &ChipSelect{
 		count:       0,
 		state:       selectStateNormal,
 		imgFrame:    -1,
@@ -49,6 +51,12 @@ func NewChipSelect() *ChipSelect {
 		imgSoulIcon: -1,
 		pointer:     sendBtnNo,
 	}
+	res.soulList.SetList([]string{
+		"アクアソウル",
+		"ブルースソウル",
+	}, -1)
+
+	return res
 }
 
 // Init initializes the chip selection.
@@ -183,13 +191,25 @@ func (c *ChipSelect) Draw() {
 			}
 		}
 	} else {
-		// WIP
+		n := c.count / 20
+		if n%3 != 0 {
+			pointer := c.soulList.GetPointer()
+			y := pointer*30 + 63 + baseY
+			dxlib.DrawBoldBox(31, y, 143, y+25, 0xFF0000, 3)
+		}
 	}
 
 	// Show Selected Chips.
 	for i, s := range c.selected {
 		y := i*32 + 50
 		dxlib.DrawGraph(193, y+baseY, chipimage.GetIcon(c.selectList[s].ID, true), true)
+	}
+
+	// Show Unison Soul.
+	if c.state == selectStateUnison {
+		for i, msg := range c.soulList.GetList() {
+			draw.String(35, 65+i*30+baseY, 0xffffff, msg)
+		}
 	}
 }
 
