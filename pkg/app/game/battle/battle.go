@@ -69,7 +69,6 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 	basePlayerInst = plyr
 	stateInst = nil
 	animMgr = manager.NewManager()
-	chipSelect = &chipsel.ChipSelect{}
 
 	var err error
 	playerInst, err = battleplayer.New(plyr, animMgr)
@@ -77,6 +76,7 @@ func Init(plyr *player.Player, enemies []enemy.EnemyParam) error {
 		return errors.Wrap(err, "battle player init failed")
 	}
 	animMgr.ObjAnimNew(playerInst)
+	chipSelect = chipsel.NewChipSelect(playerInst)
 
 	enemyList = []enemy.EnemyParam{}
 	for _, e := range enemies {
@@ -155,7 +155,9 @@ func End() {
 	skill.End()
 	enemy.End()
 	effect.End()
-	chipSelect.End()
+	if chipSelect != nil {
+		chipSelect.End()
+	}
 	logger.Info("End battle data")
 }
 
@@ -189,7 +191,6 @@ func Update() error {
 	case stateChipSelect:
 		if !isStateInit {
 			isStateInit = true
-			chipSelect = chipsel.NewChipSelect()
 			if err := chipSelect.Init(playerInst.ChipFolder, playerInst.ChipSelectMax); err != nil {
 				return errors.Wrap(err, "failed to initialize chip select")
 			}

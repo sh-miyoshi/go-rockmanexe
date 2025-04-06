@@ -87,6 +87,7 @@ type BattlePlayer struct {
 	barrierHP       int
 	animMgr         *manager.Manager
 	playerDrawer    drawer.PlayerDrawer
+	nextMindStatus  int
 }
 
 var (
@@ -103,19 +104,20 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:            uuid.New().String(),
-		HP:            plyr.HP,
-		HPMax:         plyr.HP, // TODO HPは引き継がない
-		Pos:           point.Point{X: 1, Y: 1},
-		ShotPower:     plyr.ShotPower,
-		ChargeTime:    plyr.ChargeTime,
-		EnableAct:     true,
-		MindStatus:    battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
-		visible:       true,
-		IsUnderShirt:  plyr.IsUnderShirt(),
-		ChipSelectMax: plyr.ChipSelectMax,
-		barrierHP:     0,
-		animMgr:       animMgr,
+		ID:             uuid.New().String(),
+		HP:             plyr.HP,
+		HPMax:          plyr.HP, // TODO HPは引き継がない
+		Pos:            point.Point{X: 1, Y: 1},
+		ShotPower:      plyr.ShotPower,
+		ChargeTime:     plyr.ChargeTime,
+		EnableAct:      true,
+		MindStatus:     battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
+		visible:        true,
+		IsUnderShirt:   plyr.IsUnderShirt(),
+		ChipSelectMax:  plyr.ChipSelectMax,
+		barrierHP:      0,
+		animMgr:        animMgr,
+		nextMindStatus: -1,
 	}
 	res.act.Init(&res.Pos, animMgr)
 
@@ -237,7 +239,11 @@ func (p *BattlePlayer) Draw() {
 
 	// Show Mind Status
 	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
-	dxlib.DrawGraph(frameX, frameY+35, imgMinds[p.MindStatus], true)
+	st := p.MindStatus
+	if p.nextMindStatus != -1 {
+		st = p.nextMindStatus
+	}
+	dxlib.DrawGraph(frameX, frameY+35, imgMinds[st], true)
 
 	// Show selected chip icons
 	n := len(p.SelectedChips)
@@ -599,6 +605,15 @@ func (p *BattlePlayer) UpdateChipInfo() {
 	}
 
 	logger.Info("selected player chips: %+v", p.SelectedChips)
+}
+
+func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
+	switch sid {
+	case resources.SoulUnisonAqua:
+		p.nextMindStatus = battlecommon.PlayerMindStatusAquaSoul
+	case resources.SoulUnisonBlues:
+		p.nextMindStatus = battlecommon.PlayerMindStatusBluesSoul
+	}
 }
 
 func (a *BattlePlayerAct) Init(pPos *point.Point, animMgr *manager.Manager) {

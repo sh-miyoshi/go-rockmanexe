@@ -7,6 +7,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/field"
+	battleplayer "github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/list"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
@@ -29,6 +30,7 @@ type ChipSelect struct {
 	pointer      int
 	soulList     list.ItemList
 	selectedSoul *resources.SoulUnison
+	playerInst   *battleplayer.BattlePlayer
 }
 
 const (
@@ -43,7 +45,7 @@ const (
 )
 
 // NewChipSelect creates a new ChipSelect instance.
-func NewChipSelect() *ChipSelect {
+func NewChipSelect(playerInst *battleplayer.BattlePlayer) *ChipSelect {
 	res := &ChipSelect{
 		count:        0,
 		state:        selectStateNormal,
@@ -52,10 +54,10 @@ func NewChipSelect() *ChipSelect {
 		imgSoulIcon:  -1,
 		pointer:      sendBtnNo,
 		selectedSoul: nil,
+		playerInst:   playerInst,
 	}
 	res.soulList.SetList([]string{
 		string(resources.SoulUnisonAqua),
-		string(resources.SoulUnisonBlues),
 	}, -1)
 
 	return res
@@ -298,10 +300,11 @@ func (c *ChipSelect) Update() bool {
 		}
 		sel := c.soulList.Update()
 		if sel != -1 {
-			// WIP: すでに使ったチップは使えない
+			// WIP: すでに使ったソウルは使えない
 			sound.On(resources.SESoulUnisonSelected)
 			s := resources.SoulUnison(c.soulList.GetList()[sel])
 			c.selectedSoul = &s
+			c.playerInst.SetNextSoulUnison(s)
 		}
 	}
 
