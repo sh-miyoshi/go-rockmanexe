@@ -155,6 +155,20 @@ func DrawBox(x1, y1, x2, y2 int, color uint, fillFlag bool) {
 	dxlib.DrawBox(int32(x1), int32(y1), int32(x2), int32(y2), uint32(color), makeFlag(fillFlag))
 }
 
+func DrawBoldBox(x1, y1, x2, y2 int, color uint, bold int) {
+	if disabled {
+		return
+	}
+	// Draw top side
+	DrawBox(x1, y1, x2, y1+bold, color, true)
+	// Draw bottom side
+	DrawBox(x1, y2-bold, x2, y2, color, true)
+	// Draw left side
+	DrawBox(x1, y1+bold, x1+bold, y2-bold, color, true)
+	// Draw right side
+	DrawBox(x2-bold, y1+bold, x2, y2-bold, color, true)
+}
+
 func GetColor(red, green, blue int) uint {
 	if disabled {
 		return 0
