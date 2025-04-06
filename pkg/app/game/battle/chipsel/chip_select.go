@@ -12,6 +12,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -131,6 +132,7 @@ func (c *ChipSelect) Draw() {
 	}
 
 	dxlib.DrawGraph(0, baseY, c.imgFrame, true)
+	dxlib.DrawRotaGraph(202, 287+baseY, 1, 0, c.imgSoulIcon, true)
 
 	// Show chip data.
 	for i, s := range c.selectList {
@@ -159,12 +161,19 @@ func (c *ChipSelect) Draw() {
 		}
 	}
 
+	// Show description.
+	if c.pointer == unisonBtnNo {
+		for i, s := range ja.SplitMsg("クロスするソウルを選択できます", 7) {
+			draw.String(32, 65+baseY+i*20, 0xFFFFFF, s)
+		}
+	}
+
 	// Show pointer.
 	if c.state == selectStateNormal {
 		n := c.count / 20
 		if n%3 != 0 {
 			if c.pointer == unisonBtnNo {
-				dxlib.DrawGraph(180, 285+baseY, c.imgPointer[0], true)
+				dxlib.DrawGraph(180, 265+baseY, c.imgPointer[0], true)
 			} else if c.pointer == sendBtnNo {
 				dxlib.DrawGraph(180, 225+baseY, c.imgPointer[1], true)
 			} else {
@@ -199,6 +208,7 @@ func (c *ChipSelect) Update() bool {
 			if c.pointer == unisonBtnNo {
 				sound.On(resources.SEMenuEnter)
 				c.state = selectStateUnison
+				c.pointer = 0
 				return false
 			} else if c.selectable(c.pointer) {
 				sound.On(resources.SESelect)
@@ -256,6 +266,13 @@ func (c *ChipSelect) Update() bool {
 			}
 		}
 	case selectStateUnison:
+		if inputs.CheckKey(inputs.KeyCancel) == 1 {
+			sound.On(resources.SECancel)
+			c.pointer = unisonBtnNo
+			c.state = selectStateNormal
+			c.count = 0
+			return false
+		}
 		// WIP
 	}
 
