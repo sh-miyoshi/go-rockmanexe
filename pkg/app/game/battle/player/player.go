@@ -618,6 +618,8 @@ func (p *BattlePlayer) UpdateStatus() {
 		p.MindStatus = p.getSoulMindStatus(*p.nextSoulUnison)
 		p.currentSoulUnison = *p.nextSoulUnison
 		p.nextSoulUnison = nil
+
+		p.playerDrawer.SetSoulUnison(p.currentSoulUnison)
 	}
 }
 
