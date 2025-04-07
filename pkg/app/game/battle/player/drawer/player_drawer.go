@@ -94,6 +94,7 @@ func (p *PlayerDrawer) Init() error {
 		return errors.Newf("failed to load player aqua soul move image: %s", fname)
 	}
 
+	// WIP
 	// Load player aqua damaged images
 	// fname = config.ImagePath + "battle/character/player_aqua_damaged.png"
 	p.imgAquas[battlecommon.PlayerActDamage] = make([]int, 6)
@@ -106,12 +107,13 @@ func (p *PlayerDrawer) Init() error {
 	// p.imgAquas[battlecommon.PlayerActDamage][3] = p.imgAquas[battlecommon.PlayerActDamage][1]
 
 	// Load player aqua shot images
-	// fname = config.ImagePath + "battle/character/player_aqua_shot.png"
-	// p.imgAquas[battlecommon.PlayerActShot] = make([]int, 6)
-	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, p.imgAquas[battlecommon.PlayerActShot]); res == -1 {
-	// 	return errors.Newf("failed to load player aqua shot image: %s", fname)
-	// }
+	fname = config.ImagePath + "battle/character/player_aqua_shot.png"
+	p.imgAquas[battlecommon.PlayerActShot] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, p.imgAquas[battlecommon.PlayerActShot]); res == -1 {
+		return errors.Newf("failed to load player aqua shot image: %s", fname)
+	}
 
+	// WIP
 	// Load player aqua cannon images
 	// fname = config.ImagePath + "battle/character/player_aqua_cannon.png"
 	// p.imgAquas[battlecommon.PlayerActCannon] = make([]int, 6)
@@ -143,13 +145,10 @@ func (p *PlayerDrawer) Init() error {
 	}
 
 	// Load player aqua pick images
-	// fname = config.ImagePath + "battle/character/player_aqua_pick.png"
-	// p.imgAquas[battlecommon.PlayerActPick] = make([]int, 6)
-	// if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, p.imgAquas[battlecommon.PlayerActPick]); res == -1 {
-	// 	return errors.Newf("failed to load player aqua pick image: %s", fname)
-	// }
-	// p.imgAquas[battlecommon.PlayerActPick][4] = p.imgAquas[battlecommon.PlayerActPick][3]
-	// p.imgAquas[battlecommon.PlayerActPick][5] = p.imgAquas[battlecommon.PlayerActPick][3]
+	p.imgAquas[battlecommon.PlayerActPick] = make([]int, 6)
+	for i := 0; i < 6; i++ {
+		p.imgAquas[battlecommon.PlayerActPick][i] = p.imgAquas[battlecommon.PlayerActMove][0]
+	}
 
 	// Load player aqua throw images
 	fname = config.ImagePath + "battle/character/player_aqua_throw.png"
@@ -244,7 +243,7 @@ func (p *PlayerDrawer) getOffset(actType int) point.Point {
 		}
 	case resources.SoulUnisonAqua:
 		switch actType {
-		case battlecommon.PlayerActBuster:
+		case battlecommon.PlayerActBuster, battlecommon.PlayerActShot:
 			return point.Point{X: 45, Y: 5}
 		case battlecommon.PlayerActSword:
 			return point.Point{X: 25, Y: -10}
