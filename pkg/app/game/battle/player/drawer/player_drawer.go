@@ -94,7 +94,75 @@ func (p *PlayerDrawer) Init() error {
 		return errors.Newf("failed to load player aqua soul move image: %s", fname)
 	}
 
-	// WIP
+	// Load player aqua damaged images
+	// fname = config.ImagePath + "battle/character/player_aqua_damaged.png"
+	p.imgAquas[battlecommon.PlayerActDamage] = make([]int, 6)
+	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActDamage]); res == -1 {
+	// 	return errors.Newf("failed to load player aqua damaged image: %s", fname)
+	// }
+	// p.imgAquas[battlecommon.PlayerActDamage][4] = p.imgAquas[battlecommon.PlayerActDamage][2]
+	// p.imgAquas[battlecommon.PlayerActDamage][5] = p.imgAquas[battlecommon.PlayerActDamage][3]
+	// p.imgAquas[battlecommon.PlayerActDamage][2] = p.imgAquas[battlecommon.PlayerActDamage][1]
+	// p.imgAquas[battlecommon.PlayerActDamage][3] = p.imgAquas[battlecommon.PlayerActDamage][1]
+
+	// Load player aqua shot images
+	// fname = config.ImagePath + "battle/character/player_aqua_shot.png"
+	// p.imgAquas[battlecommon.PlayerActShot] = make([]int, 6)
+	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, p.imgAquas[battlecommon.PlayerActShot]); res == -1 {
+	// 	return errors.Newf("failed to load player aqua shot image: %s", fname)
+	// }
+
+	// Load player aqua cannon images
+	// fname = config.ImagePath + "battle/character/player_aqua_cannon.png"
+	// p.imgAquas[battlecommon.PlayerActCannon] = make([]int, 6)
+	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActCannon]); res == -1 {
+	// 	return errors.Newf("failed to load player aqua cannon image: %s", fname)
+	// }
+
+	// Load player aqua sword images
+	fname = config.ImagePath + "battle/character/player_aqua_sword.png"
+	p.imgAquas[battlecommon.PlayerActSword] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 128, 128, p.imgAquas[battlecommon.PlayerActSword]); res == -1 {
+		return errors.Newf("failed to load player aqua sword image: %s", fname)
+	}
+
+	// Load player aqua bomb images
+	fname = config.ImagePath + "battle/character/player_aqua_bomb.png"
+	p.imgAquas[battlecommon.PlayerActBomb] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 5, 5, 1, 100, 114, p.imgAquas[battlecommon.PlayerActBomb]); res == -1 {
+		return errors.Newf("failed to load player aqua bomb image: %s", fname)
+	}
+	p.imgAquas[battlecommon.PlayerActBomb][5] = p.imgAquas[battlecommon.PlayerActBomb][4]
+	p.imgAquas[battlecommon.PlayerActBomb][6] = p.imgAquas[battlecommon.PlayerActBomb][4]
+
+	// Load player aqua buster images
+	fname = config.ImagePath + "battle/character/player_aqua_buster.png"
+	p.imgAquas[battlecommon.PlayerActBuster] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, p.imgAquas[battlecommon.PlayerActBuster]); res == -1 {
+		return errors.Newf("failed to load player aqua buster image: %s", fname)
+	}
+
+	// Load player aqua pick images
+	// fname = config.ImagePath + "battle/character/player_aqua_pick.png"
+	// p.imgAquas[battlecommon.PlayerActPick] = make([]int, 6)
+	// if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 96, 124, p.imgAquas[battlecommon.PlayerActPick]); res == -1 {
+	// 	return errors.Newf("failed to load player aqua pick image: %s", fname)
+	// }
+	// p.imgAquas[battlecommon.PlayerActPick][4] = p.imgAquas[battlecommon.PlayerActPick][3]
+	// p.imgAquas[battlecommon.PlayerActPick][5] = p.imgAquas[battlecommon.PlayerActPick][3]
+
+	// Load player aqua throw images
+	fname = config.ImagePath + "battle/character/player_aqua_throw.png"
+	p.imgAquas[battlecommon.PlayerActThrow] = make([]int, 4)
+	if res := dxlib.LoadDivGraph(fname, 4, 4, 1, 97, 115, p.imgAquas[battlecommon.PlayerActThrow]); res == -1 {
+		return errors.Newf("failed to load player aqua throw image: %s", fname)
+	}
+
+	// Set aqua paralyzed images same as damaged images
+	p.imgAquas[battlecommon.PlayerActParalyzed] = make([]int, 4)
+	for i := 0; i < 4; i++ {
+		p.imgAquas[battlecommon.PlayerActParalyzed][i] = p.imgAquas[battlecommon.PlayerActDamage][i]
+	}
 
 	return nil
 }
@@ -124,8 +192,9 @@ func (p *PlayerDrawer) SetSoulUnison(soulUnison resources.SoulUnison) {
 
 func (p *PlayerDrawer) Draw(count int, viewPos point.Point, actType int, isParalyzed bool) {
 	img := p.getImage(count, actType)
+	ofs := p.getOffset(actType)
 
-	dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, img, true)
+	dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, img, true)
 	if isParalyzed {
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_ADD, 255)
 		// 黄色と白を点滅させる
@@ -134,7 +203,7 @@ func (p *PlayerDrawer) Draw(count int, viewPos point.Point, actType int, isParal
 			pm = 255
 		}
 		dxlib.SetDrawBright(255, 255, pm)
-		dxlib.DrawRotaGraph(viewPos.X, viewPos.Y, 1, 0, img, true)
+		dxlib.DrawRotaGraph(viewPos.X+ofs.X, viewPos.Y+ofs.Y, 1, 0, img, true)
 		dxlib.SetDrawBright(255, 255, 255)
 		dxlib.SetDrawBlendMode(dxlib.DX_BLENDMODE_NOBLEND, 0)
 	}
@@ -164,4 +233,22 @@ func (p *PlayerDrawer) images() [battlecommon.PlayerActMax][]int {
 	}
 	system.SetError("Invalid soul unison type")
 	return p.imgNormals
+}
+
+func (p *PlayerDrawer) getOffset(actType int) point.Point {
+	switch p.currentSoulUnison {
+	case resources.SoulUnisonNone:
+		switch actType {
+		case battlecommon.PlayerActSword:
+			return point.Point{X: 20, Y: -3}
+		}
+	case resources.SoulUnisonAqua:
+		switch actType {
+		case battlecommon.PlayerActBuster:
+			return point.Point{X: 45, Y: 5}
+		case battlecommon.PlayerActSword:
+			return point.Point{X: 25, Y: -10}
+		}
+	}
+	return point.Point{X: 0, Y: 0}
 }
