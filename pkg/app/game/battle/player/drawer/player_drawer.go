@@ -94,17 +94,16 @@ func (p *PlayerDrawer) Init() error {
 		return errors.Newf("failed to load player aqua soul move image: %s", fname)
 	}
 
-	// WIP
 	// Load player aqua damaged images
-	// fname = config.ImagePath + "battle/character/player_aqua_damaged.png"
+	fname = config.ImagePath + "battle/character/player_aqua_damaged.png"
 	p.imgAquas[battlecommon.PlayerActDamage] = make([]int, 6)
-	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActDamage]); res == -1 {
-	// 	return errors.Newf("failed to load player aqua damaged image: %s", fname)
-	// }
-	// p.imgAquas[battlecommon.PlayerActDamage][4] = p.imgAquas[battlecommon.PlayerActDamage][2]
-	// p.imgAquas[battlecommon.PlayerActDamage][5] = p.imgAquas[battlecommon.PlayerActDamage][3]
-	// p.imgAquas[battlecommon.PlayerActDamage][2] = p.imgAquas[battlecommon.PlayerActDamage][1]
-	// p.imgAquas[battlecommon.PlayerActDamage][3] = p.imgAquas[battlecommon.PlayerActDamage][1]
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActDamage]); res == -1 {
+		return errors.Newf("failed to load player aqua damaged image: %s", fname)
+	}
+	p.imgAquas[battlecommon.PlayerActDamage][4] = p.imgAquas[battlecommon.PlayerActDamage][2]
+	p.imgAquas[battlecommon.PlayerActDamage][5] = p.imgAquas[battlecommon.PlayerActDamage][3]
+	p.imgAquas[battlecommon.PlayerActDamage][2] = p.imgAquas[battlecommon.PlayerActDamage][1]
+	p.imgAquas[battlecommon.PlayerActDamage][3] = p.imgAquas[battlecommon.PlayerActDamage][1]
 
 	// Load player aqua shot images
 	fname = config.ImagePath + "battle/character/player_aqua_shot.png"
