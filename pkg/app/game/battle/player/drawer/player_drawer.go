@@ -112,13 +112,12 @@ func (p *PlayerDrawer) Init() error {
 		return errors.Newf("failed to load player aqua shot image: %s", fname)
 	}
 
-	// WIP
 	// Load player aqua cannon images
-	// fname = config.ImagePath + "battle/character/player_aqua_cannon.png"
-	// p.imgAquas[battlecommon.PlayerActCannon] = make([]int, 6)
-	// if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActCannon]); res == -1 {
-	// 	return errors.Newf("failed to load player aqua cannon image: %s", fname)
-	// }
+	fname = config.ImagePath + "battle/character/player_aqua_cannon.png"
+	p.imgAquas[battlecommon.PlayerActCannon] = make([]int, 6)
+	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 100, 100, p.imgAquas[battlecommon.PlayerActCannon]); res == -1 {
+		return errors.Newf("failed to load player aqua cannon image: %s", fname)
+	}
 
 	// Load player aqua sword images
 	fname = config.ImagePath + "battle/character/player_aqua_sword.png"
