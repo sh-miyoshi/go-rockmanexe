@@ -102,7 +102,7 @@ func (s *Supporter) Update() (bool, error) {
 		targetChip := chip.IDSpreadGun
 		c := chip.Get(targetChip)
 		if c.PlayerAct != -1 {
-			s.act.SetAnim(c.PlayerAct, c.KeepCount)
+			s.act.SetAnim(resources.SoulUnisonNone, c.PlayerAct, c.KeepCount)
 		}
 		target := damage.TargetEnemy
 		if c.ForMe {
@@ -118,7 +118,7 @@ func (s *Supporter) Update() (bool, error) {
 		s.setAction(60, supporterStatusMove)
 	case supporterStatusShot:
 		s.act.ShotPower = s.ShotPower
-		s.act.SetAnim(battlecommon.PlayerActBuster, 0)
+		s.act.SetAnim(resources.SoulUnisonNone, battlecommon.PlayerActBuster, 0)
 		s.setAction(60, supporterStatusMove)
 	}
 
@@ -175,9 +175,9 @@ func (s *Supporter) DamageProc(dm *damage.Damage) bool {
 		s.act.skillObjID = ""
 
 		if dm.IsParalyzed {
-			s.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
+			s.act.SetAnim(resources.SoulUnisonNone, battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
-			s.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			s.act.SetAnim(resources.SoulUnisonNone, battlecommon.PlayerActDamage, 0)
 			if dm.StrengthType == damage.StrengthHigh {
 				s.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 			}
@@ -234,7 +234,7 @@ func (s *Supporter) moveRandom() {
 	for _, direct := range candidates {
 		if battlecommon.MoveObject(&s.Pos, direct, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			s.act.MoveDirect = direct
-			s.act.SetAnim(battlecommon.PlayerActMove, 0)
+			s.act.SetAnim(resources.SoulUnisonNone, battlecommon.PlayerActMove, 0)
 			return
 		}
 	}

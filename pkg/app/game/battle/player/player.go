@@ -89,6 +89,7 @@ type BattlePlayer struct {
 	playerDrawer      drawer.PlayerDrawer
 	currentSoulUnison resources.SoulUnison
 	nextSoulUnison    *resources.SoulUnison
+	baseChargeTime    uint
 }
 
 var (
@@ -120,6 +121,7 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 		animMgr:           animMgr,
 		nextSoulUnison:    nil,
 		currentSoulUnison: resources.SoulUnisonNone,
+		baseChargeTime:    plyr.ChargeTime,
 	}
 	res.act.Init(&res.Pos, animMgr)
 
@@ -389,7 +391,7 @@ func (p *BattlePlayer) Update() (bool, error) {
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&p.Pos, moveDirect, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
-			p.act.SetAnim(battlecommon.PlayerActMove, 0)
+			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActMove, 0)
 			p.MoveNum++
 			return false, nil
 		}
@@ -400,7 +402,7 @@ func (p *BattlePlayer) Update() (bool, error) {
 		if len(p.SelectedChips) > 0 {
 			c := chip.Get(p.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
-				p.act.SetAnim(c.PlayerAct, c.KeepCount)
+				p.act.SetAnim(p.currentSoulUnison, c.PlayerAct, c.KeepCount)
 			}
 			target := damage.TargetEnemy
 			if c.ForMe {
@@ -431,9 +433,14 @@ func (p *BattlePlayer) Update() (bool, error) {
 		}
 	} else if p.ChargeCount > 0 {
 		sound.On(resources.SEBusterShot)
-		p.act.Charged = p.ChargeCount > p.ChargeTime
 		p.act.ShotPower = p.ShotPower
-		p.act.SetAnim(battlecommon.PlayerActBuster, 0)
+		if p.ChargeCount > p.ChargeTime {
+			p.act.Charged = true
+			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBShot, 0)
+		} else {
+			p.act.Charged = false
+			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBuster, 0)
+		}
 		p.ChargeCount = 0
 	}
 
@@ -506,9 +513,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		p.ChargeCount = 0
 
 		if dm.IsParalyzed {
-			p.act.SetAnim(battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
+			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
-			p.act.SetAnim(battlecommon.PlayerActDamage, 0)
+			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActDamage, 0)
 			if dm.StrengthType == damage.StrengthHigh {
 				p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 			}
@@ -619,6 +626,10 @@ func (p *BattlePlayer) UpdateStatus() {
 		p.currentSoulUnison = *p.nextSoulUnison
 		p.nextSoulUnison = nil
 
+		if p.currentSoulUnison == resources.SoulUnisonAqua {
+			p.ChargeTime = 45
+		}
+
 		p.playerDrawer.SetSoulUnison(p.currentSoulUnison)
 	}
 }
@@ -645,7 +656,8 @@ func (a *BattlePlayerAct) Update() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
-	case battlecommon.PlayerActBuster:
+	case battlecommon.PlayerActBuster, battlecommon.PlayerActBShot:
+		// WIP
 		if a.count == 1 {
 			s := a.ShotPower
 			eff := resources.EffectTypeHitSmall
@@ -693,10 +705,10 @@ func (a *BattlePlayerAct) Update() bool {
 	return true // processing now
 }
 
-func (a *BattlePlayerAct) SetAnim(animType int, keepCount int) {
+func (a *BattlePlayerAct) SetAnim(soulUnison resources.SoulUnison, animType int, keepCount int) {
 	a.count = 0
 	a.typ = animType
-	a.endCount = battlecommon.GetPlayerActCount(animType, keepCount)
+	a.endCount = battlecommon.GetPlayerActCount(soulUnison, animType, keepCount)
 }
 
 func (a *BattlePlayerAct) IsParalyzed() bool {

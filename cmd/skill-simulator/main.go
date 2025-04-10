@@ -16,6 +16,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/player/drawer"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/battle/skill"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/player"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/skillcore"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/system"
@@ -107,7 +108,7 @@ MAIN:
 
 			c := chip.Get(chipID)
 			if c.PlayerAct != -1 {
-				act.SetAnim(c.PlayerAct, c.KeepCount)
+				act.SetAnim(resources.SoulUnisonNone, c.PlayerAct, c.KeepCount)
 			}
 			sid := skillcore.GetIDByChipID(c.ID)
 			act.SetSkill(sid, skillcore.Argument{

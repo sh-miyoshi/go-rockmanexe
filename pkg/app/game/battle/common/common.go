@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/config"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/resources"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/point"
 )
 
@@ -82,17 +83,30 @@ func ReverseDirect(direct int) int {
 }
 
 var (
-	playerImageNums   = []int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4}
-	playerImageDelays = []int{1, 2, 2, 6, 3, 4, 1, 4, 4, 2}
+	playerImageNums   = [PlayerActMax]int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4, 6}
+	playerImageDelays = [PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 4, 2, 1}
 )
 
-func GetPlayerActCount(actType int, keepCount int) int {
+func GetPlayerActCount(soulUnison resources.SoulUnison, actType int, keepCount int) int {
 	if actType < 0 || actType >= PlayerActMax {
 		return 1
+	}
+	if actType == PlayerActBShot {
+		switch soulUnison {
+		case resources.SoulUnisonAqua:
+			return 7 * (1 + keepCount)
+		}
 	}
 	return playerImageDelays[actType] * (playerImageNums[actType] + keepCount)
 }
 
-func GetPlayerImageInfo(actType int) (num, delay int) {
+func GetPlayerImageInfo(soulUnison resources.SoulUnison, actType int) (num, delay int) {
+	if actType == PlayerActBShot {
+		switch soulUnison {
+		case resources.SoulUnisonAqua:
+			return 7, 1
+		}
+	}
+
 	return playerImageNums[actType], playerImageDelays[actType]
 }

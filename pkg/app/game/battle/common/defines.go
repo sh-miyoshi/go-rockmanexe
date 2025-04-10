@@ -31,6 +31,7 @@ const (
 	PlayerActPick
 	PlayerActThrow
 	PlayerActParalyzed
+	PlayerActBShot
 
 	PlayerActMax
 )

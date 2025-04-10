@@ -67,6 +67,7 @@ func (p *PlayerDrawer) Init() error {
 	if res := dxlib.LoadDivGraph(fname, 6, 6, 1, 180, 100, p.imgNormals[battlecommon.PlayerActBuster]); res == -1 {
 		return errors.Newf("failed to load player buster image: %s", fname)
 	}
+	p.imgNormals[battlecommon.PlayerActBShot] = append(p.imgNormals[battlecommon.PlayerActBShot], p.imgNormals[battlecommon.PlayerActBuster]...)
 
 	fname = config.ImagePath + "battle/character/player_pick.png"
 	p.imgNormals[battlecommon.PlayerActPick] = make([]int, 6)
@@ -161,6 +162,12 @@ func (p *PlayerDrawer) Init() error {
 		p.imgAquas[battlecommon.PlayerActParalyzed][i] = p.imgAquas[battlecommon.PlayerActDamage][i]
 	}
 
+	fname = config.ImagePath + "battle/character/player_aqua_b_shot.png"
+	p.imgAquas[battlecommon.PlayerActBShot] = make([]int, 7)
+	if res := dxlib.LoadDivGraph(fname, 7, 7, 1, 146, 100, p.imgAquas[battlecommon.PlayerActBShot]); res == -1 {
+		return errors.Newf("failed to load player aqua buster shot image: %s", fname)
+	}
+
 	return nil
 }
 
@@ -212,7 +219,7 @@ func (p *PlayerDrawer) getImage(count int, actType int) int {
 		return p.images()[battlecommon.PlayerActMove][0]
 	}
 
-	num, delay := battlecommon.GetPlayerImageInfo(actType)
+	num, delay := battlecommon.GetPlayerImageInfo(p.currentSoulUnison, actType)
 	imgNo := (count / delay)
 	if imgNo >= num {
 		imgNo = num - 1
@@ -245,6 +252,8 @@ func (p *PlayerDrawer) getOffset(actType int) point.Point {
 			return point.Point{X: 45, Y: 5}
 		case battlecommon.PlayerActSword:
 			return point.Point{X: 25, Y: -10}
+		case battlecommon.PlayerActBShot:
+			return point.Point{X: 37, Y: 0}
 		}
 	}
 	return point.Point{X: 0, Y: 0}
