@@ -83,8 +83,13 @@ func ReverseDirect(direct int) int {
 }
 
 var (
-	playerImageNums   = [PlayerActMax]int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4, 6}
-	playerImageDelays = [PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 4, 2, 1}
+	playerImageNums   = [PlayerActMax]int{4, 6, 6, 6, 7, 7, 6, 6, 4, 4}
+	playerImageDelays = [PlayerActMax]int{1, 2, 2, 6, 3, 4, 1, 4, 4, 2}
+
+	playerBShotNumDelays = map[resources.SoulUnison][2]int{
+		resources.SoulUnisonNone: {6, 1},
+		resources.SoulUnisonAqua: {7, 1},
+	}
 )
 
 func GetPlayerActCount(soulUnison resources.SoulUnison, actType int, keepCount int) int {
@@ -92,20 +97,14 @@ func GetPlayerActCount(soulUnison resources.SoulUnison, actType int, keepCount i
 		return 1
 	}
 	if actType == PlayerActBShot {
-		switch soulUnison {
-		case resources.SoulUnisonAqua:
-			return 7 * (1 + keepCount)
-		}
+		return playerBShotNumDelays[soulUnison][0] * (playerBShotNumDelays[soulUnison][1] + keepCount)
 	}
 	return playerImageDelays[actType] * (playerImageNums[actType] + keepCount)
 }
 
 func GetPlayerImageInfo(soulUnison resources.SoulUnison, actType int) (num, delay int) {
 	if actType == PlayerActBShot {
-		switch soulUnison {
-		case resources.SoulUnisonAqua:
-			return 7, 1
-		}
+		return playerBShotNumDelays[soulUnison][0], playerBShotNumDelays[soulUnison][1]
 	}
 
 	return playerImageNums[actType], playerImageDelays[actType]
