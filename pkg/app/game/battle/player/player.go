@@ -58,6 +58,7 @@ type BattlePlayerAct struct {
 	skillObjID string
 	skillInst  skill.SkillAnim
 	animMgr    *manager.Manager
+	ownerID    string
 }
 
 type BattlePlayer struct {
@@ -123,7 +124,7 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 		currentSoulUnison: resources.SoulUnisonNone,
 		baseChargeTime:    plyr.ChargeTime,
 	}
-	res.act.Init(&res.Pos, animMgr)
+	res.act.Init(res.ID, &res.Pos, animMgr)
 
 	if config.Get().Debug.AlwaysInvisible {
 		logger.Debug("enable inbisible mode")
@@ -645,10 +646,11 @@ func (p *BattlePlayer) getSoulMindStatus(sid resources.SoulUnison) int {
 	return 0
 }
 
-func (a *BattlePlayerAct) Init(pPos *point.Point, animMgr *manager.Manager) {
+func (a *BattlePlayerAct) Init(ownerID string, pPos *point.Point, animMgr *manager.Manager) {
 	a.animMgr = animMgr
 	a.typ = -1
 	a.pPos = pPos
+	a.ownerID = ownerID
 }
 
 // Process method returns true if processing now
@@ -656,7 +658,7 @@ func (a *BattlePlayerAct) Update() bool {
 	switch a.typ {
 	case -1: // No animation
 		return false
-	case battlecommon.PlayerActBuster, battlecommon.PlayerActBShot:
+	case battlecommon.PlayerActBuster:
 		// WIP
 		if a.count == 1 {
 			s := a.ShotPower
@@ -688,6 +690,15 @@ func (a *BattlePlayerAct) Update() bool {
 		}
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow, battlecommon.PlayerActParalyzed:
 		// No special action
+	case battlecommon.PlayerActBShot:
+		// WIP: 通常攻撃
+		if a.count == 1 {
+			a.SetSkill(resources.SkillBubbleShotWithoutBody, skillcore.Argument{
+				OwnerID:    a.ownerID,
+				Power:      20,
+				TargetType: damage.TargetEnemy,
+			})
+		}
 	default:
 		system.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
 		return false

@@ -88,7 +88,7 @@ var (
 
 	playerBShotNumDelays = map[resources.SoulUnison][2]int{
 		resources.SoulUnisonNone: {6, 1},
-		resources.SoulUnisonAqua: {7, 1},
+		resources.SoulUnisonAqua: {7, 2},
 	}
 )
 

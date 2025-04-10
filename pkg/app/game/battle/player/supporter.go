@@ -59,7 +59,7 @@ func NewSupporter(param SupporterParam, animMgr *manager.Manager) (*Supporter, e
 		ShotPower: 5,
 		animMgr:   animMgr,
 	}
-	res.act.Init(&res.Pos, animMgr)
+	res.act.Init(res.ID, &res.Pos, animMgr)
 
 	if err := res.playerDrawer.Init(); err != nil {
 		return nil, err

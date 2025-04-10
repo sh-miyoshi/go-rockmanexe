@@ -83,7 +83,7 @@ func main() {
 
 	pos := point.Point{X: 1, Y: 1}
 	var act battleplayer.BattlePlayerAct
-	act.Init(&pos, animMgr)
+	act.Init("", &pos, animMgr)
 	var playerDrawer drawer.PlayerDrawer
 	playerDrawer.Init()
 
