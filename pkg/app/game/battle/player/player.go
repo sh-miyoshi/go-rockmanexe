@@ -48,17 +48,17 @@ type SelectChip struct {
 
 type BattlePlayerAct struct {
 	MoveDirect int
-	Charged    bool
 	ShotPower  uint
 
-	typ        int
-	count      int
-	endCount   int
-	pPos       *point.Point
-	skillObjID string
-	skillInst  skill.SkillAnim
-	animMgr    *manager.Manager
-	ownerID    string
+	typ               int
+	count             int
+	endCount          int
+	pPos              *point.Point
+	skillObjID        string
+	skillInst         skill.SkillAnim
+	animMgr           *manager.Manager
+	ownerID           string
+	currentSoulUnison resources.SoulUnison
 }
 
 type BattlePlayer struct {
@@ -436,10 +436,8 @@ func (p *BattlePlayer) Update() (bool, error) {
 		sound.On(resources.SEBusterShot)
 		p.act.ShotPower = p.ShotPower
 		if p.ChargeCount > p.ChargeTime {
-			p.act.Charged = true
 			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBShot, 0)
 		} else {
-			p.act.Charged = false
 			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBuster, 0)
 		}
 		p.ChargeCount = 0
@@ -659,30 +657,8 @@ func (a *BattlePlayerAct) Update() bool {
 	case -1: // No animation
 		return false
 	case battlecommon.PlayerActBuster:
-		// WIP
 		if a.count == 1 {
-			s := a.ShotPower
-			eff := resources.EffectTypeHitSmall
-			if a.Charged {
-				s *= 10
-				eff = resources.EffectTypeHitBig
-			}
-
-			y := a.pPos.Y
-			for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
-				// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
-				if objID := field.GetPanelInfo(point.Point{X: x, Y: y}).ObjectID; objID != "" {
-					a.animMgr.DamageManager().New(damage.Damage{
-						DamageType:    damage.TypeObject,
-						TargetObjID:   objID,
-						TargetObjType: damage.TargetEnemy,
-						Power:         int(s),
-						HitEffectType: eff,
-						Element:       damage.ElementNone,
-					})
-					break
-				}
-			}
+			a.busterAnim(int(a.ShotPower), resources.EffectTypeHitSmall)
 		}
 	case battlecommon.PlayerActMove:
 		if a.count == 2 {
@@ -691,13 +667,17 @@ func (a *BattlePlayerAct) Update() bool {
 	case battlecommon.PlayerActCannon, battlecommon.PlayerActSword, battlecommon.PlayerActBomb, battlecommon.PlayerActDamage, battlecommon.PlayerActShot, battlecommon.PlayerActPick, battlecommon.PlayerActThrow, battlecommon.PlayerActParalyzed:
 		// No special action
 	case battlecommon.PlayerActBShot:
-		// WIP: 通常攻撃
 		if a.count == 1 {
-			a.SetSkill(resources.SkillBubbleShotWithoutBody, skillcore.Argument{
-				OwnerID:    a.ownerID,
-				Power:      20,
-				TargetType: damage.TargetEnemy,
-			})
+			switch a.currentSoulUnison {
+			case resources.SoulUnisonNone:
+				a.busterAnim(int(a.ShotPower*10), resources.EffectTypeHitBig)
+			case resources.SoulUnisonAqua:
+				a.SetSkill(resources.SkillBubbleShotWithoutBody, skillcore.Argument{
+					OwnerID:    a.ownerID,
+					Power:      20,
+					TargetType: damage.TargetEnemy,
+				})
+			}
 		}
 	default:
 		system.SetError(fmt.Sprintf("Invalid player anim type %d was specified.", a.typ))
@@ -720,6 +700,7 @@ func (a *BattlePlayerAct) SetAnim(soulUnison resources.SoulUnison, animType int,
 	a.count = 0
 	a.typ = animType
 	a.endCount = battlecommon.GetPlayerActCount(soulUnison, animType, keepCount)
+	a.currentSoulUnison = soulUnison
 }
 
 func (a *BattlePlayerAct) IsParalyzed() bool {
@@ -733,4 +714,22 @@ func (a *BattlePlayerAct) SetSkill(id int, arg skillcore.Argument) {
 
 func (a *BattlePlayerAct) GetParams() (count int, actType int) {
 	return a.count, a.typ
+}
+
+func (a *BattlePlayerAct) busterAnim(showPower int, hitEffectType int) {
+	y := a.pPos.Y
+	for x := a.pPos.X + 1; x < battlecommon.FieldNum.X; x++ {
+		// logger.Debug("Rock buster damage set %d to (%d, %d)", s, x, y)
+		if objID := field.GetPanelInfo(point.Point{X: x, Y: y}).ObjectID; objID != "" {
+			a.animMgr.DamageManager().New(damage.Damage{
+				DamageType:    damage.TypeObject,
+				TargetObjID:   objID,
+				TargetObjType: damage.TargetEnemy,
+				Power:         showPower,
+				HitEffectType: hitEffectType,
+				Element:       damage.ElementNone,
+			})
+			break
+		}
+	}
 }
