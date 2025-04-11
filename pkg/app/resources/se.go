@@ -60,6 +60,7 @@ const (
 	SEPanelReturn
 	SEMakePoison
 	SEAirShoot
+	SESoulUnisonSelected
 
 	SEMax
 )

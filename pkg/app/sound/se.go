@@ -75,6 +75,7 @@ func Init() error {
 	soundEffects[resources.SEPanelReturn] = dxlib.LoadSoundMem(basePath + "panel_return.mp3")
 	soundEffects[resources.SEMakePoison] = dxlib.LoadSoundMem(basePath + "make_poison.mp3")
 	soundEffects[resources.SEAirShoot] = dxlib.LoadSoundMem(basePath + "air_shoot.mp3")
+	soundEffects[resources.SESoulUnisonSelected] = dxlib.LoadSoundMem(basePath + "soul_unison_selected.mp3")
 
 	for i, s := range soundEffects {
 		if s == -1 {
