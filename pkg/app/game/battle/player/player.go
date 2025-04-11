@@ -82,7 +82,6 @@ type BattlePlayer struct {
 	EnableAct     bool
 	MoveNum       int
 	DamageNum     int
-	MindStatus    int
 	IsUnderShirt  bool
 	ChipSelectMax int
 
@@ -120,7 +119,6 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 		ShotPower:      plyr.ShotPower,
 		ChargeTime:     plyr.ChargeTime,
 		EnableAct:      true,
-		MindStatus:     battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
 		visible:        true,
 		IsUnderShirt:   plyr.IsUnderShirt(),
 		ChipSelectMax:  plyr.ChipSelectMax,
@@ -249,11 +247,10 @@ func (p *BattlePlayer) Draw() {
 
 	// Show Mind Status
 	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
-	st := p.MindStatus
-	if next := p.soulUnison.GetNext(); next != nil {
-		st = p.getSoulMindStatus(*next)
+	dxlib.DrawGraph(frameX, frameY+35, imgMinds[p.getMindStatus()], true)
+	if p.soulUnison.GetCurrent() != resources.SoulUnisonNone {
+		draw.Number(frameX+50, frameY+45, int(p.soulUnison.turns))
 	}
-	dxlib.DrawGraph(frameX, frameY+35, imgMinds[st], true)
 
 	// Show selected chip icons
 	n := len(p.SelectedChips)
@@ -632,22 +629,27 @@ func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
 
 func (p *BattlePlayer) UpdateStatus() {
 	p.soulUnison.Update()
-	p.MindStatus = p.getSoulMindStatus(p.soulUnison.GetCurrent())
 	if p.soulUnison.GetCurrent() == resources.SoulUnisonAqua {
 		p.ChargeTime = 45
 	}
 	p.playerDrawer.SetSoulUnison(p.soulUnison.GetCurrent())
 }
 
-func (p *BattlePlayer) getSoulMindStatus(sid resources.SoulUnison) int {
-	switch sid {
+func (p *BattlePlayer) getMindStatus() int {
+	st := p.soulUnison.GetCurrent()
+	if next := p.soulUnison.GetNext(); next != nil {
+		st = *next
+	}
+
+	switch st {
 	case resources.SoulUnisonAqua:
 		return battlecommon.PlayerMindStatusAquaSoul
 	case resources.SoulUnisonBlues:
 		return battlecommon.PlayerMindStatusBluesSoul
 	}
-	system.SetError(fmt.Sprintf("Invalid soul unison %v was specified.", sid))
-	return 0
+
+	// WIP: フルシンクロなど
+	return battlecommon.PlayerMindStatusNormal
 }
 
 func (a *BattlePlayerAct) Init(ownerID string, pPos *point.Point, animMgr *manager.Manager) {
