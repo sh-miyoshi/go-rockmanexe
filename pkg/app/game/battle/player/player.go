@@ -64,7 +64,7 @@ type BattlePlayerAct struct {
 type playerSoulUnison struct {
 	current resources.SoulUnison
 	next    *resources.SoulUnison
-	// turnNum int // WIP
+	turns   int
 }
 
 type BattlePlayer struct {
@@ -377,6 +377,12 @@ func (p *BattlePlayer) Update() (bool, error) {
 		// State change to chip select
 		if inputs.CheckKey(inputs.KeyLButton) == 1 || inputs.CheckKey(inputs.KeyRButton) == 1 {
 			p.GaugeCount = 0
+			if p.soulUnison.GetCurrent() != resources.SoulUnisonNone {
+				p.soulUnison.turns--
+				if p.soulUnison.turns <= 0 {
+					p.soulUnison.current = resources.SoulUnisonNone
+				}
+			}
 			p.NextAction = NextActChipSelect
 			return false, nil
 		}
