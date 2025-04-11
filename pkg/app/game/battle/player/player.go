@@ -61,6 +61,12 @@ type BattlePlayerAct struct {
 	currentSoulUnison resources.SoulUnison
 }
 
+type playerSoulUnison struct {
+	current resources.SoulUnison
+	next    *resources.SoulUnison
+	// turnNum int // WIP
+}
+
 type BattlePlayer struct {
 	ID            string
 	Pos           point.Point
@@ -80,17 +86,17 @@ type BattlePlayer struct {
 	IsUnderShirt  bool
 	ChipSelectMax int
 
-	act               BattlePlayerAct
-	invincibleCount   int
-	visible           bool
-	isShiftFrame      bool
-	isShowGauge       bool
-	barrierHP         int
-	animMgr           *manager.Manager
-	playerDrawer      drawer.PlayerDrawer
-	currentSoulUnison resources.SoulUnison
-	nextSoulUnison    *resources.SoulUnison
-	baseChargeTime    uint
+	act             BattlePlayerAct
+	invincibleCount int
+	visible         bool
+	isShiftFrame    bool
+	isShowGauge     bool
+	barrierHP       int
+	animMgr         *manager.Manager
+	playerDrawer    drawer.PlayerDrawer
+	soulUnison      playerSoulUnison
+
+	baseChargeTime uint
 }
 
 var (
@@ -107,24 +113,23 @@ func New(plyr *player.Player, animMgr *manager.Manager) (*BattlePlayer, error) {
 	logger.Info("Initialize battle player data")
 
 	res := BattlePlayer{
-		ID:                uuid.New().String(),
-		HP:                plyr.HP,
-		HPMax:             plyr.HP, // TODO HPは引き継がない
-		Pos:               point.Point{X: 1, Y: 1},
-		ShotPower:         plyr.ShotPower,
-		ChargeTime:        plyr.ChargeTime,
-		EnableAct:         true,
-		MindStatus:        battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
-		visible:           true,
-		IsUnderShirt:      plyr.IsUnderShirt(),
-		ChipSelectMax:     plyr.ChipSelectMax,
-		barrierHP:         0,
-		animMgr:           animMgr,
-		nextSoulUnison:    nil,
-		currentSoulUnison: resources.SoulUnisonNone,
-		baseChargeTime:    plyr.ChargeTime,
+		ID:             uuid.New().String(),
+		HP:             plyr.HP,
+		HPMax:          plyr.HP, // TODO HPは引き継がない
+		Pos:            point.Point{X: 1, Y: 1},
+		ShotPower:      plyr.ShotPower,
+		ChargeTime:     plyr.ChargeTime,
+		EnableAct:      true,
+		MindStatus:     battlecommon.PlayerMindStatusNormal, // TODO playerにstatusを持つ
+		visible:        true,
+		IsUnderShirt:   plyr.IsUnderShirt(),
+		ChipSelectMax:  plyr.ChipSelectMax,
+		barrierHP:      0,
+		animMgr:        animMgr,
+		baseChargeTime: plyr.ChargeTime,
 	}
 	res.act.Init(res.ID, &res.Pos, animMgr)
+	res.soulUnison.Init()
 
 	if config.Get().Debug.AlwaysInvisible {
 		logger.Debug("enable inbisible mode")
@@ -245,8 +250,8 @@ func (p *BattlePlayer) Draw() {
 	// Show Mind Status
 	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
 	st := p.MindStatus
-	if p.nextSoulUnison != nil {
-		st = p.getSoulMindStatus(*p.nextSoulUnison)
+	if next := p.soulUnison.GetNext(); next != nil {
+		st = p.getSoulMindStatus(*next)
 	}
 	dxlib.DrawGraph(frameX, frameY+35, imgMinds[st], true)
 
@@ -392,7 +397,7 @@ func (p *BattlePlayer) Update() (bool, error) {
 	if moveDirect >= 0 {
 		if battlecommon.MoveObject(&p.Pos, moveDirect, battlecommon.PanelTypePlayer, false, field.GetPanelInfo) {
 			p.act.MoveDirect = moveDirect
-			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActMove, 0)
+			p.act.SetAnim(p.soulUnison.GetCurrent(), battlecommon.PlayerActMove, 0)
 			p.MoveNum++
 			return false, nil
 		}
@@ -403,7 +408,7 @@ func (p *BattlePlayer) Update() (bool, error) {
 		if len(p.SelectedChips) > 0 {
 			c := chip.Get(p.SelectedChips[0].ID)
 			if c.PlayerAct != -1 {
-				p.act.SetAnim(p.currentSoulUnison, c.PlayerAct, c.KeepCount)
+				p.act.SetAnim(p.soulUnison.GetCurrent(), c.PlayerAct, c.KeepCount)
 			}
 			target := damage.TargetEnemy
 			if c.ForMe {
@@ -436,9 +441,9 @@ func (p *BattlePlayer) Update() (bool, error) {
 		sound.On(resources.SEBusterShot)
 		p.act.ShotPower = p.ShotPower
 		if p.ChargeCount > p.ChargeTime {
-			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBShot, 0)
+			p.act.SetAnim(p.soulUnison.GetCurrent(), battlecommon.PlayerActBShot, 0)
 		} else {
-			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActBuster, 0)
+			p.act.SetAnim(p.soulUnison.GetCurrent(), battlecommon.PlayerActBuster, 0)
 		}
 		p.ChargeCount = 0
 	}
@@ -512,9 +517,9 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		p.ChargeCount = 0
 
 		if dm.IsParalyzed {
-			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
+			p.act.SetAnim(p.soulUnison.GetCurrent(), battlecommon.PlayerActParalyzed, battlecommon.DefaultParalyzedTime)
 		} else {
-			p.act.SetAnim(p.currentSoulUnison, battlecommon.PlayerActDamage, 0)
+			p.act.SetAnim(p.soulUnison.GetCurrent(), battlecommon.PlayerActDamage, 0)
 			if dm.StrengthType == damage.StrengthHigh {
 				p.MakeInvisible(battlecommon.PlayerDefaultInvincibleTime)
 			}
@@ -616,21 +621,16 @@ func (p *BattlePlayer) UpdateChipInfo() {
 }
 
 func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
-	p.nextSoulUnison = &sid
+	p.soulUnison.SetNext(sid)
 }
 
 func (p *BattlePlayer) UpdateStatus() {
-	if p.nextSoulUnison != nil {
-		p.MindStatus = p.getSoulMindStatus(*p.nextSoulUnison)
-		p.currentSoulUnison = *p.nextSoulUnison
-		p.nextSoulUnison = nil
-
-		if p.currentSoulUnison == resources.SoulUnisonAqua {
-			p.ChargeTime = 45
-		}
-
-		p.playerDrawer.SetSoulUnison(p.currentSoulUnison)
+	p.soulUnison.Update()
+	p.MindStatus = p.getSoulMindStatus(p.soulUnison.GetCurrent())
+	if p.soulUnison.GetCurrent() == resources.SoulUnisonAqua {
+		p.ChargeTime = 45
 	}
+	p.playerDrawer.SetSoulUnison(p.soulUnison.GetCurrent())
 }
 
 func (p *BattlePlayer) getSoulMindStatus(sid resources.SoulUnison) int {
@@ -731,5 +731,29 @@ func (a *BattlePlayerAct) busterAnim(showPower int, hitEffectType int) {
 			})
 			break
 		}
+	}
+}
+
+func (p *playerSoulUnison) Init() {
+	p.current = resources.SoulUnisonNone
+	p.next = nil
+}
+
+func (p *playerSoulUnison) SetNext(sid resources.SoulUnison) {
+	p.next = &sid
+}
+
+func (p *playerSoulUnison) GetCurrent() resources.SoulUnison {
+	return p.current
+}
+
+func (p *playerSoulUnison) GetNext() *resources.SoulUnison {
+	return p.next
+}
+
+func (p *playerSoulUnison) Update() {
+	if p.next != nil {
+		p.current = *p.next
+		p.next = nil
 	}
 }
