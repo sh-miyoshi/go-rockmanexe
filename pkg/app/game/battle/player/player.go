@@ -249,7 +249,7 @@ func (p *BattlePlayer) Draw() {
 	dxlib.DrawGraph(frameX, frameY+35, imgMindFrame, true)
 	dxlib.DrawGraph(frameX, frameY+35, imgMinds[p.getMindStatus()], true)
 	if p.soulUnison.GetCurrent() != resources.SoulUnisonNone {
-		draw.Number(frameX+50, frameY+45, int(p.soulUnison.turns))
+		draw.Number(frameX+68, frameY+37, int(p.soulUnison.turns))
 	}
 
 	// Show selected chip icons
@@ -629,7 +629,10 @@ func (p *BattlePlayer) SetNextSoulUnison(sid resources.SoulUnison) {
 
 func (p *BattlePlayer) UpdateStatus() {
 	p.soulUnison.Update()
-	if p.soulUnison.GetCurrent() == resources.SoulUnisonAqua {
+	switch p.soulUnison.GetCurrent() {
+	case resources.SoulUnisonNone:
+		p.ChargeTime = p.baseChargeTime
+	case resources.SoulUnisonAqua:
 		p.ChargeTime = 45
 	}
 	p.playerDrawer.SetSoulUnison(p.soulUnison.GetCurrent())
@@ -763,5 +766,6 @@ func (p *playerSoulUnison) Update() {
 	if p.next != nil {
 		p.current = *p.next
 		p.next = nil
+		p.turns = 3
 	}
 }
