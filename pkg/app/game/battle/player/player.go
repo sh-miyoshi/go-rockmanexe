@@ -473,6 +473,12 @@ func (p *BattlePlayer) DamageProc(dm *damage.Damage) bool {
 		return false
 	}
 
+	// 弱点処理
+	if damage.IsWeakness(p.soulUnison.GetDamageElementType(), *dm) {
+		dm.Power *= 2
+		p.animMgr.EffectAnimNew(effect.Get(resources.EffectTypeExclamation, p.Pos, 0))
+	}
+
 	if p.barrierHP > 0 && dm.Power > 0 {
 		logger.Debug("Barrier HP: %d, Damage: %d", p.barrierHP, dm.Power)
 		p.barrierHP -= int(dm.Power)
@@ -783,4 +789,12 @@ func (p *playerSoulUnison) Update() {
 		p.turns = 3
 		p.used = append(p.used, p.current)
 	}
+}
+
+func (p *playerSoulUnison) GetDamageElementType() int {
+	switch p.current {
+	case resources.SoulUnisonAqua:
+		return damage.ElementWater
+	}
+	return damage.ElementNone
 }
