@@ -264,6 +264,9 @@ func (p *BattlePlayer) Draw() {
 			if p.SelectedChips[0].PlusPower > 0 {
 				powTxt += fmt.Sprintf("＋ %d", p.SelectedChips[0].PlusPower)
 			}
+			if p.soulUnison.GetCurrent() == resources.SoulUnisonAqua && c.Type == chip.TypeWater {
+				powTxt += " × 2"
+			}
 		}
 		draw.String(5, config.ScreenSize.Y-20, 0xffffff, "%s %s", c.Name, powTxt)
 
@@ -420,9 +423,14 @@ func (p *BattlePlayer) Update() (bool, error) {
 			}
 
 			sid := skillcore.GetIDByChipID(c.ID)
+			power := c.Power + uint(p.SelectedChips[0].PlusPower)
+			if p.soulUnison.GetCurrent() == resources.SoulUnisonAqua && c.Type == chip.TypeWater {
+				power *= 2
+			}
+
 			p.act.SetSkill(sid, skillcore.Argument{
 				OwnerID:    p.ID,
-				Power:      c.Power + uint(p.SelectedChips[0].PlusPower),
+				Power:      power,
 				TargetType: target,
 			})
 			logger.Info("Use chip %d", sid)
