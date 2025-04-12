@@ -666,8 +666,6 @@ func (p *BattlePlayer) getMindStatus() int {
 	switch st {
 	case resources.SoulUnisonAqua:
 		return battlecommon.PlayerMindStatusAquaSoul
-	case resources.SoulUnisonBlues:
-		return battlecommon.PlayerMindStatusBluesSoul
 	}
 
 	// WIP: フルシンクロなど
