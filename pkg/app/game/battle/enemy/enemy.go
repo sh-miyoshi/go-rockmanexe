@@ -199,7 +199,7 @@ func damageProc(dm *damage.Damage, pm *EnemyParam) bool {
 			return false
 		}
 
-		if damage.IsWeakness(0, *dm) {
+		if damage.IsWeakness(pm.DamageElement, *dm) {
 			dm.Power *= 2
 			animManager.EffectAnimNew(effect.Get(resources.EffectTypeExclamation, pm.Pos, 0))
 		}

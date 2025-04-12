@@ -16,20 +16,26 @@ type bubbleShot struct {
 	Arg  skillcore.Argument
 	Core *processor.BubbleShot
 
-	drawer  skilldraw.DrawBubbleShot
-	animMgr *manager.Manager
+	drawer   skilldraw.DrawBubbleShot
+	animMgr  *manager.Manager
+	showAnim bool
 }
 
-func newBubbleShot(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager) *bubbleShot {
+func newBubbleShot(objID string, arg skillcore.Argument, core skillcore.SkillCore, animMgr *manager.Manager, showAnim bool) *bubbleShot {
 	return &bubbleShot{
-		ID:      objID,
-		Arg:     arg,
-		Core:    core.(*processor.BubbleShot),
-		animMgr: animMgr,
+		ID:       objID,
+		Arg:      arg,
+		Core:     core.(*processor.BubbleShot),
+		animMgr:  animMgr,
+		showAnim: showAnim,
 	}
 }
 
 func (p *bubbleShot) Draw() {
+	if !p.showAnim {
+		return
+	}
+
 	pos := p.animMgr.ObjAnimGetObjPos(p.Arg.OwnerID)
 	view := battlecommon.ViewPos(pos)
 	p.drawer.Draw(view, p.Core.GetCount(), true)

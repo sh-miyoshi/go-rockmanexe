@@ -106,7 +106,7 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 	case resources.SkillShrimpyAttack:
 		return newShrimpyAtk(objID, arg, animMgr)
 	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
-		return newBubbleShot(objID, arg, core, animMgr)
+		return newBubbleShot(objID, arg, core, animMgr, true)
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		return newForteHellsRolling(objID, arg, core, animMgr)
 	case resources.SkillForteDarkArmBladeType1, resources.SkillForteDarkArmBladeType2:
@@ -131,6 +131,8 @@ func Get(skillID int, arg skillcore.Argument, animMgr *manager.Manager) SkillAni
 		return newComeOnSnake(objID, arg, core, animMgr)
 	case resources.SkillAirShoot:
 		return newAirShoot(objID, arg, core, animMgr)
+	case resources.SkillBubbleShotWithoutBody:
+		return newBubbleShot(objID, arg, core, animMgr, false)
 	default:
 		system.SetError(fmt.Sprintf("Skill %d is not implemented yet", skillID))
 	}

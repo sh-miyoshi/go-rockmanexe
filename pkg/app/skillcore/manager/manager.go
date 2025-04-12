@@ -88,7 +88,7 @@ func (m *Manager) Get(id int, arg skillcore.Argument) skillcore.SkillCore {
 		res := &processor.ThunderBall{Arg: arg}
 		res.Init()
 		return res
-	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide:
+	case resources.SkillBubbleShot, resources.SkillBubbleV, resources.SkillBubbleSide, resources.SkillBubbleShotWithoutBody:
 		return &processor.BubbleShot{Arg: arg, SkillID: id}
 	case resources.SkillForteHellsRollingUp, resources.SkillForteHellsRollingDown:
 		res := &processor.ForteHellsRolling{Arg: arg}

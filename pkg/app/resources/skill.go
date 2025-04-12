@@ -65,6 +65,7 @@ const (
 	SkillAirHockey
 	SkillComeOnSnake
 	SkillAirShoot
+	SkillBubbleShotWithoutBody
 
 	SkillFailed
 )

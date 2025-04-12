@@ -340,12 +340,13 @@ func (a *playerAct) SetAnim(actType int, actInfo []byte, keepCount int) {
 	a.actType = actType
 	a.info = actInfo
 	a.count = 0
-	a.endCount = battlecommon.GetPlayerActCount(actType, keepCount)
+	// WIP: ソウルユニゾン
+	a.endCount = battlecommon.GetPlayerActCount(resources.SoulUnisonNone, actType, keepCount)
 
 	switch actType {
 	case battlecommon.PlayerActMove:
 		a.pObject.Type = TypePlayerMove
-	case battlecommon.PlayerActBuster:
+	case battlecommon.PlayerActBuster, battlecommon.PlayerActBShot:
 		a.pObject.Type = TypePlayerBuster
 	case battlecommon.PlayerActCannon:
 		a.pObject.Type = TypePlayerCannon
