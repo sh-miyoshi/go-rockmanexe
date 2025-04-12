@@ -213,7 +213,13 @@ func (c *ChipSelect) Draw() {
 	// Show Unison Soul.
 	if c.state == selectStateUnison {
 		for i, msg := range c.soulList.GetList() {
-			draw.String(35, 65+i*30+baseY, 0xffffff, msg)
+			color := 0xFFFFFF
+			if slice.Contains(c.playerInst.GetUsedSoulUnisons(), msg) {
+				color = 0xB4B4B4
+			}
+
+			// WIP: color
+			draw.String(35, 65+i*30+baseY, uint(color), msg)
 		}
 	}
 }
@@ -300,7 +306,10 @@ func (c *ChipSelect) Update() bool {
 		}
 		sel := c.soulList.Update()
 		if sel != -1 {
-			// WIP: すでに使ったソウルは使えない
+			if slice.Contains(c.playerInst.GetUsedSoulUnisons(), c.soulList.GetList()[sel]) {
+				sound.On(resources.SEDenied)
+				return false
+			}
 			sound.On(resources.SESoulUnisonSelected)
 			s := resources.SoulUnison(c.soulList.GetList()[sel])
 			c.selectedSoul = &s

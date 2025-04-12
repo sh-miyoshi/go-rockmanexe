@@ -65,6 +65,7 @@ type playerSoulUnison struct {
 	current resources.SoulUnison
 	next    *resources.SoulUnison
 	turns   int
+	used    []resources.SoulUnison
 }
 
 type BattlePlayer struct {
@@ -638,6 +639,10 @@ func (p *BattlePlayer) UpdateStatus() {
 	p.playerDrawer.SetSoulUnison(p.soulUnison.GetCurrent())
 }
 
+func (p *BattlePlayer) GetUsedSoulUnisons() []resources.SoulUnison {
+	return p.soulUnison.used
+}
+
 func (p *BattlePlayer) getMindStatus() int {
 	st := p.soulUnison.GetCurrent()
 	if next := p.soulUnison.GetNext(); next != nil {
@@ -748,6 +753,7 @@ func (a *BattlePlayerAct) busterAnim(showPower int, hitEffectType int) {
 func (p *playerSoulUnison) Init() {
 	p.current = resources.SoulUnisonNone
 	p.next = nil
+	p.used = []resources.SoulUnison{}
 }
 
 func (p *playerSoulUnison) SetNext(sid resources.SoulUnison) {
@@ -767,5 +773,6 @@ func (p *playerSoulUnison) Update() {
 		p.current = *p.next
 		p.next = nil
 		p.turns = 3
+		p.used = append(p.used, p.current)
 	}
 }
