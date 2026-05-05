@@ -46,7 +46,7 @@ func (t *menuDevFeature) Draw() {
 	dxlib.DrawBox(30, 40, 210, len(t.itemList.GetList())*35+50, dxlib.GetColor(16, 80, 104), true)
 
 	for i, msg := range t.itemList.GetList() {
-		draw.String(65, 50+i*35, 0xffffff, msg)
+		draw.String(65, 50+i*35, 0xffffff, "%s", msg)
 	}
 
 	const s = 2

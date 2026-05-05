@@ -177,7 +177,7 @@ func (c *ChipSelect) Draw() {
 	// Show description.
 	if c.pointer == unisonBtnNo {
 		for i, s := range ja.SplitMsg("クロスするソウルを選択できます", 7) {
-			draw.String(32, 65+baseY+i*20, 0xFFFFFF, s)
+			draw.String(32, 65+baseY+i*20, 0xFFFFFF, "%s", s)
 		}
 	}
 
@@ -219,7 +219,7 @@ func (c *ChipSelect) Draw() {
 			}
 
 			// WIP: color
-			draw.String(35, 65+i*30+baseY, uint(color), msg)
+			draw.String(35, 65+i*30+baseY, uint(color), "%s", msg)
 		}
 	}
 }

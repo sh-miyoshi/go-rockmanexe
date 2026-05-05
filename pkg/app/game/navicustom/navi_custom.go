@@ -211,7 +211,7 @@ func Draw() {
 		if c < len(unsetParts) {
 			parts := ncparts.Get(unsetParts[c].rawData.ID)
 			for i, s := range ja.SplitMsg(parts.Description, 7) {
-				draw.String(x+5, y+5+i*20, 0xFFFFFF, s)
+				draw.String(x+5, y+5+i*20, 0xFFFFFF, "%s", s)
 			}
 		}
 	case stateRun:
@@ -222,7 +222,7 @@ func Draw() {
 		case 2:
 			str += "・・"
 		}
-		draw.String(x+5, y+5, 0xFFFFFF, str)
+		draw.String(x+5, y+5, 0xFFFFFF, "%s", str)
 	case stateRunEnd:
 		if checkBugs() {
 			draw.String(x+5, y+5, 0xFFFFFF, "OK!")
@@ -230,7 +230,7 @@ func Draw() {
 		} else {
 			draw.String(x+5, y+5, 0xFFFFFF, "異常発生")
 			for i, s := range ja.SplitMsg("プログラムを見直してください", 7) {
-				draw.String(x+5, y+25+i*20, 0xFFFFFF, s)
+				draw.String(x+5, y+25+i*20, 0xFFFFFF, "%s", s)
 			}
 		}
 	}

@@ -80,7 +80,7 @@ func Draw() {
 
 		msgs := []string{"はじめから", "つづきから"}
 		for i := 0; i < selectMax; i++ {
-			draw.String(180, 230+i*20, 0xffffff, msgs[i])
+			draw.String(180, 230+i*20, 0xffffff, "%s", msgs[i])
 		}
 		const s = 2
 		x := 160

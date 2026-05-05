@@ -21,7 +21,7 @@ func Update() {
 func SetError(msg string) {
 	// この関数が呼ばれた場所の呼び出し元情報をセットする
 	logger.SetExtraSkipCount(1)
-	logger.Error(msg)
+	logger.Error("%s", msg)
 	logger.SetExtraSkipCount(0)
 	unrecoverableError = errors.New("ゲームプレイ中")
 }

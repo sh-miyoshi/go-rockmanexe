@@ -82,8 +82,8 @@ func (r *menuPlayerStatus) Draw() {
 	}
 
 	for i, row := range info {
-		draw.String(80, 50+i*30, 0, row.key)
-		draw.String(280, 50+i*30, 0, row.value)
+		draw.String(80, 50+i*30, 0, "%s", row.key)
+		draw.String(280, 50+i*30, 0, "%s", row.value)
 	}
 }
 

@@ -209,10 +209,10 @@ func (f *menuFolder) Draw() {
 
 		y := 75 + i*30
 		dxlib.DrawGraph(x, y, chipimage.GetIcon(c.ID, true), true)
-		draw.String(x+30, y+5, 0xffffff, info.Name)
+		draw.String(x+30, y+5, 0xffffff, "%s", info.Name)
 		dxlib.DrawGraph(x+160, y, chipimage.GetType(info.Type), true)
 		// TODO font
-		draw.String(x+192, y+5, 0xffffff, strings.ToUpper(c.Code))
+		draw.String(x+192, y+5, 0xffffff, "%s", strings.ToUpper(c.Code))
 	}
 
 	// Show pointer
@@ -387,11 +387,11 @@ func (f *menuFolder) drawDescription(desc string) {
 	switch f.currentWindow {
 	case folderWindowTypeFolder:
 		for i, d := range splited {
-			draw.String(50, 205+i*25, 0x000000, d)
+			draw.String(50, 205+i*25, 0x000000, "%s", d)
 		}
 	case folderWindowTypeBackPack:
 		for i, d := range splited {
-			draw.String(300, 205+i*25, 0x000000, d)
+			draw.String(300, 205+i*25, 0x000000, "%s", d)
 		}
 	}
 }

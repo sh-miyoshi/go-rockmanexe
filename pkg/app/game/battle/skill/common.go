@@ -40,7 +40,7 @@ func (c *chipNameDraw) Draw() {
 		x = 300
 	}
 
-	draw.ExtendString(x, 70, r, 0xffffff, c.name)
+	draw.ExtendString(x, 70, r, 0xffffff, "%s", c.name)
 }
 
 func (c *chipNameDraw) Update() bool {

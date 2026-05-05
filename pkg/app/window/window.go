@@ -105,7 +105,7 @@ func (w *MessageWindow) Draw() {
 		last := w.cursor - readNum
 		if last > 0 {
 			msg = ja.SliceMsg(msg, last)
-			draw.MessageText(120, 220+i*30, 0x000000, msg)
+			draw.MessageText(120, 220+i*30, 0x000000, "%s", msg)
 			readNum += utf8.RuneCount([]byte(msg))
 		}
 	}
