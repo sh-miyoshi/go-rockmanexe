@@ -361,7 +361,7 @@ func (p *menuGoBattle) Draw() {
 
 	for i := 0; i < goBattleListShowMax; i++ {
 		c := i + p.itemList.GetScroll()
-		draw.String(65, 50+i*35, 0xffffff, p.selectData[c].Name)
+		draw.String(65, 50+i*35, 0xffffff, "%s", p.selectData[c].Name)
 	}
 
 	const s = 2

@@ -177,7 +177,7 @@ func debugDraw() {
 		}
 
 		for i, msg := range system.PopAllDebugMessages() {
-			dxlib.DrawFormatStringToHandle(0, i*25, 0xffffff, font, msg)
+			dxlib.DrawFormatStringToHandle(0, i*25, 0xffffff, font, "%s", msg)
 		}
 	}
 }

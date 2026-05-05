@@ -1,8 +1,6 @@
 package menu
 
 import (
-	"fmt"
-
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/chip"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/draw"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/game/netbattle"
@@ -49,7 +47,7 @@ func (i *menuInvalidChip) Draw() {
 	dxlib.DrawBox(25, 45, 460, 200, dxlib.GetColor(168, 192, 216), true)
 	draw.MessageText(35, 55, 0x000000, "使用できないチップ一覧")
 	for i, name := range i.invalidChips() {
-		draw.MessageText(35, 80+(i*30), 0x000000, fmt.Sprintf("・%s", name))
+		draw.MessageText(35, 80+(i*30), 0x000000, "・%s", name)
 	}
 
 	i.win.Draw()

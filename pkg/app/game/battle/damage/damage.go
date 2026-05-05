@@ -140,5 +140,5 @@ func (m *DamageManager) PrintAllData() {
 		msg += fmt.Sprintf("%s: %+v, ", id, *d)
 	}
 	msg += " }"
-	logger.Debug(msg)
+	logger.Debug("%s", msg)
 }

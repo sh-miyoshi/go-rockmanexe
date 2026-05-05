@@ -129,9 +129,9 @@ func (m *WinManager) Draw() {
 			img := chipimage.GetDetail(chipInfo.ID)
 			dxlib.DrawGraph(baseX+227, baseY+144, img, true)
 			c := strings.ToUpper(pm.Code)
-			draw.String(baseX+195, baseY+200, 0xffffff, c)
+			draw.String(baseX+195, baseY+200, 0xffffff, "%s", c)
 		}
-		draw.String(baseX+60, baseY+200, 0xffffff, pm.Name)
+		draw.String(baseX+60, baseY+200, 0xffffff, "%s", pm.Name)
 		showDeleteTime(pm.DeleteTimeSec, baseX, baseY)
 		draw.Number(baseX+315, baseY+95, pm.BustingLevel)
 	}

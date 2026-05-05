@@ -75,7 +75,7 @@ func (m *menuNetBattle) Update() bool {
 func (m *menuNetBattle) Draw() {
 	dxlib.DrawGraph(40, 205, m.imgMsgFrame, true)
 	for i, msg := range m.messages {
-		draw.MessageText(120, 220+i*30, 0x000000, msg)
+		draw.MessageText(120, 220+i*30, 0x000000, "%s", msg)
 	}
 }
 
