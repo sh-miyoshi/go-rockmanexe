@@ -1,6 +1,6 @@
 module github.com/sh-miyoshi/go-rockmanexe
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/cockroachdb/errors v1.11.1
@@ -9,7 +9,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sh-miyoshi/dxlib v1.3.5
 	github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b
-	golang.org/x/text v0.32.0
+	golang.org/x/text v0.37.0
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/yaml.v2 v2.4.0
@@ -25,7 +25,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
-	golang.org/x/net v0.48.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
 )
