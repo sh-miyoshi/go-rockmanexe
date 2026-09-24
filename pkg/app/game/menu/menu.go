@@ -21,6 +21,7 @@ const (
 	statePlayerStatus
 	stateNetBattle
 	stateInvalidChip
+	stateTraining
 	stateDevFeature
 
 	stateMax
@@ -164,6 +165,17 @@ func Update() (Result, error) {
 	case stateInvalidChip:
 		if currentInst == nil {
 			currentInst, err = invalidChipNew(playerInfo)
+			if err != nil {
+				return ResultContinue, err
+			}
+		}
+
+		if currentInst.Update() {
+			stateChange(stateTop)
+		}
+	case stateTraining:
+		if currentInst == nil {
+			currentInst, err = trainingNew()
 			if err != nil {
 				return ResultContinue, err
 			}
