@@ -10,6 +10,7 @@ import (
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/app/sound"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/dxlib"
 	"github.com/sh-miyoshi/go-rockmanexe/pkg/inputs"
+	"github.com/sh-miyoshi/go-rockmanexe/pkg/utils/locale/ja"
 	"github.com/stretchr/stew/slice"
 )
 
@@ -19,6 +20,7 @@ const (
 	topSelectPlayerStatus
 	topSelectNetBattle
 	topSelectNaviCustom
+	topSelectTraining
 )
 
 type menuTop struct {
@@ -40,6 +42,7 @@ func topNew(plyr *player.Player) (*menuTop, error) {
 		"ロックマン",
 		"ネット対戦",
 		"ナビカスタマイザー",
+		"練習",
 	}, -1)
 
 	return res, nil
@@ -77,6 +80,8 @@ func (t *menuTop) Update() bool {
 			}
 		case topSelectNaviCustom:
 			t.result = ResultGoNaviCustom
+		case topSelectTraining:
+			t.nextState = stateTraining
 		}
 		return true
 	}
@@ -103,23 +108,27 @@ func (t *menuTop) Draw() {
 	dxlib.DrawBox(260, 60, 440, 280, dxlib.GetColor(16, 80, 104), true)
 	draw.String(280, 40, 0xffffff, "Description")
 
+	msg := ""
 	switch t.itemList.GetPointer() {
 	case topSelectChipFolder:
-		draw.String(270, 70, 0xffffff, "チップフォルダを閲覧し")
-		draw.String(270, 100, 0xffffff, "ます")
+		msg = "チップフォルダを閲覧します"
 	case topSelectGoBattle:
-		draw.String(270, 70, 0xffffff, "ウィルスバスティングを")
-		draw.String(270, 100, 0xffffff, "行います")
+		msg = "ウィルスバスティングを行います"
 	case topSelectPlayerStatus:
-		draw.String(270, 70, 0xffffff, "今までの戦績を確認しま")
-		draw.String(270, 100, 0xffffff, "す")
+		msg = "ロックマンの状態を確認します"
 	case topSelectNetBattle:
-		draw.String(270, 70, 0xffffff, "インターネットを経由し")
-		draw.String(270, 100, 0xffffff, "て対戦します")
+		msg = "インターネットを経由して対戦します"
+	case topSelectNaviCustom:
+		msg = "ナビカスタマイザーを開きます\nナビカスタマイザーではロックマンの能力を強化できます"
+	case topSelectTraining:
+		msg = "バトルの練習モードを開始します"
+	}
+	for i, s := range ja.SplitMsg(msg, 11) {
+		draw.String(270, 70+i*30, 0xFFFFFF, s)
 	}
 
 	if config.Get().Debug.EnableDevFeature {
-		draw.String(50, 250, 0x000000, "L-btn: Debug機能")
+		draw.String(50, 270, 0x000000, "L-btn: Debug機能")
 	}
 }
 
